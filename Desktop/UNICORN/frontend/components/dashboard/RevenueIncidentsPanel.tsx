@@ -211,7 +211,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
       <div className="px-8 py-5 space-y-5">
         {open
           .sort((a, b) => {
-            const order = { critical: 0, high: 1, medium: 2, low: 3 }
+            const order: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 }
             return (order[a.severity] ?? 9) - (order[b.severity] ?? 9)
           })
           .map((inc, idx) => (
