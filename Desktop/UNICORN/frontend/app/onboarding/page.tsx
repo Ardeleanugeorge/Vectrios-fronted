@@ -1,0 +1,960 @@
+"use client"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+
+// ─── QuestionBlock definit AFARA componentului principal ────────────────────
+// Dacă ar fi definit înăuntru, React îl tratează ca tip nou la fiecare render
+// → unmount + remount → scroll reset la top la fiecare click.
+const feedbackMessages: { [key: string]: string } = {
+  b2b_saas: "VectriOS currently models structural revenue exposure for B2B SaaS environments with measurable sales cycles.",
+  active_sales_motion: "Active sales motion is required for structural revenue modeling. The framework evaluates messaging alignment against revenue objectives within sales-led or hybrid models.",
+  close_rate_matters: "Close rate is the core metric for structural exposure modeling. Without close rate as a tracked KPI, the diagnostic cannot quantify revenue risk.",
+  publishing_content: "Public messaging channels are required for structural analysis. The framework evaluates content architecture integrity across your public-facing communication."
+}
+
+function QuestionBlock({
+  question,
+  order,
+  value,
+  onAnswer,
+  feedbackKey,
+}: {
+  question: string
+  order: number
+  value: boolean | null
+  onAnswer: (val: boolean) => void
+  feedbackKey: string
+}) {
+  const showFeedback = value === false
+  return (
+    <div>
+      <h3 className="text-xl font-semibold mb-4">{order}. {question}</h3>
+      <div className="flex gap-4 mb-3">
+        <button
+          type="button"
+          onClick={() => onAnswer(true)}
+          className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
+            value === true
+              ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
+              : "border-gray-700 hover:border-gray-600 text-gray-300"
+          }`}
+        >
+          Yes
+        </button>
+        <button
+          type="button"
+          onClick={() => onAnswer(false)}
+          className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
+            value === false
+              ? "border-gray-600 bg-gray-800/30 text-gray-400"
+              : "border-gray-700 hover:border-gray-600 text-gray-300"
+          }`}
+        >
+          No
+        </button>
+      </div>
+      {showFeedback && (
+        <div className="mt-3 p-4 bg-gray-800/50 border border-gray-700 rounded-lg">
+          <p className="text-sm text-gray-400 italic">
+            {feedbackMessages[feedbackKey]}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+export default function OnboardingPage() {
+  const router = useRouter()
+  const [currentStep, setCurrentStep] = useState(1)
+
+  const goToStep = (step: number) => {
+    setCurrentStep(step)
+    setTimeout(() => window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior }), 0)
+  }
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitPhase, setSubmitPhase] = useState(0)
+
+  const submitPhases = [
+    "Crawling your pages...",
+    "Analyzing messaging structure...",
+    "Generating embeddings...",
+    "Calculating Revenue Risk Index...",
+    "Finalizing diagnostic...",
+  ]
+  const [form, setForm] = useState({
+    b2b_saas: null as boolean | null,
+    active_sales_motion: null as boolean | null,
+    close_rate_matters: null as boolean | null,
+    publishing_content: null as boolean | null,
+    website_url: "",
+    arr_range: "",
+    average_deal_size_range: "",
+    team_size: "",
+    growth_model: "",
+    icp_buyer_role: "",
+    icp_industry: "",
+    icp_company_size: "",
+    icp_description: "",
+    revenue_objective: "",
+    current_close_rate: "",
+    target_close_rate: "",
+    average_sales_cycle_range: "",
+    primary_sales_channel: "",
+    top_competitors: [] as string[],
+    value_articulation_score: "",
+    pricing_clarity_score: "",
+    differentiation_score: "",
+    homepage_url: "",
+    pricing_page_url: "",
+    product_page_url: "",
+    content_channels: [] as string[],
+    content_urls: "",
+    why_applying: ""
+  })
+
+  const totalSteps = 4
+
+  const handleAnswer = (question: keyof typeof form, value: boolean) => {
+    setForm(prev => ({ ...prev, [question]: value }))
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setForm(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleCheckbox = (channel: string) => {
+    setForm(prev => ({
+      ...prev,
+      content_channels: prev.content_channels.includes(channel)
+        ? prev.content_channels.filter(c => c !== channel)
+        : [...prev.content_channels, channel]
+    }))
+  }
+
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1:
+        return Object.values({
+          b2b_saas: form.b2b_saas,
+          active_sales_motion: form.active_sales_motion,
+          close_rate_matters: form.close_rate_matters,
+          publishing_content: form.publishing_content
+        }).every(v => v === true)
+      case 2:
+        const step2Valid = !!(
+          form.website_url?.trim() && 
+          form.arr_range && 
+          form.average_deal_size_range && 
+          form.team_size && 
+          form.growth_model && 
+          form.icp_buyer_role && 
+          form.icp_industry && 
+          form.icp_company_size && 
+          form.icp_description?.trim() && 
+          form.revenue_objective
+        )
+        return step2Valid
+      case 3:
+        const step3Valid = !!(
+          form.current_close_rate && 
+          form.target_close_rate && 
+          form.average_sales_cycle_range && 
+          form.value_articulation_score && 
+          form.pricing_clarity_score && 
+          form.differentiation_score
+        )
+        return step3Valid
+      case 4:
+        return form.content_channels.length > 0 && form.why_applying.length >= 50
+      default:
+        return false
+    }
+  }
+
+  // Normalize URLs - add https:// if protocol is missing
+  const normalizeUrl = (url: string): string => {
+    const trimmed = url.trim()
+    if (!trimmed) return trimmed
+    // If already has protocol, return as is
+    if (trimmed.match(/^https?:\/\//i)) {
+      return trimmed
+    }
+    // Otherwise add https://
+    return `https://${trimmed}`
+  }
+
+  const handleSubmit = async () => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    console.log("[onboarding] token:", token ? "found" : "NOT FOUND")
+    if (!token) {
+      alert("Please sign up first")
+      router.push("/signup")
+      return
+    }
+    console.log("[onboarding] submitting...")
+    setIsSubmitting(true)
+    setSubmitPhase(0)
+
+    // Rotate through phases every 6 seconds
+    const phaseInterval = setInterval(() => {
+      setSubmitPhase(prev => (prev + 1) % submitPhases.length)
+    }, 6000)
+
+    // Normalize all URLs
+    const normalizedContentUrls = form.content_urls
+      .split("\n")
+      .filter(url => url.trim())
+      .map(url => normalizeUrl(url))
+    
+    const normalizedWebsiteUrl = normalizeUrl(form.website_url)
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/onboarding", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          b2b_saas: form.b2b_saas,
+          active_sales_motion: form.active_sales_motion,
+          publishing_content: form.publishing_content,
+          close_rate_matters: form.close_rate_matters,
+          website_url: normalizedWebsiteUrl,
+          arr_range: form.arr_range,
+          average_deal_size_range: form.average_deal_size_range || null,
+          team_size: form.team_size,
+          growth_model: form.growth_model,
+          icp_buyer_role: form.icp_buyer_role || null,
+          icp_industry: form.icp_industry || null,
+          icp_company_size: form.icp_company_size || null,
+          icp_description: form.icp_description,
+          revenue_objective: form.revenue_objective,
+          current_close_rate: form.current_close_rate ? Number(form.current_close_rate) : null,
+          target_close_rate: form.target_close_rate ? Number(form.target_close_rate) : null,
+          average_sales_cycle_range: form.average_sales_cycle_range || null,
+          primary_sales_channel: form.primary_sales_channel || null,
+          top_competitors: form.top_competitors.length > 0 ? form.top_competitors : null,
+          value_articulation_score: form.value_articulation_score || null,
+          pricing_clarity_score: form.pricing_clarity_score || null,
+          differentiation_score: form.differentiation_score || null,
+          content_channels: form.content_channels,
+          content_urls: normalizedContentUrls,
+          why_applying: form.why_applying
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // Store diagnostic result if available
+        if (data.diagnostic) {
+          sessionStorage.setItem("diagnostic_result", JSON.stringify(data.diagnostic))
+          localStorage.setItem("diagnostic_result", JSON.stringify(data.diagnostic))
+        }
+        // Store company_id for monitoring status loading
+        if (data.company_id) {
+          sessionStorage.setItem("onboarding_response", JSON.stringify({ company_id: data.company_id }))
+          localStorage.setItem("onboarding_response", JSON.stringify({ company_id: data.company_id }))
+          // Also update user_data with company_id
+          const userData = localStorage.getItem("user_data")
+          if (userData) {
+            try {
+              const parsed = JSON.parse(userData)
+              parsed.company_id = data.company_id
+              localStorage.setItem("user_data", JSON.stringify(parsed))
+            } catch (e) {
+              console.error("Error updating user_data:", e)
+            }
+          }
+        }
+        router.push("/dashboard")
+      } else {
+        let errorData
+        try {
+          errorData = await response.json()
+        } catch (e) {
+          console.error("Failed to parse error response:", e)
+          alert(`Error ${response.status}: ${response.statusText}`)
+          return
+        }
+        
+        console.error("Onboarding error response:", errorData)
+        
+        let errorMessage = "Error completing onboarding"
+        
+        if (errorData.detail) {
+          if (typeof errorData.detail === 'object') {
+            // Handle structured error with reasons
+            if (errorData.detail.reasons && Array.isArray(errorData.detail.reasons)) {
+              errorMessage = (errorData.detail.message || "Validation errors") + ":\n\n" + errorData.detail.reasons.join("\n")
+            } else {
+              errorMessage = errorData.detail.message || JSON.stringify(errorData.detail)
+            }
+          } else if (typeof errorData.detail === 'string') {
+            errorMessage = errorData.detail
+          }
+        } else if (errorData.message) {
+          errorMessage = errorData.message
+        } else {
+          errorMessage = JSON.stringify(errorData)
+        }
+        
+        alert(errorMessage)
+      }
+    } catch (error) {
+      console.error("Onboarding error:", error)
+      alert("Error completing onboarding. Please try again.")
+    } finally {
+      clearInterval(phaseInterval)
+      setIsSubmitting(false)
+      setSubmitPhase(0)
+    }
+  }
+
+  return (
+    <main className="min-h-screen bg-[#0B0F19] text-white py-12">
+      <div className="max-w-3xl mx-auto px-6">
+        {/* PROGRESS INDICATOR */}
+        <div className="mb-12">
+          <div className="flex justify-between items-center mb-4">
+            {[1, 2, 3, 4].map((step) => (
+              <div key={step} className="flex items-center flex-1">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
+                    step < currentStep
+                      ? "bg-cyan-500 text-black"
+                      : step === currentStep
+                      ? "bg-cyan-500 text-black"
+                      : "bg-gray-800 text-gray-500"
+                  }`}
+                >
+                  {step}
+                </div>
+                {step < totalSteps && (
+                  <div
+                    className={`flex-1 h-1 mx-2 ${
+                      step < currentStep ? "bg-cyan-500" : "bg-gray-800"
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-gray-500 text-center">
+            Step {currentStep} of {totalSteps}
+          </p>
+        </div>
+
+        {/* STEP 1: Structural Eligibility Assessment */}
+        {currentStep === 1 && (
+          <div className="space-y-10">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4">Structural Eligibility Assessment</h2>
+              <p className="text-gray-400">
+                Confirm revenue architecture prerequisites for exposure modeling.
+              </p>
+            </div>
+
+            <div className="space-y-8">
+              <QuestionBlock
+                question="Are you operating as a B2B SaaS company?"
+                order={1}
+                value={form.b2b_saas}
+                onAnswer={(val) => handleAnswer("b2b_saas", val)}
+                feedbackKey="b2b_saas"
+              />
+
+              <QuestionBlock
+                question="Do you operate an active sales motion?"
+                order={2}
+                value={form.active_sales_motion}
+                onAnswer={(val) => handleAnswer("active_sales_motion", val)}
+                feedbackKey="active_sales_motion"
+              />
+
+              <QuestionBlock
+                question="Is close rate a tracked revenue KPI?"
+                order={3}
+                value={form.close_rate_matters}
+                onAnswer={(val) => handleAnswer("close_rate_matters", val)}
+                feedbackKey="close_rate_matters"
+              />
+
+              <QuestionBlock
+                question="Do you maintain public messaging channels?"
+                order={4}
+                value={form.publishing_content}
+                onAnswer={(val) => handleAnswer("publishing_content", val)}
+                feedbackKey="publishing_content"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* STEP 2: Structural Modeling Inputs */}
+        {currentStep === 2 && (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4">Structural Modeling Inputs</h2>
+              <p className="text-gray-400">
+                Define the revenue architecture parameters used for exposure modeling.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Website URL *</label>
+              <input
+                type="url"
+                name="website_url"
+                required
+                value={form.website_url}
+                onChange={handleChange}
+                className="input"
+                placeholder="https://yourcompany.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Annual Revenue (ARR) *</label>
+              <select
+                name="arr_range"
+                required
+                value={form.arr_range}
+                onChange={handleChange}
+                className="input"
+              >
+                <option value="">Select ARR range</option>
+                <option value="<1M">&lt; $1M</option>
+                <option value="1M-5M">$1M–$5M</option>
+                <option value="5M-20M">$5M–$20M</option>
+                <option value="20M+">$20M+</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1 italic">
+                Used to estimate revenue exposure risk
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Average Deal Size (ACV) *</label>
+              <select
+                name="average_deal_size_range"
+                required
+                value={form.average_deal_size_range}
+                onChange={handleChange}
+                className="input"
+              >
+                <option value="">Select ACV range</option>
+                <option value="1k-5k">$1k–$5k</option>
+                <option value="5k-20k">$5k–$20k</option>
+                <option value="20k-100k">$20k–$100k</option>
+                <option value="100k+">$100k+</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1 italic">
+                Used to calculate pipeline pressure and pricing friction
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Team Size *</label>
+              <select
+                name="team_size"
+                required
+                value={form.team_size}
+                onChange={handleChange}
+                className="input"
+              >
+                <option value="">Select team size</option>
+                <option value="1-5">1–5</option>
+                <option value="6-20">6–20</option>
+                <option value="21-50">21–50</option>
+                <option value="50+">50+</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Primary Growth Model *</label>
+              <select
+                name="growth_model"
+                required
+                value={form.growth_model}
+                onChange={handleChange}
+                className="input"
+              >
+                <option value="">Select growth model</option>
+                <option value="sales-led">Sales-led</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="plg-with-sales">PLG with sales assist</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1 italic">
+                Used to evaluate pipeline structure
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">ICP Structural Profile *</h3>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Primary Buyer Role *</label>
+                <select
+                  name="icp_buyer_role"
+                  required
+                  value={form.icp_buyer_role}
+                  onChange={handleChange}
+                  className="input"
+                >
+                  <option value="">Select buyer role</option>
+                  <option value="founder">Founder</option>
+                  <option value="vp-sales">VP Sales</option>
+                  <option value="cro">CRO</option>
+                  <option value="head-of-marketing">Head of Marketing</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Industry Focus *</label>
+                <select
+                  name="icp_industry"
+                  required
+                  value={form.icp_industry}
+                  onChange={handleChange}
+                  className="input"
+                >
+                  <option value="">Select industry</option>
+                  <option value="saas">SaaS</option>
+                  <option value="fintech">Fintech</option>
+                  <option value="ecommerce">E-commerce</option>
+                  <option value="ai">AI</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Customer Size *</label>
+                <select
+                  name="icp_company_size"
+                  required
+                  value={form.icp_company_size}
+                  onChange={handleChange}
+                  className="input"
+                >
+                  <option value="">Select company size</option>
+                  <option value="startup">Startup</option>
+                  <option value="smb">SMB</option>
+                  <option value="mid-market">Mid-market</option>
+                  <option value="enterprise">Enterprise</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Describe ICP in 1–2 sentences *
+              </label>
+              <textarea
+                name="icp_description"
+                required
+                maxLength={400}
+                value={form.icp_description}
+                onChange={handleChange}
+                className="input h-32"
+                placeholder="e.g., Series A SaaS founders between $50k-$200k MRR who struggle with pricing-stage conversions"
+              />
+              <div className="mt-2 space-y-1">
+                <p className="text-xs text-gray-500 italic">
+                  Used to evaluate ICP signal consistency
+                </p>
+                <p className="text-xs text-gray-600">
+                  {form.icp_description.length}/400 characters
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Primary Revenue Objective (6-Month Horizon) *</label>
+              <select
+                name="revenue_objective"
+                required
+                value={form.revenue_objective}
+                onChange={handleChange}
+                className="input"
+              >
+                <option value="">Select objective</option>
+                <option value="improve-close-rate">Improve close rate</option>
+                <option value="pipeline-quality">Improve pipeline quality</option>
+                <option value="shorten-cycle">Shorten sales cycle</option>
+                <option value="increase-acv">Increase ACV</option>
+              </select>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3: Performance Baseline */}
+        {currentStep === 3 && (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4">Performance Baseline</h2>
+              <p className="text-gray-400">
+                Establish current performance metrics for risk modeling.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Current Close Rate (%) *</label>
+              <input
+                type="number"
+                name="current_close_rate"
+                required
+                min="0"
+                max="100"
+                step="0.1"
+                value={form.current_close_rate}
+                onChange={handleChange}
+                className="input"
+                placeholder="e.g., 18.5"
+              />
+              <div className="mt-2 space-y-1">
+                <p className="text-xs text-gray-500 italic">
+                  Used to model structural revenue gap.
+                </p>
+                <div className="text-xs text-gray-600 bg-gray-800/50 p-2 rounded border border-gray-700">
+                  <p className="font-medium mb-1">Typical SaaS close rates:</p>
+                  <ul className="space-y-0.5 text-gray-500">
+                    <li>SMB: 15–25%</li>
+                    <li>Mid-market: 20–35%</li>
+                    <li>Enterprise: 10–20%</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Target Close Rate (%) *</label>
+              <input
+                type="number"
+                name="target_close_rate"
+                required
+                min="0"
+                max="100"
+                step="0.1"
+                value={form.target_close_rate}
+                onChange={handleChange}
+                className="input"
+                placeholder="e.g., 28.0"
+              />
+              <p className="text-xs text-gray-500 mt-1 italic">
+                Defines exposure delta threshold.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Average Sales Cycle *</label>
+              <select
+                name="average_sales_cycle_range"
+                required
+                value={form.average_sales_cycle_range}
+                onChange={handleChange}
+                className="input"
+              >
+                <option value="">Select sales cycle</option>
+                <option value="<14">&lt; 14 days</option>
+                <option value="14-30">14–30 days</option>
+                <option value="30-60">30–60 days</option>
+                <option value="60+">60+ days</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1 italic">
+                Used to detect pricing friction, decision complexity, and ICP mismatch
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Top 3 Competitors</label>
+              <div className="space-y-2">
+                {[0, 1, 2].map((idx) => (
+                  <input
+                    key={idx}
+                    type="text"
+                    value={form.top_competitors[idx] || ""}
+                    onChange={(e) => {
+                      const newCompetitors = [...form.top_competitors]
+                      // Ensure array has enough elements
+                      while (newCompetitors.length <= idx) {
+                        newCompetitors.push("")
+                      }
+                      newCompetitors[idx] = e.target.value
+                      // Keep all elements, filter empty ones only when submitting
+                      setForm(prev => ({ ...prev, top_competitors: newCompetitors }))
+                    }}
+                    className="input"
+                    placeholder={`Competitor ${idx + 1} (optional)`}
+                  />
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mt-1 italic">
+                Used to detect positioning variance, category confusion, and pricing pressure
+              </p>
+            </div>
+
+            <div className="space-y-4 pt-4 border-t border-gray-800">
+              <h3 className="text-lg font-semibold">Value & Positioning Clarity</h3>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  How clearly does your product communicate ROI or business value? *
+                </label>
+                <select
+                  name="value_articulation_score"
+                  required
+                  value={form.value_articulation_score}
+                  onChange={handleChange}
+                  className="input"
+                >
+                  <option value="">Select clarity level</option>
+                  <option value="very-clearly">Very clearly — quantified ROI or measurable outcomes</option>
+                  <option value="moderately-clear">Moderately clear — benefits explained but not quantified</option>
+                  <option value="somewhat-unclear">Somewhat unclear — benefits mentioned but vague</option>
+                  <option value="unclear">Unclear — mostly feature-focused messaging</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  How easy is it for prospects to understand your pricing? *
+                </label>
+                <select
+                  name="pricing_clarity_score"
+                  required
+                  value={form.pricing_clarity_score}
+                  onChange={handleChange}
+                  className="input"
+                >
+                  <option value="">Select clarity level</option>
+                  <option value="very-clear">Very clear — pricing transparent and easy to estimate</option>
+                  <option value="mostly-clear">Mostly clear — pricing understandable with explanation</option>
+                  <option value="some-friction">Some friction — prospects often ask for clarification</option>
+                  <option value="high-friction">High friction — pricing often delays or blocks deals</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  How clearly do prospects understand why you are different from competitors? *
+                </label>
+                <select
+                  name="differentiation_score"
+                  required
+                  value={form.differentiation_score}
+                  onChange={handleChange}
+                  className="input"
+                >
+                  <option value="">Select clarity level</option>
+                  <option value="very-clear">Very clear differentiation</option>
+                  <option value="some-differentiation">Some differentiation</option>
+                  <option value="weak-differentiation">Weak differentiation</option>
+                  <option value="not-clear">Not clear / often compared as a commodity</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Primary Sales Channel</label>
+              <select
+                name="primary_sales_channel"
+                value={form.primary_sales_channel}
+                onChange={handleChange}
+                className="input"
+              >
+                <option value="">Select primary channel</option>
+                <option value="outbound-sales">Outbound sales</option>
+                <option value="inbound-marketing">Inbound marketing</option>
+                <option value="product-led-growth">Product-led growth</option>
+                <option value="partner-channel-sales">Partner / channel sales</option>
+                <option value="mixed">Mixed</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1 italic">
+                Used to evaluate pipeline volatility and conversion consistency
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: Content Inputs */}
+        {currentStep === 4 && (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4">Content Inputs</h2>
+              <p className="text-gray-400">
+                Provide content samples for structural analysis.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-3">Primary Content Channels *</label>
+              <div className="space-y-2">
+                {["LinkedIn", "Blog", "Founder posts", "Newsletter", "Podcast", "Other"].map(channel => (
+                  <label key={channel} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={form.content_channels.includes(channel)}
+                      onChange={() => handleCheckbox(channel)}
+                      className="mr-3 w-4 h-4"
+                    />
+                    <span>{channel}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Key Revenue Pages */}
+            <div className="space-y-3 pt-2 border-t border-gray-800">
+              <div>
+                <h3 className="text-sm font-medium mb-1">Key Revenue Pages <span className="text-gray-500 font-normal">(optional)</span></h3>
+                <p className="text-xs text-gray-500 italic mb-3">
+                  90% of revenue messaging issues appear on these pages. Used to evaluate value articulation, pricing anchors, and ICP signals.
+                </p>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Homepage URL</label>
+                <input
+                  type="url"
+                  name="homepage_url"
+                  value={form.homepage_url}
+                  onChange={handleChange}
+                  className="input"
+                  placeholder="https://yourcompany.com"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Pricing Page URL</label>
+                <input
+                  type="url"
+                  name="pricing_page_url"
+                  value={form.pricing_page_url}
+                  onChange={handleChange}
+                  className="input"
+                  placeholder="https://yourcompany.com/pricing"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Product Page URL</label>
+                <input
+                  type="url"
+                  name="product_page_url"
+                  value={form.product_page_url}
+                  onChange={handleChange}
+                  className="input"
+                  placeholder="https://yourcompany.com/product"
+                />
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-gray-800">
+              <div className="mb-3">
+                <h3 className="text-sm font-medium mb-1">
+                  Marketing Content Samples
+                  <span className="ml-2 text-xs text-gray-500 font-normal">optional</span>
+                </h3>
+                <p className="text-xs text-gray-500 italic mb-2">
+                  Provide recent pieces of marketing content — used to evaluate ICP messaging consistency, content framing, and conversion anchoring.
+                </p>
+                <div className="text-xs text-gray-600 bg-gray-800/40 border border-gray-700/50 rounded-lg px-3 py-2 space-y-0.5">
+                  <p className="text-gray-500 font-medium mb-1">Examples:</p>
+                  <p>• https://yourcompany.com/blog/pricing-strategy</p>
+                  <p>• https://linkedin.com/posts/your-post-url</p>
+                  <p>• https://yourcompany.com/case-study/client-name</p>
+                </div>
+              </div>
+              <textarea
+                name="content_urls"
+                value={form.content_urls}
+                onChange={handleChange}
+                className="input h-32"
+                placeholder={"Paste URLs, one per line..."}
+              />
+              <p className="text-xs text-gray-600 mt-2">Recommended 3</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Why are you seeking this diagnostic? *
+              </label>
+              <textarea
+                name="why_applying"
+                required
+                value={form.why_applying}
+                onChange={handleChange}
+                className="input h-40"
+                placeholder="Help us understand your strategic intent..."
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                {form.why_applying.length}/50 minimum characters
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* NAVIGATION */}
+        <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-800">
+          {currentStep > 1 ? (
+            <button
+              onClick={() => goToStep(currentStep - 1)}
+              className="px-6 py-3 border border-gray-700 hover:border-gray-600 rounded-lg transition"
+            >
+              Back
+            </button>
+          ) : (
+            <div></div>
+          )}
+
+          {currentStep < totalSteps ? (
+            <button
+              onClick={() => goToStep(currentStep + 1)}
+              disabled={!canProceed()}
+              className={`px-6 py-3 rounded-lg transition ${
+                canProceed()
+                  ? "bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
+                  : "bg-gray-800 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              Continue
+            </button>
+          ) : (
+            <div className="flex flex-col items-end gap-3">
+              {isSubmitting && (
+                <div className="flex items-center gap-2 text-xs text-cyan-400/80 animate-pulse">
+                  <div className="flex gap-1">
+                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                  </div>
+                  <span>{submitPhases[submitPhase]}</span>
+                </div>
+              )}
+              <button
+                onClick={handleSubmit}
+                disabled={!canProceed() || isSubmitting}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg transition ${
+                  canProceed() && !isSubmitting
+                    ? "bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
+                    : "bg-gray-800 text-gray-500 cursor-not-allowed"
+                }`}
+              >
+                {isSubmitting && (
+                  <svg className="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                )}
+                {isSubmitting ? "Analyzing..." : "Complete Assessment"}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  )
+}
