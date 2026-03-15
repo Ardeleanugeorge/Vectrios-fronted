@@ -134,7 +134,7 @@ export default function FinancialExposureCard({
                   <span className="text-red-400 font-semibold">{dealsLost} / year</span>
                 </p>
               )}
-              {monthly !== undefined && monthly > 0 && (
+              {monthly != null && monthly > 0 && (
                 <p>
                   Monthly exposure:{" "}
                   <span className="text-amber-400 font-semibold">{fmt(monthly)}</span>
