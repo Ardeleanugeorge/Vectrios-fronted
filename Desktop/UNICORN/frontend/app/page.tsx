@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -17,7 +19,7 @@ export default function Home() {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     setIsLoggedIn(!!token)
     // Fetch real scan count
-    fetch("http://127.0.0.1:8000/scan-stats")
+    fetch(`${API_URL}/scan-stats`)
       .then(r => r.json())
       .then(d => setScanCount(d.total))
       .catch(() => setScanCount(0))
@@ -29,7 +31,7 @@ export default function Home() {
     setScanError("")
     setScanning(true)
     try {
-      const res = await fetch("http://127.0.0.1:8000/scan", {
+      const res = await fetch(`${API_URL}/scan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: scanUrl.trim() }),

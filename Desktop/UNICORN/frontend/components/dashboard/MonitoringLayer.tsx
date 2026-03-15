@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useState, useEffect } from "react"
 import RevenueSystemStatus from "./RevenueSystemStatus"
 import CumulativeExposureCard from "./CumulativeExposureCard"
@@ -108,7 +110,7 @@ export default function MonitoringLayer({
   useEffect(() => {
     if (!companyId) return
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`http://127.0.0.1:8000/revenue-forecast/${companyId}`, {
+    fetch(`${API_URL}/revenue-forecast/${companyId}`, {
       headers: { "Authorization": `Bearer ${token || ""}` }
     })
       .then(r => r.ok ? r.json() : null)

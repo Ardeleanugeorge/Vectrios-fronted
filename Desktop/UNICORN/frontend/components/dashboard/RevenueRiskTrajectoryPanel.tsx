@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState } from "react"
 
 interface RevenueRiskTrajectory {
@@ -32,7 +34,7 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
     async function loadTrajectory() {
       try {
         const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-        const url = `http://127.0.0.1:8000/revenue-risk-trajectory/${companyId}`
+        const url = `${API_URL}/revenue-risk-trajectory/${companyId}`
         console.log(`RevenueRiskTrajectoryPanel: Fetching from ${url}`)
         
         const response = await fetch(url, {

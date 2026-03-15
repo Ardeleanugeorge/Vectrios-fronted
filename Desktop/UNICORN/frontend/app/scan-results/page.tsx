@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
@@ -90,7 +92,7 @@ function ScanResultsContent() {
 
   useEffect(() => {
     if (!token) { setError("No scan token found."); setLoading(false); return }
-    fetch(`http://127.0.0.1:8000/scan/${token}`)
+    fetch(`${API_URL}/scan/${token}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(d => { setData(d); setLoading(false) })
       .catch(() => { setError("Scan results not found or expired."); setLoading(false) })

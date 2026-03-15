@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState } from "react"
 
 interface RevenueSignal {
@@ -31,7 +33,7 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
     async function loadSignals() {
       try {
         const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-        const url = `http://127.0.0.1:8000/revenue-signals/${companyId}`
+        const url = `${API_URL}/revenue-signals/${companyId}`
         console.log(`RevenueSignalsPanel: Fetching from ${url}`)
         
         const response = await fetch(url, {

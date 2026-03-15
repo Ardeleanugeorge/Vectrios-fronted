@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -155,7 +157,7 @@ export default function DashboardPage() {
 
   const loadMonitoringStatus = async (token: string, companyId: string) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/monitoring/status/${companyId}`, {
+      const response = await fetch(`${API_URL}/monitoring/status/${companyId}`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -193,7 +195,7 @@ export default function DashboardPage() {
 
   const loadSubscription = async (token: string, companyId: string) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/subscription/${companyId}`, {
+      const response = await fetch(`${API_URL}/subscription/${companyId}`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -210,7 +212,7 @@ export default function DashboardPage() {
 
   const loadAlerts = async (token: string, companyId: string) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/monitoring/alerts/${companyId}`, {
+      const response = await fetch(`${API_URL}/monitoring/alerts/${companyId}`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -230,7 +232,7 @@ export default function DashboardPage() {
     if (!token) return
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/monitoring/alerts/${alertId}/mark-read`, {
+      const response = await fetch(`${API_URL}/monitoring/alerts/${alertId}/mark-read`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -255,7 +257,7 @@ export default function DashboardPage() {
     if (!token) return
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/monitoring/activate/${companyId}`, {
+      const response = await fetch(`${API_URL}/monitoring/activate/${companyId}`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`

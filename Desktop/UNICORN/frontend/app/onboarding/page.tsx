@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -213,7 +215,7 @@ export default function OnboardingPage() {
     const normalizedWebsiteUrl = normalizeUrl(form.website_url)
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/onboarding", {
+      const response = await fetch(`${API_URL}/onboarding`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

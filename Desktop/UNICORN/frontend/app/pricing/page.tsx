@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -27,7 +29,7 @@ export default function PricingPage() {
     async function loadPlans() {
       try {
         const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-        const response = await fetch("http://127.0.0.1:8000/plans", {
+        const response = await fetch(`${API_URL}/plans`, {
           headers: { "Authorization": `Bearer ${token || ""}` }
         })
         if (response.ok) {
@@ -87,7 +89,7 @@ export default function PricingPage() {
       await new Promise(r => setTimeout(r, 800))
       setPaymentStep("activating")
 
-      const res = await fetch(`http://127.0.0.1:8000/monitoring/activate/${companyId}`, {
+      const res = await fetch(`${API_URL}/monitoring/activate/${companyId}`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` },
         signal: controller.signal,
@@ -145,7 +147,7 @@ export default function PricingPage() {
 
       // STEP 3 — Create subscription in backend
       const subResponse = await fetch(
-        `http://127.0.0.1:8000/subscription/${companyId}?plan_id=${encodeURIComponent(planId)}&billing_cycle=${billingCycle}`,
+        `${API_URL}/subscription/${companyId}?plan_id=${encodeURIComponent(planId)}&billing_cycle=${billingCycle}`,
         {
           method: "POST",
           headers: { "Authorization": `Bearer ${token}` }
@@ -165,7 +167,7 @@ export default function PricingPage() {
       const activateCtrl = new AbortController()
       const activateTimeout = setTimeout(() => activateCtrl.abort(), 15000)
       try {
-        const activateRes = await fetch(`http://127.0.0.1:8000/monitoring/activate/${companyId}`, {
+        const activateRes = await fetch(`${API_URL}/monitoring/activate/${companyId}`, {
           method: "POST",
           headers: { "Authorization": `Bearer ${token}` },
           signal: activateCtrl.signal,

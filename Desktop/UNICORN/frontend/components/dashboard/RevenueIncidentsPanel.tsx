@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState } from "react"
 
 interface RevenueIncident {
@@ -130,7 +132,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
   useEffect(() => {
     if (!companyId) { setLoading(false); return }
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`http://127.0.0.1:8000/revenue-incidents/${companyId}`, {
+    fetch(`${API_URL}/revenue-incidents/${companyId}`, {
       headers: { "Authorization": `Bearer ${token || ""}` }
     })
       .then(r => r.ok ? r.json() : [])

@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState } from "react"
 
 interface RevenueForecast {
@@ -41,7 +43,7 @@ export default function RevenueForecastPanel({ companyId }: RevenueForecastPanel
     async function loadForecast() {
       try {
         const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-        const response = await fetch(`http://127.0.0.1:8000/revenue-forecast/${companyId}`, {
+        const response = await fetch(`${API_URL}/revenue-forecast/${companyId}`, {
           headers: { "Authorization": `Bearer ${token || ""}` }
         })
         if (response.ok) setForecast(await response.json())

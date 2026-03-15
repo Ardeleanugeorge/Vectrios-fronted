@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState } from "react"
 
 interface ActivityEvent {
@@ -28,7 +30,7 @@ export default function ActivityFeed({ companyId }: ActivityFeedProps) {
     async function loadActivity() {
       try {
         const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-        const url = `http://127.0.0.1:8000/revenue-activity/${companyId}`
+        const url = `${API_URL}/revenue-activity/${companyId}`
         console.log(`ActivityFeed: Fetching from ${url}`)
         
         const response = await fetch(url, {

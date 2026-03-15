@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState } from "react"
 
 interface RevenueAlert {
@@ -29,7 +31,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
     async function loadAlerts() {
       try {
         const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-        const response = await fetch(`http://127.0.0.1:8000/revenue-alerts/${companyId}?unread_only=true`, {
+        const response = await fetch(`${API_URL}/revenue-alerts/${companyId}?unread_only=true`, {
           headers: {
             "Authorization": `Bearer ${token || ""}`
           }
@@ -57,7 +59,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
   const handleMarkRead = async (alertId: string) => {
     try {
       const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-      const response = await fetch(`http://127.0.0.1:8000/revenue-alerts/${alertId}/mark-read`, {
+      const response = await fetch(`${API_URL}/revenue-alerts/${alertId}/mark-read`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token || ""}`

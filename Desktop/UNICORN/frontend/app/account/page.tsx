@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -51,7 +53,7 @@ export default function AccountPage() {
 
   const loadSubscription = async (token: string, companyId: string) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/subscription/${companyId}`, {
+      const response = await fetch(`${API_URL}/subscription/${companyId}`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }

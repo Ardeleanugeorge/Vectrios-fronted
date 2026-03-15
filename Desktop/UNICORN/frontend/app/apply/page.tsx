@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useState } from "react"
 
 export default function ApplyPage() {
@@ -52,7 +54,7 @@ export default function ApplyPage() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/diagnostic-application", {
+      const response = await fetch(`${API_URL}/diagnostic-application`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

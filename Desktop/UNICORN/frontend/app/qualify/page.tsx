@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -34,7 +36,7 @@ export default function QualifyPage() {
     console.log("Making request to qualification-check endpoint...")
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/qualification-check", {
+      const response = await fetch(`${API_URL}/qualification-check`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(answers)

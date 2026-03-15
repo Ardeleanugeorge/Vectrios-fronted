@@ -1,5 +1,7 @@
 'use client'
 
+import { API_URL } from '@/lib/config'
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import DashboardHeader from '@/components/DashboardHeader'
@@ -75,7 +77,7 @@ export default function UpgradePage() {
         const parsed = JSON.parse(userData)
         if (parsed.user_id) {
           // Get company from backend by user_id
-          fetch(`http://127.0.0.1:8000/user/${parsed.user_id}/company`, {
+          fetch(`${API_URL}/user/${parsed.user_id}/company`, {
             headers: {
               "Authorization": `Bearer ${token}`
             }
@@ -153,7 +155,7 @@ export default function UpgradePage() {
           try {
             const parsed = JSON.parse(userData)
             if (parsed.user_id) {
-              const response = await fetch(`http://127.0.0.1:8000/user/${parsed.user_id}/company`, {
+              const response = await fetch(`${API_URL}/user/${parsed.user_id}/company`, {
                 headers: {
                   "Authorization": `Bearer ${token}`
                 }
@@ -204,7 +206,7 @@ export default function UpgradePage() {
         return
       }
 
-      const response = await fetch(`http://127.0.0.1:8000/monitoring/activate/${companyIdToUse}`, {
+      const response = await fetch(`${API_URL}/monitoring/activate/${companyIdToUse}`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`

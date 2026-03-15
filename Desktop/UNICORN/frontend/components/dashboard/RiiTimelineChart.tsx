@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState, useRef } from "react"
 
 interface TrendEntry {
@@ -38,7 +40,7 @@ export default function RiiTimelineChart({ companyId, riskDelta }: Props) {
   useEffect(() => {
     if (!companyId) { setLoading(false); return }
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`http://127.0.0.1:8000/rii-trend/${companyId}`, {
+    fetch(`${API_URL}/rii-trend/${companyId}`, {
       headers: { Authorization: `Bearer ${token || ""}` },
     })
       .then(r => r.ok ? r.json() : null)

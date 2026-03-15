@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useEffect, useState } from "react"
 
 interface MetricBenchmark {
@@ -120,7 +122,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
   useEffect(() => {
     if (!companyId) { setLoading(false); return }
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`http://127.0.0.1:8000/benchmark/${companyId}`, {
+    fetch(`${API_URL}/benchmark/${companyId}`, {
       headers: { "Authorization": `Bearer ${token || ""}` }
     })
       .then(r => r.ok ? r.json() : null)

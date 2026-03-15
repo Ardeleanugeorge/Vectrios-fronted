@@ -1,5 +1,7 @@
 "use client"
 
+import { API_URL } from '@/lib/config'
+
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -40,7 +42,7 @@ export default function DashboardHeader() {
 
           // Load plan if company_id exists
           if (userData.company_id) {
-            fetch(`http://127.0.0.1:8000/subscription/${userData.company_id}`, {
+            fetch(`${API_URL}/subscription/${userData.company_id}`, {
               headers: { "Authorization": `Bearer ${token}` }
             })
               .then(r => r.ok ? r.json() : null)
