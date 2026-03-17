@@ -30,26 +30,41 @@ export default function Home() {
     if (!scanUrl.trim()) return
     setScanError("")
     setScanning(true)
+    
+    // Create AbortController for timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 60000) // 60s timeout
+    
     try {
       const res = await fetch(`${API_URL}/scan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: scanUrl.trim() }),
+        signal: controller.signal,
       })
+      clearTimeout(timeoutId)
+      
       if (res.status === 429) {
         setScanError("Scan limit reached (3/day). Create a free account for unlimited scans.")
         setScanning(false)
         return
       }
       if (!res.ok) {
-        setScanError("Scan failed. Please check the URL and try again.")
+        const errorText = await res.text().catch(() => "Unknown error")
+        setScanError(`Scan failed: ${errorText}. Please try again.`)
         setScanning(false)
         return
       }
       const data = await res.json()
+      setScanning(false) // Reset before navigation
       router.push(`/scan-results?token=${data.scan_token}`)
-    } catch {
-      setScanError("Unable to connect. Make sure the backend is running.")
+    } catch (err: any) {
+      clearTimeout(timeoutId)
+      if (err.name === 'AbortError') {
+        setScanError("Scan timed out (60s). The site may be too complex. Please try again or contact support.")
+      } else {
+        setScanError("Unable to connect. Make sure the backend is running.")
+      }
       setScanning(false)
     }
   }
