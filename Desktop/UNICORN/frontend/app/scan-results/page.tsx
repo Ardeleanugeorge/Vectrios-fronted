@@ -172,14 +172,20 @@ function ScanResultsContent() {
 
   if (!data) return null
 
-  const rii = data.rii ?? 0
-  const riiColor = rii >= 70 ? "text-red-400" : rii >= 40 ? "text-orange-400" : "text-emerald-400"
-  const benchmarkDiff = Math.round(rii - SAAS_MEDIAN_RII)
-  const benchmarkLabel = benchmarkDiff > 0
-    ? `${benchmarkDiff} pts above SaaS median — higher exposure`
-    : benchmarkDiff < 0
-      ? `${Math.abs(benchmarkDiff)} pts below SaaS median — better than average`
-      : "At SaaS median exposure level"
+  const isBlocked = data.status === "blocked"
+  const hasRii = data.rii !== null && data.rii !== undefined
+  const rii = hasRii ? (data.rii as number) : null
+  const riiColor = (rii ?? 0) >= 70 ? "text-red-400" : (rii ?? 0) >= 40 ? "text-orange-400" : "text-emerald-400"
+
+  const benchmarkLabel = (() => {
+    if (!hasRii || isBlocked) return null
+    const diff = Math.round((rii as number) - SAAS_MEDIAN_RII)
+    return diff > 0
+      ? `${diff} pts above SaaS median — higher exposure`
+      : diff < 0
+        ? `${Math.abs(diff)} pts below SaaS median — better than average`
+        : "At SaaS median exposure level"
+  })()
 
   return (
     <div className="min-h-screen bg-[#0B0F19] text-white">
@@ -211,7 +217,7 @@ function ScanResultsContent() {
         <div className="p-8 bg-[#111827] rounded-xl border border-gray-800 mb-6 text-center">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Revenue Impact Index</p>
           <p className={`text-7xl font-bold mb-2 ${riiColor}`}>
-            {data.rii !== null ? Math.round(rii) : "—"}
+            {hasRii && !isBlocked ? Math.round(rii as number) : "—"}
           </p>
           <p className={`text-lg font-semibold mb-3 ${riiColor}`}>{data.risk_level}</p>
 
@@ -232,8 +238,8 @@ function ScanResultsContent() {
             {data.pages_scanned} revenue page{data.pages_scanned !== 1 ? "s" : ""} analyzed
           </p>
 
-          {/* Confidence bar */}
-          {data.confidence !== null && (
+          {/* Confidence bar (hide for blocked) */}
+          {!isBlocked && data.confidence !== null && (
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-4">
               <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
                 <div className="h-full bg-cyan-500/60 rounded-full" style={{ width: `${data.confidence}%` }} />
@@ -254,7 +260,7 @@ function ScanResultsContent() {
           )}
 
           {/* 3. Percentile badge — live when dataset exists, median fallback otherwise */}
-          {data.percentile_label ? (
+          {data.percentile_label && !isBlocked ? (
             // Live percentile from real dataset
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-medium ${
               (data.percentile ?? 0) >= 60
@@ -268,12 +274,14 @@ function ScanResultsContent() {
             </div>
           ) : (
             // Fallback: static median comparison
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800/60 border border-gray-700 text-xs text-gray-400">
-              <span className="text-gray-500">SaaS median RII:</span>
-              <span className="font-semibold text-white">{SAAS_MEDIAN_RII}</span>
-              <span className="text-gray-600">·</span>
-              <span className={benchmarkDiff > 0 ? "text-orange-400" : "text-emerald-400"}>{benchmarkLabel}</span>
-            </div>
+            !isBlocked && benchmarkLabel ? (
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800/60 border border-gray-700 text-xs text-gray-400">
+                <span className="text-gray-500">SaaS median RII:</span>
+                <span className="font-semibold text-white">{SAAS_MEDIAN_RII}</span>
+                <span className="text-gray-600">·</span>
+                <span className={(rii ?? 0) > SAAS_MEDIAN_RII ? "text-orange-400" : "text-emerald-400"}>{benchmarkLabel}</span>
+              </div>
+            ) : null
           )}
         </div>
 
