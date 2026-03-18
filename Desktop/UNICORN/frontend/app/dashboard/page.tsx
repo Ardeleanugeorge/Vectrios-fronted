@@ -142,15 +142,24 @@ export default function DashboardPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get("governance") === "activated" && companyId) {
-      // Reload monitoring status to reflect activation
+      // Reload monitoring status and subscription to reflect activation
       const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
       if (token) {
+        // Immediate reload
+        loadMonitoringStatus(token, companyId)
+        loadAlerts(token, companyId)
+        loadSubscription(token, companyId)  // ← Critical: reload subscription to get trial plan
+        
+        // Also reload after delay to ensure backend processed
         setTimeout(() => {
           loadMonitoringStatus(token, companyId)
           loadAlerts(token, companyId)
+          loadSubscription(token, companyId)
+          // Trigger custom event to update DashboardHeader
+          window.dispatchEvent(new CustomEvent("subscription_updated"))
           // Clean URL
           window.history.replaceState({}, "", "/dashboard")
-        }, 500)
+        }, 1000)
       }
     }
   }, [companyId])

@@ -47,7 +47,13 @@ export default function DashboardHeader() {
             })
               .then(r => r.ok ? r.json() : null)
               .then(data => {
-                if (data?.plan) setCurrentPlan(data.plan.toLowerCase())
+                // If billing_cycle is "trial", set plan to "trial" for FeatureGate to work correctly
+                // Backend returns plan="scale" with billing_cycle="trial", but frontend needs plan="trial"
+                if (data?.billing_cycle === "trial") {
+                  setCurrentPlan("trial")
+                } else if (data?.plan) {
+                  setCurrentPlan(data.plan.toLowerCase())
+                }
                 if (data?.billing_cycle) setBillingCycle(data.billing_cycle)
               })
               .catch(() => {})
@@ -62,11 +68,62 @@ export default function DashboardHeader() {
 
     loadUserData()
 
+    // Reload subscription function
+    const reloadSubscription = () => {
+      const storedUser = localStorage.getItem("user_data")
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser)
+          if (userData.company_id) {
+            fetch(`${API_URL}/subscription/${userData.company_id}`, {
+              headers: { "Authorization": `Bearer ${token}` }
+            })
+              .then(r => r.ok ? r.json() : null)
+              .then(data => {
+                if (data?.billing_cycle === "trial") {
+                  setCurrentPlan("trial")
+                } else if (data?.plan) {
+                  setCurrentPlan(data.plan.toLowerCase())
+                }
+                if (data?.billing_cycle) setBillingCycle(data.billing_cycle)
+              })
+              .catch(() => {})
+          }
+        } catch (e) {}
+      }
+    }
+
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "user_data") loadUserData()
+      if (e.key === "user_data") {
+        loadUserData()
+        // Also reload subscription when user_data changes
+        setTimeout(reloadSubscription, 500)
+      }
+    }
+    
+    // Listen for custom subscription update events
+    const handleSubscriptionUpdate = () => {
+      reloadSubscription()
     }
     window.addEventListener("storage", handleStorageChange)
-    return () => window.removeEventListener("storage", handleStorageChange)
+    window.addEventListener("subscription_updated", handleSubscriptionUpdate)
+    
+    // Poll for subscription updates after page load (for trial activation)
+    let pollCount = 0
+    const pollInterval = setInterval(() => {
+      if (pollCount < 3) {  // Poll 3 times (6 seconds total)
+        reloadSubscription()
+        pollCount++
+      } else {
+        clearInterval(pollInterval)
+      }
+    }, 2000)
+    
+    return () => {
+      window.removeEventListener("storage", handleStorageChange)
+      window.removeEventListener("subscription_updated", handleSubscriptionUpdate)
+      clearInterval(pollInterval)
+    }
   }, [router])
 
   const handleLogout = () => {
