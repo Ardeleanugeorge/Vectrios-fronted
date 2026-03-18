@@ -29,9 +29,14 @@ export default function FeatureGate({
     growth: 2,
     starter: 1,
   }
-  const hasAccess = currentPlan && (
-    (planRank[plan] ?? 0) >= (requiredRank[planRequired.toLowerCase()] ?? 99)
-  )
+  const planRankValue = planRank[plan] ?? 0
+  const requiredRankValue = requiredRank[planRequired.toLowerCase()] ?? 99
+  const hasAccess = currentPlan && (planRankValue >= requiredRankValue)
+  
+  // Debug logging
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[FeatureGate] ${feature}: currentPlan="${currentPlan}", planRequired="${planRequired}", planRank=${planRankValue}, requiredRank=${requiredRankValue}, hasAccess=${hasAccess}`)
+  }
 
   if (hasAccess) {
     return <>{children}</>

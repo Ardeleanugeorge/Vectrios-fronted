@@ -220,13 +220,18 @@ export default function DashboardPage() {
       
       if (response.ok) {
         const data = await response.json()
+        console.log("[DASHBOARD] Subscription data:", { plan: data.plan, billing_cycle: data.billing_cycle })
         // If billing_cycle is "trial", set plan to "trial" for FeatureGate to work correctly
         // Backend returns plan="scale" with billing_cycle="trial", but frontend needs plan="trial"
         if (data.billing_cycle === "trial") {
+          console.log("[DASHBOARD] Setting currentPlan to 'trial'")
           setCurrentPlan("trial")
         } else {
+          console.log("[DASHBOARD] Setting currentPlan to:", data.plan || null)
           setCurrentPlan(data.plan || null)
         }
+      } else {
+        console.error("[DASHBOARD] Failed to load subscription:", response.status, response.statusText)
       }
     } catch (e) {
       console.error("Error loading subscription:", e)
