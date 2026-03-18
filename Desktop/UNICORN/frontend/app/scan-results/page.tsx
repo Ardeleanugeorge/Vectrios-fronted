@@ -257,6 +257,16 @@ function ScanResultsContent() {
         }
         localStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
         sessionStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
+        
+        // Save scan data for pre-filling onboarding form
+        const scanData = {
+          domain: data.domain,
+          website_url: `https://${data.domain}`,
+          inferred_icp: data.inferred_icp || "",
+          pages_scanned: data.pages_scanned || 0
+        }
+        localStorage.setItem("scan_data", JSON.stringify(scanData))
+        sessionStorage.setItem("scan_data", JSON.stringify(scanData))
       }
       
       // Redirect to dashboard with partial diagnostic

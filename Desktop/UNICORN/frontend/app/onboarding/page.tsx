@@ -72,6 +72,27 @@ export default function OnboardingPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
 
+  // Load scan data to pre-fill form
+  const loadScanData = () => {
+    try {
+      const scanDataStr = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+      if (scanDataStr) {
+        const scanData = JSON.parse(scanDataStr)
+        return {
+          website_url: scanData.website_url || "",
+          icp_description: scanData.inferred_icp || "",
+          homepage_url: scanData.website_url || "",
+          content_channels: ["website"] as string[]
+        }
+      }
+    } catch (e) {
+      console.error("Error loading scan data:", e)
+    }
+    return {}
+  }
+
+  const scanPrefills = loadScanData()
+
   const goToStep = (step: number) => {
     setCurrentStep(step)
     setTimeout(() => window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior }), 0)
@@ -91,7 +112,7 @@ export default function OnboardingPage() {
     active_sales_motion: null as boolean | null,
     close_rate_matters: null as boolean | null,
     publishing_content: null as boolean | null,
-    website_url: "",
+    website_url: scanPrefills.website_url || "",
     arr_range: "",
     average_deal_size_range: "",
     team_size: "",
@@ -99,7 +120,7 @@ export default function OnboardingPage() {
     icp_buyer_role: "",
     icp_industry: "",
     icp_company_size: "",
-    icp_description: "",
+    icp_description: scanPrefills.icp_description || "",
     revenue_objective: "",
     current_close_rate: "",
     target_close_rate: "",
@@ -109,10 +130,10 @@ export default function OnboardingPage() {
     value_articulation_score: "",
     pricing_clarity_score: "",
     differentiation_score: "",
-    homepage_url: "",
+    homepage_url: scanPrefills.homepage_url || "",
     pricing_page_url: "",
     product_page_url: "",
-    content_channels: [] as string[],
+    content_channels: scanPrefills.content_channels || [] as string[],
     content_urls: "",
     why_applying: ""
   })
@@ -147,27 +168,19 @@ export default function OnboardingPage() {
           publishing_content: form.publishing_content
         }).every(v => v === true)
       case 2:
+        // Simplified: only critical fields required for accurate calculation
         const step2Valid = !!(
           form.website_url?.trim() && 
-          form.arr_range && 
-          form.average_deal_size_range && 
-          form.team_size && 
-          form.growth_model && 
-          form.icp_buyer_role && 
-          form.icp_industry && 
-          form.icp_company_size && 
           form.icp_description?.trim() && 
-          form.revenue_objective
+          form.revenue_objective?.trim() &&
+          form.arr_range  // Important for context
         )
         return step2Valid
       case 3:
+        // Critical: close rates for ARR at risk calculation
         const step3Valid = !!(
           form.current_close_rate && 
-          form.target_close_rate && 
-          form.average_sales_cycle_range && 
-          form.value_articulation_score && 
-          form.pricing_clarity_score && 
-          form.differentiation_score
+          form.target_close_rate
         )
         return step3Valid
       case 4:
@@ -440,118 +453,114 @@ export default function OnboardingPage() {
               </p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">Average Deal Size (ACV) *</label>
-              <select
-                name="average_deal_size_range"
-                required
-                value={form.average_deal_size_range}
-                onChange={handleChange}
-                className="input"
-              >
-                <option value="">Select ACV range</option>
-                <option value="1k-5k">$1k–$5k</option>
-                <option value="5k-20k">$5k–$20k</option>
-                <option value="20k-100k">$20k–$100k</option>
-                <option value="100k+">$100k+</option>
-              </select>
-              <p className="text-xs text-gray-500 mt-1 italic">
-                Used to calculate pipeline pressure and pricing friction
-              </p>
-            </div>
+            {/* Optional fields - collapsed by default */}
+            <details className="border border-gray-800 rounded-lg p-4">
+              <summary className="cursor-pointer text-sm text-gray-400 hover:text-gray-300">
+                Additional context (optional - helps improve accuracy)
+              </summary>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Average Deal Size (ACV)</label>
+                  <select
+                    name="average_deal_size_range"
+                    value={form.average_deal_size_range}
+                    onChange={handleChange}
+                    className="input"
+                  >
+                    <option value="">Select ACV range (optional)</option>
+                    <option value="1k-5k">$1k–$5k</option>
+                    <option value="5k-20k">$5k–$20k</option>
+                    <option value="20k-100k">$20k–$100k</option>
+                    <option value="100k+">$100k+</option>
+                  </select>
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">Team Size *</label>
-              <select
-                name="team_size"
-                required
-                value={form.team_size}
-                onChange={handleChange}
-                className="input"
-              >
-                <option value="">Select team size</option>
-                <option value="1-5">1–5</option>
-                <option value="6-20">6–20</option>
-                <option value="21-50">21–50</option>
-                <option value="50+">50+</option>
-              </select>
-            </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Team Size</label>
+                  <select
+                    name="team_size"
+                    value={form.team_size}
+                    onChange={handleChange}
+                    className="input"
+                  >
+                    <option value="">Select team size (optional)</option>
+                    <option value="1-5">1–5</option>
+                    <option value="6-20">6–20</option>
+                    <option value="21-50">21–50</option>
+                    <option value="50+">50+</option>
+                  </select>
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">Primary Growth Model *</label>
-              <select
-                name="growth_model"
-                required
-                value={form.growth_model}
-                onChange={handleChange}
-                className="input"
-              >
-                <option value="">Select growth model</option>
-                <option value="sales-led">Sales-led</option>
-                <option value="hybrid">Hybrid</option>
-                <option value="plg-with-sales">PLG with sales assist</option>
-              </select>
-              <p className="text-xs text-gray-500 mt-1 italic">
-                Used to evaluate pipeline structure
-              </p>
-            </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Primary Growth Model</label>
+                  <select
+                    name="growth_model"
+                    value={form.growth_model}
+                    onChange={handleChange}
+                    className="input"
+                  >
+                    <option value="">Select growth model (optional)</option>
+                    <option value="sales-led">Sales-led</option>
+                    <option value="hybrid">Hybrid</option>
+                    <option value="plg-with-sales">PLG with sales assist</option>
+                  </select>
+                </div>
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">ICP Structural Profile *</h3>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">Primary Buyer Role *</label>
-                <select
-                  name="icp_buyer_role"
-                  required
-                  value={form.icp_buyer_role}
-                  onChange={handleChange}
-                  className="input"
-                >
-                  <option value="">Select buyer role</option>
-                  <option value="founder">Founder</option>
-                  <option value="vp-sales">VP Sales</option>
-                  <option value="cro">CRO</option>
-                  <option value="head-of-marketing">Head of Marketing</option>
-                  <option value="other">Other</option>
-                </select>
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">ICP Additional Details (Optional)</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Primary Buyer Role</label>
+                    <select
+                      name="icp_buyer_role"
+                      value={form.icp_buyer_role}
+                      onChange={handleChange}
+                      className="input"
+                    >
+                      <option value="">Select buyer role (optional)</option>
+                      <option value="founder">Founder</option>
+                      <option value="vp-sales">VP Sales</option>
+                      <option value="cro">CRO</option>
+                      <option value="head-of-marketing">Head of Marketing</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Industry Focus</label>
+                    <select
+                      name="icp_industry"
+                      value={form.icp_industry}
+                      onChange={handleChange}
+                      className="input"
+                    >
+                      <option value="">Select industry (optional)</option>
+                      <option value="saas">SaaS</option>
+                      <option value="fintech">Fintech</option>
+                      <option value="ecommerce">E-commerce</option>
+                      <option value="ai">AI</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Customer Size</label>
+                    <select
+                      name="icp_company_size"
+                      value={form.icp_company_size}
+                      onChange={handleChange}
+                      className="input"
+                    >
+                      <option value="">Select company size (optional)</option>
+                      <option value="startup">Startup</option>
+                      <option value="smb">SMB</option>
+                      <option value="mid-market">Mid-market</option>
+                      <option value="enterprise">Enterprise</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">Industry Focus *</label>
-                <select
-                  name="icp_industry"
-                  required
-                  value={form.icp_industry}
-                  onChange={handleChange}
-                  className="input"
-                >
-                  <option value="">Select industry</option>
-                  <option value="saas">SaaS</option>
-                  <option value="fintech">Fintech</option>
-                  <option value="ecommerce">E-commerce</option>
-                  <option value="ai">AI</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">Customer Size *</label>
-                <select
-                  name="icp_company_size"
-                  required
-                  value={form.icp_company_size}
-                  onChange={handleChange}
-                  className="input"
-                >
-                  <option value="">Select company size</option>
-                  <option value="startup">Startup</option>
-                  <option value="smb">SMB</option>
-                  <option value="mid-market">Mid-market</option>
-                  <option value="enterprise">Enterprise</option>
-                </select>
-              </div>
-            </div>
+            </details>
 
             <div>
               <label className="block text-sm font-medium mb-2">
@@ -653,69 +662,65 @@ export default function OnboardingPage() {
               </p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">Average Sales Cycle *</label>
-              <select
-                name="average_sales_cycle_range"
-                required
-                value={form.average_sales_cycle_range}
-                onChange={handleChange}
-                className="input"
-              >
-                <option value="">Select sales cycle</option>
-                <option value="<14">&lt; 14 days</option>
-                <option value="14-30">14–30 days</option>
-                <option value="30-60">30–60 days</option>
-                <option value="60+">60+ days</option>
-              </select>
-              <p className="text-xs text-gray-500 mt-1 italic">
-                Used to detect pricing friction, decision complexity, and ICP mismatch
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Top 3 Competitors</label>
-              <div className="space-y-2">
-                {[0, 1, 2].map((idx) => (
-                  <input
-                    key={idx}
-                    type="text"
-                    value={form.top_competitors[idx] || ""}
-                    onChange={(e) => {
-                      const newCompetitors = [...form.top_competitors]
-                      // Ensure array has enough elements
-                      while (newCompetitors.length <= idx) {
-                        newCompetitors.push("")
-                      }
-                      newCompetitors[idx] = e.target.value
-                      // Keep all elements, filter empty ones only when submitting
-                      setForm(prev => ({ ...prev, top_competitors: newCompetitors }))
-                    }}
+            {/* Optional fields - collapsed by default */}
+            <details className="border border-gray-800 rounded-lg p-4 mt-4">
+              <summary className="cursor-pointer text-sm text-gray-400 hover:text-gray-300">
+                Additional metrics (optional - helps improve accuracy)
+              </summary>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Average Sales Cycle</label>
+                  <select
+                    name="average_sales_cycle_range"
+                    value={form.average_sales_cycle_range}
+                    onChange={handleChange}
                     className="input"
-                    placeholder={`Competitor ${idx + 1} (optional)`}
-                  />
-                ))}
-              </div>
-              <p className="text-xs text-gray-500 mt-1 italic">
-                Used to detect positioning variance, category confusion, and pricing pressure
-              </p>
-            </div>
+                  >
+                    <option value="">Select sales cycle (optional)</option>
+                    <option value="<14">&lt; 14 days</option>
+                    <option value="14-30">14–30 days</option>
+                    <option value="30-60">30–60 days</option>
+                    <option value="60+">60+ days</option>
+                  </select>
+                </div>
 
-            <div className="space-y-4 pt-4 border-t border-gray-800">
-              <h3 className="text-lg font-semibold">Value & Positioning Clarity</h3>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  How clearly does your product communicate ROI or business value? *
+                <div>
+                  <label className="block text-sm font-medium mb-2">Top 3 Competitors</label>
+                  <div className="space-y-2">
+                    {[0, 1, 2].map((idx) => (
+                      <input
+                        key={idx}
+                        type="text"
+                        value={form.top_competitors[idx] || ""}
+                        onChange={(e) => {
+                          const newCompetitors = [...form.top_competitors]
+                          while (newCompetitors.length <= idx) {
+                            newCompetitors.push("")
+                          }
+                          newCompetitors[idx] = e.target.value
+                          setForm(prev => ({ ...prev, top_competitors: newCompetitors }))
+                        }}
+                        className="input"
+                        placeholder={`Competitor ${idx + 1} (optional)`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-4 border-t border-gray-800">
+                  <h3 className="text-lg font-semibold">Value & Positioning Clarity (Optional)</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      How clearly does your product communicate ROI or business value?
                 </label>
                 <select
                   name="value_articulation_score"
-                  required
                   value={form.value_articulation_score}
                   onChange={handleChange}
                   className="input"
                 >
-                  <option value="">Select clarity level</option>
+                  <option value="">Select clarity level (optional)</option>
                   <option value="very-clearly">Very clearly — quantified ROI or measurable outcomes</option>
                   <option value="moderately-clear">Moderately clear — benefits explained but not quantified</option>
                   <option value="somewhat-unclear">Somewhat unclear — benefits mentioned but vague</option>
@@ -725,16 +730,15 @@ export default function OnboardingPage() {
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  How easy is it for prospects to understand your pricing? *
+                  How easy is it for prospects to understand your pricing?
                 </label>
                 <select
                   name="pricing_clarity_score"
-                  required
                   value={form.pricing_clarity_score}
                   onChange={handleChange}
                   className="input"
                 >
-                  <option value="">Select clarity level</option>
+                  <option value="">Select clarity level (optional)</option>
                   <option value="very-clear">Very clear — pricing transparent and easy to estimate</option>
                   <option value="mostly-clear">Mostly clear — pricing understandable with explanation</option>
                   <option value="some-friction">Some friction — prospects often ask for clarification</option>
@@ -744,16 +748,15 @@ export default function OnboardingPage() {
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  How clearly do prospects understand why you are different from competitors? *
+                  How clearly do prospects understand why you are different from competitors?
                 </label>
                 <select
                   name="differentiation_score"
-                  required
                   value={form.differentiation_score}
                   onChange={handleChange}
                   className="input"
                 >
-                  <option value="">Select clarity level</option>
+                  <option value="">Select clarity level (optional)</option>
                   <option value="very-clear">Very clear differentiation</option>
                   <option value="some-differentiation">Some differentiation</option>
                   <option value="weak-differentiation">Weak differentiation</option>
