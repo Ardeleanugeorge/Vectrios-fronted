@@ -224,12 +224,12 @@ export default function OnboardingPage() {
     }, 6000)
 
     // Normalize all URLs
-    const normalizedContentUrls = form.content_urls
+    const normalizedContentUrls = (form.content_urls || "")
       .split("\n")
       .filter(url => url.trim())
       .map(url => normalizeUrl(url))
     
-    const normalizedWebsiteUrl = normalizeUrl(form.website_url)
+    const normalizedWebsiteUrl = normalizeUrl(form.website_url || "")
 
     try {
       const response = await fetch(`${API_URL}/onboarding`, {
@@ -788,6 +788,8 @@ export default function OnboardingPage() {
                 Used to evaluate pipeline volatility and conversion consistency
               </p>
             </div>
+              </div>
+            </details>
           </div>
         )}
 

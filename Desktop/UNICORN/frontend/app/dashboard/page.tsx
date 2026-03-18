@@ -41,6 +41,8 @@ interface DiagnosticResult {
     samples_analyzed: number
   }
   risk_override_reason?: string
+  // Partial diagnostic flag (from scan results)
+  is_partial?: boolean
 }
 
 interface MonitoringStatus {
