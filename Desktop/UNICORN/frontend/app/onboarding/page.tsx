@@ -8,6 +8,19 @@ import { useRouter } from "next/navigation"
 // ─── QuestionBlock definit AFARA componentului principal ────────────────────
 // Dacă ar fi definit înăuntru, React îl tratează ca tip nou la fiecare render
 // → unmount + remount → scroll reset la top la fiecare click.
+
+// Normalize URLs - add https:// if protocol is missing
+const normalizeUrl = (url: string): string => {
+  const trimmed = url.trim()
+  if (!trimmed) return trimmed
+  // If already has protocol, return as is
+  if (trimmed.match(/^https?:\/\//i)) {
+    return trimmed
+  }
+  // Otherwise add https://
+  return `https://${trimmed}`
+}
+
 const feedbackMessages: { [key: string]: string } = {
   b2b_saas: "VectriOS currently models structural revenue exposure for B2B SaaS environments with measurable sales cycles.",
   active_sales_motion: "Active sales motion is required for structural revenue modeling. The framework evaluates messaging alignment against revenue objectives within sales-led or hybrid models.",
@@ -193,18 +206,6 @@ export default function OnboardingPage() {
     }
   }
 
-  // Normalize URLs - add https:// if protocol is missing
-  const normalizeUrl = (url: string): string => {
-    const trimmed = url.trim()
-    if (!trimmed) return trimmed
-    // If already has protocol, return as is
-    if (trimmed.match(/^https?:\/\//i)) {
-      return trimmed
-    }
-    // Otherwise add https://
-    return `https://${trimmed}`
-  }
-
   const handleSubmit = async () => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     console.log("[onboarding] token:", token ? "found" : "NOT FOUND")
@@ -260,9 +261,9 @@ export default function OnboardingPage() {
           value_articulation_score: form.value_articulation_score || null,
           pricing_clarity_score: form.pricing_clarity_score || null,
           differentiation_score: form.differentiation_score || null,
-          content_channels: form.content_channels,
+          content_channels: form.content_channels.length > 0 ? form.content_channels : ["website"],
           content_urls: normalizedContentUrls,
-          why_applying: form.why_applying
+          why_applying: form.why_applying || "Complete diagnostic"
         })
       })
 
