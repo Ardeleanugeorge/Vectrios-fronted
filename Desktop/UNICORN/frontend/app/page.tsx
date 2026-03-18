@@ -20,9 +20,17 @@ export default function Home() {
     setIsLoggedIn(!!token)
     // Fetch real scan count
     fetch(`${API_URL}/scan-stats`)
-      .then(r => r.json())
-      .then(d => setScanCount(d.total))
-      .catch(() => setScanCount(0))
+      .then(r => {
+        if (!r.ok) {
+          throw new Error(`HTTP ${r.status}`);
+        }
+        return r.json();
+      })
+      .then(d => setScanCount(d.total ?? 0))
+      .catch((err) => {
+        console.error("[SCAN-STATS] Fetch error:", err);
+        setScanCount(0);
+      })
   }, [])
 
   const handleScan = async (e: React.FormEvent) => {

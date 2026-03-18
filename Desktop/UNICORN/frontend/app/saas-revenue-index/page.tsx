@@ -5,8 +5,6 @@ import { API_URL } from '@/lib/config'
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const API = process.env.NEXT_PUBLIC_API_URL || `${API_URL}`;
-
 interface CompanyRow {
   rank: number;
   domain: string;
@@ -83,10 +81,18 @@ export default function SaaSRevenueIndex() {
   const [search, setSearch]   = useState("");
 
   useEffect(() => {
-    fetch(`${API}/saas-revenue-index`)
-      .then(r => r.json())
+    fetch(`${API_URL}/saas-revenue-index`)
+      .then(r => {
+        if (!r.ok) {
+          throw new Error(`HTTP ${r.status}`);
+        }
+        return r.json();
+      })
       .then(setData)
-      .catch(() => setData(null))
+      .catch((err) => {
+        console.error("[SAAS-INDEX] Fetch error:", err);
+        setData(null);
+      })
       .finally(() => setLoading(false));
   }, []);
 
