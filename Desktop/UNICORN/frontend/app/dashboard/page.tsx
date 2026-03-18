@@ -82,6 +82,99 @@ interface Alert {
   created_at: string
 }
 
+// Quick diagnostic form for trial users (just website URL)
+function QuickDiagnosticForm({ companyId, onComplete }: { companyId: string | null; onComplete: () => void }) {
+  const [websiteUrl, setWebsiteUrl] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!websiteUrl.trim() || !companyId) return
+
+    setSubmitting(true)
+    setError("")
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) {
+      setError("Please log in first")
+      setSubmitting(false)
+      return
+    }
+
+    try {
+      // Use onboarding endpoint with minimal required data
+      const response = await fetch(`${API_URL}/onboarding`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          b2b_saas: true,
+          active_sales_motion: true,
+          publishing_content: true,
+          close_rate_matters: true,
+          website_url: websiteUrl.trim(),
+          arr_range: "$1M - $5M",  // Default
+          team_size: "10-50",  // Default
+          growth_model: "product-led",  // Default
+          icp_description: "B2B SaaS companies",  // Default - will be auto-detected
+          revenue_objective: "Increase close rate",  // Default
+          content_channels: ["website"],
+          content_urls: [],
+          why_applying: "Trial diagnostic"
+        })
+      })
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ detail: "Failed to run diagnostic" }))
+        throw new Error(err.detail || "Failed to run diagnostic")
+      }
+
+      const result = await response.json()
+      
+      // Save diagnostic result
+      localStorage.setItem("diagnostic_result", JSON.stringify(result.diagnostic))
+      sessionStorage.setItem("diagnostic_result", JSON.stringify(result.diagnostic))
+      
+      // Reload to show diagnostic
+      onComplete()
+    } catch (err: any) {
+      setError(err.message || "Failed to run diagnostic. Please try again.")
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+      <div className="flex gap-3 mb-4">
+        <input
+          type="text"
+          value={websiteUrl}
+          onChange={(e) => setWebsiteUrl(e.target.value)}
+          placeholder="yourcompany.com"
+          required
+          className="flex-1 px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
+          disabled={submitting}
+        />
+        <button
+          type="submit"
+          disabled={submitting || !websiteUrl.trim()}
+          className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
+        >
+          {submitting ? "Running..." : "Run Diagnostic"}
+        </button>
+      </div>
+      {error && (
+        <p className="text-sm text-red-400 text-center mb-4">{error}</p>
+      )}
+      <p className="text-xs text-gray-600 text-center">
+        We'll auto-detect your ICP, industry, and messaging structure from your website.
+      </p>
+    </form>
+  )
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -413,14 +506,25 @@ export default function DashboardPage() {
             <div className="p-12 border border-gray-800 rounded-lg bg-[#111827] text-center">
               <h2 className="text-2xl font-bold mb-4 text-gray-300">Revenue Monitoring Not Yet Active</h2>
               <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-                Run your first diagnostic to quantify revenue-stage exposure and identify compression risk.
+                {currentPlan === "trial" 
+                  ? "Run your first diagnostic to unlock full revenue analysis. Just enter your website URL."
+                  : "Run your first diagnostic to quantify revenue-stage exposure and identify compression risk."}
               </p>
-              <Link
-                href="/onboarding"
-                className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition"
-              >
-                Quantify Revenue Risk
-              </Link>
+              
+              {/* Simplified flow for trial users */}
+              {currentPlan === "trial" ? (
+                <QuickDiagnosticForm companyId={companyId} onComplete={() => {
+                  // Reload page to show diagnostic
+                  window.location.reload()
+                }} />
+              ) : (
+                <Link
+                  href="/onboarding"
+                  className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition"
+                >
+                  Quantify Revenue Risk
+                </Link>
+              )}
             </div>
           ) : isMonitoringActive && monitoringStatus ? (
             /* STATE 3 — CONTINUOUS MONITORING ACTIVE */
