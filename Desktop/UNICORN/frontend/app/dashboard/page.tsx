@@ -430,8 +430,28 @@ export default function DashboardPage() {
                 Quantify Revenue Risk
               </Link>
             </div>
+          ) : diagnostic?.is_partial ? (
+            /* STATE 2 — PARTIAL DIAGNOSTIC (from scan) — Always show SnapshotLayer with CTA */
+            <>
+              <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
+              <div className="mt-6 p-8 border border-cyan-500/20 rounded-lg bg-gradient-to-br from-cyan-950/30 to-[#111827] text-center">
+                <h3 className="text-xl font-bold text-white mb-2">Unlock Full Revenue Diagnostic</h3>
+                <p className="text-gray-400 mb-6 text-sm max-w-2xl mx-auto">
+                  You're viewing initial scan results. Complete a quick diagnostic to see ARR at risk, recovery potential, 12-month trajectory, and root cause analysis.
+                </p>
+                <Link
+                  href="/onboarding"
+                  className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
+                >
+                  Complete Full Diagnostic
+                </Link>
+                <p className="text-xs text-gray-600 mt-4">
+                  Takes 2-3 minutes · Just a few questions
+                </p>
+              </div>
+            </>
           ) : isMonitoringActive && monitoringStatus ? (
-            /* STATE 3 — CONTINUOUS MONITORING ACTIVE */
+            /* STATE 3 — CONTINUOUS MONITORING ACTIVE (full diagnostic) */
             <MonitoringLayer 
               monitoringStatus={monitoringStatus}
               diagnostic={diagnostic}
@@ -442,29 +462,9 @@ export default function DashboardPage() {
               currentPlan={currentPlan}
             />
           ) : (
-            /* STATE 2 — FREE SNAPSHOT or PARTIAL DIAGNOSTIC */
+            /* STATE 2 — FREE SNAPSHOT (full diagnostic, no monitoring) */
             diagnostic && (
-              <>
-                <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
-                {/* Show upgrade CTA if diagnostic is partial (from scan) */}
-                {diagnostic.is_partial && (
-                  <div className="mt-6 p-8 border border-cyan-500/20 rounded-lg bg-gradient-to-br from-cyan-950/30 to-[#111827] text-center">
-                    <h3 className="text-xl font-bold text-white mb-2">Unlock Full Revenue Diagnostic</h3>
-                    <p className="text-gray-400 mb-6 text-sm max-w-2xl mx-auto">
-                      You're viewing initial scan results. Complete a quick diagnostic to see ARR at risk, recovery potential, 12-month trajectory, and root cause analysis.
-                    </p>
-                    <Link
-                      href="/onboarding"
-                      className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
-                    >
-                      Complete Full Diagnostic
-                    </Link>
-                    <p className="text-xs text-gray-600 mt-4">
-                      Takes 2-3 minutes · Just a few questions
-                    </p>
-                  </div>
-                )}
-              </>
+              <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
             )
           )}
 
