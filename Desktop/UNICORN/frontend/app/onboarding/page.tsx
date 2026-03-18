@@ -456,115 +456,6 @@ export default function OnboardingPage() {
               </p>
             </div>
 
-            {/* Optional fields - collapsed by default */}
-            <details className="border border-gray-800 rounded-lg p-4">
-              <summary className="cursor-pointer text-sm text-gray-400 hover:text-gray-300">
-                Additional context (optional - helps improve accuracy)
-              </summary>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Average Deal Size (ACV)</label>
-                  <select
-                    name="average_deal_size_range"
-                    value={form.average_deal_size_range}
-                    onChange={handleChange}
-                    className="input"
-                  >
-                    <option value="">Select ACV range (optional)</option>
-                    <option value="1k-5k">$1k–$5k</option>
-                    <option value="5k-20k">$5k–$20k</option>
-                    <option value="20k-100k">$20k–$100k</option>
-                    <option value="100k+">$100k+</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Team Size</label>
-                  <select
-                    name="team_size"
-                    value={form.team_size}
-                    onChange={handleChange}
-                    className="input"
-                  >
-                    <option value="">Select team size (optional)</option>
-                    <option value="1-5">1–5</option>
-                    <option value="6-20">6–20</option>
-                    <option value="21-50">21–50</option>
-                    <option value="50+">50+</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Primary Growth Model</label>
-                  <select
-                    name="growth_model"
-                    value={form.growth_model}
-                    onChange={handleChange}
-                    className="input"
-                  >
-                    <option value="">Select growth model (optional)</option>
-                    <option value="sales-led">Sales-led</option>
-                    <option value="hybrid">Hybrid</option>
-                    <option value="plg-with-sales">PLG with sales assist</option>
-                  </select>
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">ICP Additional Details (Optional)</h3>
-                  
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Primary Buyer Role</label>
-                    <select
-                      name="icp_buyer_role"
-                      value={form.icp_buyer_role}
-                      onChange={handleChange}
-                      className="input"
-                    >
-                      <option value="">Select buyer role (optional)</option>
-                      <option value="founder">Founder</option>
-                      <option value="vp-sales">VP Sales</option>
-                      <option value="cro">CRO</option>
-                      <option value="head-of-marketing">Head of Marketing</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Industry Focus</label>
-                    <select
-                      name="icp_industry"
-                      value={form.icp_industry}
-                      onChange={handleChange}
-                      className="input"
-                    >
-                      <option value="">Select industry (optional)</option>
-                      <option value="saas">SaaS</option>
-                      <option value="fintech">Fintech</option>
-                      <option value="ecommerce">E-commerce</option>
-                      <option value="ai">AI</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Customer Size</label>
-                    <select
-                      name="icp_company_size"
-                      value={form.icp_company_size}
-                      onChange={handleChange}
-                      className="input"
-                    >
-                      <option value="">Select company size (optional)</option>
-                      <option value="startup">Startup</option>
-                      <option value="smb">SMB</option>
-                      <option value="mid-market">Mid-market</option>
-                      <option value="enterprise">Enterprise</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </details>
-
             <div>
               <label className="block text-sm font-medium mb-2">
                 Describe ICP in 1–2 sentences *
@@ -604,6 +495,115 @@ export default function OnboardingPage() {
                 <option value="increase-acv">Increase ACV</option>
               </select>
             </div>
+
+            {/* Optional fields - collapsed by default */}
+            <details className="border border-gray-800 rounded-lg p-4 mt-6">
+              <summary className="cursor-pointer text-sm text-gray-400 hover:text-gray-300 font-medium">
+                + Additional context (optional - helps improve accuracy)
+              </summary>
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-500">Average Deal Size (ACV)</label>
+                  <select
+                    name="average_deal_size_range"
+                    value={form.average_deal_size_range}
+                    onChange={handleChange}
+                    className="input"
+                  >
+                    <option value="">Select ACV range (optional)</option>
+                    <option value="1k-5k">$1k–$5k</option>
+                    <option value="5k-20k">$5k–$20k</option>
+                    <option value="20k-100k">$20k–$100k</option>
+                    <option value="100k+">$100k+</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-500">Team Size</label>
+                  <select
+                    name="team_size"
+                    value={form.team_size}
+                    onChange={handleChange}
+                    className="input"
+                  >
+                    <option value="">Select team size (optional)</option>
+                    <option value="1-5">1–5</option>
+                    <option value="6-20">6–20</option>
+                    <option value="21-50">21–50</option>
+                    <option value="50+">50+</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-gray-500">Primary Growth Model</label>
+                  <select
+                    name="growth_model"
+                    value={form.growth_model}
+                    onChange={handleChange}
+                    className="input"
+                  >
+                    <option value="">Select growth model (optional)</option>
+                    <option value="sales-led">Sales-led</option>
+                    <option value="hybrid">Hybrid</option>
+                    <option value="plg-with-sales">PLG with sales assist</option>
+                  </select>
+                </div>
+
+                <div className="space-y-4 pt-4 border-t border-gray-800">
+                  <h3 className="text-lg font-semibold text-gray-400">ICP Additional Details (Optional)</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-500">Primary Buyer Role</label>
+                    <select
+                      name="icp_buyer_role"
+                      value={form.icp_buyer_role}
+                      onChange={handleChange}
+                      className="input"
+                    >
+                      <option value="">Select buyer role (optional)</option>
+                      <option value="founder">Founder</option>
+                      <option value="vp-sales">VP Sales</option>
+                      <option value="cro">CRO</option>
+                      <option value="head-of-marketing">Head of Marketing</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-500">Industry Focus</label>
+                    <select
+                      name="icp_industry"
+                      value={form.icp_industry}
+                      onChange={handleChange}
+                      className="input"
+                    >
+                      <option value="">Select industry (optional)</option>
+                      <option value="saas">SaaS</option>
+                      <option value="fintech">Fintech</option>
+                      <option value="ecommerce">E-commerce</option>
+                      <option value="ai">AI</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-500">Customer Size</label>
+                    <select
+                      name="icp_company_size"
+                      value={form.icp_company_size}
+                      onChange={handleChange}
+                      className="input"
+                    >
+                      <option value="">Select company size (optional)</option>
+                      <option value="startup">Startup</option>
+                      <option value="smb">SMB</option>
+                      <option value="mid-market">Mid-market</option>
+                      <option value="enterprise">Enterprise</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </details>
           </div>
         )}
 
