@@ -135,11 +135,9 @@ export default function Home() {
           </p>
 
           <div className="flex items-center justify-center gap-3 text-sm text-gray-500 mb-8">
-            <span>or</span>
-            <Link href="/signup" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
-              Create free account
-            </Link>
-            <span>for full diagnostic</span>
+            <span className="text-gray-600">No signup required</span>
+            <span className="text-gray-700">·</span>
+            <span className="text-gray-600">Instant results</span>
           </div>
 
           {/* ── Companies scanned counter (clickable → leaderboard) ── */}

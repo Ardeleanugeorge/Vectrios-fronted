@@ -148,10 +148,56 @@ function ScanResultsContent() {
       .catch(() => { setError("Scan results not found or expired."); setLoading(false) })
   }, [token])
 
+  const [showEmailCapture, setShowEmailCapture] = useState(false)
+  const [email, setEmail] = useState("")
+  const [capturing, setCapturing] = useState(false)
+  const [captureError, setCaptureError] = useState("")
+
   const handleUnlock = () => {
-    if (token) sessionStorage.setItem("pending_scan_token", token)
-    if (data?.domain) sessionStorage.setItem("pending_scan_domain", data.domain)
-    router.push("/signup")
+    setShowEmailCapture(true)
+  }
+
+  const handleEmailCapture = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email.trim() || !token) return
+    
+    setCapturing(true)
+    setCaptureError("")
+    
+    try {
+      const res = await fetch(`${API_URL}/email-capture`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          email: email.trim(),
+          scan_token: token 
+        })
+      })
+      
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ detail: "Failed to create account" }))
+        setCaptureError(error.detail || "Something went wrong. Please try again.")
+        setCapturing(false)
+        return
+      }
+      
+      const result = await res.json()
+      
+      // Save auth token and user data
+      sessionStorage.setItem("auth_token", result.token)
+      localStorage.setItem("auth_token", result.token)
+      localStorage.setItem("user_data", JSON.stringify({
+        email: result.email,
+        user_id: result.user_id,
+        company_id: result.company_id
+      }))
+      
+      // Redirect to dashboard
+      router.push("/dashboard")
+    } catch (err: any) {
+      setCaptureError(err.message || "Network error. Please try again.")
+      setCapturing(false)
+    }
   }
 
   if (loading) return (
@@ -330,23 +376,105 @@ function ScanResultsContent() {
           </div>
         </div>
 
-        {/* CTA */}
-        <div className="text-center p-8 bg-[#111827] rounded-xl border border-cyan-500/20">
-          <h2 className="text-2xl font-bold mb-2">Unlock Full Revenue Diagnostic</h2>
-          <p className="text-gray-400 mb-6 text-sm">
+        {/* Soft Paywall - Full Diagnostic */}
+        <div className="text-center p-8 bg-gradient-to-br from-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/20 mb-6">
+          <div className="mb-4">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium">
+              🔒 Full Diagnostic
+            </span>
+          </div>
+          <h2 className="text-2xl font-bold mb-2 text-white">Unlock Full Revenue Diagnostic</h2>
+          <p className="text-gray-400 mb-6 text-sm max-w-md mx-auto">
             See ARR at risk, recovery potential, 12-month trajectory, and root cause analysis.
           </p>
+          <div className="space-y-2 mb-6 text-left max-w-sm mx-auto">
+            <div className="flex items-center gap-2 text-sm text-gray-300">
+              <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Estimated ARR at Risk
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-300">
+              <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Close Rate Compression Analysis
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-300">
+              <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Recovery Potential (Annual)
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-300">
+              <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Revenue Trajectory (12 months)
+            </div>
+          </div>
           <button
             onClick={handleUnlock}
             className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto"
           >
             Unlock Financial Impact Analysis
           </button>
-          {/* 5. Trust micro-messages */}
           <p className="text-xs text-gray-600 mt-3">
-            Takes less than 2 minutes · No credit card required
+            No password required · Instant access
           </p>
         </div>
+
+        {/* Email Capture Modal */}
+        {showEmailCapture && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-[#111827] rounded-xl border border-gray-800 p-8 max-w-md w-full">
+              <h3 className="text-2xl font-bold mb-2 text-white">Unlock Full Diagnostic</h3>
+              <p className="text-gray-400 mb-6 text-sm">
+                Enter your email to access ARR at risk, recovery potential, and 12-month revenue trajectory.
+              </p>
+              
+              <form onSubmit={handleEmailCapture} className="space-y-4">
+                <div>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    required
+                    className="w-full px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
+                    disabled={capturing}
+                  />
+                </div>
+                
+                {captureError && (
+                  <p className="text-sm text-red-400">{captureError}</p>
+                )}
+                
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowEmailCapture(false)}
+                    className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition"
+                    disabled={capturing}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={capturing || !email.trim()}
+                    className="flex-1 px-4 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
+                  >
+                    {capturing ? "Unlocking..." : "Unlock Access"}
+                  </button>
+                </div>
+              </form>
+              
+              <p className="text-xs text-gray-600 mt-4 text-center">
+                We'll also send you the full report and improvement recommendations.
+              </p>
+            </div>
+          </div>
+        )}
 
       </main>
     </div>
