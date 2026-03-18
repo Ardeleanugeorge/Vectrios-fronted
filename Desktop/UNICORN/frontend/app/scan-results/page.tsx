@@ -21,6 +21,8 @@ interface ScanData {
   primary_signal: string
   percentile: number | null
   percentile_label: string | null
+  status?: string  // success, partial, blocked, failed
+  reason?: string  // waf, low_content, etc.
   created_at?: string
 }
 
@@ -31,7 +33,50 @@ function RiskBadge({ level }: { level: string }) {
     return <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-sm font-semibold border border-red-500/30">{level}</span>
   if (level?.includes("Moderate"))
     return <span className="px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 text-sm font-semibold border border-orange-500/30">{level}</span>
+  if (level?.includes("Blocked"))
+    return <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-sm font-semibold border border-red-500/30">{level}</span>
   return <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-semibold border border-emerald-500/30">{level}</span>
+}
+
+function ScanStatusMessage({ status, reason }: { status?: string; reason?: string }) {
+  if (status === "blocked") {
+    return (
+      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20">
+        <p className="text-red-400 font-semibold text-sm mb-1">
+          ⛔ Scan blocked by site security
+        </p>
+        <p className="text-xs text-gray-400">
+          This website prevents automated analysis (WAF / bot protection).
+        </p>
+        <p className="text-xs text-gray-500 mt-2">
+          Common for enterprise SaaS and fintech platforms.
+        </p>
+      </div>
+    )
+  }
+  
+  if (status === "partial") {
+    return (
+      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+        <p className="text-yellow-400 font-semibold text-sm mb-1">
+          ⚠ Limited content detected
+        </p>
+        <p className="text-xs text-gray-400">
+          Site may use dynamic rendering (React / SPA). Score confidence reduced.
+        </p>
+      </div>
+    )
+  }
+  
+  if (status === "success") {
+    return (
+      <div className="mt-3 text-xs text-green-400 text-center">
+        ✓ Full analysis completed
+      </div>
+    )
+  }
+  
+  return null
 }
 
 // ── Metric descriptions shown as hints under each bar ──────────────────────
@@ -171,9 +216,16 @@ function ScanResultsContent() {
           <p className={`text-lg font-semibold mb-3 ${riiColor}`}>{data.risk_level}</p>
 
           {/* 1. Explanation line under score */}
-          <p className="text-sm text-gray-400 mb-4">
-            Estimated structural misalignment detected in revenue-stage messaging.
-          </p>
+          {data.status !== "blocked" && (
+            <p className="text-sm text-gray-400 mb-4">
+              Estimated structural misalignment detected in revenue-stage messaging.
+            </p>
+          )}
+          {data.status === "blocked" && (
+            <p className="text-sm text-gray-400 mb-4">
+              Unable to analyze — site blocked automated access.
+            </p>
+          )}
 
           {/* 2. Pages analyzed — moved under score for credibility */}
           <p className="text-xs text-gray-600 mb-4">
@@ -190,8 +242,11 @@ function ScanResultsContent() {
             </div>
           )}
 
-          {/* Low confidence warning */}
-          {(data.confidence ?? 100) < 50 && (
+          {/* Status message (replaces old low confidence warning) */}
+          <ScanStatusMessage status={data.status} reason={data.reason} />
+          
+          {/* Legacy low confidence warning (only if status not set) */}
+          {!data.status && (data.confidence ?? 100) < 50 && (
             <div className="mt-3 mx-auto max-w-sm px-4 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-xs text-yellow-400 text-center">
               ⚠ Limited content detected — site may use dynamic rendering.
               Score confidence reduced. <span className="text-yellow-300 font-semibold">Create an account for a deeper scan.</span>
