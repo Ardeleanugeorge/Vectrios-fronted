@@ -120,8 +120,9 @@ export default function DashboardPage() {
     if (diagnosticData) {
       try {
         const parsed = JSON.parse(diagnosticData)
+        console.log("[DASHBOARD] Loaded diagnostic:", { hasPartial: parsed.is_partial, riskScore: parsed.risk_score })
         setDiagnostic(parsed)
-        setHasDiagnostic(true)
+        setHasDiagnostic(true)  // Set to true even for partial diagnostics
         // Only mark as free diagnostic used if it's a full diagnostic (not partial from scan)
         if (!parsed.is_partial) {
           setFreeDiagnosticUsed(true)
@@ -129,6 +130,8 @@ export default function DashboardPage() {
       } catch (e) {
         console.error("Error parsing diagnostic data:", e)
       }
+    } else {
+      console.log("[DASHBOARD] No diagnostic data found")
     }
 
     // Load monitoring status and subscription if company ID available
@@ -416,25 +419,14 @@ export default function DashboardPage() {
             <div className="p-12 border border-gray-800 rounded-lg bg-[#111827] text-center">
               <h2 className="text-2xl font-bold mb-4 text-gray-300">Revenue Monitoring Not Yet Active</h2>
               <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-                {currentPlan === "trial" 
-                  ? "Run your first diagnostic to unlock full revenue analysis. Just enter your website URL."
-                  : "Run your first diagnostic to quantify revenue-stage exposure and identify compression risk."}
+                Run your first diagnostic to quantify revenue-stage exposure and identify compression risk.
               </p>
-              
-              {/* Simplified flow for trial users */}
-              {currentPlan === "trial" ? (
-                <QuickDiagnosticForm companyId={companyId} onComplete={() => {
-                  // Reload page to show diagnostic
-                  window.location.reload()
-                }} />
-              ) : (
-                <Link
-                  href="/onboarding"
-                  className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition"
-                >
-                  Quantify Revenue Risk
-                </Link>
-              )}
+              <Link
+                href="/onboarding"
+                className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition"
+              >
+                Quantify Revenue Risk
+              </Link>
             </div>
           ) : isMonitoringActive && monitoringStatus ? (
             /* STATE 3 — CONTINUOUS MONITORING ACTIVE */
