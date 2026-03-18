@@ -40,17 +40,22 @@ function RiskBadge({ level }: { level: string }) {
 
 function ScanStatusMessage({ status, reason }: { status?: string; reason?: string }) {
   if (status === "blocked") {
+    const isRateLimited = reason === "rate_limit"
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20">
         <p className="text-red-400 font-semibold text-sm mb-1">
-          ⛔ Scan blocked by site security
+          {isRateLimited ? "⏳ Scan rate-limited by the site" : "⛔ Scan blocked by site security"}
         </p>
         <p className="text-xs text-gray-400">
-          This website prevents automated analysis (WAF / bot protection).
+          {isRateLimited
+            ? "This website temporarily blocks automated analysis (HTTP 429). Please try again later."
+            : "This website prevents automated analysis (WAF / bot protection)."}
         </p>
-        <p className="text-xs text-gray-500 mt-2">
-          Common for enterprise SaaS and fintech platforms.
-        </p>
+        {!isRateLimited && (
+          <p className="text-xs text-gray-500 mt-2">
+            Common for enterprise SaaS and fintech platforms.
+          </p>
+        )}
       </div>
     )
   }
