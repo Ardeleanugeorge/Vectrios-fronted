@@ -78,12 +78,15 @@ export default function OnboardingPage() {
       const scanDataStr = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
       if (scanDataStr) {
         const scanData = JSON.parse(scanDataStr)
+        console.log("[ONBOARDING] Loaded scan_data:", scanData)
         return {
           website_url: scanData.website_url || "",
           icp_description: scanData.inferred_icp || "",
           homepage_url: scanData.website_url || "",
           content_channels: ["website"] as string[]
         }
+      } else {
+        console.log("[ONBOARDING] No scan_data found")
       }
     } catch (e) {
       console.error("Error loading scan data:", e)

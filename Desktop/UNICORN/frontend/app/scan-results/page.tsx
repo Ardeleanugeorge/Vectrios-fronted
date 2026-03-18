@@ -267,6 +267,8 @@ function ScanResultsContent() {
         }
         localStorage.setItem("scan_data", JSON.stringify(scanData))
         sessionStorage.setItem("scan_data", JSON.stringify(scanData))
+        console.log("[EMAIL-CAPTURE] Saved scan_data:", scanData)
+        console.log("[EMAIL-CAPTURE] Saved partial diagnostic:", partialDiagnostic)
       }
       
       // Redirect to dashboard with partial diagnostic
