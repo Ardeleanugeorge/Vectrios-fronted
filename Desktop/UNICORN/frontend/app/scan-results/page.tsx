@@ -38,13 +38,14 @@ function RiskBadge({ level }: { level: string }) {
   return <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-semibold border border-emerald-500/30">{level}</span>
 }
 
-function ScanStatusMessage({ status, reason }: { status?: string; reason?: string }) {
+function ScanStatusMessage({ status, reason, confidence }: { status?: string; reason?: string; confidence?: number | null }) {
+  // Blocked status
   if (status === "blocked") {
     const isRateLimited = reason === "rate_limit"
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20">
         <p className="text-red-400 font-semibold text-sm mb-1">
-          {isRateLimited ? "⏳ Scan rate-limited by the site" : "⛔ Scan blocked by site security"}
+          {isRateLimited ? "⏳ Scan rate-limited by the site" : "🔒 Blocked by site protection"}
         </p>
         <p className="text-xs text-gray-400">
           {isRateLimited
@@ -60,23 +61,67 @@ function ScanStatusMessage({ status, reason }: { status?: string; reason?: strin
     )
   }
   
+  // Partial scan (limited content)
   if (status === "partial") {
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
         <p className="text-yellow-400 font-semibold text-sm mb-1">
-          ⚠ Limited content detected
+          ⚠️ Partial scan
         </p>
         <p className="text-xs text-gray-400">
-          Site may use dynamic rendering (React / SPA). Score confidence reduced.
+          Site may use dynamic rendering (React / SPA). Limited content detected — score confidence reduced.
         </p>
       </div>
     )
   }
   
+  // Failed status
+  if (status === "failed") {
+    return (
+      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20">
+        <p className="text-red-400 font-semibold text-sm mb-1">
+          ❌ Scan failed
+        </p>
+        <p className="text-xs text-gray-400">
+          Unable to analyze this website. {reason ? `Reason: ${reason}` : "Please try again later."}
+        </p>
+      </div>
+    )
+  }
+  
+  // Low confidence (even if status is success, but confidence is low)
+  if (status === "success" && confidence !== null && confidence < 50) {
+    return (
+      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+        <p className="text-yellow-400 font-semibold text-sm mb-1">
+          ⚠️ Low confidence (limited content)
+        </p>
+        <p className="text-xs text-gray-400">
+          Limited content detected — site may use dynamic rendering. Score confidence reduced.
+        </p>
+      </div>
+    )
+  }
+  
+  // Success with good confidence
   if (status === "success") {
     return (
       <div className="mt-3 text-xs text-green-400 text-center">
         ✓ Full analysis completed
+      </div>
+    )
+  }
+  
+  // Fallback: if no status but low confidence
+  if (!status && confidence !== null && confidence < 50) {
+    return (
+      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+        <p className="text-yellow-400 font-semibold text-sm mb-1">
+          ⚠️ Low confidence (limited content)
+        </p>
+        <p className="text-xs text-gray-400">
+          Limited content detected — site may use dynamic rendering. Score confidence reduced.
+        </p>
       </div>
     )
   }
@@ -299,16 +344,8 @@ function ScanResultsContent() {
             </div>
           )}
 
-          {/* Status message (replaces old low confidence warning) */}
-          <ScanStatusMessage status={data.status} reason={data.reason} />
-          
-          {/* Legacy low confidence warning (only if status not set) */}
-          {!data.status && (data.confidence ?? 100) < 50 && (
-            <div className="mt-3 mx-auto max-w-sm px-4 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-xs text-yellow-400 text-center">
-              ⚠ Limited content detected — site may use dynamic rendering.
-              Score confidence reduced. <span className="text-yellow-300 font-semibold">Create an account for a deeper scan.</span>
-            </div>
-          )}
+          {/* Status message - clear classification instead of "Unknown" */}
+          <ScanStatusMessage status={data.status} reason={data.reason} confidence={data.confidence} />
 
           {/* 3. Percentile badge — live when dataset exists, median fallback otherwise */}
           {data.percentile_label && !isBlocked ? (
