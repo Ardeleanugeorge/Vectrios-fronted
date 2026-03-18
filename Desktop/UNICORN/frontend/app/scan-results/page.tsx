@@ -90,7 +90,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   }
   
   // Low confidence (even if status is success, but confidence is low)
-  if (status === "success" && confidence !== null && confidence < 50) {
+  if (status === "success" && confidence !== null && confidence !== undefined && confidence < 50) {
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
         <p className="text-yellow-400 font-semibold text-sm mb-1">
@@ -113,7 +113,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   }
   
   // Fallback: if no status but low confidence
-  if (!status && confidence !== null && confidence < 50) {
+  if (!status && confidence !== null && confidence !== undefined && confidence < 50) {
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
         <p className="text-yellow-400 font-semibold text-sm mb-1">
