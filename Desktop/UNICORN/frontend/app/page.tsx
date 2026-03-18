@@ -33,7 +33,8 @@ export default function Home() {
     
     // Create AbortController for timeout
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 60000) // 60s timeout
+    const timeoutMs = 180000 // 180s timeout (Playwright-heavy sites can be slow)
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
     
     try {
       const res = await fetch(`${API_URL}/scan`, {
@@ -61,9 +62,10 @@ export default function Home() {
     } catch (err: any) {
       clearTimeout(timeoutId)
       if (err.name === 'AbortError') {
-        setScanError("Scan timed out (60s). The site may be too complex. Please try again or contact support.")
+        setScanError(`Scan timed out (${Math.round(timeoutMs/1000)}s). This site may be JS-heavy or rate-limited. Try again, or scan fewer pages via a deeper account scan.`)
       } else {
-        setScanError("Unable to connect. Make sure the backend is running.")
+        const msg = (err && (err.message || err.toString())) ? String(err.message || err.toString()) : "Unknown network error"
+        setScanError(`Unable to connect to the scan service. (${msg})`)
       }
       setScanning(false)
     }
