@@ -153,21 +153,26 @@ export default function DashboardPage() {
       // Reload monitoring status and subscription to reflect activation
       const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
       if (token) {
-        // Immediate reload
+        // Immediate reload - subscription first to set currentPlan
+        loadSubscription(token, companyId)  // ← Critical: reload subscription FIRST to get trial plan
         loadMonitoringStatus(token, companyId)
         loadAlerts(token, companyId)
-        loadSubscription(token, companyId)  // ← Critical: reload subscription to get trial plan
         
         // Also reload after delay to ensure backend processed
         setTimeout(() => {
+          loadSubscription(token, companyId)  // Reload subscription again to ensure it's set
           loadMonitoringStatus(token, companyId)
           loadAlerts(token, companyId)
-          loadSubscription(token, companyId)
           // Trigger custom event to update DashboardHeader
           window.dispatchEvent(new CustomEvent("subscription_updated"))
           // Clean URL
           window.history.replaceState({}, "", "/dashboard")
         }, 1000)
+        
+        // One more reload after 2 seconds to be absolutely sure
+        setTimeout(() => {
+          loadSubscription(token, companyId)
+        }, 2000)
       }
     }
   }, [companyId])
