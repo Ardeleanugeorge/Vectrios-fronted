@@ -231,11 +231,14 @@ function ScanResultsContent() {
       // Save auth token and user data
       sessionStorage.setItem("auth_token", result.token)
       localStorage.setItem("auth_token", result.token)
-      localStorage.setItem("user_data", JSON.stringify({
+      const userData = {
         email: result.email,
         user_id: result.user_id,
         company_id: result.company_id
-      }))
+      }
+      localStorage.setItem("user_data", JSON.stringify(userData))
+      sessionStorage.setItem("user_data", JSON.stringify(userData))
+      console.log("[EMAIL-CAPTURE] Saved user_data:", userData)
       
       // Convert scan result to partial diagnostic for dashboard
       // This gives user initial data without full onboarding
