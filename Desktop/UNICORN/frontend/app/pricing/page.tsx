@@ -102,10 +102,14 @@ export default function PricingPage() {
         throw new Error(err.detail || `Server error ${res.status}`)
       }
 
+      const responseData = await res.json().catch(() => ({}))
+      console.log("[PRICING] Trial activation response:", responseData)
+
       await new Promise(r => setTimeout(r, 800))
       setPaymentStep("done")
       await new Promise(r => setTimeout(r, 800))
       // Force reload to ensure subscription is refreshed
+      console.log("[PRICING] Redirecting to dashboard with trial=activated")
       window.location.href = "/dashboard?governance=activated&trial=activated"
     } catch (err: any) {
       clearTimeout(timeout)

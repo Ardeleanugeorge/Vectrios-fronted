@@ -75,21 +75,30 @@ export default function DashboardHeader() {
         try {
           const userData = JSON.parse(storedUser)
           if (userData.company_id) {
+            console.log("[HEADER] Reloading subscription for company_id:", userData.company_id)
             fetch(`${API_URL}/subscription/${userData.company_id}`, {
               headers: { "Authorization": `Bearer ${token}` }
             })
               .then(r => r.ok ? r.json() : null)
               .then(data => {
+                console.log("[HEADER] Subscription data:", { plan: data?.plan, billing_cycle: data?.billing_cycle })
                 if (data?.billing_cycle === "trial") {
+                  console.log("[HEADER] Setting currentPlan to 'trial'")
                   setCurrentPlan("trial")
+                  setBillingCycle("trial")
                 } else if (data?.plan) {
+                  console.log("[HEADER] Setting currentPlan to:", data.plan.toLowerCase())
                   setCurrentPlan(data.plan.toLowerCase())
+                  if (data?.billing_cycle) setBillingCycle(data.billing_cycle)
                 }
-                if (data?.billing_cycle) setBillingCycle(data.billing_cycle)
               })
-              .catch(() => {})
+              .catch((e) => {
+                console.error("[HEADER] Error reloading subscription:", e)
+              })
           }
-        } catch (e) {}
+        } catch (e) {
+          console.error("[HEADER] Error parsing user_data:", e)
+        }
       }
     }
 
@@ -109,15 +118,20 @@ export default function DashboardHeader() {
     window.addEventListener("subscription_updated", handleSubscriptionUpdate)
     
     // Poll for subscription updates after page load (for trial activation)
+    // Check URL params first - if trial=activated, poll more aggressively
+    const urlParams = new URLSearchParams(window.location.search)
+    const isTrialActivated = urlParams.get("trial") === "activated"
+    
     let pollCount = 0
+    const maxPolls = isTrialActivated ? 10 : 3  // Poll more if trial was just activated
     const pollInterval = setInterval(() => {
-      if (pollCount < 3) {  // Poll 3 times (6 seconds total)
+      if (pollCount < maxPolls) {
         reloadSubscription()
         pollCount++
       } else {
         clearInterval(pollInterval)
       }
-    }, 2000)
+    }, isTrialActivated ? 1000 : 2000)  // Poll every 1s if trial activated, otherwise 2s
     
     return () => {
       window.removeEventListener("storage", handleStorageChange)
