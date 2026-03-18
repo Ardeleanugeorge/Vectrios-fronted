@@ -203,7 +203,13 @@ export default function DashboardPage() {
       
       if (response.ok) {
         const data = await response.json()
-        setCurrentPlan(data.plan || null)
+        // If billing_cycle is "trial", set plan to "trial" for FeatureGate to work correctly
+        // Backend returns plan="scale" with billing_cycle="trial", but frontend needs plan="trial"
+        if (data.billing_cycle === "trial") {
+          setCurrentPlan("trial")
+        } else {
+          setCurrentPlan(data.plan || null)
+        }
       }
     } catch (e) {
       console.error("Error loading subscription:", e)
@@ -265,9 +271,10 @@ export default function DashboardPage() {
       })
       
       if (response.ok) {
-        // Reload monitoring status
+        // Reload monitoring status and subscription (trial is auto-assigned on activation)
         loadMonitoringStatus(token, companyId)
         loadAlerts(token, companyId)
+        loadSubscription(token, companyId)
       } else {
         const error = await response.json()
         alert(error.detail || "Failed to activate monitoring")
