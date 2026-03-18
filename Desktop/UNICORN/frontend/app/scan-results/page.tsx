@@ -237,8 +237,30 @@ function ScanResultsContent() {
         company_id: result.company_id
       }))
       
-      // Redirect to dashboard
-      router.push("/dashboard")
+      // Convert scan result to partial diagnostic for dashboard
+      // This gives user initial data without full onboarding
+      if (data) {
+        const partialDiagnostic = {
+          risk_level: data.risk_level || "MODERATE",
+          risk_score: data.rii || null,
+          alignment_score: data.alignment || null,
+          anchor_density_score: data.anchor_density || null,
+          icp_clarity_score: data.icp_clarity || null,
+          positioning_coherence_score: data.positioning || null,
+          confidence: data.confidence || null,
+          inferred_icp: data.inferred_icp || "",
+          primary_signal: data.primary_signal || "",
+          pages_scanned: data.pages_scanned || 0,
+          // Mark as partial - needs upgrade for full diagnostic
+          is_partial: true,
+          scan_token: token
+        }
+        localStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
+        sessionStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
+      }
+      
+      // Redirect to dashboard with partial diagnostic
+      router.push("/dashboard?partial=true")
     } catch (err: any) {
       setCaptureError(err.message || "Network error. Please try again.")
       setCapturing(false)
