@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "VectriOS - Strategic Revenue Diagnostic Engine for B2B SaaS",
   description: "Detect structural misalignment between content, ICP, and revenue objective. Measure close rate risk, not impressions.",
   icons: {
-    icon: "/api/favicon",
+    icon: "/favicon.png",
   },
 }
 
