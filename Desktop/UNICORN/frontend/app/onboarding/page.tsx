@@ -235,8 +235,8 @@ export default function OnboardingPage() {
           website_url: normalizedWebsiteUrl,
           arr_range: form.arr_range,
           average_deal_size_range: form.average_deal_size_range || null,
-          team_size: form.team_size || "10-50",
-          growth_model: form.growth_model || "hybrid",
+          team_size: form.team_size || null, // Now optional in backend
+          growth_model: form.growth_model || null, // Now optional in backend
           icp_buyer_role: form.icp_buyer_role || null,
           icp_industry: form.icp_industry || null,
           icp_company_size: form.icp_company_size || null,
