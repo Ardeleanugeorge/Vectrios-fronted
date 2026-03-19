@@ -154,7 +154,7 @@ export default function OnboardingPage() {
     why_applying: ""
   })
 
-  const totalSteps = 4
+  const totalSteps = 2  // Simplified: only 2 steps (removed eligibility and content steps)
 
   const handleAnswer = (question: keyof typeof form, value: boolean) => {
     setForm(prev => ({ ...prev, [question]: value }))
@@ -177,30 +177,18 @@ export default function OnboardingPage() {
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return Object.values({
-          b2b_saas: form.b2b_saas,
-          active_sales_motion: form.active_sales_motion,
-          close_rate_matters: form.close_rate_matters,
-          publishing_content: form.publishing_content
-        }).every(v => v === true)
-      case 2:
-        // Simplified: only critical fields required for accurate calculation
-        const step2Valid = !!(
+        // Step 1: Only essential fields for modeling
+        return !!(
           form.website_url?.trim() && 
-          form.icp_description?.trim() && 
-          form.revenue_objective?.trim() &&
-          form.arr_range  // Important for context
+          form.arr_range &&
+          form.icp_description?.trim()
         )
-        return step2Valid
-      case 3:
-        // Critical: close rates for ARR at risk calculation
-        const step3Valid = !!(
+      case 2:
+        // Step 2: Close rates for ARR at risk calculation
+        return !!(
           form.current_close_rate && 
           form.target_close_rate
         )
-        return step3Valid
-      case 4:
-        return form.content_channels.length > 0 && form.why_applying.length >= 50
       default:
         return false
     }
@@ -338,9 +326,9 @@ export default function OnboardingPage() {
     <main className="min-h-screen bg-[#0B0F19] text-white py-12">
       <div className="max-w-3xl mx-auto px-6">
         {/* PROGRESS INDICATOR */}
-        <div className="mb-12">
+          <div className="mb-12">
           <div className="flex justify-between items-center mb-4">
-            {[1, 2, 3, 4].map((step) => (
+            {[1, 2].map((step) => (
               <div key={step} className="flex items-center flex-1">
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
@@ -368,59 +356,16 @@ export default function OnboardingPage() {
           </p>
         </div>
 
-        {/* STEP 1: Structural Eligibility Assessment */}
+        {/* STEP 1: Essential Modeling Inputs (simplified - only 3 critical fields) */}
         {currentStep === 1 && (
-          <div className="space-y-10">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">Structural Eligibility Assessment</h2>
-              <p className="text-gray-400">
-                Confirm revenue architecture prerequisites for exposure modeling.
-              </p>
-            </div>
-
-            <div className="space-y-8">
-              <QuestionBlock
-                question="Are you operating as a B2B SaaS company?"
-                order={1}
-                value={form.b2b_saas}
-                onAnswer={(val) => handleAnswer("b2b_saas", val)}
-                feedbackKey="b2b_saas"
-              />
-
-              <QuestionBlock
-                question="Do you operate an active sales motion?"
-                order={2}
-                value={form.active_sales_motion}
-                onAnswer={(val) => handleAnswer("active_sales_motion", val)}
-                feedbackKey="active_sales_motion"
-              />
-
-              <QuestionBlock
-                question="Is close rate a tracked revenue KPI?"
-                order={3}
-                value={form.close_rate_matters}
-                onAnswer={(val) => handleAnswer("close_rate_matters", val)}
-                feedbackKey="close_rate_matters"
-              />
-
-              <QuestionBlock
-                question="Do you maintain public messaging channels?"
-                order={4}
-                value={form.publishing_content}
-                onAnswer={(val) => handleAnswer("publishing_content", val)}
-                feedbackKey="publishing_content"
-              />
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: Structural Modeling Inputs */}
-        {currentStep === 2 && (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">Structural Modeling Inputs</h2>
-              <p className="text-gray-400">
-                Define the revenue architecture parameters used for exposure modeling.
+              <h2 className="text-3xl font-bold mb-4">Want a precise model for your business?</h2>
+              <p className="text-gray-400 mb-2">
+                Takes ~2 minutes · Used by revenue teams to model ARR risk
+              </p>
+              <p className="text-sm text-gray-500">
+                We'll calculate exact ARR at risk, close rate impact, and recovery potential
               </p>
             </div>
 
@@ -480,141 +425,16 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">Primary Revenue Objective (6-Month Horizon) *</label>
-              <select
-                name="revenue_objective"
-                required
-                value={form.revenue_objective}
-                onChange={handleChange}
-                className="input"
-              >
-                <option value="">Select objective</option>
-                <option value="improve-close-rate">Improve close rate</option>
-                <option value="pipeline-quality">Improve pipeline quality</option>
-                <option value="shorten-cycle">Shorten sales cycle</option>
-                <option value="increase-acv">Increase ACV</option>
-              </select>
-            </div>
-
-            {/* Optional fields - collapsed by default */}
-            <details className="border border-gray-800 rounded-lg p-4 mt-6">
-              <summary className="cursor-pointer text-sm text-gray-400 hover:text-gray-300 font-medium">
-                + Additional context (optional - helps improve accuracy)
-              </summary>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-500">Average Deal Size (ACV)</label>
-                  <select
-                    name="average_deal_size_range"
-                    value={form.average_deal_size_range}
-                    onChange={handleChange}
-                    className="input"
-                  >
-                    <option value="">Select ACV range (optional)</option>
-                    <option value="1k-5k">$1k–$5k</option>
-                    <option value="5k-20k">$5k–$20k</option>
-                    <option value="20k-100k">$20k–$100k</option>
-                    <option value="100k+">$100k+</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-500">Team Size</label>
-                  <select
-                    name="team_size"
-                    value={form.team_size}
-                    onChange={handleChange}
-                    className="input"
-                  >
-                    <option value="">Select team size (optional)</option>
-                    <option value="1-5">1–5</option>
-                    <option value="6-20">6–20</option>
-                    <option value="21-50">21–50</option>
-                    <option value="50+">50+</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-500">Primary Growth Model</label>
-                  <select
-                    name="growth_model"
-                    value={form.growth_model}
-                    onChange={handleChange}
-                    className="input"
-                  >
-                    <option value="">Select growth model (optional)</option>
-                    <option value="sales-led">Sales-led</option>
-                    <option value="hybrid">Hybrid</option>
-                    <option value="plg-with-sales">PLG with sales assist</option>
-                  </select>
-                </div>
-
-                <div className="space-y-4 pt-4 border-t border-gray-800">
-                  <h3 className="text-lg font-semibold text-gray-400">ICP Additional Details (Optional)</h3>
-                  
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-500">Primary Buyer Role</label>
-                    <select
-                      name="icp_buyer_role"
-                      value={form.icp_buyer_role}
-                      onChange={handleChange}
-                      className="input"
-                    >
-                      <option value="">Select buyer role (optional)</option>
-                      <option value="founder">Founder</option>
-                      <option value="vp-sales">VP Sales</option>
-                      <option value="cro">CRO</option>
-                      <option value="head-of-marketing">Head of Marketing</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-500">Industry Focus</label>
-                    <select
-                      name="icp_industry"
-                      value={form.icp_industry}
-                      onChange={handleChange}
-                      className="input"
-                    >
-                      <option value="">Select industry (optional)</option>
-                      <option value="saas">SaaS</option>
-                      <option value="fintech">Fintech</option>
-                      <option value="ecommerce">E-commerce</option>
-                      <option value="ai">AI</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-500">Customer Size</label>
-                    <select
-                      name="icp_company_size"
-                      value={form.icp_company_size}
-                      onChange={handleChange}
-                      className="input"
-                    >
-                      <option value="">Select company size (optional)</option>
-                      <option value="startup">Startup</option>
-                      <option value="smb">SMB</option>
-                      <option value="mid-market">Mid-market</option>
-                      <option value="enterprise">Enterprise</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </details>
           </div>
         )}
 
-        {/* STEP 3: Performance Baseline */}
-        {currentStep === 3 && (
+        {/* STEP 2: Close Rates (for ARR at risk calculation) */}
+        {currentStep === 2 && (
           <div className="space-y-6">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold mb-4">Performance Baseline</h2>
               <p className="text-gray-400">
-                Establish current performance metrics for risk modeling.
+                Last step: Your current close rates to calculate exact ARR at risk
               </p>
             </div>
 
@@ -793,120 +613,6 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 4: Content Inputs */}
-        {currentStep === 4 && (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">Content Inputs</h2>
-              <p className="text-gray-400">
-                Provide content samples for structural analysis.
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-3">Primary Content Channels *</label>
-              <div className="space-y-2">
-                {["LinkedIn", "Blog", "Founder posts", "Newsletter", "Podcast", "Other"].map(channel => (
-                  <label key={channel} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={form.content_channels.includes(channel)}
-                      onChange={() => handleCheckbox(channel)}
-                      className="mr-3 w-4 h-4"
-                    />
-                    <span>{channel}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Key Revenue Pages */}
-            <div className="space-y-3 pt-2 border-t border-gray-800">
-              <div>
-                <h3 className="text-sm font-medium mb-1">Key Revenue Pages <span className="text-gray-500 font-normal">(optional)</span></h3>
-                <p className="text-xs text-gray-500 italic mb-3">
-                  90% of revenue messaging issues appear on these pages. Used to evaluate value articulation, pricing anchors, and ICP signals.
-                </p>
-              </div>
-              <div>
-                <label className="block text-xs text-gray-400 mb-1">Homepage URL</label>
-                <input
-                  type="url"
-                  name="homepage_url"
-                  value={form.homepage_url}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="https://yourcompany.com"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-gray-400 mb-1">Pricing Page URL</label>
-                <input
-                  type="url"
-                  name="pricing_page_url"
-                  value={form.pricing_page_url}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="https://yourcompany.com/pricing"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-gray-400 mb-1">Product Page URL</label>
-                <input
-                  type="url"
-                  name="product_page_url"
-                  value={form.product_page_url}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="https://yourcompany.com/product"
-                />
-              </div>
-            </div>
-
-            <div className="pt-2 border-t border-gray-800">
-              <div className="mb-3">
-                <h3 className="text-sm font-medium mb-1">
-                  Marketing Content Samples
-                  <span className="ml-2 text-xs text-gray-500 font-normal">optional</span>
-                </h3>
-                <p className="text-xs text-gray-500 italic mb-2">
-                  Provide recent pieces of marketing content — used to evaluate ICP messaging consistency, content framing, and conversion anchoring.
-                </p>
-                <div className="text-xs text-gray-600 bg-gray-800/40 border border-gray-700/50 rounded-lg px-3 py-2 space-y-0.5">
-                  <p className="text-gray-500 font-medium mb-1">Examples:</p>
-                  <p>• https://yourcompany.com/blog/pricing-strategy</p>
-                  <p>• https://linkedin.com/posts/your-post-url</p>
-                  <p>• https://yourcompany.com/case-study/client-name</p>
-                </div>
-              </div>
-              <textarea
-                name="content_urls"
-                value={form.content_urls}
-                onChange={handleChange}
-                className="input h-32"
-                placeholder={"Paste URLs, one per line..."}
-              />
-              <p className="text-xs text-gray-600 mt-2">Recommended 3</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Why are you seeking this diagnostic? *
-              </label>
-              <textarea
-                name="why_applying"
-                required
-                value={form.why_applying}
-                onChange={handleChange}
-                className="input h-40"
-                placeholder="Help us understand your strategic intent..."
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                {form.why_applying.length}/50 minimum characters
-              </p>
-            </div>
-          </div>
-        )}
 
         {/* NAVIGATION */}
         <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-800">
