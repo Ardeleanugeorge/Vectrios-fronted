@@ -89,6 +89,7 @@ export default function OnboardingPage() {
   const loadScanData = () => {
     try {
       const scanDataStr = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+      const arrRangePrefill = sessionStorage.getItem("onboarding_arr_range") || localStorage.getItem("onboarding_arr_range")
       if (scanDataStr) {
         const scanData = JSON.parse(scanDataStr)
         console.log("[ONBOARDING] Loaded scan_data:", scanData)
@@ -96,10 +97,14 @@ export default function OnboardingPage() {
           website_url: scanData.website_url || "",
           icp_description: scanData.inferred_icp || "",
           homepage_url: scanData.website_url || "",
-          content_channels: ["website"] as string[]
+          content_channels: ["website"] as string[],
+          arr_range: arrRangePrefill || ""
         }
       } else {
         console.log("[ONBOARDING] No scan_data found")
+        return {
+          arr_range: arrRangePrefill || ""
+        }
       }
     } catch (e) {
       console.error("Error loading scan data:", e)
@@ -129,7 +134,7 @@ export default function OnboardingPage() {
     close_rate_matters: null as boolean | null,
     publishing_content: null as boolean | null,
     website_url: scanPrefills.website_url || "",
-    arr_range: "",
+    arr_range: (scanPrefills as any).arr_range || "",
     average_deal_size_range: "",
     team_size: "",
     growth_model: "",

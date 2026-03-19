@@ -753,7 +753,20 @@ function ScanResultsContent() {
               <p className="text-sm text-gray-400">Best guess is OK. We'll use industry priors if left blank.</p>
             </div>
             
-            <form onSubmit={(e) => { e.preventDefault(); calculateFinancialImpact(); }} className="space-y-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                // Persist ARR range choice for onboarding prefill
+                if (typeof window !== "undefined" && arrRange) {
+                  try {
+                    window.localStorage.setItem("onboarding_arr_range", arrRange);
+                    window.sessionStorage.setItem("onboarding_arr_range", arrRange);
+                  } catch {}
+                }
+                calculateFinancialImpact();
+              }}
+              className="space-y-4"
+            >
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
                   To calculate your exact revenue loss: What's your ARR? <span className="text-red-400">*</span>
