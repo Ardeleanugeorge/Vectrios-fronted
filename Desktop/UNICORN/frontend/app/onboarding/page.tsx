@@ -227,10 +227,11 @@ export default function OnboardingPage() {
           "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
-          b2b_saas: form.b2b_saas,
-          active_sales_motion: form.active_sales_motion,
-          publishing_content: form.publishing_content,
-          close_rate_matters: form.close_rate_matters,
+          // Default to true for eligibility fields (removed from UI but required by backend)
+          b2b_saas: form.b2b_saas ?? true,
+          active_sales_motion: form.active_sales_motion ?? true,
+          publishing_content: form.publishing_content ?? true,
+          close_rate_matters: form.close_rate_matters ?? true,
           website_url: normalizedWebsiteUrl,
           arr_range: form.arr_range,
           average_deal_size_range: form.average_deal_size_range || null,
