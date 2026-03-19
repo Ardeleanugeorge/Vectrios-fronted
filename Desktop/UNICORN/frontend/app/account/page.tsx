@@ -117,7 +117,7 @@ export default function AccountPage() {
                     href="/pricing"
                     className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-medium rounded-lg transition"
                   >
-                    Contact Sales
+                    Upgrade Plan
                   </Link>
                 </div>
               </div>
@@ -128,7 +128,7 @@ export default function AccountPage() {
                   href="/pricing"
                   className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-medium rounded-lg transition"
                 >
-                  Contact Sales
+                  Choose a Plan
                 </Link>
               </div>
             )}

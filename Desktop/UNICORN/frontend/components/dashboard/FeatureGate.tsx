@@ -76,7 +76,7 @@ export default function FeatureGate({
             href="/pricing"
             className="inline-block px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-sm"
           >
-            Contact Sales
+            Upgrade to {planRequired.charAt(0).toUpperCase() + planRequired.slice(1)}
           </Link>
         </div>
       </div>
