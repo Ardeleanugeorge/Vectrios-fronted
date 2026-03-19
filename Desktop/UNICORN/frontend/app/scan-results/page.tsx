@@ -213,7 +213,11 @@ function ScanResultsContent() {
     closeRateDeltaLow: number
     closeRateDeltaHigh: number
     confidence: string
+    confidenceExplanation: string
+    primaryDriver: string
   } | null>(null)
+  
+  const [showImpactForm, setShowImpactForm] = useState(false)
 
   const handleUnlock = () => {
     setShowEmailCapture(true)
@@ -303,14 +307,14 @@ function ScanResultsContent() {
         console.log("[EMAIL-CAPTURE] Saved partial diagnostic:", partialDiagnostic)
       }
       
-      // Mark as unlocked - show financial impact form (NO redirect to dashboard)
+      // Mark as unlocked - show peer-based estimate FIRST (NO redirect to dashboard)
       setUnlocked(true)
       setShowEmailCapture(false)
-      setShowFinancialImpact(true)
+      setShowFinancialImpact(true) // This will show peer estimate first, then form
       
-      // Scroll to financial impact form after a short delay
+      // Scroll to financial impact after a short delay
       setTimeout(() => {
-        document.getElementById("financial-impact-form")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document.getElementById("financial-impact-peer")?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 300)
     } catch (err: any) {
       setCaptureError(err.message || "Network error. Please try again.")
@@ -396,12 +400,29 @@ function ScanResultsContent() {
     const closeRateDeltaLow = Math.round(closeRateDeltaBase * 0.8 * 10) / 10
     const closeRateDeltaHigh = Math.round(closeRateDeltaBase * 1.2 * 10) / 10
     
-    // Determine confidence
-    let confidence = "Moderate"
+    // Determine confidence with explanation
+    let confidence = "Medium"
+    let confidenceExplanation = ""
     if (data.confidence && data.confidence >= 80 && data.pages_scanned >= 5) {
       confidence = "High"
+      confidenceExplanation = `High (based on ${data.pages_scanned} pages analyzed)`
     } else if (data.confidence && data.confidence < 50 || data.pages_scanned < 3) {
       confidence = "Low"
+      confidenceExplanation = `Low (limited data from ${data.pages_scanned} pages)`
+    } else {
+      confidenceExplanation = `Medium (based on ${data.pages_scanned} pages analyzed)`
+    }
+    
+    // Determine primary driver of revenue loss
+    let primaryDriver = ""
+    if (data.icp_clarity && data.icp_clarity < 30) {
+      primaryDriver = `ICP clarity is too broad for your ACV (${acvEst >= 40 ? "high-value" : "mid-value"} deals require precise targeting)`
+    } else if (data.anchor_density && data.anchor_density < 30) {
+      primaryDriver = `Anchor density is insufficient for your ${acvEst < 15 ? "high-volume" : "sales-led"} model`
+    } else if (data.alignment && data.alignment < 40) {
+      primaryDriver = `Messaging misalignment across revenue pages reduces conversion consistency`
+    } else {
+      primaryDriver = `Structural misalignment detected across multiple revenue signals`
     }
     
     setFinancialImpact({
@@ -409,7 +430,9 @@ function ScanResultsContent() {
       arrAtRiskHigh,
       closeRateDeltaLow,
       closeRateDeltaHigh,
-      confidence
+      confidence,
+      confidenceExplanation,
+      primaryDriver
     })
     
     setCalculatingImpact(false)
@@ -684,8 +707,34 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* Financial Impact Form (after unlock) */}
-        {unlocked && showFinancialImpact && !financialImpact && (
+        {/* Financial Impact - Peer Estimate FIRST (after unlock, before form) */}
+        {unlocked && showFinancialImpact && !financialImpact && !showImpactForm && peerEstimate && (
+          <div id="financial-impact-peer" className="p-6 bg-gradient-to-br from-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/20 mb-6">
+            <div className="mb-4">
+              <h3 className="text-xl font-bold text-white mb-1">Estimated Impact</h3>
+              <p className="text-sm text-gray-400">Based on similar companies with your structure</p>
+            </div>
+            
+            <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800 mb-4">
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">ARR at Risk</p>
+              <p className="text-3xl font-bold text-orange-400 mb-1">
+                {formatCurrency(peerEstimate.low)} – {formatCurrency(peerEstimate.high)}
+              </p>
+              <p className="text-xs text-gray-500">Annual revenue exposure from structural misalignment</p>
+            </div>
+            
+            <button
+              onClick={() => setShowImpactForm(true)}
+              className="w-full px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
+            >
+              Make this accurate for your business
+            </button>
+            <p className="text-xs text-gray-500 mt-2 text-center">Takes 30 seconds · Best guess is OK</p>
+          </div>
+        )}
+
+        {/* Financial Impact Form (after clicking "Make this accurate") */}
+        {unlocked && showFinancialImpact && !financialImpact && showImpactForm && (
           <div id="financial-impact-form" className="p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6">
             <div className="mb-4">
               <h3 className="text-xl font-bold text-white mb-1">Make this accurate for your business</h3>
@@ -695,7 +744,7 @@ function ScanResultsContent() {
             <form onSubmit={(e) => { e.preventDefault(); calculateFinancialImpact(); }} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  What's your annual recurring revenue (ARR)? <span className="text-red-400">*</span>
+                  To calculate your exact revenue loss: What's your ARR? <span className="text-red-400">*</span>
                 </label>
                 <select
                   value={arrRange}
@@ -712,27 +761,6 @@ function ScanResultsContent() {
                   <option value="50-100M">$50M – $100M</option>
                   <option value="100M+">$100M+</option>
                 </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">
-                  What's your typical deal size (ACV)? <span className="text-red-400">*</span>
-                </label>
-                <select
-                  value={acvRange}
-                  onChange={(e) => setAcvRange(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
-                >
-                  <option value="">Select ACV range</option>
-                  <option value="<2K">Less than $2K</option>
-                  <option value="2-5K">$2K – $5K</option>
-                  <option value="5-15K">$5K – $15K</option>
-                  <option value="15-40K">$15K – $40K</option>
-                  <option value="40-100K">$40K – $100K</option>
-                  <option value="100K+">$100K+</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">Best guess is OK</p>
               </div>
               
               <div>
@@ -761,6 +789,27 @@ function ScanResultsContent() {
                     <option value="">Not sure</option>
                   </select>
                 </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">
+                  What's your typical deal size (ACV)? <span className="text-red-400">*</span>
+                </label>
+                <select
+                  value={acvRange}
+                  onChange={(e) => setAcvRange(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+                >
+                  <option value="">Select ACV range</option>
+                  <option value="<2K">Less than $2K</option>
+                  <option value="2-5K">$2K – $5K</option>
+                  <option value="5-15K">$5K – $15K</option>
+                  <option value="15-40K">$15K – $40K</option>
+                  <option value="40-100K">$40K – $100K</option>
+                  <option value="100K+">$100K+</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">Best guess is OK</p>
               </div>
               
               <button
@@ -803,13 +852,20 @@ function ScanResultsContent() {
               
               <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800">
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Confidence Level</p>
-                <p className={`text-lg font-semibold ${
+                <p className={`text-lg font-semibold mb-1 ${
                   financialImpact.confidence === "High" ? "text-emerald-400" :
-                  financialImpact.confidence === "Moderate" ? "text-yellow-400" : "text-orange-400"
+                  financialImpact.confidence === "Medium" ? "text-yellow-400" : "text-orange-400"
                 }`}>
                   {financialImpact.confidence}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">Based on {data.pages_scanned} pages analyzed</p>
+                <p className="text-xs text-gray-500">{financialImpact.confidenceExplanation}</p>
+              </div>
+              
+              <div className="p-4 bg-[#0B0F19] rounded-lg border border-orange-500/20">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Primary Driver of Revenue Loss</p>
+                <p className="text-sm text-orange-300 font-medium">
+                  → {financialImpact.primaryDriver}
+                </p>
               </div>
             </div>
             
