@@ -231,10 +231,22 @@ function ScanResultsContent() {
       // Save auth token and user data
       sessionStorage.setItem("auth_token", result.token)
       localStorage.setItem("auth_token", result.token)
+
+      // Try to derive a friendly company name from current scan domain
+      const domain = data?.domain || ""
+      const derivedCompanyName = domain
+        ? domain.replace(/^www\./i, "").split(".")[0].replace(/[-_]/g, " ")
+        : null
+      const derivedCompanyTitle =
+        derivedCompanyName
+          ? derivedCompanyName.charAt(0).toUpperCase() + derivedCompanyName.slice(1)
+          : null
+
       const userData = {
         email: result.email,
         user_id: result.user_id,
-        company_id: result.company_id
+        company_id: result.company_id,
+        company_name: derivedCompanyTitle || null
       }
       localStorage.setItem("user_data", JSON.stringify(userData))
       sessionStorage.setItem("user_data", JSON.stringify(userData))
