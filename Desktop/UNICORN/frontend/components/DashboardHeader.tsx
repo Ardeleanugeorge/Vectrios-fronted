@@ -27,6 +27,7 @@ export default function DashboardHeader() {
   const [showMenu, setShowMenu] = useState(false)
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
   const [billingCycle, setBillingCycle] = useState<string | null>(null)
+  const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null)
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -50,8 +51,10 @@ export default function DashboardHeader() {
                 // Trial users should have full access equivalent to Scale.
                 if (data?.billing_cycle === "trial") {
                   setCurrentPlan("scale")
+                  setTrialDaysLeft(typeof data?.trial_days_left === "number" ? data.trial_days_left : null)
                 } else if (data?.plan) {
                   setCurrentPlan(data.plan.toLowerCase())
+                  setTrialDaysLeft(null)
                 }
                 if (data?.billing_cycle) setBillingCycle(data.billing_cycle)
               })
@@ -85,10 +88,12 @@ export default function DashboardHeader() {
                   console.log("[HEADER] Setting currentPlan to 'scale' (trial has full access)")
                   setCurrentPlan("scale")
                   setBillingCycle("trial")
+                  setTrialDaysLeft(typeof data?.trial_days_left === "number" ? data.trial_days_left : null)
                 } else if (data?.plan) {
                   console.log("[HEADER] Setting currentPlan to:", data.plan.toLowerCase())
                   setCurrentPlan(data.plan.toLowerCase())
                   if (data?.billing_cycle) setBillingCycle(data.billing_cycle)
+                  setTrialDaysLeft(null)
                 }
               })
               .catch((e) => {
@@ -169,6 +174,7 @@ export default function DashboardHeader() {
             {planLabel && (
               <span className={`hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${planColorClass}`}>
                 {planLabel}
+                {billingCycle === "trial" && trialDaysLeft !== null ? ` · ${trialDaysLeft}d left` : ""}
               </span>
             )}
 
@@ -208,7 +214,7 @@ export default function DashboardHeader() {
                     )}
                     {planLabel && (
                       <span className={`inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${planColorClass}`}>
-                        {planLabel} Plan
+                        {planLabel} Plan{billingCycle === "trial" && trialDaysLeft !== null ? ` · ${trialDaysLeft}d left` : ""}
                       </span>
                     )}
                   </div>

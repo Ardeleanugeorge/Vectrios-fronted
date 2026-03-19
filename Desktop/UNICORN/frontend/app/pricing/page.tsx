@@ -72,10 +72,8 @@ export default function PricingPage() {
         })
         if (!res.ok) return
         const sub = await res.json().catch(() => null)
-        const hasActiveTrial = sub?.billing_cycle === "trial"
-        const hasActiveSubscription = !!sub?.plan
-
-        if (hasActiveTrial || hasActiveSubscription) {
+        const hasFullAccess = !!sub?.has_full_access || sub?.billing_cycle === "trial" || !!sub?.plan
+        if (hasFullAccess) {
           router.replace("/dashboard")
         }
       } catch (e) {
