@@ -86,8 +86,15 @@ export default function OnboardingPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
 
-  // Load scan data to pre-fill form
-  const loadScanData = () => {
+  // Read scan prefill only in the browser (sessionStorage/localStorage do not exist on the server during `next build`)
+  const getScanPrefillPatch = (): Partial<{
+    website_url: string
+    icp_description: string
+    homepage_url: string
+    content_channels: string[]
+    arr_range: string
+  }> => {
+    if (typeof window === "undefined") return {}
     try {
       const scanDataStr = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
       const arrRangePrefill = sessionStorage.getItem("onboarding_arr_range") || localStorage.getItem("onboarding_arr_range")
@@ -99,21 +106,16 @@ export default function OnboardingPage() {
           icp_description: scanData.inferred_icp || "",
           homepage_url: scanData.website_url || "",
           content_channels: ["website"] as string[],
-          arr_range: arrRangePrefill || ""
-        }
-      } else {
-        console.log("[ONBOARDING] No scan_data found")
-        return {
-          arr_range: arrRangePrefill || ""
+          arr_range: arrRangePrefill || "",
         }
       }
+      console.log("[ONBOARDING] No scan_data found")
+      return { arr_range: arrRangePrefill || "" }
     } catch (e) {
       console.error("Error loading scan data:", e)
     }
     return {}
   }
-
-  const scanPrefills = loadScanData()
 
   const goToStep = (step: number) => {
     setCurrentStep(step)
@@ -134,15 +136,15 @@ export default function OnboardingPage() {
     active_sales_motion: null as boolean | null,
     close_rate_matters: null as boolean | null,
     publishing_content: null as boolean | null,
-    website_url: scanPrefills.website_url || "",
-    arr_range: (scanPrefills as any).arr_range || "",
+    website_url: "",
+    arr_range: "",
     average_deal_size_range: "",
     team_size: "",
     growth_model: "",
     icp_buyer_role: "",
     icp_industry: "",
     icp_company_size: "",
-    icp_description: scanPrefills.icp_description || "",
+    icp_description: "",
     revenue_objective: "",
     current_close_rate: "",
     target_close_rate: "",
@@ -152,13 +154,21 @@ export default function OnboardingPage() {
     value_articulation_score: "",
     pricing_clarity_score: "",
     differentiation_score: "",
-    homepage_url: scanPrefills.homepage_url || "",
+    homepage_url: "",
     pricing_page_url: "",
     product_page_url: "",
-    content_channels: scanPrefills.content_channels || [] as string[],
+    content_channels: [] as string[],
     content_urls: "",
-    why_applying: ""
+    why_applying: "",
   })
+
+  // Apply scan prefill after mount (client only)
+  useEffect(() => {
+    const patch = getScanPrefillPatch()
+    if (Object.keys(patch).length > 0) {
+      setForm((prev) => ({ ...prev, ...patch }))
+    }
+  }, [])
 
   // Persist onboarding draft locally so progress isn't lost on refresh
   useEffect(() => {
