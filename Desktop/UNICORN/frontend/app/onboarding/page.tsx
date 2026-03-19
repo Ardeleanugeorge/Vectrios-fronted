@@ -177,7 +177,7 @@ export default function OnboardingPage() {
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        // Step 1: Only essential fields for modeling
+        // Step 1: Only essential fields for modeling (removed revenue_objective requirement)
         return !!(
           form.website_url?.trim() && 
           form.arr_range &&
@@ -240,7 +240,7 @@ export default function OnboardingPage() {
           icp_industry: form.icp_industry || null,
           icp_company_size: form.icp_company_size || null,
           icp_description: form.icp_description,
-          revenue_objective: form.revenue_objective,
+          revenue_objective: form.revenue_objective || "improve-close-rate", // Default if not provided
           current_close_rate: form.current_close_rate ? Number(form.current_close_rate) : null,
           target_close_rate: form.target_close_rate ? Number(form.target_close_rate) : null,
           average_sales_cycle_range: form.average_sales_cycle_range || null,
