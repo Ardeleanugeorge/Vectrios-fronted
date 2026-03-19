@@ -2,8 +2,9 @@
 
 import { API_URL } from '@/lib/config'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import DashboardHeader from "@/components/DashboardHeader"
 
 // ─── QuestionBlock definit AFARA componentului principal ────────────────────
 // Dacă ar fi definit înăuntru, React îl tratează ca tip nou la fiecare render
@@ -158,6 +159,27 @@ export default function OnboardingPage() {
     content_urls: "",
     why_applying: ""
   })
+
+  // Persist onboarding draft locally so progress isn't lost on refresh
+  useEffect(() => {
+    try {
+      const draftStr = localStorage.getItem("onboarding_draft")
+      if (draftStr) {
+        const draft = JSON.parse(draftStr)
+        setForm(prev => ({ ...prev, ...draft }))
+      }
+    } catch (e) {
+      console.error("Error loading onboarding draft:", e)
+    }
+  }, [])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("onboarding_draft", JSON.stringify(form))
+    } catch (e) {
+      // ignore
+    }
+  }, [form])
 
   const totalSteps = 2  // Simplified: only 2 steps (removed eligibility and content steps)
 
@@ -329,8 +351,10 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0B0F19] text-white py-12">
-      <div className="max-w-3xl mx-auto px-6">
+    <main className="min-h-screen bg-[#0B0F19] text-white">
+      {/* Shared app header with company + email + plan badge */}
+      <DashboardHeader />
+      <div className="max-w-3xl mx-auto px-6 py-12">
         {/* PROGRESS INDICATOR */}
           <div className="mb-12">
           <div className="flex justify-between items-center mb-4">
