@@ -197,6 +197,23 @@ function ScanResultsContent() {
   const [email, setEmail] = useState("")
   const [capturing, setCapturing] = useState(false)
   const [captureError, setCaptureError] = useState("")
+  const [unlocked, setUnlocked] = useState(false)
+  const [showFinancialImpact, setShowFinancialImpact] = useState(false)
+  
+  // Financial impact form state
+  const [arrRange, setArrRange] = useState("")
+  const [acvRange, setAcvRange] = useState("")
+  const [monthlyTraffic, setMonthlyTraffic] = useState("")
+  const [calculatingImpact, setCalculatingImpact] = useState(false)
+  
+  // Financial impact results
+  const [financialImpact, setFinancialImpact] = useState<{
+    arrAtRiskLow: number
+    arrAtRiskHigh: number
+    closeRateDeltaLow: number
+    closeRateDeltaHigh: number
+    confidence: string
+  } | null>(null)
 
   const handleUnlock = () => {
     setShowEmailCapture(true)
@@ -286,12 +303,158 @@ function ScanResultsContent() {
         console.log("[EMAIL-CAPTURE] Saved partial diagnostic:", partialDiagnostic)
       }
       
-      // Redirect to dashboard with partial diagnostic
-      router.push("/dashboard?partial=true")
+      // Mark as unlocked - show financial impact form (NO redirect to dashboard)
+      setUnlocked(true)
+      setShowEmailCapture(false)
+      setShowFinancialImpact(true)
+      
+      // Scroll to financial impact form after a short delay
+      setTimeout(() => {
+        document.getElementById("financial-impact-form")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      }, 300)
     } catch (err: any) {
       setCaptureError(err.message || "Network error. Please try again.")
       setCapturing(false)
     }
+  }
+
+  // Calculate financial impact based on structural data + user inputs
+  const calculateFinancialImpact = () => {
+    if (!data || !arrRange || !acvRange) return
+    
+    setCalculatingImpact(true)
+    
+    // Parse ARR range to midpoint (in millions)
+    const arrMidpoints: Record<string, number> = {
+      "<1M": 0.5,
+      "1-3M": 2,
+      "3-10M": 6.5,
+      "10-25M": 17.5,
+      "25-50M": 37.5,
+      "50-100M": 75,
+      "100M+": 150
+    }
+    const arrEst = (arrMidpoints[arrRange] || 2) * 1000000 // Convert to dollars
+    
+    // Parse ACV range to midpoint (in thousands)
+    const acvMidpoints: Record<string, number> = {
+      "<2K": 1,
+      "2-5K": 3.5,
+      "5-15K": 10,
+      "15-40K": 27.5,
+      "40-100K": 70,
+      "100K+": 150
+    }
+    const acvEst = acvMidpoints[acvRange] || 10
+    
+    // Base risk multiplier from RII
+    const rii = data.rii || 50
+    let baseRiskMultiplier = 0
+    if (rii < 45) {
+      baseRiskMultiplier = 0.035 // 2.5-4.5% range, use 3.5%
+    } else if (rii < 60) {
+      baseRiskMultiplier = 0.0175 // 1.0-2.5% range, use 1.75%
+    } else {
+      baseRiskMultiplier = 0.0065 // 0.3-1.0% range, use 0.65%
+    }
+    
+    // Adjust by signal profile
+    let signalAdjustment = 1.0
+    if (data.icp_clarity && data.icp_clarity < 30) signalAdjustment += 0.3
+    if (data.anchor_density && data.anchor_density < 30) signalAdjustment += 0.2
+    if (data.positioning && data.positioning < 40) signalAdjustment += 0.15
+    
+    // Adjust by ACV
+    if (acvEst < 5) {
+      signalAdjustment += 0.25 // Lower ACV = higher sensitivity
+    } else if (acvEst > 40) {
+      signalAdjustment -= 0.2 // Higher ACV = lower sensitivity
+    }
+    
+    // Adjust by traffic (if provided)
+    const trafficNum = monthlyTraffic ? parseInt(monthlyTraffic) : null
+    if (trafficNum && trafficNum < 10000) {
+      signalAdjustment += 0.2 // Lower traffic = wider interval
+    } else if (trafficNum && trafficNum > 50000) {
+      signalAdjustment -= 0.2 // Higher traffic = narrower interval
+    }
+    
+    // Calculate ARR at risk
+    const riskPercent = baseRiskMultiplier * signalAdjustment
+    const arrAtRiskBase = arrEst * riskPercent
+    
+    // Create range (±30% for uncertainty)
+    const arrAtRiskLow = Math.round(arrAtRiskBase * 0.7 / 1000) * 1000 // Round to nearest $1K
+    const arrAtRiskHigh = Math.round(arrAtRiskBase * 1.3 / 1000) * 1000
+    
+    // Calculate close rate delta (based on ICP + anchor issues)
+    let closeRateDeltaBase = 0
+    if (data.icp_clarity && data.icp_clarity < 30) closeRateDeltaBase += 1.2
+    if (data.anchor_density && data.anchor_density < 30) closeRateDeltaBase += 0.8
+    if (data.alignment && data.alignment < 40) closeRateDeltaBase += 0.6
+    
+    const closeRateDeltaLow = Math.round(closeRateDeltaBase * 0.8 * 10) / 10
+    const closeRateDeltaHigh = Math.round(closeRateDeltaBase * 1.2 * 10) / 10
+    
+    // Determine confidence
+    let confidence = "Moderate"
+    if (data.confidence && data.confidence >= 80 && data.pages_scanned >= 5) {
+      confidence = "High"
+    } else if (data.confidence && data.confidence < 50 || data.pages_scanned < 3) {
+      confidence = "Low"
+    }
+    
+    setFinancialImpact({
+      arrAtRiskLow,
+      arrAtRiskHigh,
+      closeRateDeltaLow,
+      closeRateDeltaHigh,
+      confidence
+    })
+    
+    setCalculatingImpact(false)
+    
+    // Scroll to results
+    setTimeout(() => {
+      document.getElementById("financial-impact-results")?.scrollIntoView({ behavior: "smooth", block: "center" })
+    }, 100)
+  }
+
+  // Calculate peer-based estimate (without user input) - for display before form
+  const getPeerBasedEstimate = () => {
+    if (!data || !data.rii) return null
+    
+    const rii = data.rii
+    // Use median ARR range (3-10M) for peer estimate
+    const peerArrLow = 3000000
+    const peerArrHigh = 10000000
+    
+    // Risk multiplier based on RII
+    let riskMultiplier = 0.02 // Default 2%
+    if (rii < 45) {
+      riskMultiplier = 0.035
+    } else if (rii < 60) {
+      riskMultiplier = 0.0175
+    } else {
+      riskMultiplier = 0.0065
+    }
+    
+    // Apply to peer range
+    const low = Math.round(peerArrLow * riskMultiplier / 1000) * 1000
+    const high = Math.round(peerArrHigh * riskMultiplier / 1000) * 1000
+    
+    return { low, high }
+  }
+
+  const peerEstimate = getPeerBasedEstimate()
+  
+  const formatCurrency = (val: number) => {
+    if (val >= 1000000) {
+      return `$${(val / 1000000).toFixed(1)}M`
+    } else if (val >= 1000) {
+      return `$${(val / 1000).toFixed(0)}K`
+    }
+    return `$${val.toFixed(0)}`
   }
 
   if (loading) return (
@@ -420,6 +583,15 @@ function ScanResultsContent() {
               </div>
             ) : null
           )}
+          
+          {/* Peer-based estimate message (fear trigger) */}
+          {!isBlocked && peerEstimate && !unlocked && (
+            <div className="mt-4 px-4 py-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
+              <p className="text-sm text-orange-300 font-medium">
+                Companies with similar structure typically lose {formatCurrency(peerEstimate.low)} – {formatCurrency(peerEstimate.high)} annually
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Score breakdown — with hints */}
@@ -462,53 +634,198 @@ function ScanResultsContent() {
           </div>
         </div>
 
-        {/* Soft Paywall - Full Diagnostic */}
-        <div className="text-center p-8 bg-gradient-to-br from-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/20 mb-6">
-          <div className="mb-4">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium">
-              🔒 Full Diagnostic
-            </span>
+        {/* Soft Paywall - Full Diagnostic (only show if not unlocked) */}
+        {!unlocked && (
+          <div className="text-center p-8 bg-gradient-to-br from-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/20 mb-6">
+            <div className="mb-4">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium">
+                🔒 Full Diagnostic
+              </span>
+            </div>
+            <h2 className="text-2xl font-bold mb-2 text-white">Unlock Financial Impact Analysis</h2>
+            <p className="text-gray-400 mb-6 text-sm max-w-md mx-auto">
+              See ARR at risk, recovery potential, 12-month trajectory, and root cause analysis.
+            </p>
+            <div className="space-y-2 mb-6 text-left max-w-sm mx-auto">
+              <div className="flex items-center gap-2 text-sm text-gray-300">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Estimated ARR at Risk
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-300">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Close Rate Compression Analysis
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-300">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Recovery Potential (Annual)
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-300">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Revenue Trajectory (12 months)
+              </div>
+            </div>
+            <button
+              onClick={handleUnlock}
+              className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto"
+            >
+              Unlock Financial Impact Analysis
+            </button>
+            <p className="text-xs text-gray-600 mt-3">
+              No password required · Instant access
+            </p>
           </div>
-          <h2 className="text-2xl font-bold mb-2 text-white">Unlock Full Revenue Diagnostic</h2>
-          <p className="text-gray-400 mb-6 text-sm max-w-md mx-auto">
-            See ARR at risk, recovery potential, 12-month trajectory, and root cause analysis.
-          </p>
-          <div className="space-y-2 mb-6 text-left max-w-sm mx-auto">
-            <div className="flex items-center gap-2 text-sm text-gray-300">
-              <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Estimated ARR at Risk
+        )}
+
+        {/* Financial Impact Form (after unlock) */}
+        {unlocked && showFinancialImpact && !financialImpact && (
+          <div id="financial-impact-form" className="p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6">
+            <div className="mb-4">
+              <h3 className="text-xl font-bold text-white mb-1">Make this accurate for your business</h3>
+              <p className="text-sm text-gray-400">Best guess is OK. We'll use industry priors if left blank.</p>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-300">
-              <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Close Rate Compression Analysis
+            
+            <form onSubmit={(e) => { e.preventDefault(); calculateFinancialImpact(); }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">
+                  What's your annual recurring revenue (ARR)? <span className="text-red-400">*</span>
+                </label>
+                <select
+                  value={arrRange}
+                  onChange={(e) => setArrRange(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+                >
+                  <option value="">Select ARR range</option>
+                  <option value="<1M">Less than $1M</option>
+                  <option value="1-3M">$1M – $3M</option>
+                  <option value="3-10M">$3M – $10M</option>
+                  <option value="10-25M">$10M – $25M</option>
+                  <option value="25-50M">$25M – $50M</option>
+                  <option value="50-100M">$50M – $100M</option>
+                  <option value="100M+">$100M+</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">
+                  What's your typical deal size (ACV)? <span className="text-red-400">*</span>
+                </label>
+                <select
+                  value={acvRange}
+                  onChange={(e) => setAcvRange(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+                >
+                  <option value="">Select ACV range</option>
+                  <option value="<2K">Less than $2K</option>
+                  <option value="2-5K">$2K – $5K</option>
+                  <option value="5-15K">$5K – $15K</option>
+                  <option value="15-40K">$15K – $40K</option>
+                  <option value="40-100K">$40K – $100K</option>
+                  <option value="100K+">$100K+</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">Best guess is OK</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-300">
+                  Roughly how many qualified site visitors per month? <span className="text-gray-500">(optional)</span>
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={monthlyTraffic}
+                    onChange={(e) => setMonthlyTraffic(e.target.value.replace(/\D/g, ""))}
+                    placeholder="e.g., 25000"
+                    className="flex-1 px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
+                  />
+                  <select
+                    value={monthlyTraffic ? "" : ""}
+                    onChange={(e) => e.target.value && setMonthlyTraffic(e.target.value)}
+                    className="px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
+                  >
+                    <option value="">Or select</option>
+                    <option value="5000">5K</option>
+                    <option value="10000">10K</option>
+                    <option value="25000">25K</option>
+                    <option value="50000">50K</option>
+                    <option value="100000">100K+</option>
+                    <option value="">Not sure</option>
+                  </select>
+                </div>
+              </div>
+              
+              <button
+                type="submit"
+                disabled={calculatingImpact || !arrRange || !acvRange}
+                className="w-full px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
+              >
+                {calculatingImpact ? "Calculating..." : "Calculate Impact"}
+              </button>
+            </form>
+          </div>
+        )}
+
+        {/* Financial Impact Results (after calculation) */}
+        {financialImpact && (
+          <div id="financial-impact-results" className="p-6 bg-gradient-to-br from-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/20 mb-6">
+            <div className="mb-4">
+              <h3 className="text-xl font-bold text-white mb-1">Financial Impact (estimated)</h3>
+              <p className="text-xs text-gray-400">
+                These estimates use your inputs + peers with similar structure. For exact modeling, finish the full diagnostic.
+              </p>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-300">
-              <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Recovery Potential (Annual)
+            
+            <div className="space-y-4">
+              <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">ARR at Risk</p>
+                <p className="text-2xl font-bold text-orange-400">
+                  {formatCurrency(financialImpact.arrAtRiskLow)} – {formatCurrency(financialImpact.arrAtRiskHigh)}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">Annual revenue exposure based on structural misalignment</p>
+              </div>
+              
+              <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Close Rate Impact</p>
+                <p className="text-2xl font-bold text-red-400">
+                  −{financialImpact.closeRateDeltaLow}% to −{financialImpact.closeRateDeltaHigh}%
+                </p>
+                <p className="text-xs text-gray-500 mt-1">Estimated compression from messaging misalignment</p>
+              </div>
+              
+              <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Confidence Level</p>
+                <p className={`text-lg font-semibold ${
+                  financialImpact.confidence === "High" ? "text-emerald-400" :
+                  financialImpact.confidence === "Moderate" ? "text-yellow-400" : "text-orange-400"
+                }`}>
+                  {financialImpact.confidence}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">Based on {data.pages_scanned} pages analyzed</p>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-300">
-              <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Revenue Trajectory (12 months)
+            
+            <div className="mt-6 pt-6 border-t border-gray-800 text-center">
+              <Link
+                href="/onboarding"
+                className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
+              >
+                Get exact impact for your business →
+              </Link>
+              <p className="text-xs text-gray-500 mt-2">
+                Complete full diagnostic for precise ARR modeling and recovery roadmap
+              </p>
             </div>
           </div>
-          <button
-            onClick={handleUnlock}
-            className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto"
-          >
-            Unlock Financial Impact Analysis
-          </button>
-          <p className="text-xs text-gray-600 mt-3">
-            No password required · Instant access
-          </p>
-        </div>
+        )}
 
         {/* Email Capture Modal */}
         {showEmailCapture && (
