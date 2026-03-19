@@ -117,12 +117,21 @@ export default function PricingPage() {
       const responseData = await res.json().catch(() => ({}))
       console.log("[PRICING] Trial activation response:", responseData)
 
+      // Verify company_id is available before redirect
+      const companyId = resolveCompanyId()
+      console.log("[PRICING] Company ID for redirect:", companyId)
+
       await new Promise(r => setTimeout(r, 800))
       setPaymentStep("done")
       await new Promise(r => setTimeout(r, 800))
       // Force reload to ensure subscription is refreshed
       console.log("[PRICING] Redirecting to dashboard with trial=activated")
-      window.location.href = "/dashboard?governance=activated&trial=activated"
+      if (companyId) {
+        window.location.href = "/dashboard?governance=activated&trial=activated"
+      } else {
+        console.error("[PRICING] No company_id found - cannot redirect to dashboard")
+        alert("Trial activated, but company ID not found. Please refresh the page.")
+      }
     } catch (err: any) {
       clearTimeout(timeout)
       setPaymentStep("idle")
