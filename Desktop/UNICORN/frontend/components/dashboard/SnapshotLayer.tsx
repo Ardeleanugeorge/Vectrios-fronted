@@ -63,7 +63,7 @@ function LockedCard({ title, description, planRequired }: {
             href="/pricing"
             className="inline-block px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-xs"
           >
-            Unlock with {planRequired}
+            Contact Sales
           </Link>
         </div>
       </div>
@@ -173,13 +173,13 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
             href="/pricing"
             className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-sm text-center"
           >
-            View Plans & Pricing
+            Contact Sales
           </Link>
           <Link
             href="/pricing"
             className="inline-block px-6 py-3 bg-transparent hover:bg-gray-800 text-cyan-400 font-medium rounded-lg border border-cyan-700 transition text-sm text-center"
           >
-            Start 14-Day Free Trial
+            Request Sales Call
           </Link>
         </div>
       </div>
