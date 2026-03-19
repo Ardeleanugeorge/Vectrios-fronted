@@ -383,13 +383,25 @@ function ScanResultsContent() {
       signalAdjustment -= 0.2 // Higher traffic = narrower interval
     }
     
-    // Calculate ARR at risk
-    const riskPercent = baseRiskMultiplier * signalAdjustment
+    // Calculate ARR at risk (cap at 8% max for credibility)
+    const riskPercent = Math.min(baseRiskMultiplier * signalAdjustment, 0.08) // Max 8%
     const arrAtRiskBase = arrEst * riskPercent
     
-    // Create range (±30% for uncertainty)
-    const arrAtRiskLow = Math.round(arrAtRiskBase * 0.7 / 1000) * 1000 // Round to nearest $1K
-    const arrAtRiskHigh = Math.round(arrAtRiskBase * 1.3 / 1000) * 1000
+    // Create range (±30% for uncertainty) with intelligent rounding
+    let arrAtRiskLow = Math.round(arrAtRiskBase * 0.7)
+    let arrAtRiskHigh = Math.round(arrAtRiskBase * 1.3)
+    
+    // Intelligent rounding: round to nearest $50K for large numbers, $10K for medium, $5K for small
+    if (arrAtRiskHigh >= 1000000) {
+      arrAtRiskLow = Math.round(arrAtRiskLow / 50000) * 50000
+      arrAtRiskHigh = Math.round(arrAtRiskHigh / 50000) * 50000
+    } else if (arrAtRiskHigh >= 200000) {
+      arrAtRiskLow = Math.round(arrAtRiskLow / 10000) * 10000
+      arrAtRiskHigh = Math.round(arrAtRiskHigh / 10000) * 10000
+    } else {
+      arrAtRiskLow = Math.round(arrAtRiskLow / 5000) * 5000
+      arrAtRiskHigh = Math.round(arrAtRiskHigh / 5000) * 5000
+    }
     
     // Calculate close rate delta (based on ICP + anchor issues)
     let closeRateDeltaBase = 0
