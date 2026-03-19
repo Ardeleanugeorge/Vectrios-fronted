@@ -15,6 +15,15 @@ export default function Home() {
   const [scanCount, setScanCount] = useState<number | null>(null)
   const router = useRouter()
 
+  // Fake scan phases for perceived progress
+  const scanPhases = useRef([
+    "Crawling your pages…",
+    "Analyzing messaging structure…",
+    "Detecting ICP & value signals…",
+    "Estimating Revenue Impact Index…"
+  ])
+  const [scanPhase, setScanPhase] = useState(0)
+
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     setIsLoggedIn(!!token)
@@ -32,6 +41,18 @@ export default function Home() {
         setScanCount(0);
       })
   }, [])
+
+  // Rotate fake scan phases while scanning
+  useEffect(() => {
+    if (!scanning) {
+      setScanPhase(0)
+      return
+    }
+    const interval = setInterval(() => {
+      setScanPhase(prev => (prev + 1) % scanPhases.current.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [scanning])
 
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -100,26 +121,28 @@ export default function Home() {
 
           {/* ── SCAN BOX ── */}
           <form onSubmit={handleScan} className="max-w-xl mx-auto mb-3">
-            <div className="flex items-center bg-[#111827] border border-gray-700 rounded-xl overflow-hidden focus-within:border-cyan-500 transition">
-              <span className="pl-4 text-gray-500 text-sm select-none shrink-0">https://</span>
-              <input
-                type="text"
-                value={scanUrl}
-                onChange={e => setScanUrl(e.target.value)}
-                placeholder="yourcompany.com"
-                className="flex-1 bg-transparent px-2 py-4 text-white placeholder-gray-500 outline-none text-base"
-                disabled={scanning}
-              />
+            <div className="flex flex-col sm:flex-row items-stretch bg-[#111827] border border-gray-700 rounded-xl overflow-hidden focus-within:border-cyan-500 transition">
+              <div className="flex items-center flex-1">
+                <span className="pl-4 text-gray-500 text-sm select-none shrink-0">https://</span>
+                <input
+                  type="text"
+                  value={scanUrl}
+                  onChange={e => setScanUrl(e.target.value)}
+                  placeholder="yourcompany.com"
+                  className="flex-1 bg-transparent px-2 py-4 text-white placeholder-gray-500 outline-none text-base"
+                  disabled={scanning}
+                />
+              </div>
               <button
                 type="submit"
                 disabled={scanning || !scanUrl.trim()}
-                className="m-1.5 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-sm whitespace-nowrap"
+                className="sm:m-1.5 sm:ml-0 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold transition text-sm whitespace-nowrap rounded-none sm:rounded-lg w-full sm:w-auto mt-2 sm:mt-0"
               >
                 {scanning ? (
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center justify-center gap-2">
                     <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a 8 8 0 018-8v8H4z"/>
                     </svg>
                     Scanning…
                   </span>
@@ -130,6 +153,11 @@ export default function Home() {
               <p className="text-red-400 text-sm mt-2">{scanError}</p>
             )}
           </form>
+          {scanning && (
+            <div className="mb-4 text-xs text-cyan-300/80 flex flex-col items-center gap-1">
+              <p>{scanPhases.current[scanPhase]}</p>
+            </div>
+          )}
           <p className="text-xs text-gray-500 mb-6">
             Instant scan · No signup required
           </p>
