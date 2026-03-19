@@ -47,10 +47,9 @@ export default function DashboardHeader() {
             })
               .then(r => r.ok ? r.json() : null)
               .then(data => {
-                // If billing_cycle is "trial", set plan to "trial" for FeatureGate to work correctly
-                // Backend returns plan="scale" with billing_cycle="trial", but frontend needs plan="trial"
+                // Trial users should have full access equivalent to Scale.
                 if (data?.billing_cycle === "trial") {
-                  setCurrentPlan("trial")
+                  setCurrentPlan("scale")
                 } else if (data?.plan) {
                   setCurrentPlan(data.plan.toLowerCase())
                 }
@@ -83,8 +82,8 @@ export default function DashboardHeader() {
               .then(data => {
                 console.log("[HEADER] Subscription data:", { plan: data?.plan, billing_cycle: data?.billing_cycle })
                 if (data?.billing_cycle === "trial") {
-                  console.log("[HEADER] Setting currentPlan to 'trial'")
-                  setCurrentPlan("trial")
+                  console.log("[HEADER] Setting currentPlan to 'scale' (trial has full access)")
+                  setCurrentPlan("scale")
                   setBillingCycle("trial")
                 } else if (data?.plan) {
                   console.log("[HEADER] Setting currentPlan to:", data.plan.toLowerCase())

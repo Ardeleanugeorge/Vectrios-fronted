@@ -59,6 +59,33 @@ export default function PricingPage() {
     loadPlans()
   }, [])
 
+  // Guard: users with active trial/subscription should not stay on pricing page.
+  useEffect(() => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    const companyId = resolveCompanyId()
+    if (!token || !companyId) return
+
+    const checkAccess = async () => {
+      try {
+        const res = await fetch(`${API_URL}/subscription/${companyId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        })
+        if (!res.ok) return
+        const sub = await res.json().catch(() => null)
+        const hasActiveTrial = sub?.billing_cycle === "trial"
+        const hasActiveSubscription = !!sub?.plan
+
+        if (hasActiveTrial || hasActiveSubscription) {
+          router.replace("/dashboard")
+        }
+      } catch (e) {
+        console.warn("[PRICING] Subscription guard failed:", e)
+      }
+    }
+
+    checkAccess()
+  }, [router])
+
   // Resolve company_id from all possible storage locations
   const resolveCompanyId = (): string | null => {
     // 1. Direct key
@@ -84,6 +111,36 @@ export default function PricingPage() {
     } catch {}
 
     return null
+  }
+
+  const resolvePlanId = async (planName: string, currentPlanId?: string): Promise<string | undefined> => {
+    if (currentPlanId) return currentPlanId
+
+    // Fallback: re-fetch plans at click-time so buttons never stay dead
+    // when initial plan sync fails for any reason.
+    try {
+      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      const response = await fetch(`${API_URL}/plans`, {
+        headers: { "Authorization": `Bearer ${token || ""}` }
+      })
+      if (!response.ok) return undefined
+
+      const apiPlans = await response.json()
+      const match = apiPlans.find((p: any) =>
+        String(p?.name || "").toLowerCase() === planName.toLowerCase()
+      )
+      if (!match?.id) return undefined
+
+      setPlans(prev =>
+        prev.map(p =>
+          p.name.toLowerCase() === planName.toLowerCase() ? { ...p, id: match.id } : p
+        )
+      )
+      return match.id
+    } catch (e) {
+      console.error("[PRICING] Failed to resolve plan id:", e)
+      return undefined
+    }
   }
 
   const handleTrial = async () => {
@@ -143,7 +200,8 @@ export default function PricingPage() {
   }
 
   const handleSelectPlan = async (planName: string, planId?: string) => {
-    if (!planId) {
+    const resolvedPlanId = await resolvePlanId(planName, planId)
+    if (!resolvedPlanId) {
       alert("Plan information not loaded yet. Please refresh the page.")
       return
     }
@@ -173,7 +231,7 @@ export default function PricingPage() {
 
       // STEP 3 — Create subscription in backend
       const subResponse = await fetch(
-        `${API_URL}/subscription/${companyId}?plan_id=${encodeURIComponent(planId)}&billing_cycle=${billingCycle}`,
+        `${API_URL}/subscription/${companyId}?plan_id=${encodeURIComponent(resolvedPlanId)}&billing_cycle=${billingCycle}`,
         {
           method: "POST",
           headers: { "Authorization": `Bearer ${token}` }
@@ -186,6 +244,13 @@ export default function PricingPage() {
           ? err.detail
           : JSON.stringify(err.detail)
         throw new Error(errMsg || "Failed to activate plan")
+      }
+
+      // If backend provides Stripe checkout URL, redirect to Stripe immediately.
+      const subData = await subResponse.json().catch(() => ({}))
+      if (subData?.checkout_url) {
+        window.location.href = subData.checkout_url
+        return
       }
 
       // STEP 4 — Activate monitoring (with timeout)
