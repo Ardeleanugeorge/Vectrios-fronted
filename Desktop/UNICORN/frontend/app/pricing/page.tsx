@@ -34,14 +34,26 @@ export default function PricingPage() {
         })
         if (response.ok) {
           const apiPlans = await response.json()
+          console.log("[PRICING] API plans loaded:", apiPlans)
           const mergedPlans = PLANS.map(configPlan => {
             const apiPlan = apiPlans.find((p: any) => p.name.toLowerCase() === configPlan.name.toLowerCase())
-            return apiPlan ? { ...configPlan, id: apiPlan.id } : configPlan
+            if (apiPlan) {
+              console.log(`[PRICING] Matched ${configPlan.name} with API plan:`, apiPlan)
+              return { ...configPlan, id: apiPlan.id }
+            } else {
+              console.warn(`[PRICING] No API plan found for ${configPlan.name}`)
+              return configPlan
+            }
           })
           setPlans(mergedPlans)
+          console.log("[PRICING] Final merged plans:", mergedPlans)
+        } else {
+          console.error("[PRICING] Failed to load plans:", response.status, response.statusText)
+          // Keep default plans from config (without IDs) - user will see error when clicking
         }
       } catch (error) {
-        console.error("Error loading plans:", error)
+        console.error("[PRICING] Error loading plans:", error)
+        // Keep default plans from config (without IDs) - user will see error when clicking
       }
     }
     loadPlans()
