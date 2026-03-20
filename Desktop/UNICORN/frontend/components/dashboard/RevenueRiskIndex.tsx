@@ -5,13 +5,15 @@ interface RevenueRiskIndexProps {
   riskLevel: string
   confidence: number
   overrideTriggered: boolean
+  scoreSource?: "instant_scan" | "full_diagnostic"
 }
 
 export default function RevenueRiskIndex({
   riskScore,
   riskLevel,
   confidence,
-  overrideTriggered
+  overrideTriggered,
+  scoreSource = "full_diagnostic",
 }: RevenueRiskIndexProps) {
   const displayScore = riskScore !== null ? Math.min(riskScore, 100) : null
   
@@ -40,6 +42,9 @@ export default function RevenueRiskIndex({
     <div className="p-10 bg-[#111827] rounded-lg border-2 border-gray-800 mb-8">
       <div className="text-center">
         <p className="text-sm text-gray-400 mb-4 uppercase tracking-wide">Revenue Risk Index</p>
+        <p className="text-xs text-gray-500 mb-3">
+          Source: {scoreSource === "instant_scan" ? "Instant Scan RII" : "Full Diagnostic RII"}
+        </p>
         {displayScore !== null ? (
           <>
             <div className="mb-4">
