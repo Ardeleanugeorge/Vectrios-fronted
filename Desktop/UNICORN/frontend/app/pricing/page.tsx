@@ -333,7 +333,7 @@ export default function PricingPage() {
         <div className="border-t border-gray-800 pt-12">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-2">Contact Sales</h2>
-            <p className="text-gray-400">Separate option, in case you want a custom setup.</p>
+            <p className="text-gray-400">Optional, if you need a custom setup.</p>
           </div>
 
           <div className="p-8 bg-[#111827] rounded-lg border border-gray-800 space-y-5">
@@ -393,6 +393,11 @@ export default function PricingPage() {
             >
               Contact Sales
             </button>
+            {!canSendContact && (
+              <p className="text-xs text-gray-500 text-center -mt-2">
+                Fill in name, business email, and message to enable submit.
+              </p>
+            )}
           </div>
         </div>
       </main>
