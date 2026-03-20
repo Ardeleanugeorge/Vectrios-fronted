@@ -22,6 +22,7 @@ interface FinancialExposureCardProps {
   forecast?: ForecastData | null
   riskScore?: number | null
   riskLevel?: string | null
+  uiState?: "low" | "medium" | "high"
 }
 
 function fmt(val: number): string {
@@ -70,10 +71,11 @@ export default function FinancialExposureCard({
   forecast,
   riskScore,
   riskLevel,
+  uiState,
 }: FinancialExposureCardProps) {
   const normalizedRisk = (riskLevel || "").toUpperCase()
-  const isLowRisk = (typeof riskScore === "number" && riskScore < 40) || normalizedRisk.includes("LOW")
-  const isMediumRisk = !isLowRisk && ((typeof riskScore === "number" && riskScore < 70) || normalizedRisk.includes("MODERATE"))
+  const isLowRisk = uiState ? uiState === "low" : (typeof riskScore === "number" && riskScore < 40) || normalizedRisk.includes("LOW")
+  const isMediumRisk = uiState ? uiState === "medium" : (!isLowRisk && ((typeof riskScore === "number" && riskScore < 70) || normalizedRisk.includes("MODERATE")))
 
   const sectionTitle = isLowRisk ? "Residual Optimization Potential" : "Estimated Revenue Exposure"
   const mainLabel = isLowRisk ? "Additional Revenue Available" : "Estimated ARR at Risk"

@@ -95,6 +95,8 @@ interface MonitoringLayerProps {
   currentPlan?: string | null
 }
 
+type UiState = "low" | "medium" | "high"
+
 export default function MonitoringLayer({ 
   monitoringStatus, 
   diagnostic, 
@@ -155,6 +157,21 @@ export default function MonitoringLayer({
   // Extract RII for health indicator
   const rii = diagnostic?.risk_score || null
   const riskDelta = monitoringStatus.risk_delta_since_last_scan || null
+  const uiState: UiState =
+    rii !== null && rii < 40 ? "low" : rii !== null && rii < 70 ? "medium" : "high"
+  const trend = (monitoringStatus.trend_direction || "stable").toLowerCase()
+  const trendText =
+    trend === "improving" ? "Trend: Improving - recent changes are reducing risk."
+    : trend === "escalating" ? "Trend: Declining - risk is increasing over time."
+    : "Trend: Stable - no significant changes detected."
+  const headline =
+    uiState === "low" ? "Revenue system is healthy"
+    : uiState === "medium" ? "Revenue performance is constrained"
+    : "Revenue is at risk"
+  const subtext =
+    uiState === "low" ? "Minor optimization opportunities remain."
+    : uiState === "medium" ? "Structural gaps are impacting conversion efficiency."
+    : "Structural misalignment is compressing performance."
   
   // Extract and simplify primary risk driver from recommendations or diagnostic
   const simplifyRiskDriver = (text: string): string => {
@@ -223,6 +240,16 @@ export default function MonitoringLayer({
         />
       )}
 
+      <div className={`p-5 rounded-lg border ${
+        uiState === "low" ? "border-emerald-700/40 bg-emerald-950/10"
+        : uiState === "medium" ? "border-amber-700/40 bg-amber-950/10"
+        : "border-red-700/40 bg-red-950/10"
+      }`}>
+        <p className="text-lg font-semibold text-white">{headline}</p>
+        <p className="text-sm text-gray-300 mt-1">{subtext}</p>
+        <p className="text-xs text-gray-500 mt-2">{trendText}</p>
+      </div>
+
       {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action */}
       {primaryRiskDriver && (
         <ActionableInsights
@@ -238,6 +265,7 @@ export default function MonitoringLayer({
         forecast={forecast}
         riskScore={diagnostic?.risk_score || null}
         riskLevel={diagnostic?.risk_level || null}
+        uiState={uiState}
       />
 
       {/* 2. SYSTEM STATUS — Heartbeat of the system */}
@@ -245,6 +273,7 @@ export default function MonitoringLayer({
         monthlyExposure={monthlyExposure}
         monitoringActive={monitoringStatus.monitoring_active}
         impactConfidence={impactConfidence}
+        uiState={uiState}
         modelConfidence={diagnostic?.revenue_leak_confidence ? 
           (diagnostic.revenue_leak_confidence >= 80 ? "high" : 
            diagnostic.revenue_leak_confidence >= 60 ? "moderate" : "low") : 
@@ -274,6 +303,7 @@ export default function MonitoringLayer({
         alignmentScore={alignmentScore}
         icpClarity={icpClarity}
         anchorDensity={anchorDensity}
+        uiState={uiState}
       />
 
       {/* 5. REVENUE ALIGNMENT STATUS — System state explanation */}
@@ -336,6 +366,7 @@ export default function MonitoringLayer({
       <RiiTimelineChart
         companyId={companyId}
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
+        uiState={uiState}
       />
 
       {/* STRUCTURAL ALERTS PANEL (drift/volatility/trend) */}

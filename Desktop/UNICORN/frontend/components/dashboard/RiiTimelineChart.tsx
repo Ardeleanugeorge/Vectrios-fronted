@@ -18,6 +18,7 @@ interface TrendEntry {
 interface Props {
   companyId: string | null
   riskDelta?: number
+  uiState?: "low" | "medium" | "high"
 }
 
 function formatDate(iso: string): string {
@@ -31,7 +32,7 @@ function trendColor(trend: string | null): string {
   return "#94a3b8"                                // gray – stable/unstable
 }
 
-export default function RiiTimelineChart({ companyId, riskDelta }: Props) {
+export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medium" }: Props) {
   const [entries, setEntries] = useState<TrendEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
@@ -112,7 +113,7 @@ export default function RiiTimelineChart({ companyId, riskDelta }: Props) {
             <span className={`text-sm font-semibold px-2 py-0.5 rounded ${
               riskDelta > 0 ? "text-red-400 bg-red-400/10" : "text-green-400 bg-green-400/10"
             }`}>
-              {riskDelta > 0 ? "+" : ""}{riskDelta.toFixed(1)} last delta
+              {riskDelta > 0 ? "+" : ""}{riskDelta.toFixed(1)} {uiState === "low" ? "volatility delta" : "risk delta"}
             </span>
           )}
         </div>
@@ -170,7 +171,7 @@ export default function RiiTimelineChart({ companyId, riskDelta }: Props) {
           <p className={`text-lg font-bold ${totalDelta > 2 ? "text-red-400" : totalDelta < -2 ? "text-green-400" : "text-gray-400"}`}>
             {totalDelta > 0 ? "+" : ""}{totalDelta.toFixed(1)}
           </p>
-          <p className="text-[10px] text-gray-600 mt-0.5">RII delta ({entries.length}d)</p>
+          <p className="text-[10px] text-gray-600 mt-0.5">{uiState === "low" ? "Stability delta" : "RII delta"} ({entries.length}d)</p>
         </div>
       </div>
 

@@ -5,13 +5,15 @@ interface RevenueSystemStatusProps {
   monitoringActive: boolean
   impactConfidence?: string
   modelConfidence?: string
+  uiState?: "low" | "medium" | "high"
 }
 
 export default function RevenueSystemStatus({
   monthlyExposure,
   monitoringActive,
   impactConfidence = "moderate",
-  modelConfidence
+  modelConfidence,
+  uiState = "medium",
 }: RevenueSystemStatusProps) {
   const hasExposure = monthlyExposure !== null && monthlyExposure > 0
 
@@ -31,14 +33,16 @@ export default function RevenueSystemStatus({
       
       {hasExposure ? (
         <div>
-          <p className="text-lg font-semibold text-amber-400 mb-2">
-            Active Revenue Compression Detected
+          <p className={`text-lg font-semibold mb-2 ${uiState === "low" ? "text-emerald-300" : "text-amber-400"}`}>
+            {uiState === "low" ? "Optimization Opportunity Identified" : "Active Revenue Compression Detected"}
           </p>
           <p className="text-sm text-gray-400">
             Estimated Monthly Impact: ${monthlyExposure?.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            Revenue-stage inefficiency is increasing due to structural misalignment.
+            {uiState === "low"
+              ? "Most leakage is mitigated. Remaining impact is incremental upside with full alignment."
+              : "Revenue-stage inefficiency is increasing due to structural misalignment."}
           </p>
         </div>
       ) : (

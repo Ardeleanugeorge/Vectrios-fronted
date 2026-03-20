@@ -7,6 +7,7 @@ interface ExecutiveInterpretationProps {
   alignmentScore: number
   icpClarity: number
   anchorDensity: number
+  uiState?: "low" | "medium" | "high"
 }
 
 export default function ExecutiveInterpretation({
@@ -15,7 +16,8 @@ export default function ExecutiveInterpretation({
   impactDirection,
   alignmentScore,
   icpClarity,
-  anchorDensity
+  anchorDensity,
+  uiState = "medium",
 }: ExecutiveInterpretationProps) {
   const hasExposure = monthlyExposure !== null && monthlyExposure > 0
   const annualizedImpact = monthlyExposure ? monthlyExposure * 12 : null
@@ -35,11 +37,14 @@ export default function ExecutiveInterpretation({
       {hasExposure && closeRateDelta ? (
         <div className="space-y-1">
           <p className="text-sm text-gray-300">
-            Revenue-stage inefficiency increasing due to pricing-stage misalignment. Estimated close-rate compression: <span className="font-semibold text-amber-400">{Math.abs(closeRateDelta).toFixed(1)}%</span>.
+            {uiState === "low"
+              ? <>Residual optimization potential detected. Estimated additional close-rate upside: <span className="font-semibold text-emerald-300">{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
+              : <>Revenue-stage inefficiency increasing due to pricing-stage misalignment. Estimated close-rate compression: <span className="font-semibold text-amber-400">{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>}
           </p>
           {annualizedImpact && (
             <p className="text-sm text-gray-300">
-              Projected annualized impact: <span className="font-semibold text-amber-400">~${annualizedImpact.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>.
+              {uiState === "low" ? "Projected annualized optimization potential: " : "Projected annualized impact: "}
+              <span className={`font-semibold ${uiState === "low" ? "text-emerald-300" : "text-amber-400"}`}>~${annualizedImpact.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>.
             </p>
           )}
         </div>
