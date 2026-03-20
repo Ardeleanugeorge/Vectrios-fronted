@@ -912,9 +912,9 @@ function ScanResultsContent() {
         {showEmailCapture && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-[#111827] rounded-xl border border-gray-800 p-8 max-w-md w-full">
-              <h3 className="text-2xl font-bold mb-2 text-white">Unlock Full Diagnostic</h3>
+              <h3 className="text-2xl font-bold mb-2 text-white">See how much revenue you're losing (in $)</h3>
               <p className="text-gray-400 mb-6 text-sm">
-                Enter your email to access ARR at risk, recovery potential, and 12-month revenue trajectory.
+                Enter your email to unlock your financial impact.
               </p>
               
               <form onSubmit={handleEmailCapture} className="space-y-4">

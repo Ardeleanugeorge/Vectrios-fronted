@@ -24,8 +24,8 @@ export interface Plan {
 export const PLANS: Plan[] = [
   {
     name: "Starter",
-    priceMonthly: 79,
-    priceAnnual: 59, // per month when billed annually
+    priceMonthly: 49,
+    priceAnnual: 39, // per month when billed annually
     maxUsers: 1,
     features: [
       "Diagnostic Engine",
@@ -44,8 +44,8 @@ export const PLANS: Plan[] = [
   },
   {
     name: "Growth",
-    priceMonthly: 199,
-    priceAnnual: 159, // per month when billed annually
+    priceMonthly: 129,
+    priceAnnual: 99, // per month when billed annually
     maxUsers: 5,
     features: [
       "Everything in Starter",
@@ -65,8 +65,8 @@ export const PLANS: Plan[] = [
   },
   {
     name: "Scale",
-    priceMonthly: 399,
-    priceAnnual: 319, // per month when billed annually
+    priceMonthly: 299,
+    priceAnnual: 239, // per month when billed annually
     maxUsers: 20,
     features: [
       "Everything in Growth",
