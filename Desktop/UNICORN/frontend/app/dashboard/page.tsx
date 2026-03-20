@@ -47,6 +47,15 @@ interface DiagnosticResult {
 
 interface MonitoringStatus {
   monitoring_active: boolean
+  ui_state_payload?: {
+    ui_state: "low" | "medium" | "high"
+    financial_mode: "opportunity" | "recoverable" | "risk"
+    headline: string
+    subtext: string
+    financial_label: string
+    delta_label: string
+    theme: "emerald" | "amber" | "red"
+  }
   structural_health?: {
     health_classification: string
     structural_health_score: number | null

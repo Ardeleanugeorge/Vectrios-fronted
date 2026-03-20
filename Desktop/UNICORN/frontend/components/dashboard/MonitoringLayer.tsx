@@ -27,6 +27,15 @@ import ActionableInsights from "./ActionableInsights"
 interface MonitoringStatus {
   monitoring_active: boolean
   created_at?: string
+  ui_state_payload?: {
+    ui_state: "low" | "medium" | "high"
+    financial_mode: "opportunity" | "recoverable" | "risk"
+    headline: string
+    subtext: string
+    financial_label: string
+    delta_label: string
+    theme: "emerald" | "amber" | "red"
+  }
   structural_health?: {
     health_classification: string
     structural_health_score: number | null
@@ -158,20 +167,23 @@ export default function MonitoringLayer({
   const rii = diagnostic?.risk_score || null
   const riskDelta = monitoringStatus.risk_delta_since_last_scan || null
   const uiState: UiState =
-    rii !== null && rii < 40 ? "low" : rii !== null && rii < 70 ? "medium" : "high"
+    monitoringStatus.ui_state_payload?.ui_state ??
+    (rii !== null && rii < 40 ? "low" : rii !== null && rii < 70 ? "medium" : "high")
   const trend = (monitoringStatus.trend_direction || "stable").toLowerCase()
   const trendText =
     trend === "improving" ? "Trend: Improving - recent changes are reducing risk."
     : trend === "escalating" ? "Trend: Declining - risk is increasing over time."
     : "Trend: Stable - no significant changes detected."
-  const headline =
+  const headline = monitoringStatus.ui_state_payload?.headline ?? (
     uiState === "low" ? "Revenue system is healthy"
     : uiState === "medium" ? "Revenue performance is constrained"
     : "Revenue is at risk"
-  const subtext =
+  )
+  const subtext = monitoringStatus.ui_state_payload?.subtext ?? (
     uiState === "low" ? "Minor optimization opportunities remain."
     : uiState === "medium" ? "Structural gaps are impacting conversion efficiency."
     : "Structural misalignment is compressing performance."
+  )
   
   // Extract and simplify primary risk driver from recommendations or diagnostic
   const simplifyRiskDriver = (text: string): string => {
