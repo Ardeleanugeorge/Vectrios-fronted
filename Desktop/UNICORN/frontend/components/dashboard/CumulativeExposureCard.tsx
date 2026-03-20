@@ -3,11 +3,13 @@
 interface CumulativeExposureCardProps {
   rolling30DayExposure: number | null
   monthlyExposure: number | null
+  uiState?: "low" | "medium" | "high"
 }
 
 export default function CumulativeExposureCard({
   rolling30DayExposure,
-  monthlyExposure
+  monthlyExposure,
+  uiState = "medium",
 }: CumulativeExposureCardProps) {
   const hasCumulative = rolling30DayExposure !== null && rolling30DayExposure > 0
   const cumulativeValue = rolling30DayExposure || 0
@@ -21,16 +23,26 @@ export default function CumulativeExposureCard({
         {hasCumulative ? (
           <>
             <div>
-              <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">30-Day Cumulative</p>
-              <p className="text-3xl font-bold text-amber-400">
+              <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
+                {uiState === "low" ? "30-Day Realized Opportunity" : "30-Day Cumulative"}
+              </p>
+              <p className={`text-3xl font-bold ${uiState === "low" ? "text-emerald-300" : "text-amber-400"}`}>
                 ${cumulativeValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </p>
             </div>
-            {annualizedProjection && annualizedProjection > 0 && (
+            {annualizedProjection && annualizedProjection > 0 && uiState !== "low" && (
               <div>
                 <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Annualized Projection</p>
                 <p className="text-3xl font-bold text-gray-300">
                   ${annualizedProjection.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                </p>
+              </div>
+            )}
+            {uiState === "low" && monthlyExposure && monthlyExposure > 0 && (
+              <div>
+                <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Current Monthly Upside</p>
+                <p className="text-3xl font-bold text-emerald-300">
+                  ${monthlyExposure.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
               </div>
             )}

@@ -30,14 +30,14 @@ export default function StructuralRiskOverview({
     switch (trend) {
       case "escalating": return "Deteriorating"
       case "improving": return "Improving"
-      case "unstable": return "Initializing"
+      case "unstable": return "Not enough data yet"
       default: return "Stabilizing"
     }
   }
 
   const getTrendSubtext = (trend: string) => {
     if (trend === "unstable") {
-      return "Trend Signal: Baseline Establishing"
+      return "Monitoring started - insights will improve over time"
     }
     return null
   }

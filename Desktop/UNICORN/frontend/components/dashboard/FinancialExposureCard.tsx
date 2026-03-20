@@ -31,15 +31,15 @@ function fmt(val: number): string {
   return `$${Math.round(val).toLocaleString()}`
 }
 
-/** Semi-circular gauge — uses absolute value, safe for any sign */
-function CompressionGauge({ raw }: { raw: number }) {
+/** Semi-circular gauge — supports risk and opportunity modes */
+function CompressionGauge({ raw, isLowRisk }: { raw: number; isLowRisk: boolean }) {
   const value = Math.abs(raw)                      // ← fix: always positive
   const capped = Math.min(value, 20)
   const pct = capped / 20
   const radius = 38
   const circumference = Math.PI * radius
   const strokeOffset = circumference * (1 - pct)
-  const color = value >= 8 ? "#f87171" : value >= 4 ? "#fbbf24" : "#34d399"
+  const color = isLowRisk ? "#34d399" : value >= 8 ? "#f87171" : value >= 4 ? "#fbbf24" : "#34d399"
 
   return (
     <div className="flex flex-col items-center">
@@ -58,9 +58,11 @@ function CompressionGauge({ raw }: { raw: number }) {
       </svg>
       <div className="text-center -mt-2">
         <span className="text-2xl font-bold" style={{ color }}>
-          -{value.toFixed(1)}%
+          {isLowRisk ? "+" : "-"}{value.toFixed(1)}%
         </span>
-        <p className="text-xs text-gray-500 mt-0.5">Close-rate compression</p>
+        <p className="text-xs text-gray-500 mt-0.5">
+          {isLowRisk ? "Performance improvement available" : "Close-rate compression"}
+        </p>
       </div>
     </div>
   )
@@ -141,7 +143,7 @@ export default function FinancialExposureCard({
         {/* Gauge + side stats */}
         {compression !== undefined && Math.abs(compression) > 0 && (
           <div className="mt-6 flex items-center gap-8 flex-wrap">
-            <CompressionGauge raw={compression} />
+            <CompressionGauge raw={compression} isLowRisk={isLowRisk} />
             <div className="text-sm text-gray-400 space-y-1.5">
               {dealsLost !== null && dealsLost > 0 && (
                 <p>
@@ -151,8 +153,8 @@ export default function FinancialExposureCard({
               )}
               {monthly != null && monthly > 0 && (
                 <p>
-                  Monthly exposure:{" "}
-                  <span className="text-amber-400 font-semibold">{fmt(monthly)}</span>
+                  {isLowRisk ? "Monthly optimization upside: " : "Monthly exposure: "}
+                  <span className={`font-semibold ${isLowRisk ? "text-emerald-300" : "text-amber-400"}`}>{fmt(monthly)}</span>
                 </p>
               )}
             </div>

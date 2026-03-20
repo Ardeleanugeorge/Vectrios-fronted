@@ -222,6 +222,9 @@ export default function MonitoringLayer({
     : diagnostic?.primary_revenue_leak 
       ? simplifyRiskDriver(diagnostic.primary_revenue_leak)
       : "Messaging Architecture Misalignment"
+  const displayRiskDriver = uiState === "low" && primaryRiskDriver.toLowerCase().includes("misalignment")
+    ? "Minor messaging misalignment detected"
+    : primaryRiskDriver
 
   // Safety checks for ActionableInsights props
   const safeCloseRateDelta = typeof closeRateDelta === 'number' ? closeRateDelta : null
@@ -259,16 +262,22 @@ export default function MonitoringLayer({
       }`}>
         <p className="text-lg font-semibold text-white">{headline}</p>
         <p className="text-sm text-gray-300 mt-1">{subtext}</p>
+        {uiState === "low" && (
+          <p className="text-xs text-emerald-300/80 mt-2">
+            Your system is structurally healthy, but small inefficiencies still create measurable upside.
+          </p>
+        )}
         <p className="text-xs text-gray-500 mt-2">{trendText}</p>
       </div>
 
       {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action */}
       {primaryRiskDriver && (
         <ActionableInsights
-          primaryRiskDriver={primaryRiskDriver}
+          primaryRiskDriver={displayRiskDriver}
           closeRateDelta={safeCloseRateDelta}
           monthlyExposure={safeMonthlyExposure}
           recommendation={safeRecommendation}
+          uiState={uiState}
         />
       )}
 
@@ -297,6 +306,7 @@ export default function MonitoringLayer({
         <CumulativeExposureCard
           rolling30DayExposure={rolling30DayExposure}
           monthlyExposure={monthlyExposure}
+          uiState={uiState}
         />
       )}
 

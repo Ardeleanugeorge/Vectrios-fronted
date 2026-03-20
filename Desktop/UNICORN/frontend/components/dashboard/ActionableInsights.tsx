@@ -5,13 +5,15 @@ interface ActionableInsightsProps {
   closeRateDelta: number | null
   monthlyExposure: number | null
   recommendation: string | null
+  uiState?: "low" | "medium" | "high"
 }
 
 export default function ActionableInsights({
   primaryRiskDriver,
   closeRateDelta,
   monthlyExposure,
-  recommendation
+  recommendation,
+  uiState = "medium",
 }: ActionableInsightsProps) {
   // Safety checks
   if (!primaryRiskDriver || primaryRiskDriver.trim() === '') {
@@ -24,6 +26,9 @@ export default function ActionableInsights({
 
   // Determine severity icon based on impact
   const getSeverityIcon = (delta: number | null, exposure: number | null): { icon: string; color: string } => {
+    if (uiState === "low") {
+      return { icon: "✓", color: "text-emerald-300" }
+    }
     if (delta === null && exposure === null) {
       return { icon: "⚡", color: "text-amber-400" }
     }
@@ -64,6 +69,14 @@ export default function ActionableInsights({
   }
 
   const formattedRecommendation = formatRecommendation(recommendation)
+  const impactBoxClass = uiState === "low"
+    ? "mb-4 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded"
+    : "mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded"
+  const impactValueClass = uiState === "low" ? "text-emerald-300" : "text-red-400"
+  const driverLabel = uiState === "low" ? "Primary Optimization Gap" : "Primary Risk Driver"
+  const safeDriver = uiState === "low" && primaryRiskDriver.toLowerCase().includes("misalignment")
+    ? "Minor messaging misalignment detected"
+    : primaryRiskDriver
 
   return (
     <div className="mb-6 p-6 bg-[#111827] rounded-lg border border-gray-800">
@@ -75,25 +88,27 @@ export default function ActionableInsights({
           
           {/* Primary Risk Driver */}
           <div className="mb-4">
-            <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Primary Risk Driver</div>
+            <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">{driverLabel}</div>
             <div className="text-base font-semibold text-gray-300 flex items-center gap-2">
               <span className={severity.color}>{severity.icon}</span>
-              <span>{primaryRiskDriver}</span>
+              <span>{safeDriver}</span>
             </div>
           </div>
 
           {/* Estimated Impact */}
           {(safeCloseRateDelta !== null || (safeMonthlyExposure !== null && safeMonthlyExposure > 0)) && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded">
+            <div className={impactBoxClass}>
               <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Estimated Impact</div>
               {safeCloseRateDelta !== null && (
-                <div className="text-sm font-semibold text-red-400 mb-1">
-                  {safeCloseRateDelta > 0 ? "+" : ""}{safeCloseRateDelta.toFixed(1)}% close-rate loss
+                <div className={`text-sm font-semibold mb-1 ${impactValueClass}`}>
+                  {uiState === "low" ? "+" : (safeCloseRateDelta > 0 ? "+" : "")}{Math.abs(safeCloseRateDelta).toFixed(1)}%
+                  {uiState === "low" ? " performance improvement available" : " close-rate loss"}
                 </div>
               )}
               {safeMonthlyExposure !== null && safeMonthlyExposure > 0 && (
-                <div className="text-sm font-semibold text-red-400">
-                  ${safeMonthlyExposure.toLocaleString(undefined, { maximumFractionDigits: 0 })} monthly revenue exposure
+                <div className={`text-sm font-semibold ${impactValueClass}`}>
+                  ${safeMonthlyExposure.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  {uiState === "low" ? " monthly optimization upside" : " monthly revenue exposure"}
                 </div>
               )}
             </div>
