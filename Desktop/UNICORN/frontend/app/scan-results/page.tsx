@@ -299,7 +299,8 @@ function ScanResultsContent() {
           domain: data.domain,
           website_url: `https://${data.domain}`,
           inferred_icp: data.inferred_icp || "",
-          pages_scanned: data.pages_scanned || 0
+          pages_scanned: data.pages_scanned || 0,
+          prefill_created_at: Date.now(),
         }
         localStorage.setItem("scan_data", JSON.stringify(scanData))
         sessionStorage.setItem("scan_data", JSON.stringify(scanData))

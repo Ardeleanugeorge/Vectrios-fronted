@@ -96,10 +96,20 @@ export default function OnboardingPage() {
   }> => {
     if (typeof window === "undefined") return {}
     try {
-      const scanDataStr = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
-      const arrRangePrefill = sessionStorage.getItem("onboarding_arr_range") || localStorage.getItem("onboarding_arr_range")
+      // Keep prefill from the latest scan, but ignore stale browser leftovers.
+      const PREFILL_TTL_MS = 2 * 60 * 60 * 1000 // 2h
+      const sessionScanDataStr = sessionStorage.getItem("scan_data")
+      const localScanDataStr = localStorage.getItem("scan_data")
+      const scanDataStr = sessionScanDataStr || localScanDataStr
+      const arrRangePrefill = sessionStorage.getItem("onboarding_arr_range")
       if (scanDataStr) {
         const scanData = JSON.parse(scanDataStr)
+        const createdAt = Number(scanData?.prefill_created_at || 0)
+        const isFresh = createdAt > 0 && Date.now() - createdAt < PREFILL_TTL_MS
+        if (!sessionScanDataStr && localScanDataStr && !isFresh) {
+          console.log("[ONBOARDING] Ignoring stale local scan_data prefill")
+          return { arr_range: arrRangePrefill || "" }
+        }
         console.log("[ONBOARDING] Loaded scan_data:", scanData)
         return {
           website_url: scanData.website_url || "",
@@ -183,7 +193,8 @@ export default function OnboardingPage() {
   // Persist onboarding draft locally so progress isn't lost on refresh
   useEffect(() => {
     try {
-      const draftStr = localStorage.getItem("onboarding_draft")
+      // Keep draft session-scoped to avoid carrying old company context.
+      const draftStr = sessionStorage.getItem("onboarding_draft")
       if (draftStr) {
         const draft = JSON.parse(draftStr)
         setForm(prev => ({ ...prev, ...draft }))
@@ -195,11 +206,30 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     try {
-      localStorage.setItem("onboarding_draft", JSON.stringify(form))
+      sessionStorage.setItem("onboarding_draft", JSON.stringify(form))
     } catch (e) {
       // ignore
     }
   }, [form])
+
+  const clearPrefill = () => {
+    try {
+      sessionStorage.removeItem("scan_data")
+      sessionStorage.removeItem("onboarding_arr_range")
+      sessionStorage.removeItem("onboarding_draft")
+      localStorage.removeItem("scan_data")
+    } catch {}
+
+    setDetectedIcp("")
+    setForm((prev) => ({
+      ...prev,
+      website_url: "",
+      arr_range: "",
+      icp_description: "",
+      homepage_url: "",
+      content_channels: [],
+    }))
+  }
 
   const totalSteps = 2  // Simplified: only 2 steps (removed eligibility and content steps)
 
@@ -419,7 +449,18 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Website URL *</label>
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <label className="block text-sm font-medium">Website URL *</label>
+                {(form.website_url || detectedIcp || form.arr_range) && (
+                  <button
+                    type="button"
+                    onClick={clearPrefill}
+                    className="text-xs text-gray-400 hover:text-gray-200 underline underline-offset-2"
+                  >
+                    Clear prefill
+                  </button>
+                )}
+              </div>
               <input
                 type="url"
                 name="website_url"
