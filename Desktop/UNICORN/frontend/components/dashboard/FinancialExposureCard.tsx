@@ -20,6 +20,8 @@ interface FinancialExposureCardProps {
   rolling30DayExposure?: number | null
   annualizedProjection?: number | null
   forecast?: ForecastData | null
+  riskScore?: number | null
+  riskLevel?: string | null
 }
 
 function fmt(val: number): string {
@@ -66,13 +68,22 @@ function CompressionGauge({ raw }: { raw: number }) {
 export default function FinancialExposureCard({
   monthlyExposure,
   forecast,
+  riskScore,
+  riskLevel,
 }: FinancialExposureCardProps) {
+  const normalizedRisk = (riskLevel || "").toUpperCase()
+  const isLowRisk = (typeof riskScore === "number" && riskScore < 40) || normalizedRisk.includes("LOW")
+  const isMediumRisk = !isLowRisk && ((typeof riskScore === "number" && riskScore < 70) || normalizedRisk.includes("MODERATE"))
+
+  const sectionTitle = isLowRisk ? "Residual Optimization Potential" : "Estimated Revenue Exposure"
+  const mainLabel = isLowRisk ? "Additional Revenue Available" : "Estimated ARR at Risk"
+  const stageLabel = isLowRisk ? "Primary Optimization Gap" : "Where it breaks"
 
   // ── Fallback: forecast not yet available ──
   if (!forecast) {
     return (
       <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-        <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Estimated Revenue Exposure</p>
+        <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">{sectionTitle}</p>
         <p className="text-sm text-gray-500">Forecast not available yet.</p>
         <p className="text-xs text-gray-600 mt-1">Run an assessment to see financial impact.</p>
       </div>
@@ -98,7 +109,7 @@ export default function FinancialExposureCard({
   if (!hasRealData) {
     return (
       <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-        <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Estimated Revenue Exposure</p>
+        <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">{sectionTitle}</p>
         <p className="text-sm text-gray-400">Financial impact not yet observable.</p>
         <p className="text-sm text-gray-500">Structural risk signals detected.</p>
       </div>
@@ -109,13 +120,15 @@ export default function FinancialExposureCard({
     <div className="bg-[#111827] rounded-lg border border-gray-800 overflow-hidden">
 
       {/* ── 1️⃣  ARR AT RISK ─────────────────────────────────────────── */}
-      <div className="p-8 border-b border-gray-800 bg-red-950/20">
-        <p className="text-xs text-red-400/80 uppercase tracking-wide mb-2 font-medium">
-          Estimated ARR at Risk
+      <div className={`p-8 border-b border-gray-800 ${isLowRisk ? "bg-emerald-950/15" : isMediumRisk ? "bg-amber-950/15" : "bg-red-950/20"}`}>
+        <p className={`text-xs uppercase tracking-wide mb-2 font-medium ${isLowRisk ? "text-emerald-300/80" : isMediumRisk ? "text-amber-300/80" : "text-red-400/80"}`}>
+          {mainLabel}
         </p>
         <div className="flex items-end gap-3 flex-wrap">
-          <span className="text-5xl font-bold text-red-400">{fmt(annualDelta)}</span>
-          <span className="text-lg text-red-400/50 mb-1">/ year</span>
+          <span className={`text-5xl font-bold ${isLowRisk ? "text-emerald-300" : isMediumRisk ? "text-amber-300" : "text-red-400"}`}>
+            {isLowRisk ? "+" : ""}{fmt(annualDelta)}
+          </span>
+          <span className={`text-lg mb-1 ${isLowRisk ? "text-emerald-300/60" : isMediumRisk ? "text-amber-300/60" : "text-red-400/50"}`}>/ year</span>
           {confidence !== undefined && (
             <span className="mb-1 ml-2 text-xs px-2 py-0.5 rounded-full bg-gray-800 text-gray-400">
               {Math.round(confidence * 100)}% confidence
@@ -130,8 +143,8 @@ export default function FinancialExposureCard({
             <div className="text-sm text-gray-400 space-y-1.5">
               {dealsLost !== null && dealsLost > 0 && (
                 <p>
-                  Estimated deals lost:{" "}
-                  <span className="text-red-400 font-semibold">{dealsLost} / year</span>
+                  {isLowRisk ? "Potential additional deals: " : "Estimated deals lost: "}
+                  <span className={`font-semibold ${isLowRisk ? "text-emerald-300" : "text-red-400"}`}>{dealsLost} / year</span>
                 </p>
               )}
               {monthly != null && monthly > 0 && (
@@ -161,8 +174,8 @@ export default function FinancialExposureCard({
       {/* ── 3️⃣  WHERE IT BREAKS ─────────────────────────────────────── */}
       {stage && (
         <div className="px-8 py-5 border-b border-gray-800">
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Where it breaks</p>
-          <p className="text-base font-semibold text-red-300">{stage}</p>
+          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">{stageLabel}</p>
+          <p className={`text-base font-semibold ${isLowRisk ? "text-emerald-300" : "text-red-300"}`}>{stage}</p>
         </div>
       )}
 
@@ -189,6 +202,16 @@ export default function FinancialExposureCard({
           )}
         </div>
       )}
+
+      <div className="px-8 py-4 border-t border-gray-800">
+        <p className="text-xs text-gray-500">
+          {isLowRisk
+            ? "Low structural risk. Remaining impact reflects optimization opportunity, not critical revenue leakage."
+            : isMediumRisk
+              ? "Recoverable revenue inefficiency detected. Alignment improvements can recover meaningful upside."
+              : "Structural degradation indicates active revenue leakage risk if left uncorrected."}
+        </p>
+      </div>
 
     </div>
   )

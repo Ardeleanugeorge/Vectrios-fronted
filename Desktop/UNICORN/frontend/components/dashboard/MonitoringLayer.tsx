@@ -234,7 +234,11 @@ export default function MonitoringLayer({
       )}
 
       {/* 1. FINANCIAL EXPOSURE — ARR at risk, recovery potential, compression gauge */}
-      <FinancialExposureCard forecast={forecast} />
+      <FinancialExposureCard
+        forecast={forecast}
+        riskScore={diagnostic?.risk_score || null}
+        riskLevel={diagnostic?.risk_level || null}
+      />
 
       {/* 2. SYSTEM STATUS — Heartbeat of the system */}
       <RevenueSystemStatus
