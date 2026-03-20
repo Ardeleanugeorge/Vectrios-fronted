@@ -57,6 +57,11 @@ export default function RevenueRiskIndex({
         <p className="text-xs text-gray-500 italic mb-6">
           Risk classification derived from revenue-stage alignment analysis.
         </p>
+        {confidence < 50 && (
+          <p className="text-xs text-amber-300 mb-4">
+            Limited content detected - results may be less accurate.
+          </p>
+        )}
         <div className="flex items-center justify-center gap-6 text-sm flex-wrap">
           <div>
             <span className="text-gray-400">Confidence Level: </span>
