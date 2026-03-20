@@ -289,10 +289,12 @@ function ScanResultsContent() {
           pages_scanned: data.pages_scanned || 0,
           // Mark as partial - needs upgrade for full diagnostic
           is_partial: true,
+          source: "instant_scan",
           scan_token: token
         }
-        localStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
-        sessionStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
+        // Keep partial in a dedicated key only; never affect dashboard source-of-truth.
+        localStorage.setItem("diagnostic_result_partial", JSON.stringify(partialDiagnostic))
+        sessionStorage.setItem("diagnostic_result_partial", JSON.stringify(partialDiagnostic))
         
         // Save scan data for pre-filling onboarding form
         const scanData = {

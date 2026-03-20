@@ -128,7 +128,11 @@ export default function DashboardPage() {
     }
 
     // Check for diagnostic result from onboarding or scan
-    const diagnosticData = sessionStorage.getItem("diagnostic_result") || localStorage.getItem("diagnostic_result")
+    const diagnosticData =
+      sessionStorage.getItem("diagnostic_result_full") ||
+      localStorage.getItem("diagnostic_result_full") ||
+      sessionStorage.getItem("diagnostic_result") ||
+      localStorage.getItem("diagnostic_result")
     if (diagnosticData) {
       try {
         const parsed = JSON.parse(diagnosticData)
@@ -443,6 +447,7 @@ export default function DashboardPage() {
               riskLevel={diagnostic.risk_level || "MODERATE"}
               confidence={confidence}
               overrideTriggered={overrideTriggered}
+              scoreSource={diagnostic?.is_partial ? "instant_scan" : "full_diagnostic"}
             />
           )}
 
