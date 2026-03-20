@@ -522,8 +522,11 @@ function ScanResultsContent() {
   const riiColor = (rii ?? 0) >= 70 ? "text-red-400" : (rii ?? 0) >= 40 ? "text-orange-400" : "text-emerald-400"
   const normalizedPercentileLabel = (() => {
     if (!data.percentile_label) return null
-    if (!isHighExposure) return data.percentile_label
-    return data.percentile_label
+    const baseLabel = data.percentile_label
+      .replace(/above median performance/gi, "above median baseline")
+      .replace(/below median performance/gi, "below median baseline")
+    if (!isHighExposure) return baseLabel
+    return baseLabel
       .replace(/optimization opportunity/gi, "elevated revenue risk")
       .replace(/better than average/gi, "elevated revenue risk")
   })()
