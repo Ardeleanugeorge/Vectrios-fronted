@@ -89,7 +89,7 @@ export default function OnboardingPage() {
   // Read scan prefill only in the browser (sessionStorage/localStorage do not exist on the server during `next build`)
   const getScanPrefillPatch = (): Partial<{
     website_url: string
-    icp_description: string
+    inferred_icp: string
     homepage_url: string
     content_channels: string[]
     arr_range: string
@@ -103,7 +103,7 @@ export default function OnboardingPage() {
         console.log("[ONBOARDING] Loaded scan_data:", scanData)
         return {
           website_url: scanData.website_url || "",
-          icp_description: scanData.inferred_icp || "",
+          inferred_icp: scanData.inferred_icp || "",
           homepage_url: scanData.website_url || "",
           content_channels: ["website"] as string[],
           arr_range: arrRangePrefill || "",
@@ -123,6 +123,7 @@ export default function OnboardingPage() {
   }
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitPhase, setSubmitPhase] = useState(0)
+  const [detectedIcp, setDetectedIcp] = useState("")
 
   const submitPhases = [
     "Crawling your pages...",
@@ -166,7 +167,16 @@ export default function OnboardingPage() {
   useEffect(() => {
     const patch = getScanPrefillPatch()
     if (Object.keys(patch).length > 0) {
-      setForm((prev) => ({ ...prev, ...patch }))
+      setForm((prev) => ({
+        ...prev,
+        website_url: patch.website_url ?? prev.website_url,
+        homepage_url: patch.homepage_url ?? prev.homepage_url,
+        content_channels: patch.content_channels ?? prev.content_channels,
+        arr_range: patch.arr_range ?? prev.arr_range,
+      }))
+      if (patch.inferred_icp) {
+        setDetectedIcp(patch.inferred_icp)
+      }
     }
   }, [])
 
@@ -214,11 +224,10 @@ export default function OnboardingPage() {
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        // Step 1: Only essential fields for modeling (removed revenue_objective requirement)
+        // Step 1: Only essential fields for modeling (ICP is optional refinement)
         return !!(
           form.website_url?.trim() && 
-          form.arr_range &&
-          form.icp_description?.trim()
+          form.arr_range
         )
       case 2:
         // Step 2: Close rates for ARR at risk calculation
@@ -277,7 +286,7 @@ export default function OnboardingPage() {
           icp_buyer_role: form.icp_buyer_role || null,
           icp_industry: form.icp_industry || null,
           icp_company_size: form.icp_company_size || null,
-          icp_description: form.icp_description,
+          icp_description: form.icp_description.trim() || detectedIcp || "",
           revenue_objective: form.revenue_objective || "improve-close-rate", // Default if not provided
           current_close_rate: form.current_close_rate ? Number(form.current_close_rate) : null,
           target_close_rate: form.target_close_rate ? Number(form.target_close_rate) : null,
@@ -444,20 +453,25 @@ export default function OnboardingPage() {
 
             <div>
               <label className="block text-sm font-medium mb-2">
-                Describe ICP in 1–2 sentences *
+                Refine ICP (optional)
               </label>
+              {detectedIcp && (
+                <div className="mb-2 p-3 rounded-lg border border-cyan-800/40 bg-cyan-950/20">
+                  <p className="text-xs text-cyan-300 mb-1">Detected target audience</p>
+                  <p className="text-sm text-gray-200">{detectedIcp}</p>
+                </div>
+              )}
               <textarea
                 name="icp_description"
-                required
                 maxLength={400}
                 value={form.icp_description}
                 onChange={handleChange}
                 className="input h-32"
-                placeholder="e.g., Series A SaaS founders between $50k-$200k MRR who struggle with pricing-stage conversions"
+                placeholder="Optional: adjust detected audience if needed (e.g., Mid-market SaaS support teams with complex onboarding flows)."
               />
               <div className="mt-2 space-y-1">
                 <p className="text-xs text-gray-500 italic">
-                  Used to evaluate ICP signal consistency
+                  Leave empty to use auto-detected ICP from your site content.
                 </p>
                 <p className="text-xs text-gray-600">
                   {form.icp_description.length}/400 characters
