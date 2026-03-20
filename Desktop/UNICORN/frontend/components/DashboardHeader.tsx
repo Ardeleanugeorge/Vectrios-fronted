@@ -33,6 +33,15 @@ export default function DashboardHeader() {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) { router.push("/login"); return }
 
+    // Optimistic state to avoid "no trial" flicker immediately after activation redirect.
+    try {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get("trial") === "activated") {
+        setCurrentPlan("scale")
+        setBillingCycle("trial")
+      }
+    } catch {}
+
     // Load user data
     const loadUserData = () => {
       try {

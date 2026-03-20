@@ -95,6 +95,7 @@ export default function DashboardPage() {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true)
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -135,6 +136,14 @@ export default function DashboardPage() {
     } else {
       console.log("[DASHBOARD] No diagnostic data found")
     }
+
+    // Optimistic trial state to avoid flicker right after activation redirect.
+    try {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get("trial") === "activated") {
+        setCurrentPlan("scale")
+      }
+    } catch {}
 
     // Load monitoring status and subscription if company ID available
     if (companyId) {
@@ -216,6 +225,7 @@ export default function DashboardPage() {
   }
 
   const loadSubscription = async (token: string, companyId: string) => {
+    setSubscriptionLoading(true)
     try {
       const response = await fetch(`${API_URL}/subscription/${companyId}`, {
         headers: {
@@ -239,6 +249,8 @@ export default function DashboardPage() {
       }
     } catch (e) {
       console.error("Error loading subscription:", e)
+    } finally {
+      setSubscriptionLoading(false)
     }
   }
 
@@ -459,6 +471,10 @@ export default function DashboardPage() {
                 </p>
               </div>
             </>
+          ) : subscriptionLoading ? (
+            <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
+              <p className="text-sm text-gray-400 animate-pulse">Loading subscription status...</p>
+            </div>
           ) : isMonitoringActive && monitoringStatus ? (
             /* STATE 3 — CONTINUOUS MONITORING ACTIVE (full diagnostic) */
             <MonitoringLayer 
