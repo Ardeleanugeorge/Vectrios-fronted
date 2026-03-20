@@ -518,7 +518,15 @@ function ScanResultsContent() {
   const isBlocked = data.status === "blocked"
   const hasRii = data.rii !== null && data.rii !== undefined
   const rii = hasRii ? (data.rii as number) : null
+  const isHighExposure = (rii ?? 0) >= 70 || data.risk_level?.toLowerCase().includes("high")
   const riiColor = (rii ?? 0) >= 70 ? "text-red-400" : (rii ?? 0) >= 40 ? "text-orange-400" : "text-emerald-400"
+  const normalizedPercentileLabel = (() => {
+    if (!data.percentile_label) return null
+    if (!isHighExposure) return data.percentile_label
+    return data.percentile_label
+      .replace(/optimization opportunity/gi, "elevated revenue risk")
+      .replace(/better than average/gi, "elevated revenue risk")
+  })()
 
   const benchmarkLabel = (() => {
     if (!hasRii || isBlocked) return null
@@ -605,7 +613,7 @@ function ScanResultsContent() {
                   : "bg-red-500/10 border-red-500/30 text-red-400"
             }`}>
               <span className="font-bold text-base">{data.percentile}%</span>
-              <span>{data.percentile_label}</span>
+              <span>{normalizedPercentileLabel}</span>
             </div>
           ) : (
             // Fallback: static median comparison
