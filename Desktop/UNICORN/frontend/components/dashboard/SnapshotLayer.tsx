@@ -96,6 +96,17 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
     riskLevel === "HIGH" ? "⚠" :
     riskLevel === "MODERATE" ? "◈" : "◉"
 
+  const metric = (v: unknown) => {
+    const n = typeof v === "number" ? v : Number(v)
+    if (Number.isNaN(n)) return "N/A"
+    return `${Math.round(n)}`
+  }
+
+  const alignment = diagnostic?.alignment_score ?? diagnostic?.strategic_alignment ?? diagnostic?.metrics_breakdown?.alignment_average
+  const anchor = diagnostic?.anchor_density_score ?? diagnostic?.conversion_anchor_density ?? diagnostic?.metrics_breakdown?.anchor_density_average
+  const icp = diagnostic?.icp_clarity_score ?? (diagnostic?.icp_mention_count ? Math.min((diagnostic.icp_mention_count / 5) * 100, 100) : diagnostic?.metrics_breakdown?.icp_mentions_total ? Math.min((diagnostic.metrics_breakdown.icp_mentions_total / 5) * 100, 100) : null)
+  const confidence = diagnostic?.confidence ?? diagnostic?.confidence_score ?? diagnostic?.revenue_leak_confidence
+
   return (
     <div className="space-y-4">
 
@@ -118,46 +129,36 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
         </div>
       </div>
 
-      {/* ══ LOCKED: ROOT CAUSE — Starter ══ */}
+      {/* Key metrics preview (real values) */}
+      <div className="grid md:grid-cols-4 gap-3">
+        <div className="p-4 bg-[#111827] border border-gray-800 rounded-lg">
+          <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Alignment</p>
+          <p className="text-2xl font-bold text-white">{metric(alignment)}</p>
+        </div>
+        <div className="p-4 bg-[#111827] border border-gray-800 rounded-lg">
+          <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">ICP Clarity</p>
+          <p className="text-2xl font-bold text-white">{metric(icp)}</p>
+        </div>
+        <div className="p-4 bg-[#111827] border border-gray-800 rounded-lg">
+          <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Anchor Density</p>
+          <p className="text-2xl font-bold text-white">{metric(anchor)}</p>
+        </div>
+        <div className="p-4 bg-[#111827] border border-gray-800 rounded-lg">
+          <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Confidence</p>
+          <p className="text-2xl font-bold text-white">{metric(confidence)}</p>
+        </div>
+      </div>
+
+      {/* Main locked modules only (avoid overload) */}
       <LockedCard
         title="Root Cause & Primary Risk Driver"
         description="Understand exactly what is causing revenue compression."
         planRequired="Starter"
       />
-
-      {/* ══ LOCKED: SIGNAL BREAKDOWN — Starter ══ */}
-      <LockedCard
-        title="Revenue Signal Breakdown"
-        description="Alignment · ICP Clarity · Anchor Density · Positioning scores."
-        planRequired="Starter"
-      />
-
-      {/* ══ LOCKED: FINANCIAL EXPOSURE — Starter ══ */}
       <LockedCard
         title="Financial Exposure & ARR at Risk"
         description="Exact ARR at risk, close-rate compression and recovery potential."
         planRequired="Starter"
-      />
-
-      {/* ══ LOCKED: MONITORING + INCIDENTS — Growth ══ */}
-      <LockedCard
-        title="Revenue Incidents & Continuous Monitoring"
-        description="Live monitoring, incident detection and revenue alerts."
-        planRequired="Growth"
-      />
-
-      {/* ══ LOCKED: FORECAST — Growth ══ */}
-      <LockedCard
-        title="Forecast Engine — 30-Day Prediction"
-        description="Revenue compression forecast with close-rate modeling."
-        planRequired="Growth"
-      />
-
-      {/* ══ LOCKED: TRAJECTORY + BENCHMARK — Scale ══ */}
-      <LockedCard
-        title="12-Month Trajectory & Benchmark Intelligence"
-        description="ARR trajectory simulation and cross-company benchmarking."
-        planRequired="Scale"
       />
 
       {/* ══ CTA PRINCIPAL ══ */}

@@ -279,16 +279,33 @@ export default function PricingPage() {
 
         <div className="grid md:grid-cols-3 gap-6 mb-14">
           {plans.map((plan) => (
+            (() => {
+              const isScale = plan.name.toLowerCase() === "scale"
+              return (
             <div
               key={plan.name}
-              className={`p-7 bg-[#111827] rounded-lg border ${plan.name.toLowerCase() === "scale" ? "border-cyan-500/60" : "border-gray-800"}`}
+              className={`relative p-7 bg-[#111827] rounded-lg border transition ${
+                isScale
+                  ? "border-cyan-500/70 shadow-[0_0_0_1px_rgba(34,211,238,0.25)] shadow-cyan-500/10"
+                  : "border-gray-800 hover:border-cyan-500/40"
+              }`}
             >
+              {isScale && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                  Recommended
+                </span>
+              )}
               <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
               <div className="mb-6">
                 <span className="text-4xl font-bold">
                   ${billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly}
                 </span>
                 <span className="text-gray-400">/month</span>
+                {billingCycle === "annual" && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Billed annually (${plan.priceAnnual * 12}/year)
+                  </p>
+                )}
               </div>
               <ul className="space-y-2 mb-7 text-sm text-gray-300">
                 {plan.features.map((feature) => (
@@ -308,6 +325,8 @@ export default function PricingPage() {
                 Start {plan.name}
               </button>
             </div>
+              )
+            })()
           ))}
         </div>
 
