@@ -149,17 +149,24 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
         </div>
       </div>
 
-      {/* Main locked modules only (avoid overload) */}
-      <LockedCard
-        title="Root Cause & Primary Risk Driver"
-        description="Understand exactly what is causing revenue compression."
-        planRequired="Starter"
-      />
-      <LockedCard
-        title="Financial Exposure & ARR at Risk"
-        description="Exact ARR at risk, close-rate compression and recovery potential."
-        planRequired="Starter"
-      />
+      {/* One locked module per tier (clear upgrade path) */}
+      <div className="grid md:grid-cols-3 gap-3">
+        <LockedCard
+          title="Starter: Root Cause & Risk Driver"
+          description="See what is causing compression and where to start fixing."
+          planRequired="Starter"
+        />
+        <LockedCard
+          title="Growth: Financial Exposure Model"
+          description="Unlock ARR at risk, close-rate impact, and recovery path."
+          planRequired="Growth"
+        />
+        <LockedCard
+          title="Scale: Trajectory & Benchmark Intelligence"
+          description="Access 12-month trajectory and benchmark position vs peers."
+          planRequired="Scale"
+        />
+      </div>
 
       {/* ══ CTA PRINCIPAL ══ */}
       <div className="p-8 rounded-lg border border-cyan-800/40 bg-gradient-to-br from-cyan-950/30 to-[#111827]">
