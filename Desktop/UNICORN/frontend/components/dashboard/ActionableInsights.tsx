@@ -6,6 +6,9 @@ interface ActionableInsightsProps {
   monthlyExposure: number | null
   recommendation: string | null
   uiState?: "low" | "medium" | "high"
+  alignmentScore?: number
+  icpClarity?: number
+  anchorDensity?: number
 }
 
 export default function ActionableInsights({
@@ -14,6 +17,9 @@ export default function ActionableInsights({
   monthlyExposure,
   recommendation,
   uiState = "medium",
+  alignmentScore = 0,
+  icpClarity = 0,
+  anchorDensity = 0,
 }: ActionableInsightsProps) {
   // Safety checks
   if (!primaryRiskDriver || primaryRiskDriver.trim() === '') {
@@ -77,6 +83,29 @@ export default function ActionableInsights({
   const safeDriver = uiState === "low" && primaryRiskDriver.toLowerCase().includes("misalignment")
     ? "Minor messaging misalignment detected"
     : primaryRiskDriver
+  const actions = [
+    {
+      key: "icp",
+      title: "Fix ICP clarity",
+      description: "Your ICP definition is too broad. Narrow targeting to increase conversion consistency.",
+      impact: "High",
+      score: icpClarity,
+    },
+    {
+      key: "alignment",
+      title: "Improve messaging alignment",
+      description: "Value proposition varies across key pages. Align your core message across revenue pages.",
+      impact: "Medium",
+      score: alignmentScore,
+    },
+    {
+      key: "anchors",
+      title: "Add value anchors",
+      description: "Quantified outcomes are underused. Add ROI metrics on high-intent pages.",
+      impact: "Medium",
+      score: anchorDensity,
+    },
+  ].sort((a, b) => a.score - b.score).slice(0, 3)
 
   return (
     <div className="mb-6 p-6 bg-[#111827] rounded-lg border border-gray-800">
@@ -92,6 +121,20 @@ export default function ActionableInsights({
             <div className="text-base font-semibold text-gray-300 flex items-center gap-2">
               <span className={severity.color}>{severity.icon}</span>
               <span>{safeDriver}</span>
+            </div>
+          </div>
+
+          <div className="mb-4 p-4 bg-gray-900/40 border border-gray-800 rounded">
+            <div className="text-xs text-gray-500 mb-3 uppercase tracking-wide">Recommended Actions (Top 3)</div>
+            <div className="space-y-3">
+              {actions.map((action, idx) => (
+                <div key={action.key} className="text-sm text-gray-300">
+                  <p className="font-semibold text-gray-200">
+                    {idx + 1}. {action.title} <span className="text-xs text-gray-500">Impact: {action.impact}</span>
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">{action.description}</p>
+                </div>
+              ))}
             </div>
           </div>
 

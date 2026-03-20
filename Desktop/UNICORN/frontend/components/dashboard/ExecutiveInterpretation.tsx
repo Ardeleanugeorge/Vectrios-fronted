@@ -32,7 +32,7 @@ export default function ExecutiveInterpretation({
 
   return (
     <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
-      <h2 className="text-sm font-semibold mb-4 uppercase tracking-wide text-gray-400">Executive Interpretation</h2>
+      <h2 className="text-sm font-semibold mb-4 uppercase tracking-wide text-gray-400">Executive Takeaway</h2>
       
       {hasExposure && closeRateDelta ? (
         <div className="space-y-1">

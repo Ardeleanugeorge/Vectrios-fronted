@@ -11,6 +11,19 @@ export default function SystemIndicators({
   driftSensitivity = "Standard",
   coverage = "Revenue-Stage Messaging"
 }: SystemIndicatorsProps) {
+  const formatNextScan = (dateString: string | null | undefined) => {
+    if (!dateString) return "in 24h"
+    try {
+      const date = new Date(dateString)
+      const next = new Date(date.getTime() + 24 * 60 * 60 * 1000)
+      const now = new Date()
+      const diffHours = Math.max(1, Math.ceil((next.getTime() - now.getTime()) / (1000 * 60 * 60)))
+      return `in ${diffHours}h`
+    } catch {
+      return "in 24h"
+    }
+  }
+
   const formatLastScan = (dateString: string | null | undefined) => {
     if (!dateString) return "Today"
     try {
@@ -35,6 +48,9 @@ export default function SystemIndicators({
       </div>
       <div>
         Last Scan: <span className="text-gray-400 font-medium">{formatLastScan(lastScan)}</span>
+      </div>
+      <div>
+        Next Scan: <span className="text-gray-400 font-medium">{formatNextScan(lastScan)}</span>
       </div>
       <div>
         Drift Sensitivity: <span className="text-gray-400 font-medium">{driftSensitivity}</span>

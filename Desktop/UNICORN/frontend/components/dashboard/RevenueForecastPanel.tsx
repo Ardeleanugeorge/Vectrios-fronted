@@ -25,6 +25,7 @@ interface RevenueForecast {
 
 interface RevenueForecastPanelProps {
   companyId: string | null
+  uiState?: "low" | "medium" | "high"
 }
 
 function formatCurrency(val: number): string {
@@ -33,7 +34,7 @@ function formatCurrency(val: number): string {
   return `$${Math.round(val).toLocaleString()}`
 }
 
-export default function RevenueForecastPanel({ companyId }: RevenueForecastPanelProps) {
+export default function RevenueForecastPanel({ companyId, uiState = "medium" }: RevenueForecastPanelProps) {
   const [forecast, setForecast] = useState<RevenueForecast | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -61,14 +62,14 @@ export default function RevenueForecastPanel({ companyId }: RevenueForecastPanel
 
   if (loading) return (
     <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Delta Engine</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Optimization Model</h2>
       <p className="text-sm text-gray-500">Calculating revenue impact...</p>
     </div>
   )
 
   if (!forecast) return (
     <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Delta Engine</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Optimization Model</h2>
       <p className="text-sm text-gray-500">Insufficient data for revenue calculation.</p>
     </div>
   )
@@ -79,30 +80,36 @@ export default function RevenueForecastPanel({ companyId }: RevenueForecastPanel
   return (
     <div className="p-8 bg-[#111827] rounded-lg border border-gray-800 space-y-6">
       <div>
-        <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Delta Engine</h2>
+        <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Optimization Model</h2>
         <p className="text-xs text-gray-500 mt-1 uppercase tracking-wide">Messaging impact on ARR</p>
       </div>
 
       {/* ── PRIMARY: Annual Revenue at Risk ─────────────────────────── */}
       {hasRevenueDelta && (
-        <div className="p-5 bg-red-950/30 border border-red-900/40 rounded-lg">
-          <div className="text-xs text-red-400/80 uppercase tracking-wide mb-2 font-medium">
-            Estimated ARR at Risk
+        <div className={`p-5 rounded-lg border ${uiState === "low" ? "bg-emerald-950/20 border-emerald-900/30" : "bg-red-950/30 border-red-900/40"}`}>
+          <div className={`text-xs uppercase tracking-wide mb-2 font-medium ${uiState === "low" ? "text-emerald-300/80" : "text-red-400/80"}`}>
+            {uiState === "low" ? "Optimization Potential" : "Estimated ARR at Risk"}
           </div>
-          <div className="text-4xl font-bold text-red-400">
-            {formatCurrency(forecast.annual_revenue_delta!)}
-            <span className="text-lg font-normal text-red-400/60 ml-2">/ year</span>
+          <div className={`text-4xl font-bold ${uiState === "low" ? "text-emerald-300" : "text-red-400"}`}>
+            {uiState === "low" ? "+" : ""}{formatCurrency(forecast.annual_revenue_delta!)}
+            <span className={`text-lg font-normal ml-2 ${uiState === "low" ? "text-emerald-300/60" : "text-red-400/60"}`}>/ year</span>
           </div>
           {forecast.primary_stage && (
-            <div className="mt-2 text-sm text-red-300/70">
-              Compression detected at <span className="text-red-300 font-medium">{forecast.primary_stage}</span>
+            <div className={`mt-2 text-sm ${uiState === "low" ? "text-emerald-300/70" : "text-red-300/70"}`}>
+              {uiState === "low" ? "Primary optimization gap: " : "Compression detected at "}
+              <span className={`font-medium ${uiState === "low" ? "text-emerald-300" : "text-red-300"}`}>{forecast.primary_stage}</span>
             </div>
           )}
           {forecast.close_rate_compression !== undefined && (
             <div className="mt-1 text-xs text-gray-500">
-              Close-rate compression: <span className="text-red-400">−{forecast.close_rate_compression.toFixed(1)}%</span>
+              {uiState === "low" ? "Performance improvement available: " : "Close-rate compression: "}
+              <span className={uiState === "low" ? "text-emerald-300" : "text-red-400"}>
+                {uiState === "low" ? "+" : "−"}{Math.abs(forecast.close_rate_compression).toFixed(1)}%
+              </span>
               {forecast.lost_deals_annual !== undefined && forecast.lost_deals_annual > 0 && (
-                <span className="ml-2">· ~{Math.round(forecast.lost_deals_annual)} deals/yr at risk</span>
+                <span className="ml-2">
+                  · ~{Math.round(forecast.lost_deals_annual)} deals/yr {uiState === "low" ? "additional potential" : "at risk"}
+                </span>
               )}
             </div>
           )}

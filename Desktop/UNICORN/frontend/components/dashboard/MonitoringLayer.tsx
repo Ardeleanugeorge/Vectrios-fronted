@@ -184,6 +184,8 @@ export default function MonitoringLayer({
     : uiState === "medium" ? "Structural gaps are impacting conversion efficiency."
     : "Structural misalignment is compressing performance."
   )
+  const improvementsDetected =
+    typeof riskDelta === "number" && riskDelta < 0 ? Math.max(1, Math.round(Math.abs(riskDelta))) : (uiState === "low" ? 2 : 0)
   
   // Extract and simplify primary risk driver from recommendations or diagnostic
   const simplifyRiskDriver = (text: string): string => {
@@ -267,6 +269,11 @@ export default function MonitoringLayer({
             Your system is structurally healthy, but small inefficiencies still create measurable upside.
           </p>
         )}
+        {improvementsDetected > 0 && (
+          <p className="text-xs text-cyan-300/80 mt-2">
+            +{improvementsDetected} improvement{improvementsDetected > 1 ? "s" : ""} detected since last scan.
+          </p>
+        )}
         <p className="text-xs text-gray-500 mt-2">{trendText}</p>
       </div>
 
@@ -278,6 +285,9 @@ export default function MonitoringLayer({
           monthlyExposure={safeMonthlyExposure}
           recommendation={safeRecommendation}
           uiState={uiState}
+          alignmentScore={alignmentScore}
+          icpClarity={icpClarity}
+          anchorDensity={anchorDensity}
         />
       )}
 
@@ -366,7 +376,7 @@ export default function MonitoringLayer({
 
       {/* 11. REVENUE COMPRESSION FORECAST — 30-day prediction (Growth+) */}
       <FeatureGate feature="Forecast Engine" planRequired="growth" currentPlan={currentPlan}>
-        <RevenueForecastPanel companyId={companyId} />
+        <RevenueForecastPanel companyId={companyId} uiState={uiState} />
       </FeatureGate>
 
       {/* 12. REVENUE TRAJECTORY SIMULATION — 12-month ARR (Scale+) */}
