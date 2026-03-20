@@ -18,6 +18,12 @@ export default function RevenueSystemStatus({
   uiState = "medium",
 }: RevenueSystemStatusProps) {
   const hasExposure = (monthlyExposure !== null && monthlyExposure > 0) || (annualExposure !== null && annualExposure !== undefined && annualExposure > 0)
+  const displayMonthlyImpact =
+    monthlyExposure && monthlyExposure > 0
+      ? monthlyExposure
+      : annualExposure && annualExposure > 0
+        ? annualExposure / 12
+        : null
 
   return (
     <div className="p-8 bg-[#111827] rounded-lg border-2 border-gray-800 mb-6">
@@ -39,7 +45,9 @@ export default function RevenueSystemStatus({
             {uiState === "low" ? "Optimization Opportunity Identified" : "Active Revenue Compression Detected"}
           </p>
           <p className="text-sm text-gray-400">
-            Estimated Monthly Impact: ${monthlyExposure?.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+            Estimated Monthly Impact: {displayMonthlyImpact !== null
+              ? `$${displayMonthlyImpact.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+              : "Not available"}
           </p>
           <p className="text-sm text-gray-500 mt-2">
             {uiState === "low"

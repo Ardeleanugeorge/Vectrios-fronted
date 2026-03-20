@@ -2,6 +2,7 @@
 
 interface ExecutiveInterpretationProps {
   monthlyExposure: number | null
+  annualExposure?: number | null
   closeRateDelta: number | null
   impactDirection: string
   alignmentScore: number
@@ -12,6 +13,7 @@ interface ExecutiveInterpretationProps {
 
 export default function ExecutiveInterpretation({
   monthlyExposure,
+  annualExposure,
   closeRateDelta,
   impactDirection,
   alignmentScore,
@@ -19,8 +21,14 @@ export default function ExecutiveInterpretation({
   anchorDensity,
   uiState = "medium",
 }: ExecutiveInterpretationProps) {
-  const hasExposure = monthlyExposure !== null && monthlyExposure > 0
-  const annualizedImpact = monthlyExposure ? monthlyExposure * 12 : null
+  const hasExposure =
+    (monthlyExposure !== null && monthlyExposure > 0) ||
+    (annualExposure !== null && annualExposure !== undefined && annualExposure > 0)
+  const annualizedImpact = annualExposure && annualExposure > 0
+    ? annualExposure
+    : monthlyExposure
+      ? monthlyExposure * 12
+      : null
 
   // Determine primary structural fault
   const faults = []

@@ -332,6 +332,7 @@ export default function MonitoringLayer({
       {/* 4. EXECUTIVE INTERPRETATION — Max 2 lines */}
       <ExecutiveInterpretation
         monthlyExposure={monthlyExposure}
+        annualExposure={annualDelta}
         closeRateDelta={closeRateDelta}
         impactDirection={impactDirection}
         alignmentScore={alignmentScore}
