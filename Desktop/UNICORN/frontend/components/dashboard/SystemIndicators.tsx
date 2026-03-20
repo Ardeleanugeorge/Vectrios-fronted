@@ -58,6 +58,12 @@ export default function SystemIndicators({
       <div>
         Coverage: <span className="text-gray-400 font-medium">{coverage}</span>
       </div>
+
+      <div className="hidden sm:block">
+        <span className="text-gray-500">
+          We’ll continuously monitor your messaging and alert you when risk changes.
+        </span>
+      </div>
     </div>
   )
 }

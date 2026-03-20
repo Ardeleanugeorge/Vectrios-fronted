@@ -142,6 +142,7 @@ export default function MonitoringLayer({
   const closeRateDelta = revenueImpact?.projected_close_rate_delta || null
   const driftSeverity = monitoringStatus.drift_status === "critical" ? "high" :
                         monitoringStatus.drift_status === "degrading" ? "moderate" : "none"
+  const annualDelta: number | null = forecast?.annual_revenue_delta ?? null
 
   // Extract diagnostic metrics (new API fields first, legacy fallbacks second)
   const alignmentScore =
@@ -404,6 +405,15 @@ export default function MonitoringLayer({
       {/* STRUCTURAL ALERTS PANEL (drift/volatility/trend) */}
       {alerts.length > 0 && (
         <AlertPanel alerts={alerts} onMarkAlertRead={onMarkAlertRead} />
+      )}
+
+      {uiState === "low" && annualDelta !== null && annualDelta > 0 && (
+        <div className="p-6 bg-emerald-950/10 border border-emerald-700/30 rounded-lg">
+          <p className="text-sm font-semibold text-emerald-200">Summary</p>
+          <p className="text-sm text-gray-300 mt-1">
+            Your revenue system is strong. Addressing the 2–3 remaining gaps could unlock ~${Math.round(annualDelta / 1000) * 1000} annually.
+          </p>
+        </div>
       )}
 
     </div>

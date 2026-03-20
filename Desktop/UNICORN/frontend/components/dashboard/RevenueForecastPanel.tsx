@@ -141,9 +141,20 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
           </div>
         </div>
         <div>
-          <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Close-Rate Risk</div>
-          <div className={`text-xl font-bold ${forecast.close_rate_shift < 0 ? "text-red-400" : "text-green-400"}`}>
-            {forecast.close_rate_shift > 0 ? "+" : ""}{forecast.close_rate_shift.toFixed(1)}%
+          <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
+            {uiState === "low" ? "Performance Upside" : "Close-Rate Risk"}
+          </div>
+          <div
+            className={`text-xl font-bold ${
+              uiState === "low"
+                ? "text-emerald-300"
+                : forecast.close_rate_shift < 0
+                  ? "text-red-400"
+                  : "text-green-400"
+            }`}
+          >
+            {uiState === "low" ? "+" : forecast.close_rate_shift > 0 ? "+" : ""}
+            {Math.abs(forecast.close_rate_shift).toFixed(1)}%
           </div>
         </div>
       </div>
