@@ -2,6 +2,7 @@
 
 interface RevenueSystemStatusProps {
   monthlyExposure: number | null
+  annualExposure?: number | null
   monitoringActive: boolean
   impactConfidence?: string
   modelConfidence?: string
@@ -10,12 +11,13 @@ interface RevenueSystemStatusProps {
 
 export default function RevenueSystemStatus({
   monthlyExposure,
+  annualExposure,
   monitoringActive,
   impactConfidence = "moderate",
   modelConfidence,
   uiState = "medium",
 }: RevenueSystemStatusProps) {
-  const hasExposure = monthlyExposure !== null && monthlyExposure > 0
+  const hasExposure = (monthlyExposure !== null && monthlyExposure > 0) || (annualExposure !== null && annualExposure !== undefined && annualExposure > 0)
 
   return (
     <div className="p-8 bg-[#111827] rounded-lg border-2 border-gray-800 mb-6">
@@ -49,7 +51,7 @@ export default function RevenueSystemStatus({
         <div>
           <p className="text-lg font-semibold text-gray-300 mb-2">Revenue Monitoring Active</p>
           <p className="text-sm text-gray-400">
-            Structural risk signals detected. No measurable revenue compression observed.
+            Structural signals are being monitored. Financial exposure is not yet measurable with current evidence.
           </p>
         </div>
       )}
@@ -61,7 +63,7 @@ export default function RevenueSystemStatus({
           <span className="text-gray-400 font-medium">Revenue-Stage Messaging</span>
         </div>
         <div>
-          <span className="text-gray-500">Signal Confidence: </span>
+          <span className="text-gray-500">Risk Signal Confidence: </span>
           <span className="text-gray-400 font-medium capitalize">{modelConfidence || impactConfidence}</span>
         </div>
       </div>

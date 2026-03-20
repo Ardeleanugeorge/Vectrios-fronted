@@ -2,6 +2,7 @@
 
 interface StructuralRiskOverviewProps {
   riskScore: number | null
+  alignmentScore?: number | null
   riskLevel: string
   trendDirection?: string
   driftStatus?: string
@@ -11,6 +12,7 @@ interface StructuralRiskOverviewProps {
 
 export default function StructuralRiskOverview({
   riskScore,
+  alignmentScore,
   riskLevel,
   trendDirection = "unstable",
   driftStatus = "stable",
@@ -91,7 +93,7 @@ export default function StructuralRiskOverview({
                 {integrityStatus}
               </p>
               <p className="text-sm text-gray-500 mt-1">
-                Alignment Score: {riskScore.toFixed(0)}
+                Alignment Score: {(alignmentScore ?? riskScore).toFixed(0)}
               </p>
             </div>
           ) : (

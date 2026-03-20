@@ -175,7 +175,6 @@ export default function MonitoringLayer({
     trend === "improving" ? "Trend: Improving - recent changes are reducing risk."
     : trend === "escalating" ? "Trend: Declining - risk is increasing over time."
     : "Trend: Stable - no significant changes detected."
-<<<<<<< HEAD
   const headline = monitoringStatus.ui_state_payload?.headline ?? (
     uiState === "low" ? "Revenue system is healthy"
     : uiState === "medium" ? "Revenue performance is constrained"
@@ -304,6 +303,7 @@ export default function MonitoringLayer({
       {/* 2. SYSTEM STATUS — Heartbeat of the system */}
       <RevenueSystemStatus
         monthlyExposure={monthlyExposure}
+        annualExposure={annualDelta}
         monitoringActive={monitoringStatus.monitoring_active}
         impactConfidence={impactConfidence}
         uiState={uiState}
@@ -343,6 +343,7 @@ export default function MonitoringLayer({
       {/* 5. REVENUE ALIGNMENT STATUS — System state explanation */}
       <StructuralRiskOverview
         riskScore={diagnostic?.risk_score || null}
+        alignmentScore={alignmentScore}
         riskLevel={diagnostic?.risk_level || "MODERATE"}
         trendDirection={monitoringStatus.trend_direction || "unstable"}
         driftStatus={monitoringStatus.drift_status || "stable"}
