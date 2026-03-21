@@ -237,7 +237,7 @@ export default function MonitoringLayer({
     : null
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 lg:space-y-8">
       
       {/* ALERTS FIRST — Critical alerts at top */}
       {hasCriticalAlerts && (
@@ -258,7 +258,7 @@ export default function MonitoringLayer({
         />
       )}
 
-      <div className={`p-5 rounded-lg border ${
+      <div className={`p-5 lg:p-6 rounded-lg border ${
         uiState === "low" ? "border-emerald-700/40 bg-emerald-950/10"
         : uiState === "medium" ? "border-amber-700/40 bg-amber-950/10"
         : "border-red-700/40 bg-red-950/10"

@@ -336,8 +336,14 @@ export default function OnboardingPage() {
         const data = await response.json()
         // Store diagnostic result if available
         if (data.diagnostic) {
-          sessionStorage.setItem("diagnostic_result", JSON.stringify(data.diagnostic))
-          localStorage.setItem("diagnostic_result", JSON.stringify(data.diagnostic))
+          const fullDiagnostic = { ...data.diagnostic, is_partial: false, source: "full_diagnostic" }
+          sessionStorage.setItem("diagnostic_result_full", JSON.stringify(fullDiagnostic))
+          localStorage.setItem("diagnostic_result_full", JSON.stringify(fullDiagnostic))
+          sessionStorage.setItem("diagnostic_result", JSON.stringify(fullDiagnostic))
+          localStorage.setItem("diagnostic_result", JSON.stringify(fullDiagnostic))
+          // Clear partial snapshot to prevent stale fallback.
+          sessionStorage.removeItem("diagnostic_result_partial")
+          localStorage.removeItem("diagnostic_result_partial")
         }
         // Store company_id for monitoring status loading
         if (data.company_id) {
