@@ -182,6 +182,7 @@ function ScanResultsContent() {
   const router = useRouter()
   const token = params.get("token")
   const [data, setData] = useState<ScanData | null>(null)
+  const [scanCount, setScanCount] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
@@ -192,6 +193,13 @@ function ScanResultsContent() {
       .then(d => { setData(d); setLoading(false) })
       .catch(() => { setError("Scan results not found or expired."); setLoading(false) })
   }, [token])
+
+  useEffect(() => {
+    fetch(`${API_URL}/scan-stats`)
+      .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then(d => setScanCount(d.total ?? 0))
+      .catch(() => setScanCount(0))
+  }, [])
 
   const [showEmailCapture, setShowEmailCapture] = useState(false)
   const [email, setEmail] = useState("")
@@ -642,6 +650,24 @@ function ScanResultsContent() {
             </div>
           )}
         </div>
+
+        {scanCount !== null && scanCount > 0 && (
+          <div className="flex items-center justify-center mb-6">
+            <Link
+              href="/saas-revenue-index"
+              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 hover:border-cyan-500/30 hover:bg-white/[0.06] transition-all text-sm text-gray-500"
+            >
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shrink-0" />
+              <span className="font-semibold text-gray-300 group-hover:text-white transition-colors">
+                {scanCount.toLocaleString("en-US")}
+              </span>
+              <span className="text-gray-500">revenue architectures scanned</span>
+              <span className="text-cyan-500 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                View index →
+              </span>
+            </Link>
+          </div>
+        )}
 
         {/* Score breakdown — with hints */}
         <div className="p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6">
