@@ -1,6 +1,7 @@
 "use client"
 
 import { API_URL } from '@/lib/config'
+import { scanDomainKey } from '@/lib/scanPrefill'
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -20,6 +21,21 @@ const normalizeUrl = (url: string): string => {
   }
   // Otherwise add https://
   return `https://${trimmed}`
+}
+
+/** Scan-results financial form uses different bucket keys than onboarding; map so prefill actually selects an option. */
+function mapScanArrRangeToOnboarding(raw: string): string {
+  if (!raw) return ""
+  const map: Record<string, string> = {
+    "<1M": "<1M",
+    "1-3M": "1M-5M",
+    "3-10M": "5M-20M",
+    "10-25M": "5M-20M",
+    "25-50M": "20M+",
+    "50-100M": "20M+",
+    "100M+": "20M+",
+  }
+  return map[raw] ?? raw
 }
 
 const feedbackMessages: { [key: string]: string } = {
@@ -101,7 +117,11 @@ export default function OnboardingPage() {
       const sessionScanDataStr = sessionStorage.getItem("scan_data")
       const localScanDataStr = localStorage.getItem("scan_data")
       const scanDataStr = sessionScanDataStr || localScanDataStr
-      const arrRangePrefill = sessionStorage.getItem("onboarding_arr_range")
+      const rawArrPrefill =
+        sessionStorage.getItem("onboarding_arr_range") ||
+        localStorage.getItem("onboarding_arr_range") ||
+        ""
+      const arrRangePrefill = mapScanArrRangeToOnboarding(rawArrPrefill)
       if (scanDataStr) {
         const scanData = JSON.parse(scanDataStr)
         const createdAt = Number(scanData?.prefill_created_at || 0)
@@ -134,6 +154,7 @@ export default function OnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitPhase, setSubmitPhase] = useState(0)
   const [detectedIcp, setDetectedIcp] = useState("")
+  const [cameFromInstantScan, setCameFromInstantScan] = useState(false)
 
   const submitPhases = [
     "Crawling your pages...",
@@ -173,34 +194,42 @@ export default function OnboardingPage() {
     why_applying: "",
   })
 
-  // Apply scan prefill after mount (client only)
+  // Hydrate form once: draft first, then instant-scan prefill wins on URL / ARR / ICP
+  // (draft can carry icp_description from another company — drop it when host ≠ current scan)
   useEffect(() => {
     const patch = getScanPrefillPatch()
-    if (Object.keys(patch).length > 0) {
-      setForm((prev) => ({
-        ...prev,
-        website_url: patch.website_url ?? prev.website_url,
-        homepage_url: patch.homepage_url ?? prev.homepage_url,
-        content_channels: patch.content_channels ?? prev.content_channels,
-        arr_range: patch.arr_range ?? prev.arr_range,
-      }))
-      if (patch.inferred_icp) {
-        setDetectedIcp(patch.inferred_icp)
-      }
-    }
-  }, [])
+    setCameFromInstantScan(!!patch.website_url?.trim())
 
-  // Persist onboarding draft locally so progress isn't lost on refresh
-  useEffect(() => {
-    try {
-      // Keep draft session-scoped to avoid carrying old company context.
-      const draftStr = sessionStorage.getItem("onboarding_draft")
-      if (draftStr) {
-        const draft = JSON.parse(draftStr)
-        setForm(prev => ({ ...prev, ...draft }))
+    setForm((prev) => {
+      let next = { ...prev }
+      try {
+        const draftStr = sessionStorage.getItem("onboarding_draft")
+        if (draftStr) {
+          next = { ...next, ...JSON.parse(draftStr) }
+        }
+      } catch (e) {
+        console.error("Error loading onboarding draft:", e)
       }
-    } catch (e) {
-      console.error("Error loading onboarding draft:", e)
+      if (patch.website_url?.trim()) {
+        const patchHost = scanDomainKey(patch.website_url)
+        const draftHost = scanDomainKey(next.website_url || "")
+        if (draftHost && patchHost && draftHost !== patchHost) {
+          next.icp_description = ""
+        }
+        next.website_url = patch.website_url
+        next.homepage_url = patch.homepage_url || patch.website_url
+        if (patch.content_channels?.length) next.content_channels = patch.content_channels
+      }
+      if (patch.arr_range) {
+        next.arr_range = mapScanArrRangeToOnboarding(patch.arr_range)
+      }
+      return next
+    })
+
+    if (patch.website_url?.trim()) {
+      setDetectedIcp(patch.inferred_icp ?? "")
+    } else if (patch.inferred_icp) {
+      setDetectedIcp(patch.inferred_icp)
     }
   }, [])
 
@@ -216,6 +245,7 @@ export default function OnboardingPage() {
     try {
       sessionStorage.removeItem("scan_data")
       sessionStorage.removeItem("onboarding_arr_range")
+      localStorage.removeItem("onboarding_arr_range")
       sessionStorage.removeItem("onboarding_draft")
       localStorage.removeItem("scan_data")
     } catch {}
@@ -452,6 +482,12 @@ export default function OnboardingPage() {
               <p className="text-sm text-gray-500">
                 We'll calculate exact ARR at risk, close rate impact, and recovery potential
               </p>
+              {cameFromInstantScan && (
+                <p className="text-sm text-cyan-500/90 mt-4 max-w-lg mx-auto">
+                  Website and ARR band below are carried from your instant scan (and unlock flow). Confirm or tweak —{" "}
+                  <span className="text-gray-400">Step 2 only asks for current vs. target close rates.</span>
+                </p>
+              )}
             </div>
 
             <div>

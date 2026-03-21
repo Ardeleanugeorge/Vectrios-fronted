@@ -1,6 +1,7 @@
 "use client"
 
 import { API_URL } from '@/lib/config'
+import { buildScanPrefillPayload, persistScanDataForPrefill } from '@/lib/scanPrefill'
 
 import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
@@ -87,6 +88,21 @@ export default function Home() {
       }
       const data = await res.json()
       setScanning(false) // Reset before navigation
+      // Bind prefill to this scan immediately (avoid stale company from older localStorage).
+      try {
+        if (data.scan_token && data.domain) {
+          persistScanDataForPrefill(
+            buildScanPrefillPayload({
+              domain: data.domain,
+              inferred_icp: data.inferred_icp,
+              pages_scanned: data.pages_scanned,
+              scan_token: data.scan_token,
+            })
+          )
+        }
+      } catch {
+        /* ignore */
+      }
       router.push(`/scan-results?token=${data.scan_token}`)
     } catch (err: any) {
       clearTimeout(timeoutId)

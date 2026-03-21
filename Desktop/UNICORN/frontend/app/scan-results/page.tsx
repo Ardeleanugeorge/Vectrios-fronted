@@ -1,6 +1,7 @@
 "use client"
 
 import { API_URL } from '@/lib/config'
+import { buildScanPrefillPayload, persistScanDataForPrefill } from '@/lib/scanPrefill'
 
 import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -190,7 +191,25 @@ function ScanResultsContent() {
     if (!token) { setError("No scan token found."); setLoading(false); return }
     fetch(`${API_URL}/scan/${token}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
-      .then(d => { setData(d); setLoading(false) })
+      .then(d => {
+        setData(d)
+        setLoading(false)
+        // Always tie prefill to the scan in this URL (fixes stale company from prior sessions).
+        try {
+          if (d?.domain && token) {
+            persistScanDataForPrefill(
+              buildScanPrefillPayload({
+                domain: d.domain,
+                inferred_icp: d.inferred_icp,
+                pages_scanned: d.pages_scanned,
+                scan_token: token,
+              })
+            )
+          }
+        } catch {
+          /* ignore */
+        }
+      })
       .catch(() => { setError("Scan results not found or expired."); setLoading(false) })
   }, [token])
 
@@ -304,16 +323,14 @@ function ScanResultsContent() {
         localStorage.setItem("diagnostic_result_partial", JSON.stringify(partialDiagnostic))
         sessionStorage.setItem("diagnostic_result_partial", JSON.stringify(partialDiagnostic))
         
-        // Save scan data for pre-filling onboarding form
-        const scanData = {
+        // Save scan data for pre-filling onboarding form (same path as scan-results load / landing scan)
+        const scanData = buildScanPrefillPayload({
           domain: data.domain,
-          website_url: `https://${data.domain}`,
-          inferred_icp: data.inferred_icp || "",
-          pages_scanned: data.pages_scanned || 0,
-          prefill_created_at: Date.now(),
-        }
-        localStorage.setItem("scan_data", JSON.stringify(scanData))
-        sessionStorage.setItem("scan_data", JSON.stringify(scanData))
+          inferred_icp: data.inferred_icp,
+          pages_scanned: data.pages_scanned,
+          scan_token: token,
+        })
+        persistScanDataForPrefill(scanData)
         console.log("[EMAIL-CAPTURE] Saved scan_data:", scanData)
         console.log("[EMAIL-CAPTURE] Saved partial diagnostic:", partialDiagnostic)
       }
@@ -782,6 +799,9 @@ function ScanResultsContent() {
               Make this accurate for your business
             </button>
             <p className="text-xs text-gray-500 mt-2 text-center">Takes 30 seconds · Best guess is OK</p>
+            <p className="text-xs text-gray-600 mt-3 text-center max-w-md mx-auto leading-relaxed">
+              This step runs <span className="text-gray-400">before</span> full diagnostic onboarding. What you enter here is reused there so you don&apos;t start from zero — Step 2 of onboarding only adds close-rate targets.
+            </p>
           </div>
         )}
 
@@ -791,6 +811,9 @@ function ScanResultsContent() {
             <div className="mb-4">
               <h3 className="text-xl font-bold text-white mb-1">Make this accurate for your business</h3>
               <p className="text-sm text-gray-400">Best guess is OK. We'll use industry priors if left blank.</p>
+              <p className="text-xs text-gray-600 mt-2">
+                Your ARR band is saved for the next page — you won&apos;t have to re-pick the same range if you continue to full diagnostic.
+              </p>
             </div>
             
             <form
@@ -813,7 +836,16 @@ function ScanResultsContent() {
                 </label>
                 <select
                   value={arrRange}
-                  onChange={(e) => setArrRange(e.target.value)}
+                  onChange={(e) => {
+                    const v = e.target.value
+                    setArrRange(v)
+                    if (typeof window !== "undefined" && v) {
+                      try {
+                        window.localStorage.setItem("onboarding_arr_range", v)
+                        window.sessionStorage.setItem("onboarding_arr_range", v)
+                      } catch { /* ignore */ }
+                    }
+                  }}
                   required
                   className="w-full px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
                 >
@@ -943,6 +975,9 @@ function ScanResultsContent() {
               </Link>
               <p className="text-xs text-gray-500 mt-2">
                 Complete full diagnostic for precise ARR modeling and recovery roadmap
+              </p>
+              <p className="text-xs text-gray-600 mt-2 max-w-sm mx-auto">
+                Site URL + ARR (from your scan flow) pre-fill onboarding; you&apos;ll mainly add close rates next.
               </p>
             </div>
           </div>
