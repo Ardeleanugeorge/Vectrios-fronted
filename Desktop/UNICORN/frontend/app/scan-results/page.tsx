@@ -803,6 +803,9 @@ function ScanResultsContent() {
             >
               View your full report →
             </button>
+            <p className="text-xs text-gray-400 mt-3 max-w-md mx-auto text-center leading-relaxed">
+              Instant access via email — no signup required
+            </p>
             <p className="text-sm text-amber-200/90 mt-4 max-w-md mx-auto leading-relaxed font-medium">
               Every month this stays unfixed, your revenue loss compounds
             </p>
