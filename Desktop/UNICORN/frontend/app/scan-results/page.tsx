@@ -815,29 +815,38 @@ function ScanResultsContent() {
 
         {/* Financial Impact - Peer Estimate FIRST (after unlock, before form) */}
         {unlocked && showFinancialImpact && !financialImpact && !showImpactForm && peerEstimate && (
-          <div id="financial-impact-peer" className="p-6 bg-gradient-to-br from-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/20 mb-6">
-            <div className="mb-4">
-              <h3 className="text-xl font-bold text-white mb-1">Estimated Impact</h3>
-              <p className="text-sm text-gray-400">Based on similar companies with your structure</p>
-            </div>
-            
-            <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800 mb-4">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">ARR at Risk</p>
-              <p className="text-3xl font-bold text-orange-400 mb-1">
-                {formatCurrency(peerEstimate.low)} – {formatCurrency(peerEstimate.high)}
-              </p>
-              <p className="text-xs text-gray-500">Annual revenue exposure from structural misalignment</p>
-            </div>
-            
+          <div id="financial-impact-peer" className="p-6 sm:p-8 bg-gradient-to-br from-orange-950/20 via-[#111827] to-[#0d1320] rounded-xl border border-orange-500/25 mb-6">
+            <p className="text-xs font-semibold text-orange-400/90 uppercase tracking-wider mb-3">Your revenue exposure</p>
+            <h3 className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-3">
+              You&apos;re losing an estimated{" "}
+              <span className="text-orange-400">
+                {formatCurrency(peerEstimate.low)}–{formatCurrency(peerEstimate.high)}
+              </span>{" "}
+              per year
+            </h3>
+            <p className="text-sm text-gray-400 mb-6">
+              Based on similar B2B companies with your structural profile — not a generic content score.
+            </p>
+
             <button
               onClick={() => setShowImpactForm(true)}
-              className="w-full px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
+              className="w-full px-6 py-3.5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base shadow-lg shadow-cyan-500/15"
             >
-              Make this accurate for your business
+              See your exact revenue loss →
             </button>
-            <p className="text-xs text-gray-500 mt-2 text-center">Takes 30 seconds · Best guess is OK</p>
-            <p className="text-xs text-gray-600 mt-3 text-center max-w-md mx-auto leading-relaxed">
-              This step runs <span className="text-gray-400">before</span> full diagnostic onboarding. What you enter here is reused there so you don&apos;t start from zero — Step 2 of onboarding only adds close-rate targets.
+
+            <div className="mt-5 text-left border-t border-gray-800 pt-5 max-w-md mx-auto">
+              <p className="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">See exactly</p>
+              <ul className="text-sm text-gray-400 space-y-1.5 list-disc list-inside marker:text-cyan-500">
+                <li>where you&apos;re losing revenue</li>
+                <li>how much each issue costs you</li>
+                <li>what to fix first</li>
+              </ul>
+            </div>
+
+            <p className="text-xs text-gray-500 mt-4 text-center">Takes 30 seconds · Best guess is OK</p>
+            <p className="text-xs text-gray-600 mt-2 text-center max-w-md mx-auto leading-relaxed">
+              We use your ARR band to personalize the full report — same data carries into onboarding (no retyping).
             </p>
           </div>
         )}
