@@ -7,6 +7,10 @@
 export interface Plan {
   id?: string
   name: string
+  /** Outcome headline on pricing (sells the result, not the SKU). */
+  headline: string
+  /** Primary button label on the pricing card. */
+  ctaLabel: string
   priceMonthly: number
   priceAnnual: number
   maxUsers: number
@@ -24,14 +28,15 @@ export interface Plan {
 export const PLANS: Plan[] = [
   {
     name: "Starter",
+    headline: "Find what's costing you revenue",
+    ctaLabel: "Find my revenue leak",
     priceMonthly: 49,
     priceAnnual: 39, // per month when billed annually
     maxUsers: 1,
     features: [
-      "Diagnostic Engine",
-      "Revenue Signals",
-      "System Health Indicator",
-      "Basic Monitoring"
+      "Identify your biggest revenue leak",
+      "See where your messaging breaks",
+      "Get 1 high-impact fix",
     ],
     featureFlags: {
       signals: true,
@@ -44,15 +49,17 @@ export const PLANS: Plan[] = [
   },
   {
     name: "Growth",
-    priceMonthly: 129,
-    priceAnnual: 99, // per month when billed annually
+    headline: "Recover lost revenue",
+    ctaLabel: "Recover my lost revenue",
+    priceMonthly: 149,
+    priceAnnual: 119, // per month when billed annually
     maxUsers: 5,
     features: [
       "Everything in Starter",
-      "Revenue Alerts",
-      "Revenue Incidents",
-      "Forecast Engine",
-      "Activity Feed"
+      "Full fix plan (step-by-step)",
+      "ARR at risk calculation",
+      "Close rate impact",
+      "Page-by-page breakdown",
     ],
     featureFlags: {
       signals: true,
@@ -65,15 +72,16 @@ export const PLANS: Plan[] = [
   },
   {
     name: "Scale",
+    headline: "Maximize revenue performance",
+    ctaLabel: "Maximize my revenue",
     priceMonthly: 299,
     priceAnnual: 239, // per month when billed annually
     maxUsers: 20,
     features: [
       "Everything in Growth",
-      "Trajectory Engine",
-      "Team Monitoring",
-      "Advanced Alerts",
-      "Priority Support"
+      "Benchmark vs similar companies",
+      "Ongoing monitoring",
+      "Weekly alerts on revenue risk",
     ],
     featureFlags: {
       signals: true,
@@ -88,6 +96,8 @@ export const PLANS: Plan[] = [
 
 export const ENTERPRISE_PLAN: Plan = {
   name: "Enterprise",
+  headline: "Custom revenue operations",
+  ctaLabel: "Talk to sales",
   priceMonthly: 0, // Custom pricing
   priceAnnual: 0,
   maxUsers: -1, // Unlimited

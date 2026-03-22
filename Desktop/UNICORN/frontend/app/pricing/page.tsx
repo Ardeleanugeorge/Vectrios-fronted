@@ -3,18 +3,9 @@
 import { API_URL } from "@/lib/config"
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { PLANS } from "@/config/plans"
+import { PLANS, type Plan } from "@/config/plans"
 
 const SALES_EMAIL = "hello@vectrios.com"
-
-interface Plan {
-  id?: string
-  name: string
-  priceMonthly: number
-  priceAnnual: number
-  maxUsers: number
-  features: string[]
-}
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
@@ -238,15 +229,31 @@ export default function PricingPage() {
         )}
 
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold mb-3">Choose Your Plan</h1>
-          <p className="text-gray-400">Starter, Growth, Scale plus full-access trial.</p>
+          <h1 className="text-4xl font-bold mb-3">Recover revenue—not features</h1>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Outcome-based plans: find what&apos;s leaking, fix it, and quantify what you get back.
+          </p>
+        </div>
+
+        {/* ROI anchor — makes dollar price feel small vs. problem size */}
+        <div className="max-w-3xl mx-auto mb-10 p-6 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/25 to-[#111827]">
+          <p className="text-center text-lg sm:text-xl font-semibold text-white mb-2">
+            Companies like yours typically lose{" "}
+            <span className="text-amber-300">$120K–$300K/year</span>
+          </p>
+          <p className="text-center text-sm text-gray-400">
+            Vectrios helps recover a significant portion of that—before you spend more on traffic or headcount.
+          </p>
         </div>
 
         <div className="max-w-2xl mx-auto mb-12">
           <div className="p-7 bg-gradient-to-br from-cyan-950/40 to-[#111827] rounded-2xl border border-cyan-500/40 text-center">
-            <h2 className="text-2xl font-bold mb-2">14-Day Trial = Scale Plan</h2>
+            <p className="text-cyan-200/90 font-semibold mb-2 text-lg">
+              Try risk-free — recover your first $50K in lost revenue
+            </p>
+            <h2 className="text-2xl font-bold mb-2">14-day trial · full Scale access</h2>
             <p className="text-gray-400 text-sm mb-6">
-              Trial users receive full Scale features for 14 days.
+              Every trial includes the full Scale playbook so you can see the complete recovery path—not a watered-down demo.
             </p>
             <button
               onClick={handleTrial}
@@ -255,7 +262,7 @@ export default function PricingPage() {
                 isProcessing ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
               }`}
             >
-              Start Trial (Scale Access)
+              Start 14-day trial — full access
             </button>
           </div>
         </div>
@@ -278,56 +285,61 @@ export default function PricingPage() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-14">
-          {plans.map((plan) => (
-            (() => {
-              const isScale = plan.name.toLowerCase() === "scale"
-              return (
-            <div
-              key={plan.name}
-              className={`relative p-7 bg-[#111827] rounded-lg border transition ${
-                isScale
-                  ? "border-cyan-500/70 shadow-[0_0_0_1px_rgba(34,211,238,0.25)] shadow-cyan-500/10"
-                  : "border-gray-800 hover:border-cyan-500/40"
-              }`}
-            >
-              {isScale && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                  Recommended
-                </span>
-              )}
-              <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-              <div className="mb-6">
-                <span className="text-4xl font-bold">
-                  ${billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly}
-                </span>
-                <span className="text-gray-400">/month</span>
-                {billingCycle === "annual" && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Billed annually (${plan.priceAnnual * 12}/year)
-                  </p>
-                )}
-              </div>
-              <ul className="space-y-2 mb-7 text-sm text-gray-300">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex gap-2">
-                    <span className="text-cyan-400">✓</span>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => handleSelectPlan(plan.name)}
-                disabled={isProcessing}
-                className={`w-full py-3 font-medium rounded-lg transition ${
-                  isProcessing ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
+          {plans.map((plan) => {
+            const isGrowth = plan.name.toLowerCase() === "growth"
+            return (
+              <div
+                key={plan.name}
+                className={`relative p-7 bg-[#111827] rounded-lg border transition flex flex-col ${
+                  isGrowth
+                    ? "border-cyan-500/80 shadow-[0_0_24px_-4px_rgba(34,211,238,0.35)] md:scale-[1.02] z-[1]"
+                    : "border-gray-800 hover:border-cyan-500/40"
                 }`}
               >
-                Start {plan.name}
-              </button>
-            </div>
-              )
-            })()
-          ))}
+                {isGrowth && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide text-center max-w-[95%] leading-tight">
+                    Most companies recover value here
+                  </span>
+                )}
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-cyan-400/80 mb-1">
+                  {plan.name}
+                </p>
+                <h3 className="text-xl font-bold mb-4 leading-snug">{plan.headline}</h3>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold">
+                    ${billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly}
+                  </span>
+                  <span className="text-gray-400">/month</span>
+                  {billingCycle === "annual" && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Billed annually (${plan.priceAnnual * 12}/year)
+                    </p>
+                  )}
+                </div>
+                <ul className="space-y-2 mb-7 text-sm text-gray-300 flex-1">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex gap-2">
+                      <span className="text-cyan-400 shrink-0">✓</span>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => handleSelectPlan(plan.name)}
+                  disabled={isProcessing}
+                  className={`w-full py-3 font-semibold rounded-lg transition ${
+                    isGrowth && !isProcessing
+                      ? "bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20"
+                      : isProcessing
+                        ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+                        : "bg-cyan-500 hover:bg-cyan-400 text-black"
+                  }`}
+                >
+                  {plan.ctaLabel}
+                </button>
+              </div>
+            )
+          })}
         </div>
 
         <div className="border-t border-gray-800 pt-12">

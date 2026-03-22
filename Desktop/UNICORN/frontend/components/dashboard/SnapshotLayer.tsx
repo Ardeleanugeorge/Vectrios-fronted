@@ -34,10 +34,11 @@ interface SnapshotLayerProps {
   companyId?: string | null
 }
 
-function LockedCard({ title, description, planRequired }: {
+function LockedCard({ title, description, ctaLabel }: {
   title: string
   description: string
-  planRequired: string
+  /** Outcome-based CTA (not "Unlock with {plan}") */
+  ctaLabel: string
 }) {
   return (
     <div className="relative rounded-lg overflow-hidden min-h-[140px] bg-[#111827] border border-gray-800">
@@ -61,9 +62,9 @@ function LockedCard({ title, description, planRequired }: {
           <p className="text-xs text-gray-500 mb-3">{description}</p>
           <Link
             href="/pricing"
-            className="inline-block px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-xs"
+            className="inline-block px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-xs text-center leading-snug"
           >
-            Unlock with {planRequired}
+            {ctaLabel}
           </Link>
         </div>
       </div>
@@ -124,7 +125,7 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
         </div>
         <div className="mt-4 pt-4 border-t border-white/10">
           <p className="text-xs opacity-50">
-            Unlock your plan to see exact ARR at risk, root cause, signal breakdown and recovery path.
+            See exact ARR at risk, root cause, and recovery path—upgrade to a paid plan.
           </p>
         </div>
       </div>
@@ -152,42 +153,42 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
       {/* One locked module per tier (clear upgrade path) */}
       <div className="grid md:grid-cols-3 gap-3">
         <LockedCard
-          title="Starter: Root Cause & Risk Driver"
-          description="See what is causing compression and where to start fixing."
-          planRequired="Starter"
+          title="Find what's costing you revenue"
+          description="Identify your biggest leak, where messaging breaks, and one high-impact fix."
+          ctaLabel="Find my revenue leak"
         />
         <LockedCard
-          title="Growth: Financial Exposure Model"
-          description="Unlock ARR at risk, close-rate impact, and recovery path."
-          planRequired="Growth"
+          title="Recover lost revenue"
+          description="Full fix plan, ARR at risk, close-rate impact, and page-by-page breakdown."
+          ctaLabel="See how to recover $185K/year"
         />
         <LockedCard
-          title="Scale: Trajectory & Benchmark Intelligence"
-          description="Access 12-month trajectory and benchmark position vs peers."
-          planRequired="Scale"
+          title="Maximize revenue performance"
+          description="Benchmarks vs similar companies, ongoing monitoring, and weekly revenue-risk alerts."
+          ctaLabel="Maximize my revenue"
         />
       </div>
 
       {/* ══ CTA PRINCIPAL ══ */}
       <div className="p-8 rounded-lg border border-cyan-800/40 bg-gradient-to-br from-cyan-950/30 to-[#111827]">
         <h3 className="text-lg font-bold text-white mb-2">
-          Your diagnostic is ready. Unlock the full picture.
+          Your diagnostic is ready—see how much you can recover.
         </h3>
         <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-          See exactly why your revenue is at risk, how much, and what to fix — starting from $49/mo.
+          Typical companies lose $120K–$300K/year to messaging and funnel leaks. Vectrios maps the fix and the dollar impact—from $49/mo.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
             href="/pricing"
             className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-sm text-center"
           >
-            View Plans & Pricing
+            View plans & recover revenue
           </Link>
           <Link
             href="/pricing"
             className="inline-block px-6 py-3 bg-transparent hover:bg-gray-800 text-cyan-400 font-medium rounded-lg border border-cyan-700 transition text-sm text-center"
           >
-            Start 14-Day Free Trial
+            Try risk-free — 14-day full access
           </Link>
         </div>
       </div>

@@ -42,6 +42,16 @@ export default function FeatureGate({
     return <>{children}</>
   }
 
+  const pr = planRequired.toLowerCase()
+  const upgradeLabel =
+    pr === "growth"
+      ? "See how to recover $185K/year"
+      : pr === "scale"
+        ? "Maximize my revenue"
+        : pr === "starter"
+          ? "Find my revenue leak"
+          : `Upgrade to ${planRequired.charAt(0).toUpperCase() + planRequired.slice(1)}`
+
   // Locked — static placeholder (nu randăm children real ca să evităm fetch inutil + height glitch)
   return (
     <div className="relative rounded-lg overflow-hidden min-h-[220px] bg-[#111827] border border-gray-800">
@@ -74,9 +84,9 @@ export default function FeatureGate({
           </p>
           <Link
             href="/pricing"
-            className="inline-block px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-sm"
+            className="inline-block px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-sm text-center max-w-[280px]"
           >
-            Upgrade to {planRequired.charAt(0).toUpperCase() + planRequired.slice(1)}
+            {upgradeLabel}
           </Link>
         </div>
       </div>
