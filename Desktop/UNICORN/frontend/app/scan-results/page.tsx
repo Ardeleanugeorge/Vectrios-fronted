@@ -464,17 +464,6 @@ function ScanResultsContent() {
   const [captureError, setCaptureError] = useState("")
   const [unlocked, setUnlocked] = useState(false)
   const [showFinancialImpact, setShowFinancialImpact] = useState(false)
-  
-  // Financial impact form state
-  const [arrRange, setArrRange] = useState("")
-  const [acvRange, setAcvRange] = useState("")
-  const [monthlyTraffic, setMonthlyTraffic] = useState("")
-  const [calculatingImpact, setCalculatingImpact] = useState(false)
-  
-  // Financial impact results
-  const [financialImpact, setFinancialImpact] = useState<FinancialImpactComputed | null>(null)
-  
-  const [showImpactForm, setShowImpactForm] = useState(false)
 
   /** Default mid-market priors: full report immediately after email (same engine as refined model). */
   const instantFinancials = useMemo(() => {
@@ -579,7 +568,6 @@ function ScanResultsContent() {
       setUnlocked(true)
       setShowEmailCapture(false)
       setShowFinancialImpact(true)
-      setShowImpactForm(false)
       setCapturing(false)
 
       setTimeout(() => {
@@ -591,32 +579,6 @@ function ScanResultsContent() {
     }
   }
 
-  const calculateFinancialImpact = () => {
-    if (!data || !arrRange || !acvRange) return
-    setCalculatingImpact(true)
-    const result = computeFinancialImpactFromScan(data, {
-      arrRange,
-      acvRange,
-      monthlyTraffic: monthlyTraffic || "",
-    })
-    if (result) {
-      setFinancialImpact(result)
-    }
-    setCalculatingImpact(false)
-    setShowImpactForm(false)
-    setTimeout(() => {
-      document.getElementById("financial-impact-results")?.scrollIntoView({ behavior: "smooth", block: "center" })
-    }, 100)
-  }
-
-  /** Step 2 → Step 3: recovery CTA first, precision form only after click */
-  const openPrecisionForm = () => {
-    setShowImpactForm(true)
-    setTimeout(() => {
-      document.getElementById("financial-impact-form")?.scrollIntoView({ behavior: "smooth", block: "start" })
-    }, 150)
-  }
-  
   const formatCurrency = (val: number) => {
     if (val >= 1000000) {
       return `$${(val / 1000000).toFixed(1)}M`
@@ -663,20 +625,48 @@ function ScanResultsContent() {
         : "Roughly in line with typical B2B messaging exposure"
   })()
 
+  const wideLayout = unlocked
+
   return (
     <div className="min-h-screen bg-[#0B0F19] text-white">
-      {/* Header */}
-      <div className="border-b border-gray-800 px-6 py-4 flex items-center justify-between max-w-4xl mx-auto">
-        <Link href="/" className="text-xl font-bold">
-          Vectri<span className="text-cyan-400">OS</span>
-        </Link>
-        <Link href="/" className="text-sm text-gray-500 hover:text-gray-300">← Run another scan</Link>
-      </div>
+      {/* Înainte de email: același header îngust ca landing-ul de rezultate. După email: lățime dashboard. */}
+      {wideLayout ? (
+        <div className="border-b border-gray-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+            <Link href="/" className="text-xl font-bold shrink-0">
+              Vectri<span className="text-cyan-400">OS</span>
+            </Link>
+            <div className="flex items-center gap-4 text-sm">
+              <Link href="/dashboard" className="text-gray-500 hover:text-cyan-400 transition hidden sm:inline">
+                Dashboard
+              </Link>
+              <Link href="/" className="text-gray-500 hover:text-gray-300 whitespace-nowrap">
+                ← Run another scan
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="border-b border-gray-800 px-6 py-4 flex items-center justify-between max-w-4xl mx-auto">
+          <Link href="/" className="text-xl font-bold">
+            Vectri<span className="text-cyan-400">OS</span>
+          </Link>
+          <Link href="/" className="text-sm text-gray-500 hover:text-gray-300">
+            ← Run another scan
+          </Link>
+        </div>
+      )}
 
-      <main className="max-w-3xl mx-auto px-6 py-12">
+      <main
+        className={
+          wideLayout
+            ? "mx-auto w-full max-w-7xl px-4 sm:px-6 py-10 lg:py-12"
+            : "max-w-3xl mx-auto px-6 py-12"
+        }
+      >
 
         {/* Domain + badge */}
-        <div className="flex items-center gap-3 mb-8">
+        <div className={`flex items-center gap-3 mb-8 ${wideLayout ? "flex-wrap lg:mb-10" : ""}`}>
           <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs font-bold text-cyan-400 border border-gray-700">
             {data.domain.charAt(0).toUpperCase()}
           </div>
@@ -689,9 +679,13 @@ function ScanResultsContent() {
           </div>
         </div>
 
-        {/* RII Score card — financial pain FIRST */}
-        <div className="p-8 bg-[#111827] rounded-xl border border-gray-800 mb-6 text-center">
-          {!isBlocked && instantFinancials && !unlocked && (
+        {/* RII: coloană îngustă + centrat înainte de email; grid lat după email */}
+        <div
+          className={`bg-[#111827] rounded-xl border border-gray-800 mb-6 ${
+            wideLayout ? "p-6 lg:p-8 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start text-left" : "p-8 text-center"
+          }`}
+        >
+          {!wideLayout && !isBlocked && instantFinancials && (
             <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-orange-950/50 to-[#0d1320] border border-orange-500/30 text-left">
               <p className="text-lg font-semibold text-white leading-snug mb-2">
                 You&apos;re already losing revenue due to messaging misalignment
@@ -701,7 +695,7 @@ function ScanResultsContent() {
               </p>
             </div>
           )}
-          {!isBlocked && !instantFinancials && (
+          {!wideLayout && !isBlocked && !instantFinancials && (
             <div className="mb-6 p-4 rounded-xl bg-orange-950/30 border border-orange-500/20 text-left">
               <p className="text-lg font-semibold text-white leading-snug">
                 You&apos;re already losing revenue due to messaging misalignment
@@ -710,59 +704,75 @@ function ScanResultsContent() {
             </div>
           )}
 
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Revenue Impact Index</p>
-          <p className={`text-7xl font-bold mb-2 ${riiColor}`}>
-            {hasRii && !isBlocked ? Math.round(rii as number) : "—"}
-          </p>
-          <p className={`text-lg font-semibold mb-3 ${riiColor}`}>{data.risk_level}</p>
-
-          {data.status !== "blocked" && (
-            <p className="text-sm text-gray-400 mb-4">
-              Structural misalignment in revenue-stage messaging — see breakdown below.
+          <div className={wideLayout ? "lg:col-span-4 lg:row-span-2" : ""}>
+            <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Revenue Impact Index</p>
+            <p className={`font-bold mb-2 ${riiColor} ${wideLayout ? "text-6xl sm:text-7xl" : "text-7xl"}`}>
+              {hasRii && !isBlocked ? Math.round(rii as number) : "—"}
             </p>
-          )}
-          {data.status === "blocked" && (
-            <p className="text-sm text-gray-400 mb-4">
-              Unable to analyze — site blocked automated access.
+            <p className={`text-lg font-semibold mb-3 ${riiColor}`}>{data.risk_level}</p>
+          </div>
+
+          <div className={wideLayout ? "lg:col-span-8 space-y-4" : "contents"}>
+            {data.status !== "blocked" && (
+              <p className={`text-sm text-gray-400 ${wideLayout ? "mb-2" : "mb-4"}`}>
+                Structural misalignment in revenue-stage messaging — see breakdown below.
+              </p>
+            )}
+            {data.status === "blocked" && (
+              <p className="text-sm text-gray-400 mb-4">
+                Unable to analyze — site blocked automated access.
+              </p>
+            )}
+
+            <p className="text-xs text-gray-600 mb-4">
+              {data.pages_scanned} revenue page{data.pages_scanned !== 1 ? "s" : ""} analyzed
             </p>
-          )}
 
-          <p className="text-xs text-gray-600 mb-4">
-            {data.pages_scanned} revenue page{data.pages_scanned !== 1 ? "s" : ""} analyzed
-          </p>
-
-          {!isBlocked && data.confidence !== null && (
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-4">
-              <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                <div className="h-full bg-cyan-500/60 rounded-full" style={{ width: `${data.confidence}%` }} />
+            {!isBlocked && data.confidence !== null && (
+              <div
+                className={`flex items-center gap-2 text-sm text-gray-500 mb-4 ${
+                  wideLayout ? "justify-start" : "justify-center"
+                }`}
+              >
+                <div className={`h-1.5 bg-gray-800 rounded-full overflow-hidden ${wideLayout ? "w-24 sm:w-32" : "w-24"}`}>
+                  <div className="h-full bg-cyan-500/60 rounded-full" style={{ width: `${data.confidence}%` }} />
+                </div>
+                <span>Confidence: {Math.round(data.confidence)}%</span>
               </div>
-              <span>Confidence: {Math.round(data.confidence)}%</span>
-            </div>
-          )}
+            )}
 
-          <ScanStatusMessage status={data.status} reason={data.reason} confidence={data.confidence} />
+            <ScanStatusMessage status={data.status} reason={data.reason} confidence={data.confidence} />
 
-          {data.percentile_label && !isBlocked ? (
-            <div className={`inline-flex flex-col sm:flex-row items-center justify-center gap-2 px-4 py-3 rounded-xl border text-sm font-medium max-w-lg mx-auto ${
-              (data.percentile ?? 0) >= 60
-                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                : (data.percentile ?? 0) >= 40
-                  ? "bg-yellow-500/10 border-yellow-500/30 text-yellow-200"
-                  : "bg-red-500/10 border-red-500/30 text-red-200"
-            }`}>
-              <span>
-                {(data.percentile ?? 0) < 50
-                  ? "Your messaging underperforms compared to similar B2B sites"
-                  : "Your messaging outperforms many comparable B2B sites"}
-              </span>
-            </div>
-          ) : (
-            !isBlocked && benchmarkLabel ? (
-              <div className="inline-flex items-center justify-center px-4 py-3 rounded-xl bg-gray-800/60 border border-gray-700 text-sm text-gray-200 max-w-lg mx-auto">
-                {benchmarkLabel}
+            {data.percentile_label && !isBlocked ? (
+              <div
+                className={`flex flex-col sm:flex-row items-start sm:items-center gap-2 px-4 py-3 rounded-xl border text-sm font-medium w-full ${
+                  wideLayout ? "max-w-none" : "max-w-lg mx-auto"
+                } ${
+                  (data.percentile ?? 0) >= 60
+                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                    : (data.percentile ?? 0) >= 40
+                      ? "bg-yellow-500/10 border-yellow-500/30 text-yellow-200"
+                      : "bg-red-500/10 border-red-500/30 text-red-200"
+                }`}
+              >
+                <span>
+                  {(data.percentile ?? 0) < 50
+                    ? "Your messaging underperforms compared to similar B2B sites"
+                    : "Your messaging outperforms many comparable B2B sites"}
+                </span>
               </div>
-            ) : null
-          )}
+            ) : (
+              !isBlocked && benchmarkLabel ? (
+                <div
+                  className={`flex items-center px-4 py-3 rounded-xl bg-gray-800/60 border border-gray-700 text-sm text-gray-200 w-full ${
+                    wideLayout ? "max-w-none" : "max-w-lg mx-auto justify-center"
+                  }`}
+                >
+                  {benchmarkLabel}
+                </div>
+              ) : null
+            )}
+          </div>
         </div>
 
         {scanCount !== null && scanCount > 0 && (
@@ -783,11 +793,11 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* Score breakdown — business language */}
-        <div className="p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6">
+        {/* Score breakdown: o coloană înainte de email; 2 coloane după email */}
+        <div className={`p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6 ${wideLayout ? "lg:p-8 lg:mb-8" : ""}`}>
           <p className="text-lg font-semibold text-white mb-1">Where you&apos;re losing revenue</p>
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-5">Leak severity by area (0–100)</p>
-          <div className="space-y-6">
+          <div className={wideLayout ? "grid md:grid-cols-2 gap-x-10 gap-y-6" : "space-y-6"}>
             <ScoreBar {...METRIC_ROWS[0]} value={data.alignment} />
             <ScoreBar {...METRIC_ROWS[1]} value={data.icp_clarity} />
             <ScoreBar {...METRIC_ROWS[2]} value={data.anchor_density} />
@@ -864,7 +874,7 @@ function ScanResultsContent() {
               See your recovery numbers →
             </button>
             <p className="text-xs text-gray-400 mt-4 max-w-md mx-auto text-center leading-relaxed">
-              Email for instant unlock — full dollar breakdown first, one optional precision step before your plan.
+              Email for instant unlock — see your leak, then choose a plan to recover revenue.
             </p>
             <p className="text-sm text-amber-200/90 mt-3 max-w-md mx-auto leading-relaxed font-medium text-center">
               Every month unfixed, loss compounds
@@ -872,259 +882,120 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* After email: full value first — no forms until user chooses recovery path */}
-        {unlocked && showFinancialImpact && !financialImpact && instantFinancials && !isBlocked && (
-          <div id="financial-impact-instant" className="p-6 sm:p-8 bg-gradient-to-br from-cyan-950/25 via-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/25 mb-6">
-            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">Unlocked</p>
-            <h3 className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-2">
-              Here&apos;s the revenue you&apos;re leaking
-            </h3>
-            <p className="text-xs text-gray-500 mb-5 max-w-xl">
-              Built from this scan&apos;s live signals. Dollar bands use a mid-market prior until you optionally sharpen them — same model, no filler numbers.
+        {/* După email: pierdere → recovery (hero) → CTA monetizare (fără form pe loc) */}
+        {unlocked && showFinancialImpact && instantFinancials && !isBlocked && (
+          <div
+            id="financial-impact-instant"
+            className="p-6 sm:p-8 lg:p-10 bg-gradient-to-br from-cyan-950/25 via-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/25 mb-8"
+          >
+            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2 text-center lg:text-left">
+              Unlocked · revenue-first
             </p>
+            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-6 text-center lg:text-left max-w-4xl">
+              You&apos;re losing revenue right now — here&apos;s how much, and what you can get back
+            </h3>
 
-            <div className="p-4 sm:p-5 rounded-xl bg-orange-950/45 border border-orange-500/35 mb-5">
-              <p className="text-sm text-orange-200/95 font-medium mb-1">You&apos;re losing about this every month</p>
-              <p className="text-2xl sm:text-3xl font-bold text-orange-300 tracking-tight">
-                ~{formatCurrency(Math.round(instantFinancials.arrAtRiskLow / 12))}–{formatCurrency(Math.round(instantFinancials.arrAtRiskHigh / 12))} / month
-              </p>
-              <p className="text-xs text-gray-400 mt-2">
-                ≈ {formatCurrency(instantFinancials.arrAtRiskLow)}–{formatCurrency(instantFinancials.arrAtRiskHigh)} / year at risk if messaging stays misaligned
-              </p>
-            </div>
-
-            <div className="grid sm:grid-cols-3 gap-3 mb-5">
-              <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Close rate hit</p>
-                <p className="text-xl font-bold text-red-400">
-                  −{instantFinancials.closeRateDeltaLow}% to −{instantFinancials.closeRateDeltaHigh}%
+            <div className="grid lg:grid-cols-2 gap-4 lg:gap-6 mb-8">
+              <div className="p-5 sm:p-6 rounded-xl bg-orange-950/50 border border-orange-500/40">
+                <p className="text-xs font-semibold uppercase tracking-wider text-orange-200/90 mb-2">
+                  You&apos;re losing (modeled)
+                </p>
+                <p className="text-3xl sm:text-4xl font-bold text-orange-300 tracking-tight">
+                  ~{formatCurrency(Math.round(instantFinancials.arrAtRiskLow / 12))}–
+                  {formatCurrency(Math.round(instantFinancials.arrAtRiskHigh / 12))}
+                  <span className="text-lg sm:text-xl font-semibold text-orange-200/85"> / month</span>
+                </p>
+                <p className="text-xs text-gray-400 mt-3">
+                  ≈ {formatCurrency(instantFinancials.arrAtRiskLow)}–{formatCurrency(instantFinancials.arrAtRiskHigh)} / year
+                  at risk if nothing changes
                 </p>
               </div>
-              <div className="p-4 bg-[#0B0F19] rounded-lg border border-emerald-500/15">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Recoverable (modeled)</p>
-                <p className="text-xl font-bold text-emerald-400">
-                  {formatCurrency(instantFinancials.recoveryLow)} – {formatCurrency(instantFinancials.recoveryHigh)} / yr
+
+              <div className="p-5 sm:p-6 rounded-xl bg-gradient-to-br from-emerald-950/60 to-[#0d2818]/80 border border-emerald-500/45 shadow-[0_0_40px_-12px_rgba(52,211,153,0.35)]">
+                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-200/95 mb-2">
+                  You can recover (modeled)
                 </p>
-              </div>
-              <div className="p-4 bg-[#0B0F19] rounded-lg border border-orange-500/20">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Primary leak</p>
-                <p className="text-sm text-orange-200 leading-snug">{instantFinancials.primaryDriver}</p>
+                <p className="text-3xl sm:text-4xl font-bold text-emerald-300 tracking-tight">
+                  {formatCurrency(instantFinancials.recoveryLow)} – {formatCurrency(instantFinancials.recoveryHigh)}
+                  <span className="text-lg sm:text-xl font-semibold text-emerald-200/90"> / year</span>
+                </p>
+                <p className="text-sm text-emerald-100/80 mt-3 leading-relaxed">
+                  If structural fixes from this scan land — this is the modeled band you could claw back.
+                </p>
               </div>
             </div>
 
-            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">Why the model says this</p>
-            <ul className="text-sm text-gray-300 space-y-2 mb-4 max-w-xl list-disc list-inside marker:text-cyan-500">
-              {buildStructureInsightBullets(
-                data,
-                instantFinancials.closeRateDeltaLow,
-                instantFinancials.closeRateDeltaHigh
-              )
-                .slice(0, 3)
-                .map((line) => (
-                  <li key={line} className="leading-relaxed pl-1">
-                    {line}
+            <div className="max-w-2xl mx-auto lg:mx-0 lg:max-w-xl mb-8">
+              <Link
+                href="/pricing?from=scan"
+                className="flex flex-col w-full items-center justify-center px-6 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl transition text-base sm:text-lg shadow-lg shadow-cyan-500/20 text-center leading-snug"
+              >
+                <span>
+                  Recover up to {formatCurrency(instantFinancials.recoveryHigh)}/year →
+                </span>
+                <span className="text-xs sm:text-sm font-semibold text-black/75 mt-1.5 normal-case tracking-normal">
+                  Fix ~{formatCurrency(Math.round(instantFinancials.arrAtRiskHigh / 12))}/mo bleed · plans &amp; 14-day trial
+                </span>
+              </Link>
+              <ul className="mt-4 space-y-2 text-sm text-gray-400">
+                {[
+                  "See exact fixes (page-by-page)",
+                  "Prioritized recovery plan for your funnel",
+                  "Timeline to recover revenue — not more spreadsheets",
+                ].map((line) => (
+                  <li key={line} className="flex items-start gap-2">
+                    <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
+                    <span>{line}</span>
                   </li>
                 ))}
-            </ul>
-
-            <p className="text-xs text-gray-600 mb-6">
-              Confidence: <span className="text-gray-400">{instantFinancials.confidence}</span> — {instantFinancials.confidenceExplanation}
-            </p>
-
-            {!showImpactForm && (
-              <div className="p-5 rounded-xl bg-gradient-to-br from-cyan-950/35 to-[#0B0F19] border border-cyan-500/30">
-                <p className="text-base font-bold text-white mb-1">Fix this leak — get your recovery plan</p>
-                <p className="text-sm text-gray-400 mb-4">
-                  Next step: we walk you through what to change first. Optional 60s afterward to tighten dollars{" "}
-                  <span className="text-gray-300">(3–5× accuracy)</span> using your ARR &amp; ACV.
-                </p>
-                <button
-                  type="button"
-                  onClick={openPrecisionForm}
-                  className="w-full px-6 py-3.5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base shadow-lg shadow-cyan-500/15"
-                >
-                  See exact recovery plan for your business →
-                </button>
-                <p className="text-xs text-gray-500 mt-2 text-center">
-                  Increase accuracy to recover up to {formatCurrency(instantFinancials.recoveryHigh)}/year → opens right below
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Step 3 — precision only after user clicks recovery CTA */}
-        {unlocked && showFinancialImpact && !financialImpact && showImpactForm && (
-          <div id="financial-impact-form" className="p-6 bg-[#111827] rounded-xl border border-cyan-500/20 mb-6">
-            <div className="mb-4">
-              <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-1">Optional · ~60 seconds</p>
-              <h3 className="text-xl font-bold text-white mb-1">Improve accuracy by 3–5× before your plan</h3>
-              <p className="text-sm text-gray-400">
-                Same engine as above — your ARR, ACV, and traffic replace the default prior so recovery dollars match your business.
-              </p>
-              <p className="text-xs text-gray-600 mt-2">
-                Saved for onboarding so you don&apos;t re-enter the same ranges.
-              </p>
+              </ul>
+              <Link
+                href="/onboarding?from=scan"
+                className="mt-5 block text-center lg:text-left text-sm text-gray-500 hover:text-cyan-400/90 transition underline underline-offset-2 decoration-gray-600 hover:decoration-cyan-500/50"
+              >
+                Optional: tighten your numbers (~30 sec) in the free diagnostic — ARR, ACV, close rates
+              </Link>
             </div>
-            
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                // Persist ARR range choice for onboarding prefill
-                if (typeof window !== "undefined" && arrRange) {
-                  try {
-                    window.localStorage.setItem("onboarding_arr_range", arrRange);
-                    window.sessionStorage.setItem("onboarding_arr_range", arrRange);
-                  } catch {}
-                }
-                calculateFinancialImpact();
-              }}
-              className="space-y-4"
-            >
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Scale the model to your business — what&apos;s your ARR band? <span className="text-red-400">*</span>
-                </label>
-                <select
-                  value={arrRange}
-                  onChange={(e) => {
-                    const v = e.target.value
-                    setArrRange(v)
-                    if (typeof window !== "undefined" && v) {
-                      try {
-                        window.localStorage.setItem("onboarding_arr_range", v)
-                        window.sessionStorage.setItem("onboarding_arr_range", v)
-                      } catch { /* ignore */ }
-                    }
-                  }}
-                  required
-                  className="w-full px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
-                >
-                  <option value="">Select ARR range</option>
-                  <option value="<1M">Less than $1M</option>
-                  <option value="1-3M">$1M – $3M</option>
-                  <option value="3-10M">$3M – $10M</option>
-                  <option value="10-25M">$10M – $25M</option>
-                  <option value="25-50M">$25M – $50M</option>
-                  <option value="50-100M">$50M – $100M</option>
-                  <option value="100M+">$100M+</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">
-                  Roughly how many qualified site visitors per month? <span className="text-gray-500">(optional)</span>
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={monthlyTraffic}
-                    onChange={(e) => setMonthlyTraffic(e.target.value.replace(/\D/g, ""))}
-                    placeholder="e.g., 25000"
-                    className="flex-1 px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
-                  />
-                  <select
-                    value={monthlyTraffic ? "" : ""}
-                    onChange={(e) => e.target.value && setMonthlyTraffic(e.target.value)}
-                    className="px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
-                  >
-                    <option value="">Or select</option>
-                    <option value="5000">5K</option>
-                    <option value="10000">10K</option>
-                    <option value="25000">25K</option>
-                    <option value="50000">50K</option>
-                    <option value="100000">100K+</option>
-                    <option value="">Not sure</option>
-                  </select>
+
+            <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 pt-8 border-t border-gray-800/80">
+              <div className="lg:col-span-5 grid sm:grid-cols-2 lg:grid-cols-1 gap-3">
+                <div className="p-4 bg-[#111827] rounded-lg border border-gray-800">
+                  <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Annual ARR at risk</p>
+                  <p className="text-xl font-bold text-white">
+                    {formatCurrency(instantFinancials.arrAtRiskLow)} – {formatCurrency(instantFinancials.arrAtRiskHigh)}
+                  </p>
+                </div>
+                <div className="p-4 bg-[#111827] rounded-lg border border-gray-800">
+                  <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Close rate compression</p>
+                  <p className="text-xl font-bold text-red-400">
+                    −{instantFinancials.closeRateDeltaLow}% to −{instantFinancials.closeRateDeltaHigh}%
+                  </p>
+                </div>
+                <div className="p-4 bg-[#111827] rounded-lg border border-orange-500/25 sm:col-span-2 lg:col-span-1">
+                  <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Primary leak</p>
+                  <p className="text-sm text-orange-200 leading-snug">{instantFinancials.primaryDriver}</p>
                 </div>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">
-                  What's your typical deal size (ACV)? <span className="text-red-400">*</span>
-                </label>
-                <select
-                  value={acvRange}
-                  onChange={(e) => setAcvRange(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 bg-[#0B0F19] border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500"
-                >
-                  <option value="">Select ACV range</option>
-                  <option value="<2K">Less than $2K</option>
-                  <option value="2-5K">$2K – $5K</option>
-                  <option value="5-15K">$5K – $15K</option>
-                  <option value="15-40K">$15K – $40K</option>
-                  <option value="40-100K">$40K – $100K</option>
-                  <option value="100K+">$100K+</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">Ranges are fine — we map to the same model midpoints</p>
-              </div>
-              
-              <button
-                type="submit"
-                disabled={calculatingImpact || !arrRange || !acvRange}
-                className="w-full px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
-              >
-                {calculatingImpact ? "Sharpening recovery numbers…" : "Sharpen my recovery numbers →"}
-              </button>
-            </form>
-          </div>
-        )}
-
-        {/* Same journey: sharpened numbers → one recovery CTA (no second “full report”) */}
-        {financialImpact && (
-          <div id="financial-impact-results" className="p-6 bg-gradient-to-br from-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/20 mb-6">
-            <div className="mb-4">
-              <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-1">Sharpened model</p>
-              <h3 className="text-lg font-bold text-white mb-1">Recovery numbers with your ARR &amp; ACV</h3>
-              <p className="text-xs text-gray-500">
-                Same scan + formulas — scaled to what you entered. Monthly bleed updates below.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-lg bg-orange-950/35 border border-orange-500/25 mb-4">
-              <p className="text-xs text-orange-200/90 mb-1">Modeled monthly at risk (unchanged)</p>
-              <p className="text-xl font-bold text-orange-300">
-                ~{formatCurrency(Math.round(financialImpact.arrAtRiskLow / 12))}–{formatCurrency(Math.round(financialImpact.arrAtRiskHigh / 12))} / mo
-              </p>
-            </div>
-
-            <div className="grid sm:grid-cols-3 gap-3 mb-4">
-              <div className="p-3 bg-[#0B0F19] rounded-lg border border-gray-800">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">At risk / yr</p>
-                <p className="text-lg font-bold text-orange-400 leading-tight">
-                  {formatCurrency(financialImpact.arrAtRiskLow)} – {formatCurrency(financialImpact.arrAtRiskHigh)}
+              <div className="lg:col-span-7">
+                <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">Why the model says this</p>
+                <ul className="text-sm text-gray-300 space-y-2.5 list-disc list-inside marker:text-cyan-500">
+                  {buildStructureInsightBullets(
+                    data,
+                    instantFinancials.closeRateDeltaLow,
+                    instantFinancials.closeRateDeltaHigh
+                  )
+                    .slice(0, 3)
+                    .map((line) => (
+                      <li key={line} className="leading-relaxed pl-1">
+                        {line}
+                      </li>
+                    ))}
+                </ul>
+                <p className="text-xs text-gray-600 mt-5">
+                  Confidence: <span className="text-gray-400">{instantFinancials.confidence}</span> —{" "}
+                  {instantFinancials.confidenceExplanation}
                 </p>
               </div>
-              <div className="p-3 bg-[#0B0F19] rounded-lg border border-emerald-500/15">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Recoverable / yr</p>
-                <p className="text-lg font-bold text-emerald-400 leading-tight">
-                  {formatCurrency(financialImpact.recoveryLow)} – {formatCurrency(financialImpact.recoveryHigh)}
-                </p>
-              </div>
-              <div className="p-3 bg-[#0B0F19] rounded-lg border border-gray-800">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Close rate</p>
-                <p className="text-lg font-bold text-red-400 leading-tight">
-                  −{financialImpact.closeRateDeltaLow}% to −{financialImpact.closeRateDeltaHigh}%
-                </p>
-              </div>
-            </div>
-
-            <p className="text-sm text-orange-200/95 mb-1">→ {financialImpact.primaryDriver}</p>
-            <p className="text-xs text-gray-600 mb-5">
-              {financialImpact.confidence} confidence — {financialImpact.confidenceExplanation}
-            </p>
-
-            <div className="pt-5 border-t border-gray-800 text-center">
-              <Link
-                href="/onboarding"
-                className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
-              >
-                Get your recovery roadmap →
-              </Link>
-              <p className="text-xs text-gray-500 mt-2 max-w-sm mx-auto">
-                Full diagnostic: what to fix first, pre-filled from this scan + your inputs.
-              </p>
             </div>
           </div>
         )}
@@ -1135,7 +1006,7 @@ function ScanResultsContent() {
             <div className="bg-[#111827] rounded-xl border border-gray-800 p-8 max-w-md w-full">
               <h3 className="text-2xl font-bold mb-2 text-white">Unlock your full structural revenue model</h3>
               <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-                Unlock the full dollar breakdown instantly (monthly + annual bleed, recoverable range, drivers). Forms only appear if you choose the recovery path — optional ARR/ACV step to sharpen numbers 3–5×.
+                Unlock your leak and recovery range instantly. Next step after email: choose a plan or trial to get the playbook — optional free diagnostic later if you want tighter numbers.
               </p>
               
               <form onSubmit={handleEmailCapture} className="space-y-4">
