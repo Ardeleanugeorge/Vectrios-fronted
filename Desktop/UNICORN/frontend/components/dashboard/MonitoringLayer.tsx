@@ -22,7 +22,7 @@ import BenchmarkPanel from "./BenchmarkPanel"
 import FinancialExposureCard from "./FinancialExposureCard"
 import SystemHealthIndicator from "./SystemHealthIndicator"
 import FeatureGate from "./FeatureGate"
-import ActionableInsights from "./ActionableInsights"
+import ActionableInsights, { type ActionLayerPayload } from "./ActionableInsights"
 
 interface MonitoringStatus {
   monitoring_active: boolean
@@ -73,6 +73,8 @@ interface DiagnosticResult {
   primary_revenue_leak?: string
   revenue_leak_confidence?: number
   recommendations?: string[]
+  /** Consultant-style playbook from full diagnostic (backend action_layer) */
+  action_layer?: ActionLayerPayload | null
   // legacy fallbacks
   strategic_alignment?: number
   conversion_anchor_density?: number
@@ -160,6 +162,9 @@ export default function MonitoringLayer({
       : diagnostic?.metrics_breakdown?.icp_mentions_total
         ? Math.min((diagnostic.metrics_breakdown.icp_mentions_total / 5) * 100, 100)
         : 0)
+
+  const positioningScore =
+    diagnostic?.positioning_coherence_score ?? 0
 
   // Get last scan date from monitoring status
   const lastScan = monitoringStatus.created_at || new Date().toISOString()
@@ -279,7 +284,7 @@ export default function MonitoringLayer({
       </div>
 
       {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action */}
-      {primaryRiskDriver && (
+      {diagnostic && (
         <ActionableInsights
           primaryRiskDriver={displayRiskDriver}
           closeRateDelta={safeCloseRateDelta}
@@ -289,6 +294,10 @@ export default function MonitoringLayer({
           alignmentScore={alignmentScore}
           icpClarity={icpClarity}
           anchorDensity={anchorDensity}
+          positioningScore={positioningScore}
+          riskScore={rii}
+          actionLayer={diagnostic?.action_layer ?? null}
+          currentPlan={currentPlan}
         />
       )}
 

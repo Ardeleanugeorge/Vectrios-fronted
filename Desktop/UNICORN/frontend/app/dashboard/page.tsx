@@ -9,6 +9,7 @@ import DashboardHeader from "@/components/DashboardHeader"
 import SnapshotLayer from "@/components/dashboard/SnapshotLayer"
 import MonitoringLayer from "@/components/dashboard/MonitoringLayer"
 import RevenueRiskIndex from "@/components/dashboard/RevenueRiskIndex"
+import type { ActionLayerPayload } from "@/components/dashboard/ActionableInsights"
 
 interface DiagnosticResult {
   risk_level?: string
@@ -43,6 +44,8 @@ interface DiagnosticResult {
   risk_override_reason?: string
   // Partial diagnostic flag (from scan results)
   is_partial?: boolean
+  /** Full-diagnostic playbook (backend) */
+  action_layer?: ActionLayerPayload | null
 }
 
 interface MonitoringStatus {
