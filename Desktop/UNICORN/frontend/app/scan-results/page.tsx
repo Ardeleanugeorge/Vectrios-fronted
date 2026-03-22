@@ -1046,27 +1046,27 @@ function ScanResultsContent() {
                   <p className="text-sm text-red-400">{captureError}</p>
                 )}
                 
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                   <button
                     type="button"
                     onClick={() => setShowEmailCapture(false)}
-                    className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition"
+                    className="order-2 sm:order-1 self-start text-sm text-gray-500 hover:text-gray-400 px-1 py-2 bg-transparent border-0 transition disabled:opacity-40"
                     disabled={capturing}
                   >
-                    Cancel
+                    ← Back
                   </button>
                   <button
                     type="submit"
                     disabled={capturing || !email.trim()}
-                    className="flex-1 px-4 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
+                    className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
                   >
                     {capturing ? "Unlocking…" : "Unlock full analysis →"}
                   </button>
                 </div>
               </form>
               
-              <p className="text-xs text-gray-500 mt-4 text-center">
-                No spam. Instant access.
+              <p className="text-xs text-gray-500 mt-4 text-center leading-relaxed">
+                Instant access — no signup required
               </p>
             </div>
           </div>
