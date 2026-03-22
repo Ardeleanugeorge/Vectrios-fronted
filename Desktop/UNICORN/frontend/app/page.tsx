@@ -133,7 +133,7 @@ export default function Home() {
             <span className="text-cyan-400"> We show you exactly where — and how much.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto">
-            We analyze your site like a revenue system — and show exactly where you&apos;re losing deals before they hit your pipeline.
+            We analyze your site like a revenue system — and show exactly where you&apos;re losing deals and why they don&apos;t convert.
           </p>
           <p className="text-sm md:text-base text-amber-200/90 font-medium mb-10 max-w-2xl mx-auto">
             Revenue loss compounds over time — most teams notice it too late.
@@ -183,7 +183,7 @@ export default function Home() {
               Takes 30 seconds · No signup · See your revenue risk instantly
             </p>
             <p className="text-gray-500 max-w-md mx-auto leading-relaxed">
-              Used by revenue teams to catch hidden losses before they show in pipeline
+              Used by revenue teams to catch hidden losses before they impact pipeline
             </p>
           </div>
 
@@ -249,9 +249,10 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">Example Revenue Architecture Scan</p>
-          <p className="text-center text-base md:text-lg font-semibold text-white mb-6">
+          <p className="text-center text-base md:text-lg font-semibold text-white mb-6 max-w-xl mx-auto leading-snug">
             Example:{" "}
-            <span className="text-red-400">$287K</span> in revenue at risk detected
+            <span className="text-red-400">$287K</span> in revenue at risk —{" "}
+            <span className="text-gray-300 font-medium">caused by messaging misalignment</span>
           </p>
 
           {/* Mock Dashboard */}
@@ -480,7 +481,7 @@ export default function Home() {
             href="/signup"
             className="inline-block px-12 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-lg"
           >
-            See how much revenue you&apos;re losing →
+            Find your revenue leaks →
           </Link>
           <p className="text-sm text-gray-500 mt-4">
             Run your scan → find your revenue leaks · Takes 30 seconds · No credit card required
