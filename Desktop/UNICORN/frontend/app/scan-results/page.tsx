@@ -775,81 +775,92 @@ function ScanResultsContent() {
                 🔒 Full Diagnostic
               </span>
             </div>
-            <h2 className="text-2xl font-bold mb-2 text-white">See exactly how much revenue you&apos;re losing →</h2>
-            <p className="text-gray-400 mb-4 text-sm max-w-md mx-auto">
-              Full diagnostic ties every leak to dollars — so you know what to fix first.
+            <h2 className="text-xl sm:text-2xl font-bold mb-3 text-white max-w-xl mx-auto leading-snug">
+              See exactly where you&apos;re losing revenue — and how much it&apos;s costing you
+            </h2>
+            <p className="text-gray-400 mb-5 text-sm max-w-lg mx-auto leading-relaxed">
+              We break down exactly where your revenue is leaking — and what it&apos;s costing you every month
             </p>
             <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">Includes</p>
-            <div className="space-y-2 mb-6 text-left max-w-sm mx-auto">
+            <div className="space-y-2.5 mb-6 text-left max-w-md mx-auto">
               {[
-                "Exact ARR at risk",
-                "Conversion loss breakdown",
-                "What to fix first (prioritized)",
-                "12-month trajectory & recovery potential",
+                "How much revenue you're losing (in $)",
+                "Which pages are causing the loss",
+                "What's breaking your conversion (and why)",
+                "What to fix first to recover revenue",
               ].map((line) => (
-                <div key={line} className="flex items-center gap-2 text-sm text-gray-200">
-                  <svg className="w-4 h-4 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div key={line} className="flex items-start gap-2 text-sm text-gray-200">
+                  <svg className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  {line}
+                  <span>{line}</span>
                 </div>
               ))}
             </div>
             <button
               onClick={handleUnlock}
-              className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto"
+              className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
             >
-              See exactly how much revenue you&apos;re losing →
+              Unlock your full revenue breakdown →
             </button>
             <p className="text-sm text-amber-200/90 mt-4 max-w-md mx-auto leading-relaxed font-medium">
-              Revenue loss compounds every month this isn&apos;t fixed
+              Every month this stays unfixed, you&apos;re losing more revenue
             </p>
             <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
-              Takes 30 seconds — no setup required
-            </p>
-            <p className="text-xs text-gray-600 mt-3">
-              No password required · Instant access
+              Takes 30 seconds — instant access, no setup required
             </p>
           </div>
         )}
 
         {/* Financial Impact - Peer Estimate FIRST (after unlock, before form) */}
         {unlocked && showFinancialImpact && !financialImpact && !showImpactForm && peerEstimate && (
-          <div id="financial-impact-peer" className="p-6 sm:p-8 bg-gradient-to-br from-orange-950/20 via-[#111827] to-[#0d1320] rounded-xl border border-orange-500/25 mb-6">
-            <p className="text-xs font-semibold text-orange-400/90 uppercase tracking-wider mb-3">Your revenue exposure</p>
+          <div id="financial-impact-peer" className="p-6 sm:p-8 bg-gradient-to-br from-cyan-950/20 via-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/25 mb-6">
+            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">Ready for you</p>
             <h3 className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-3">
+              Your full revenue analysis is ready
+            </h3>
+            <p className="text-lg sm:text-xl font-semibold text-white mb-2">
               You&apos;re already losing{" "}
               <span className="text-orange-400">
                 {formatCurrency(peerEstimate.low)}–{formatCurrency(peerEstimate.high)}
               </span>{" "}
               per year due to messaging gaps
-            </h3>
-            <p className="text-sm font-medium text-amber-200/90 mb-3 leading-relaxed">
-              This loss compounds every month your messaging stays misaligned
             </p>
-            <p className="text-sm text-gray-400 mb-6">
-              Based on patterns across 250+ B2B companies we&apos;ve analyzed
+            <p className="text-sm text-gray-300 mb-5 leading-relaxed max-w-xl">
+              We&apos;ve mapped exactly where your revenue is leaking — and what it&apos;s costing you. Patterns from{" "}
+              <span className="text-gray-400">250+ B2B companies analyzed</span>.
             </p>
+
+            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">Includes</p>
+            <ul className="text-sm text-gray-300 space-y-2 mb-6 max-w-md">
+              {[
+                "How much revenue you're losing",
+                "Which pages are causing the loss",
+                "What's breaking your conversion",
+                "What to fix first to recover revenue",
+              ].map((line) => (
+                <li key={line} className="flex items-start gap-2">
+                  <span className="text-cyan-400 mt-0.5">•</span>
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
 
             <button
               onClick={() => setShowImpactForm(true)}
               className="w-full px-6 py-3.5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base shadow-lg shadow-cyan-500/15"
             >
-              Get your full revenue breakdown →
+              View your full report →
             </button>
 
-            <div className="mt-5 text-left border-t border-gray-800 pt-5 max-w-md mx-auto">
-              <p className="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">See exactly</p>
-              <ul className="text-sm text-gray-400 space-y-1.5 list-disc list-inside marker:text-cyan-500">
-                <li>where you&apos;re losing revenue</li>
-                <li>how much each issue costs you</li>
-                <li>what to fix first</li>
-              </ul>
-            </div>
-
-            <p className="text-xs text-gray-500 mt-4 text-center">Takes 30 seconds — no exact data needed</p>
+            <p className="text-sm text-amber-200/90 mt-4 text-center font-medium leading-relaxed max-w-md mx-auto">
+              Every month this stays unfixed, you&apos;re losing more revenue
+            </p>
+            <p className="text-xs text-gray-500 mt-3 text-center">
+              Instant access — no setup required
+            </p>
             <p className="text-xs text-gray-600 mt-2 text-center max-w-md mx-auto leading-relaxed">
-              We use your ARR band to personalize the full report — same data carries into onboarding (no retyping).
+              One short step below personalizes dollar ranges — your email is already saved.
             </p>
           </div>
         )}
@@ -858,7 +869,7 @@ function ScanResultsContent() {
         {unlocked && showFinancialImpact && !financialImpact && showImpactForm && (
           <div id="financial-impact-form" className="p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6">
             <div className="mb-4">
-              <h3 className="text-xl font-bold text-white mb-1">Make this accurate for your business</h3>
+              <h3 className="text-xl font-bold text-white mb-1">Personalize your full report</h3>
               <p className="text-sm text-gray-400">No exact data needed — we&apos;ll use industry priors if you leave fields blank.</p>
               <p className="text-xs text-gray-600 mt-2">
                 Your ARR band is saved for the next page — you won&apos;t have to re-pick the same range if you continue to full diagnostic.
