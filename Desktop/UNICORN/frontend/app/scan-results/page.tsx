@@ -130,24 +130,36 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   return null
 }
 
-// ── Metric descriptions shown as hints under each bar ──────────────────────
-const METRIC_HINTS: Record<string, string> = {
-  "Messaging Alignment":   "Alignment between website messaging and stated revenue objective.",
-  "ICP Clarity":           "Clarity of ideal customer signals across key revenue pages.",
-  "Anchor Density":        "Presence of quantified value anchors that drive conversion decisions.",
-  "Positioning Coherence": "Consistency of positioning and category language across pages.",
-}
+// ── Business-language metric copy (no framework jargon) ─────────────────────
+const METRIC_ROWS: { label: string; hint: string }[] = [
+  {
+    label: "Your pages don't consistently convert",
+    hint: "Messaging doesn't line up with the revenue story you're selling.",
+  },
+  {
+    label: "You're attracting low-fit visitors",
+    hint: "ICP signals are weak — wrong people enter the funnel.",
+  },
+  {
+    label: "Proof and numbers are too thin to justify the next step",
+    hint: "Anchors that drive decisions are missing or vague.",
+  },
+  {
+    label: "Your category story is inconsistent across pages",
+    hint: "Positioning shifts — buyers can't compare you with confidence.",
+  },
+]
 
-function ScoreBar({ label, value }: { label: string; value: number | null }) {
+function ScoreBar({ label, hint, value }: { label: string; hint: string; value: number | null }) {
   const v = value ?? 0
   const color = v >= 65 ? "from-emerald-500 to-green-400"
     : v >= 40 ? "from-yellow-500 to-orange-400"
     : "from-red-500 to-orange-500"
   return (
     <div>
-      <div className="flex justify-between mb-1.5">
-        <span className="text-sm text-gray-300 font-medium">{label}</span>
-        <span className="text-sm font-bold text-white">{value !== null ? Math.round(v) : "—"}</span>
+      <div className="flex justify-between mb-1.5 gap-3">
+        <span className="text-sm text-gray-200 font-medium leading-snug">{label}</span>
+        <span className="text-sm font-bold text-white shrink-0">{value !== null ? Math.round(v) : "—"}</span>
       </div>
       <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden mb-1">
         <div
@@ -155,11 +167,35 @@ function ScoreBar({ label, value }: { label: string; value: number | null }) {
           style={{ width: `${Math.min(v, 100)}%` }}
         />
       </div>
-      {METRIC_HINTS[label] && (
-        <p className="text-xs text-gray-600">{METRIC_HINTS[label]}</p>
-      )}
+      <p className="text-xs text-gray-600">{hint}</p>
     </div>
   )
+}
+
+/** Translate backend primary_signal into pain-first copy */
+function primarySignalDisplay(signal: string): { headline: string } {
+  const s = (signal || "").toLowerCase()
+  if (s.includes("positioning") || s.includes("coherence")) {
+    return {
+      headline: "Your positioning is inconsistent — buyers don't clearly understand why to choose you",
+    }
+  }
+  if (s.includes("icp") || s.includes("clarity")) {
+    return {
+      headline: "Your ICP story is weak — you're pulling in visitors who will never buy",
+    }
+  }
+  if (s.includes("alignment") || s.includes("messaging")) {
+    return {
+      headline: "Your messaging doesn't match your revenue objective — conversion breaks early",
+    }
+  }
+  if (s.includes("anchor")) {
+    return {
+      headline: "Proof and conversion anchors are too thin — buyers stall before they act",
+    }
+  }
+  return { headline: signal || "Structural revenue leak detected in your messaging" }
 }
 
 function LockedInsight({ label }: { label: string }) {
@@ -485,8 +521,8 @@ function ScanResultsContent() {
 
   // Calculate peer-based estimate (without user input) - for display before form
   const getPeerBasedEstimate = () => {
-    if (!data || !data.rii) return null
-    
+    if (!data || data.rii === null || data.rii === undefined) return null
+
     const rii = data.rii
     // Use median ARR range (3-10M) for peer estimate
     const peerArrLow = 3000000
@@ -546,27 +582,15 @@ function ScanResultsContent() {
   const isBlocked = data.status === "blocked"
   const hasRii = data.rii !== null && data.rii !== undefined
   const rii = hasRii ? (data.rii as number) : null
-  const isHighExposure = (rii ?? 0) >= 70 || data.risk_level?.toLowerCase().includes("high")
   const riiColor = (rii ?? 0) >= 70 ? "text-red-400" : (rii ?? 0) >= 40 ? "text-orange-400" : "text-emerald-400"
-  const normalizedPercentileLabel = (() => {
-    if (!data.percentile_label) return null
-    const baseLabel = data.percentile_label
-      .replace(/above median performance/gi, "above median baseline")
-      .replace(/below median performance/gi, "below median baseline")
-    if (!isHighExposure) return baseLabel
-    return baseLabel
-      .replace(/optimization opportunity/gi, "elevated revenue risk")
-      .replace(/better than average/gi, "elevated revenue risk")
-  })()
-
   const benchmarkLabel = (() => {
     if (!hasRii || isBlocked) return null
     const diff = Math.round((rii as number) - SAAS_MEDIAN_RII)
     return diff > 0
-      ? `${diff} pts above SaaS median — higher exposure`
+      ? "Your messaging shows more revenue risk than many comparable B2B sites"
       : diff < 0
-        ? `${Math.abs(diff)} pts below SaaS median — better than average`
-        : "At SaaS median exposure level"
+        ? "Your messaging underperforms compared to similar B2B sites"
+        : "Roughly in line with typical B2B messaging exposure"
   })()
 
   return (
@@ -595,18 +619,36 @@ function ScanResultsContent() {
           </div>
         </div>
 
-        {/* RII Score card */}
+        {/* RII Score card — financial pain FIRST */}
         <div className="p-8 bg-[#111827] rounded-xl border border-gray-800 mb-6 text-center">
+          {!isBlocked && peerEstimate && (
+            <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-orange-950/50 to-[#0d1320] border border-orange-500/30 text-left">
+              <p className="text-lg font-semibold text-white leading-snug mb-2">
+                You&apos;re likely losing revenue due to messaging misalignment
+              </p>
+              <p className="text-base text-orange-300 font-semibold">
+                Estimated impact: {formatCurrency(peerEstimate.low)}–{formatCurrency(peerEstimate.high)}/year at risk
+              </p>
+            </div>
+          )}
+          {!isBlocked && !peerEstimate && (
+            <div className="mb-6 p-4 rounded-xl bg-orange-950/30 border border-orange-500/20 text-left">
+              <p className="text-lg font-semibold text-white leading-snug">
+                You&apos;re likely losing revenue due to messaging misalignment
+              </p>
+              <p className="text-sm text-gray-400 mt-1">Run a full scan to estimate dollar impact.</p>
+            </div>
+          )}
+
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Revenue Impact Index</p>
           <p className={`text-7xl font-bold mb-2 ${riiColor}`}>
             {hasRii && !isBlocked ? Math.round(rii as number) : "—"}
           </p>
           <p className={`text-lg font-semibold mb-3 ${riiColor}`}>{data.risk_level}</p>
 
-          {/* 1. Explanation line under score */}
           {data.status !== "blocked" && (
             <p className="text-sm text-gray-400 mb-4">
-              Estimated structural misalignment detected in revenue-stage messaging.
+              Structural misalignment in revenue-stage messaging — see breakdown below.
             </p>
           )}
           {data.status === "blocked" && (
@@ -615,12 +657,10 @@ function ScanResultsContent() {
             </p>
           )}
 
-          {/* 2. Pages analyzed — moved under score for credibility */}
           <p className="text-xs text-gray-600 mb-4">
             {data.pages_scanned} revenue page{data.pages_scanned !== 1 ? "s" : ""} analyzed
           </p>
 
-          {/* Confidence bar (hide for blocked) */}
           {!isBlocked && data.confidence !== null && (
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-4">
               <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
@@ -630,41 +670,28 @@ function ScanResultsContent() {
             </div>
           )}
 
-          {/* Status message - clear classification instead of "Unknown" */}
           <ScanStatusMessage status={data.status} reason={data.reason} confidence={data.confidence} />
 
-          {/* 3. Percentile badge — live when dataset exists, median fallback otherwise */}
           {data.percentile_label && !isBlocked ? (
-            // Live percentile from real dataset
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-medium ${
+            <div className={`inline-flex flex-col sm:flex-row items-center justify-center gap-2 px-4 py-3 rounded-xl border text-sm font-medium max-w-lg mx-auto ${
               (data.percentile ?? 0) >= 60
-                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
                 : (data.percentile ?? 0) >= 40
-                  ? "bg-yellow-500/10 border-yellow-500/30 text-yellow-400"
-                  : "bg-red-500/10 border-red-500/30 text-red-400"
+                  ? "bg-yellow-500/10 border-yellow-500/30 text-yellow-200"
+                  : "bg-red-500/10 border-red-500/30 text-red-200"
             }`}>
-              <span className="font-bold text-base">{data.percentile}%</span>
-              <span>{normalizedPercentileLabel}</span>
+              <span>
+                {(data.percentile ?? 0) < 50
+                  ? "Your messaging underperforms compared to similar B2B sites"
+                  : "Your messaging outperforms many comparable B2B sites"}
+              </span>
             </div>
           ) : (
-            // Fallback: static median comparison
             !isBlocked && benchmarkLabel ? (
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800/60 border border-gray-700 text-xs text-gray-400">
-                <span className="text-gray-500">SaaS median RII:</span>
-                <span className="font-semibold text-white">{SAAS_MEDIAN_RII}</span>
-                <span className="text-gray-600">·</span>
-                <span className={(rii ?? 0) > SAAS_MEDIAN_RII ? "text-orange-400" : "text-emerald-400"}>{benchmarkLabel}</span>
+              <div className="inline-flex items-center justify-center px-4 py-3 rounded-xl bg-gray-800/60 border border-gray-700 text-sm text-gray-200 max-w-lg mx-auto">
+                {benchmarkLabel}
               </div>
             ) : null
-          )}
-          
-          {/* Peer-based estimate message (fear trigger) */}
-          {!isBlocked && peerEstimate && !unlocked && (
-            <div className="mt-4 px-4 py-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
-              <p className="text-sm text-orange-300 font-medium">
-                Companies with similar structure typically lose {formatCurrency(peerEstimate.low)} – {formatCurrency(peerEstimate.high)} annually
-              </p>
-            </div>
           )}
         </div>
 
@@ -686,27 +713,29 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* Score breakdown — with hints */}
+        {/* Score breakdown — business language */}
         <div className="p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-5">Structural Breakdown</p>
+          <p className="text-lg font-semibold text-white mb-1">Where you&apos;re losing revenue</p>
+          <p className="text-xs text-gray-500 uppercase tracking-widest mb-5">Leak severity by area (0–100)</p>
           <div className="space-y-6">
-            <ScoreBar label="Messaging Alignment" value={data.alignment} />
-            <ScoreBar label="ICP Clarity" value={data.icp_clarity} />
-            <ScoreBar label="Anchor Density" value={data.anchor_density} />
-            <ScoreBar label="Positioning Coherence" value={data.positioning} />
+            <ScoreBar {...METRIC_ROWS[0]} value={data.alignment} />
+            <ScoreBar {...METRIC_ROWS[1]} value={data.icp_clarity} />
+            <ScoreBar {...METRIC_ROWS[2]} value={data.anchor_density} />
+            <ScoreBar {...METRIC_ROWS[3]} value={data.positioning} />
           </div>
         </div>
 
-        {/* Primary signal — with revenue impact line */}
+        {/* Primary signal — pain-first */}
         <div className="p-5 bg-[#0d1320] rounded-xl border border-orange-500/20 mb-6">
-          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Primary Signal Detected</p>
-          <p className="text-orange-300 font-medium mb-2">{data.primary_signal}</p>
-          {/* 4. Revenue connection line */}
-          <p className="text-sm text-gray-500">
-            This condition can compress close rates over time.
+          <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Primary signal</p>
+          <p className="text-orange-200 font-semibold text-lg mb-2 leading-snug">
+            {primarySignalDisplay(data.primary_signal).headline}
+          </p>
+          <p className="text-sm text-gray-400">
+            → This directly reduces conversion rates
           </p>
           {data.inferred_icp && (
-            <p className="text-xs text-gray-600 mt-2">Detected audience: {data.inferred_icp}</p>
+            <p className="text-xs text-gray-600 mt-3">Detected audience: {data.inferred_icp}</p>
           )}
         </div>
 
@@ -734,42 +763,35 @@ function ScanResultsContent() {
                 🔒 Full Diagnostic
               </span>
             </div>
-            <h2 className="text-2xl font-bold mb-2 text-white">Unlock Financial Impact Analysis</h2>
-            <p className="text-gray-400 mb-6 text-sm max-w-md mx-auto">
-              See ARR at risk, recovery potential, 12-month trajectory, and root cause analysis.
+            <h2 className="text-2xl font-bold mb-2 text-white">See exactly how much revenue you&apos;re losing →</h2>
+            <p className="text-gray-400 mb-4 text-sm max-w-md mx-auto">
+              Full diagnostic ties every leak to dollars — so you know what to fix first.
             </p>
+            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">Includes</p>
             <div className="space-y-2 mb-6 text-left max-w-sm mx-auto">
-              <div className="flex items-center gap-2 text-sm text-gray-300">
-                <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Estimated ARR at Risk
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-300">
-                <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Close Rate Compression Analysis
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-300">
-                <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Recovery Potential (Annual)
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-300">
-                <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Revenue Trajectory (12 months)
-              </div>
+              {[
+                "Exact ARR at risk",
+                "Conversion loss breakdown",
+                "What to fix first (prioritized)",
+                "12-month trajectory & recovery potential",
+              ].map((line) => (
+                <div key={line} className="flex items-center gap-2 text-sm text-gray-200">
+                  <svg className="w-4 h-4 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  {line}
+                </div>
+              ))}
             </div>
             <button
               onClick={handleUnlock}
               className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto"
             >
-              Unlock Financial Impact Analysis
+              See exactly how much revenue you&apos;re losing →
             </button>
+            <p className="text-sm text-gray-500 mt-4 max-w-md mx-auto leading-relaxed">
+              Most teams ignore this — and revenue loss compounds over time
+            </p>
             <p className="text-xs text-gray-600 mt-3">
               No password required · Instant access
             </p>
@@ -987,9 +1009,9 @@ function ScanResultsContent() {
         {showEmailCapture && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-[#111827] rounded-xl border border-gray-800 p-8 max-w-md w-full">
-              <h3 className="text-2xl font-bold mb-2 text-white">See how much revenue you're losing (in $)</h3>
+              <h3 className="text-2xl font-bold mb-2 text-white">See how much revenue you&apos;re losing (in $)</h3>
               <p className="text-gray-400 mb-6 text-sm">
-                Enter your email to unlock your financial impact.
+                Enter your email to see your full dollar impact and recovery plan.
               </p>
               
               <form onSubmit={handleEmailCapture} className="space-y-4">
@@ -1023,7 +1045,7 @@ function ScanResultsContent() {
                     disabled={capturing || !email.trim()}
                     className="flex-1 px-4 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
                   >
-                    {capturing ? "Unlocking..." : "Unlock Access"}
+                    {capturing ? "Continuing…" : "Continue →"}
                   </button>
                 </div>
               </form>
