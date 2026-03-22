@@ -775,13 +775,13 @@ function ScanResultsContent() {
                 🔒 Full Diagnostic
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold mb-3 text-white max-w-xl mx-auto leading-snug">
+            <h2 className="text-xl sm:text-2xl font-bold mb-5 text-white max-w-xl mx-auto leading-snug">
               We&apos;ve mapped exactly where you&apos;re losing revenue — and how much it&apos;s costing you
             </h2>
             <p className="text-gray-400 mb-5 text-sm max-w-lg mx-auto leading-relaxed">
               We&apos;ve analyzed your structure and mapped exactly where your revenue is leaking — and what it&apos;s costing you every month
             </p>
-            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">Includes</p>
+            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">What you&apos;ll see</p>
             <div className="space-y-2.5 mb-6 text-left max-w-md mx-auto">
               {[
                 "Your exact revenue loss (in $)",
@@ -807,7 +807,7 @@ function ScanResultsContent() {
               Every month this stays unfixed, your revenue loss compounds
             </p>
             <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
-              Instant access — no setup required
+              Instant access — no setup, no signup required
             </p>
           </div>
         )}
@@ -816,10 +816,10 @@ function ScanResultsContent() {
         {unlocked && showFinancialImpact && !financialImpact && !showImpactForm && peerEstimate && (
           <div id="financial-impact-peer" className="p-6 sm:p-8 bg-gradient-to-br from-cyan-950/20 via-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/25 mb-6">
             <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">Ready for you</p>
-            <h3 className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-3">
+            <h3 className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-5">
               Your full revenue analysis is ready
             </h3>
-            <p className="text-lg sm:text-xl font-semibold text-white mb-2">
+            <p className="text-lg sm:text-xl font-semibold text-white mb-3">
               You&apos;re already losing{" "}
               <span className="text-orange-400">
                 {formatCurrency(peerEstimate.low)}–{formatCurrency(peerEstimate.high)}
@@ -831,7 +831,7 @@ function ScanResultsContent() {
               <span className="text-gray-400">250+ B2B companies analyzed</span>.
             </p>
 
-            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">Includes</p>
+            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">What you&apos;ll see</p>
             <ul className="text-sm text-gray-300 space-y-2 mb-6 max-w-md">
               {[
                 "Your exact revenue loss (in $)",
@@ -857,7 +857,7 @@ function ScanResultsContent() {
               Every month this stays unfixed, your revenue loss compounds
             </p>
             <p className="text-xs text-gray-500 mt-3 text-center">
-              Instant access — no setup required
+              Instant access — no setup, no signup required
             </p>
             <p className="text-xs text-gray-600 mt-2 text-center max-w-md mx-auto leading-relaxed">
               One short step below personalizes dollar ranges — your email is already saved.
