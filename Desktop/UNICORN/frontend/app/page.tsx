@@ -178,11 +178,11 @@ export default function Home() {
               <p>{scanPhases.current[scanPhase]}</p>
             </div>
           )}
-          <div className="text-xs text-gray-400 mb-8 space-y-2">
-            <p>
+          <div className="text-xs sm:text-sm text-gray-400 mb-8 space-y-3 max-w-lg mx-auto">
+            <p className="font-medium">
               Takes 30 seconds · No signup · See your revenue risk instantly
             </p>
-            <p className="text-gray-500 max-w-md mx-auto leading-relaxed">
+            <p className="text-gray-500 leading-relaxed border-t border-gray-800/80 pt-3">
               Used by revenue teams to catch hidden losses before they impact pipeline
             </p>
           </div>
@@ -255,8 +255,12 @@ export default function Home() {
             <span className="text-gray-300 font-medium">caused by messaging misalignment</span>
           </p>
 
-          {/* Mock Dashboard */}
-          <div className="rounded-xl border border-gray-700 bg-[#111827] overflow-hidden shadow-2xl">
+          {/* Mock Dashboard — ARR anchor overlay for “wow” */}
+          <div className="relative rounded-xl border border-gray-700 bg-[#111827] overflow-hidden shadow-2xl">
+            <div className="absolute top-[48px] right-3 sm:right-5 z-20 px-3 py-2 rounded-lg bg-[#1a0505]/95 border border-red-500/50 shadow-lg shadow-red-950/50 backdrop-blur-sm pointer-events-none text-right min-w-[7rem]">
+              <p className="text-[10px] uppercase tracking-wider text-red-300/85 font-semibold">ARR at risk</p>
+              <p className="text-xl sm:text-2xl font-bold text-red-400 tabular-nums leading-tight">$287K</p>
+            </div>
             {/* Top bar */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-gray-800 bg-[#0d1320]">
               <div className="flex items-center gap-2">
@@ -380,6 +384,9 @@ export default function Home() {
       {/* ── 5. FINANCIAL FRAMING ────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
+          <p className="text-lg md:text-xl font-semibold text-cyan-400 mb-3">
+            We don&apos;t just detect issues — we quantify their impact.
+          </p>
           <h2 className="text-3xl font-bold mb-4">Messaging Translated to Revenue</h2>
           <p className="text-lg text-gray-300 mb-8">
             When structural drift is detected, VectriOS estimates the financial impact:
