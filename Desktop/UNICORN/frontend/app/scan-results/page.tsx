@@ -779,12 +779,12 @@ function ScanResultsContent() {
               We&apos;ve mapped exactly where you&apos;re losing revenue — and how much it&apos;s costing you
             </h2>
             <p className="text-gray-400 mb-5 text-sm max-w-lg mx-auto leading-relaxed">
-              We break down exactly where your revenue is leaking — and what it&apos;s costing you every month
+              We&apos;ve analyzed your structure and mapped exactly where your revenue is leaking — and what it&apos;s costing you every month
             </p>
             <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">Includes</p>
             <div className="space-y-2.5 mb-6 text-left max-w-md mx-auto">
               {[
-                "How much revenue you're losing (in $)",
+                "Your exact revenue loss (in $)",
                 "Which pages are causing the loss",
                 "What's breaking your conversion (and why)",
                 "What to fix first to recover revenue",
@@ -804,7 +804,7 @@ function ScanResultsContent() {
               View your full report →
             </button>
             <p className="text-sm text-amber-200/90 mt-4 max-w-md mx-auto leading-relaxed font-medium">
-              Every month this stays unfixed, you&apos;re losing more revenue
+              Every month this stays unfixed, your revenue loss compounds
             </p>
             <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
               Instant access — no setup required
@@ -827,16 +827,16 @@ function ScanResultsContent() {
               per year due to messaging gaps
             </p>
             <p className="text-sm text-gray-300 mb-5 leading-relaxed max-w-xl">
-              We&apos;ve mapped exactly where your revenue is leaking — and what it&apos;s costing you. Patterns from{" "}
+              We&apos;ve analyzed your structure and mapped exactly where your revenue is leaking — and what it&apos;s costing you. Cross-checked with patterns from{" "}
               <span className="text-gray-400">250+ B2B companies analyzed</span>.
             </p>
 
             <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">Includes</p>
             <ul className="text-sm text-gray-300 space-y-2 mb-6 max-w-md">
               {[
-                "How much revenue you're losing",
+                "Your exact revenue loss (in $)",
                 "Which pages are causing the loss",
-                "What's breaking your conversion",
+                "What's breaking your conversion (and why)",
                 "What to fix first to recover revenue",
               ].map((line) => (
                 <li key={line} className="flex items-start gap-2">
@@ -854,7 +854,7 @@ function ScanResultsContent() {
             </button>
 
             <p className="text-sm text-amber-200/90 mt-4 text-center font-medium leading-relaxed max-w-md mx-auto">
-              Every month this stays unfixed, you&apos;re losing more revenue
+              Every month this stays unfixed, your revenue loss compounds
             </p>
             <p className="text-xs text-gray-500 mt-3 text-center">
               Instant access — no setup required
