@@ -125,14 +125,15 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 md:py-28">
         <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-8 uppercase tracking-wider">
-            Revenue Observability Platform
+            Revenue Architecture Scanner
           </div>
           <h1 className="text-4xl md:text-6xl text-white mb-6 font-bold leading-tight">
-            Detect revenue loss in your messaging<br className="hidden md:block" />
-            <span className="text-cyan-400"> before it shows up in pipeline.</span>
+            Most B2B sites are silently losing revenue.
+            <br className="hidden md:block" />
+            <span className="text-cyan-400"> We show you exactly where — and how much.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed max-w-2xl mx-auto">
-            VectriOS scans your website and revenue messaging architecture to identify structural misalignment that silently compresses close rates.
+            We analyze your website like a revenue system — and show where conversion breaks before it hits your pipeline.
           </p>
 
           {/* ── SCAN BOX ── */}
@@ -174,15 +175,9 @@ export default function Home() {
               <p>{scanPhases.current[scanPhase]}</p>
             </div>
           )}
-          <p className="text-xs text-gray-500 mb-6">
-            Instant scan · No signup required
+          <p className="text-xs text-gray-400 mb-8">
+            Takes 30 seconds · No signup required · See your revenue risk instantly
           </p>
-
-          <div className="flex items-center justify-center gap-3 text-sm text-gray-500 mb-8">
-            <span className="text-gray-600">No signup required</span>
-            <span className="text-gray-700">·</span>
-            <span className="text-gray-600">Instant results</span>
-          </div>
 
           {/* ── Companies scanned counter (clickable → leaderboard) ── */}
           {scanCount !== null && scanCount > 0 && (
@@ -193,9 +188,9 @@ export default function Home() {
               >
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                 <span className="font-semibold text-gray-300 group-hover:text-white transition-colors">
-                  {scanCount.toLocaleString("en-US")}
+                  {scanCount.toLocaleString("en-US")}+
                 </span>
-                <span className="text-gray-500">revenue architectures scanned</span>
+                <span className="text-gray-500">revenue architectures analyzed</span>
                 <span className="text-cyan-500 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                   View index →
                 </span>
@@ -218,26 +213,26 @@ export default function Home() {
           <ul className="space-y-4 text-lg text-gray-400 mb-8 ml-6">
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-              ICP clarity weakens
+              You&apos;re attracting the wrong customers
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-              Pricing-stage messaging loses precision
+              Pricing sugar-coats the gap between price and perceived value
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-              Value articulation becomes inconsistent
+              Your value proposition gets fuzzy — buyers can&apos;t compare you clearly
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-              Conversion anchors disappear
+              Buyers don&apos;t see why they should choose you
             </li>
           </ul>
           <p className="text-lg text-gray-300 leading-relaxed mb-2">
-            These shifts do not trigger immediate alerts. They reduce efficiency quietly.
+            None of this trips a dashboard alert. It quietly drains pipeline efficiency.
           </p>
           <p className="text-lg text-cyan-400 font-semibold mt-4">
-            VectriOS monitors structural alignment before revenue-stage friction compounds.
+            See how VectriOS catches alignment drift before it hits your numbers.
           </p>
         </div>
       </section>
@@ -312,23 +307,34 @@ export default function Home() {
           <p className="text-center text-xs text-gray-600 mt-4">
             Sample output — your actual scan will reflect your live messaging data
           </p>
+
+          {/* Financial proof — hook */}
+          <div className="mt-10 p-6 rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-950/30 to-[#111827] text-center">
+            <p className="text-lg md:text-xl font-semibold text-white">
+              Companies we analyze typically uncover{" "}
+              <span className="text-amber-300">$20K–$200K</span> in hidden revenue loss.
+            </p>
+            <p className="text-sm text-gray-400 mt-2">
+              Real dollars left on the table — not a “content score.”
+            </p>
+          </div>
         </div>
       </section>
 
       {/* ── 4. WHAT IT DOES ─────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">What VectriOS Scans</h2>
+          <h2 className="text-3xl font-bold mb-4">What we find that costs you revenue</h2>
           <p className="text-lg text-gray-300 mb-8">
-            VectriOS scans your revenue messaging architecture:
+            We map your site like a revenue system — and flag where money leaks:
           </p>
 
           <div className="grid md:grid-cols-2 gap-4 mb-8">
             {[
-              { icon: "→", title: "Revenue objective alignment", desc: "Is your messaging driving the business outcome you're targeting?" },
-              { icon: "→", title: "ICP clarity signals", desc: "Does your site clearly communicate who you serve?" },
-              { icon: "→", title: "Value-to-price messaging", desc: "Is the value-to-price relationship clear at every stage?" },
-              { icon: "→", title: "Conversion anchors", desc: "Are the language patterns that drive decisions present?" },
+              { icon: "→", title: "Revenue objective alignment", desc: "Is your messaging actually driving the revenue outcome you sell?" },
+              { icon: "→", title: "ICP & positioning fit", desc: "Are you signaling the right buyer — or accidentally repelling them?" },
+              { icon: "→", title: "Value vs. price", desc: "Does what you charge line up with what you prove on the page?" },
+              { icon: "→", title: "Conversion triggers", desc: "Are the reasons to act obvious — or missing when it counts?" },
             ].map(item => (
               <div key={item.title} className="p-5 bg-[#111827] rounded-lg border border-gray-800">
                 <p className="text-cyan-400 font-semibold mb-1">{item.title}</p>
@@ -450,9 +456,11 @@ export default function Home() {
             href="/signup"
             className="inline-block px-12 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-lg"
           >
-            Run Your Revenue Architecture Scan
+            See how much revenue you&apos;re losing →
           </Link>
-          <p className="text-sm text-gray-500 mt-4">3-minute setup · No credit card required</p>
+          <p className="text-sm text-gray-500 mt-4">
+            Run your scan → find your revenue leaks · Takes 30 seconds · No credit card required
+          </p>
         </div>
       </section>
 
