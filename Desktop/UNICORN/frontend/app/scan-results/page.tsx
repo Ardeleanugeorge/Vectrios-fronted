@@ -818,21 +818,24 @@ function ScanResultsContent() {
           <div id="financial-impact-peer" className="p-6 sm:p-8 bg-gradient-to-br from-orange-950/20 via-[#111827] to-[#0d1320] rounded-xl border border-orange-500/25 mb-6">
             <p className="text-xs font-semibold text-orange-400/90 uppercase tracking-wider mb-3">Your revenue exposure</p>
             <h3 className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-3">
-              You&apos;re losing an estimated{" "}
+              You&apos;re already losing{" "}
               <span className="text-orange-400">
                 {formatCurrency(peerEstimate.low)}–{formatCurrency(peerEstimate.high)}
               </span>{" "}
-              per year
+              per year due to messaging gaps
             </h3>
+            <p className="text-sm font-medium text-amber-200/90 mb-3 leading-relaxed">
+              This loss compounds every month your messaging stays misaligned
+            </p>
             <p className="text-sm text-gray-400 mb-6">
-              Based on similar B2B companies with your structural profile — not a generic content score.
+              Based on patterns across 250+ B2B companies we&apos;ve analyzed
             </p>
 
             <button
               onClick={() => setShowImpactForm(true)}
               className="w-full px-6 py-3.5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base shadow-lg shadow-cyan-500/15"
             >
-              See your exact revenue loss →
+              Get your full revenue breakdown →
             </button>
 
             <div className="mt-5 text-left border-t border-gray-800 pt-5 max-w-md mx-auto">
@@ -844,7 +847,7 @@ function ScanResultsContent() {
               </ul>
             </div>
 
-            <p className="text-xs text-gray-500 mt-4 text-center">Takes 30 seconds · Best guess is OK</p>
+            <p className="text-xs text-gray-500 mt-4 text-center">Takes 30 seconds — no exact data needed</p>
             <p className="text-xs text-gray-600 mt-2 text-center max-w-md mx-auto leading-relaxed">
               We use your ARR band to personalize the full report — same data carries into onboarding (no retyping).
             </p>
@@ -856,7 +859,7 @@ function ScanResultsContent() {
           <div id="financial-impact-form" className="p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6">
             <div className="mb-4">
               <h3 className="text-xl font-bold text-white mb-1">Make this accurate for your business</h3>
-              <p className="text-sm text-gray-400">Best guess is OK. We'll use industry priors if left blank.</p>
+              <p className="text-sm text-gray-400">No exact data needed — we&apos;ll use industry priors if you leave fields blank.</p>
               <p className="text-xs text-gray-600 mt-2">
                 Your ARR band is saved for the next page — you won&apos;t have to re-pick the same range if you continue to full diagnostic.
               </p>
