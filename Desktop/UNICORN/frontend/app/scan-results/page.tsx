@@ -150,6 +150,13 @@ const METRIC_ROWS: { label: string; hint: string }[] = [
   },
 ]
 
+/** 0–100 score → plain-English impact tier (matches example bands: ~20 / ~38 / ~59) */
+function metricImpactLabel(v: number): string {
+  if (v >= 59) return "High impact"
+  if (v >= 34) return "Moderate impact"
+  return "Low impact"
+}
+
 function ScoreBar({ label, hint, value }: { label: string; hint: string; value: number | null }) {
   const v = value ?? 0
   const color = v >= 65 ? "from-emerald-500 to-green-400"
@@ -159,7 +166,12 @@ function ScoreBar({ label, hint, value }: { label: string; hint: string; value: 
     <div>
       <div className="flex justify-between mb-1.5 gap-3">
         <span className="text-sm text-gray-200 font-medium leading-snug">{label}</span>
-        <span className="text-sm font-bold text-white shrink-0">{value !== null ? Math.round(v) : "—"}</span>
+        <div className="flex flex-col items-end shrink-0">
+          <span className="text-sm font-bold text-white tabular-nums">{value !== null ? Math.round(v) : "—"}</span>
+          {value !== null && (
+            <span className="text-[10px] font-medium text-gray-500 mt-0.5">{metricImpactLabel(v)}</span>
+          )}
+        </div>
       </div>
       <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden mb-1">
         <div
@@ -624,7 +636,7 @@ function ScanResultsContent() {
           {!isBlocked && peerEstimate && (
             <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-orange-950/50 to-[#0d1320] border border-orange-500/30 text-left">
               <p className="text-lg font-semibold text-white leading-snug mb-2">
-                You&apos;re likely losing revenue due to messaging misalignment
+                You&apos;re already losing revenue due to messaging misalignment
               </p>
               <p className="text-base text-orange-300 font-semibold">
                 Estimated impact: {formatCurrency(peerEstimate.low)}–{formatCurrency(peerEstimate.high)}/year at risk
@@ -634,7 +646,7 @@ function ScanResultsContent() {
           {!isBlocked && !peerEstimate && (
             <div className="mb-6 p-4 rounded-xl bg-orange-950/30 border border-orange-500/20 text-left">
               <p className="text-lg font-semibold text-white leading-snug">
-                You&apos;re likely losing revenue due to messaging misalignment
+                You&apos;re already losing revenue due to messaging misalignment
               </p>
               <p className="text-sm text-gray-400 mt-1">Run a full scan to estimate dollar impact.</p>
             </div>
@@ -789,8 +801,11 @@ function ScanResultsContent() {
             >
               See exactly how much revenue you&apos;re losing →
             </button>
-            <p className="text-sm text-gray-500 mt-4 max-w-md mx-auto leading-relaxed">
-              Most teams ignore this — and revenue loss compounds over time
+            <p className="text-sm text-amber-200/90 mt-4 max-w-md mx-auto leading-relaxed font-medium">
+              Revenue loss compounds every month this isn&apos;t fixed
+            </p>
+            <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
+              Takes 30 seconds — no setup required
             </p>
             <p className="text-xs text-gray-600 mt-3">
               No password required · Instant access
