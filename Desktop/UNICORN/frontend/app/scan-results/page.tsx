@@ -3,7 +3,7 @@
 import { API_URL } from '@/lib/config'
 import { buildScanPrefillPayload, persistScanDataForPrefill } from '@/lib/scanPrefill'
 
-import { useEffect, useState, Suspense } from "react"
+import { useEffect, useState, useMemo, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 
@@ -210,6 +210,196 @@ function primarySignalDisplay(signal: string): { headline: string } {
   return { headline: signal || "Structural revenue leak detected in your messaging" }
 }
 
+/** Model output from scan signals + ARR/ACV inputs — same formulas everywhere (no placeholder numbers). */
+interface FinancialImpactComputed {
+  arrAtRiskLow: number
+  arrAtRiskHigh: number
+  closeRateDeltaLow: number
+  closeRateDeltaHigh: number
+  recoveryLow: number
+  recoveryHigh: number
+  confidence: string
+  confidenceExplanation: string
+  primaryDriver: string
+}
+
+const DEFAULT_INSTANT_ARR = "3-10M"
+const DEFAULT_INSTANT_ACV = "5-15K"
+
+function roundMoneyPair(low: number, high: number): { low: number; high: number } {
+  let l = low
+  let h = high
+  if (h >= 1000000) {
+    l = Math.round(l / 50000) * 50000
+    h = Math.round(h / 50000) * 50000
+  } else if (h >= 200000) {
+    l = Math.round(l / 10000) * 10000
+    h = Math.round(h / 10000) * 10000
+  } else {
+    l = Math.round(l / 5000) * 5000
+    h = Math.round(h / 5000) * 5000
+  }
+  return { low: l, high: h }
+}
+
+function computeFinancialImpactFromScan(
+  data: ScanData,
+  inputs: { arrRange: string; acvRange: string; monthlyTraffic: string }
+): FinancialImpactComputed | null {
+  if (!inputs.arrRange || !inputs.acvRange) return null
+
+  const arrMidpoints: Record<string, number> = {
+    "<1M": 0.5,
+    "1-3M": 2,
+    "3-10M": 6.5,
+    "10-25M": 17.5,
+    "25-50M": 37.5,
+    "50-100M": 75,
+    "100M+": 150,
+  }
+  const arrEst = (arrMidpoints[inputs.arrRange] || 2) * 1000000
+
+  const acvMidpoints: Record<string, number> = {
+    "<2K": 1,
+    "2-5K": 3.5,
+    "5-15K": 10,
+    "15-40K": 27.5,
+    "40-100K": 70,
+    "100K+": 150,
+  }
+  const acvEst = acvMidpoints[inputs.acvRange] || 10
+
+  const rii = data.rii ?? 50
+  let baseRiskMultiplier = 0
+  if (rii < 45) {
+    baseRiskMultiplier = 0.035
+  } else if (rii < 60) {
+    baseRiskMultiplier = 0.0175
+  } else {
+    baseRiskMultiplier = 0.0065
+  }
+
+  let signalAdjustment = 1.0
+  if (data.icp_clarity && data.icp_clarity < 30) signalAdjustment += 0.3
+  if (data.anchor_density && data.anchor_density < 30) signalAdjustment += 0.2
+  if (data.positioning && data.positioning < 40) signalAdjustment += 0.15
+
+  if (acvEst < 5) {
+    signalAdjustment += 0.25
+  } else if (acvEst > 40) {
+    signalAdjustment -= 0.2
+  }
+
+  const trafficNum = inputs.monthlyTraffic ? parseInt(inputs.monthlyTraffic, 10) : NaN
+  if (!Number.isNaN(trafficNum) && trafficNum < 10000) {
+    signalAdjustment += 0.2
+  } else if (!Number.isNaN(trafficNum) && trafficNum > 50000) {
+    signalAdjustment -= 0.2
+  }
+
+  const riskPercent = Math.min(baseRiskMultiplier * signalAdjustment, 0.08)
+  const arrAtRiskBase = arrEst * riskPercent
+  let arrAtRiskLow = Math.round(arrAtRiskBase * 0.7)
+  let arrAtRiskHigh = Math.round(arrAtRiskBase * 1.3)
+  const arrR = roundMoneyPair(arrAtRiskLow, arrAtRiskHigh)
+  arrAtRiskLow = arrR.low
+  arrAtRiskHigh = arrR.high
+
+  let closeRateDeltaBase = 0
+  if (data.icp_clarity && data.icp_clarity < 30) closeRateDeltaBase += 1.2
+  if (data.anchor_density && data.anchor_density < 30) closeRateDeltaBase += 0.8
+  if (data.alignment && data.alignment < 40) closeRateDeltaBase += 0.6
+
+  const closeRateDeltaLow = Math.round(closeRateDeltaBase * 0.8 * 10) / 10
+  const closeRateDeltaHigh = Math.round(closeRateDeltaBase * 1.2 * 10) / 10
+
+  let confidence = "Medium"
+  let confidenceExplanation = ""
+  if (data.confidence && data.confidence >= 80 && data.pages_scanned >= 5) {
+    confidence = "High"
+    confidenceExplanation = `High (based on ${data.pages_scanned} pages analyzed)`
+  } else if ((data.confidence && data.confidence < 50) || data.pages_scanned < 3) {
+    confidence = "Low"
+    confidenceExplanation = `Low (limited data from ${data.pages_scanned} pages)`
+  } else {
+    confidenceExplanation = `Medium (based on ${data.pages_scanned} pages analyzed)`
+  }
+
+  let primaryDriver = ""
+  if (data.icp_clarity && data.icp_clarity < 30) {
+    primaryDriver = `ICP clarity is too broad for your ACV (${acvEst >= 40 ? "high-value" : "mid-value"} deals require precise targeting)`
+  } else if (data.anchor_density && data.anchor_density < 30) {
+    primaryDriver = `Anchor density is insufficient for your ${acvEst < 15 ? "high-volume" : "sales-led"} model`
+  } else if (data.alignment && data.alignment < 40) {
+    primaryDriver = `Messaging misalignment across revenue pages reduces conversion consistency`
+  } else {
+    primaryDriver = `Structural misalignment detected across multiple revenue signals`
+  }
+
+  let recoveryLow = Math.round(arrAtRiskLow * 0.55)
+  let recoveryHigh = Math.round(arrAtRiskHigh * 0.82)
+  const recR = roundMoneyPair(recoveryLow, recoveryHigh)
+  recoveryLow = recR.low
+  recoveryHigh = recR.high
+
+  return {
+    arrAtRiskLow,
+    arrAtRiskHigh,
+    closeRateDeltaLow,
+    closeRateDeltaHigh,
+    recoveryLow,
+    recoveryHigh,
+    confidence,
+    confidenceExplanation,
+    primaryDriver,
+  }
+}
+
+function buildStructureInsightBullets(data: ScanData, closeLow: number, closeHigh: number): string[] {
+  const bullets: string[] = []
+  if (closeRateDeltaBase(data) > 0) {
+    bullets.push(
+      `Modeled close-rate gap vs. structural potential: ~${closeLow.toFixed(1)}–${closeHigh.toFixed(1)} percentage points from this scan’s signals.`
+    )
+  }
+  const icp = data.icp_clarity ?? 0
+  const anch = data.anchor_density ?? 0
+  const aln = data.alignment ?? 0
+  const pos = data.positioning ?? 0
+  if (icp < 45) {
+    bullets.push(
+      `ICP clarity scores ${Math.round(icp)}/100 on analyzed pages — targeting reads broad, which drags deal quality.`
+    )
+  }
+  if (anch < 45) {
+    bullets.push(
+      `Proof / anchor density is ${Math.round(anch)}/100 — fewer quantified triggers for buyers to justify the next step.`
+    )
+  }
+  if (aln < 45) {
+    bullets.push(
+      `Messaging alignment is ${Math.round(aln)}/100 — the revenue story is inconsistent across key pages.`
+    )
+  }
+  if (pos < 45 && bullets.length < 4) {
+    bullets.push(
+      `Positioning coherence is ${Math.round(pos)}/100 — category and “why us” language shifts between pages.`
+    )
+  }
+  if (data.inferred_icp && bullets.length < 4) {
+    bullets.push(`Detected audience focus: ${data.inferred_icp} — check that hero and pricing match that buyer.`)
+  }
+  return bullets.slice(0, 4)
+}
+
+function closeRateDeltaBase(data: ScanData): number {
+  let b = 0
+  if (data.icp_clarity && data.icp_clarity < 30) b += 1.2
+  if (data.anchor_density && data.anchor_density < 30) b += 0.8
+  if (data.alignment && data.alignment < 40) b += 0.6
+  return b
+}
+
 function LockedInsight({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-between p-4 bg-[#0d1320] rounded-lg border border-gray-800">
@@ -282,17 +472,19 @@ function ScanResultsContent() {
   const [calculatingImpact, setCalculatingImpact] = useState(false)
   
   // Financial impact results
-  const [financialImpact, setFinancialImpact] = useState<{
-    arrAtRiskLow: number
-    arrAtRiskHigh: number
-    closeRateDeltaLow: number
-    closeRateDeltaHigh: number
-    confidence: string
-    confidenceExplanation: string
-    primaryDriver: string
-  } | null>(null)
+  const [financialImpact, setFinancialImpact] = useState<FinancialImpactComputed | null>(null)
   
   const [showImpactForm, setShowImpactForm] = useState(false)
+
+  /** Default mid-market priors: full report immediately after email (same engine as refined model). */
+  const instantFinancials = useMemo(() => {
+    if (!data) return null
+    return computeFinancialImpactFromScan(data, {
+      arrRange: DEFAULT_INSTANT_ARR,
+      acvRange: DEFAULT_INSTANT_ACV,
+      monthlyTraffic: "",
+    })
+  }, [data])
 
   const handleUnlock = () => {
     setShowEmailCapture(true)
@@ -383,14 +575,15 @@ function ScanResultsContent() {
         console.log("[EMAIL-CAPTURE] Saved partial diagnostic:", partialDiagnostic)
       }
       
-      // Mark as unlocked - show peer-based estimate FIRST (NO redirect to dashboard)
+      // Mark as unlocked — show full structural financial model immediately (default priors)
       setUnlocked(true)
       setShowEmailCapture(false)
-      setShowFinancialImpact(true) // This will show peer estimate first, then form
-      
-      // Scroll to financial impact after a short delay
+      setShowFinancialImpact(true)
+      setShowImpactForm(false)
+      setCapturing(false)
+
       setTimeout(() => {
-        document.getElementById("financial-impact-peer")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        document.getElementById("financial-impact-instant")?.scrollIntoView({ behavior: "smooth", block: "center" })
       }, 300)
     } catch (err: any) {
       setCaptureError(err.message || "Network error. Please try again.")
@@ -398,166 +591,23 @@ function ScanResultsContent() {
     }
   }
 
-  // Calculate financial impact based on structural data + user inputs
   const calculateFinancialImpact = () => {
     if (!data || !arrRange || !acvRange) return
-    
     setCalculatingImpact(true)
-    
-    // Parse ARR range to midpoint (in millions)
-    const arrMidpoints: Record<string, number> = {
-      "<1M": 0.5,
-      "1-3M": 2,
-      "3-10M": 6.5,
-      "10-25M": 17.5,
-      "25-50M": 37.5,
-      "50-100M": 75,
-      "100M+": 150
-    }
-    const arrEst = (arrMidpoints[arrRange] || 2) * 1000000 // Convert to dollars
-    
-    // Parse ACV range to midpoint (in thousands)
-    const acvMidpoints: Record<string, number> = {
-      "<2K": 1,
-      "2-5K": 3.5,
-      "5-15K": 10,
-      "15-40K": 27.5,
-      "40-100K": 70,
-      "100K+": 150
-    }
-    const acvEst = acvMidpoints[acvRange] || 10
-    
-    // Base risk multiplier from RII
-    const rii = data.rii || 50
-    let baseRiskMultiplier = 0
-    if (rii < 45) {
-      baseRiskMultiplier = 0.035 // 2.5-4.5% range, use 3.5%
-    } else if (rii < 60) {
-      baseRiskMultiplier = 0.0175 // 1.0-2.5% range, use 1.75%
-    } else {
-      baseRiskMultiplier = 0.0065 // 0.3-1.0% range, use 0.65%
-    }
-    
-    // Adjust by signal profile
-    let signalAdjustment = 1.0
-    if (data.icp_clarity && data.icp_clarity < 30) signalAdjustment += 0.3
-    if (data.anchor_density && data.anchor_density < 30) signalAdjustment += 0.2
-    if (data.positioning && data.positioning < 40) signalAdjustment += 0.15
-    
-    // Adjust by ACV
-    if (acvEst < 5) {
-      signalAdjustment += 0.25 // Lower ACV = higher sensitivity
-    } else if (acvEst > 40) {
-      signalAdjustment -= 0.2 // Higher ACV = lower sensitivity
-    }
-    
-    // Adjust by traffic (if provided)
-    const trafficNum = monthlyTraffic ? parseInt(monthlyTraffic) : null
-    if (trafficNum && trafficNum < 10000) {
-      signalAdjustment += 0.2 // Lower traffic = wider interval
-    } else if (trafficNum && trafficNum > 50000) {
-      signalAdjustment -= 0.2 // Higher traffic = narrower interval
-    }
-    
-    // Calculate ARR at risk (cap at 8% max for credibility)
-    const riskPercent = Math.min(baseRiskMultiplier * signalAdjustment, 0.08) // Max 8%
-    const arrAtRiskBase = arrEst * riskPercent
-    
-    // Create range (±30% for uncertainty) with intelligent rounding
-    let arrAtRiskLow = Math.round(arrAtRiskBase * 0.7)
-    let arrAtRiskHigh = Math.round(arrAtRiskBase * 1.3)
-    
-    // Intelligent rounding: round to nearest $50K for large numbers, $10K for medium, $5K for small
-    if (arrAtRiskHigh >= 1000000) {
-      arrAtRiskLow = Math.round(arrAtRiskLow / 50000) * 50000
-      arrAtRiskHigh = Math.round(arrAtRiskHigh / 50000) * 50000
-    } else if (arrAtRiskHigh >= 200000) {
-      arrAtRiskLow = Math.round(arrAtRiskLow / 10000) * 10000
-      arrAtRiskHigh = Math.round(arrAtRiskHigh / 10000) * 10000
-    } else {
-      arrAtRiskLow = Math.round(arrAtRiskLow / 5000) * 5000
-      arrAtRiskHigh = Math.round(arrAtRiskHigh / 5000) * 5000
-    }
-    
-    // Calculate close rate delta (based on ICP + anchor issues)
-    let closeRateDeltaBase = 0
-    if (data.icp_clarity && data.icp_clarity < 30) closeRateDeltaBase += 1.2
-    if (data.anchor_density && data.anchor_density < 30) closeRateDeltaBase += 0.8
-    if (data.alignment && data.alignment < 40) closeRateDeltaBase += 0.6
-    
-    const closeRateDeltaLow = Math.round(closeRateDeltaBase * 0.8 * 10) / 10
-    const closeRateDeltaHigh = Math.round(closeRateDeltaBase * 1.2 * 10) / 10
-    
-    // Determine confidence with explanation
-    let confidence = "Medium"
-    let confidenceExplanation = ""
-    if (data.confidence && data.confidence >= 80 && data.pages_scanned >= 5) {
-      confidence = "High"
-      confidenceExplanation = `High (based on ${data.pages_scanned} pages analyzed)`
-    } else if (data.confidence && data.confidence < 50 || data.pages_scanned < 3) {
-      confidence = "Low"
-      confidenceExplanation = `Low (limited data from ${data.pages_scanned} pages)`
-    } else {
-      confidenceExplanation = `Medium (based on ${data.pages_scanned} pages analyzed)`
-    }
-    
-    // Determine primary driver of revenue loss
-    let primaryDriver = ""
-    if (data.icp_clarity && data.icp_clarity < 30) {
-      primaryDriver = `ICP clarity is too broad for your ACV (${acvEst >= 40 ? "high-value" : "mid-value"} deals require precise targeting)`
-    } else if (data.anchor_density && data.anchor_density < 30) {
-      primaryDriver = `Anchor density is insufficient for your ${acvEst < 15 ? "high-volume" : "sales-led"} model`
-    } else if (data.alignment && data.alignment < 40) {
-      primaryDriver = `Messaging misalignment across revenue pages reduces conversion consistency`
-    } else {
-      primaryDriver = `Structural misalignment detected across multiple revenue signals`
-    }
-    
-    setFinancialImpact({
-      arrAtRiskLow,
-      arrAtRiskHigh,
-      closeRateDeltaLow,
-      closeRateDeltaHigh,
-      confidence,
-      confidenceExplanation,
-      primaryDriver
+    const result = computeFinancialImpactFromScan(data, {
+      arrRange,
+      acvRange,
+      monthlyTraffic: monthlyTraffic || "",
     })
-    
+    if (result) {
+      setFinancialImpact(result)
+    }
     setCalculatingImpact(false)
-    
-    // Scroll to results
+    setShowImpactForm(false)
     setTimeout(() => {
       document.getElementById("financial-impact-results")?.scrollIntoView({ behavior: "smooth", block: "center" })
     }, 100)
   }
-
-  // Calculate peer-based estimate (without user input) - for display before form
-  const getPeerBasedEstimate = () => {
-    if (!data || data.rii === null || data.rii === undefined) return null
-
-    const rii = data.rii
-    // Use median ARR range (3-10M) for peer estimate
-    const peerArrLow = 3000000
-    const peerArrHigh = 10000000
-    
-    // Risk multiplier based on RII
-    let riskMultiplier = 0.02 // Default 2%
-    if (rii < 45) {
-      riskMultiplier = 0.035
-    } else if (rii < 60) {
-      riskMultiplier = 0.0175
-    } else {
-      riskMultiplier = 0.0065
-    }
-    
-    // Apply to peer range
-    const low = Math.round(peerArrLow * riskMultiplier / 1000) * 1000
-    const high = Math.round(peerArrHigh * riskMultiplier / 1000) * 1000
-    
-    return { low, high }
-  }
-
-  const peerEstimate = getPeerBasedEstimate()
   
   const formatCurrency = (val: number) => {
     if (val >= 1000000) {
@@ -633,22 +683,22 @@ function ScanResultsContent() {
 
         {/* RII Score card — financial pain FIRST */}
         <div className="p-8 bg-[#111827] rounded-xl border border-gray-800 mb-6 text-center">
-          {!isBlocked && peerEstimate && (
+          {!isBlocked && instantFinancials && (
             <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-orange-950/50 to-[#0d1320] border border-orange-500/30 text-left">
               <p className="text-lg font-semibold text-white leading-snug mb-2">
                 You&apos;re already losing revenue due to messaging misalignment
               </p>
               <p className="text-base text-orange-300 font-semibold">
-                Estimated impact: {formatCurrency(peerEstimate.low)}–{formatCurrency(peerEstimate.high)}/year at risk
+                Estimated impact: {formatCurrency(instantFinancials.arrAtRiskLow)}–{formatCurrency(instantFinancials.arrAtRiskHigh)}/year at risk
               </p>
             </div>
           )}
-          {!isBlocked && !peerEstimate && (
+          {!isBlocked && !instantFinancials && (
             <div className="mb-6 p-4 rounded-xl bg-orange-950/30 border border-orange-500/20 text-left">
               <p className="text-lg font-semibold text-white leading-snug">
                 You&apos;re already losing revenue due to messaging misalignment
               </p>
-              <p className="text-sm text-gray-400 mt-1">Run a full scan to estimate dollar impact.</p>
+              <p className="text-sm text-gray-400 mt-1">Loading model from your scan…</p>
             </div>
           )}
 
@@ -776,15 +826,15 @@ function ScanResultsContent() {
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold mb-5 text-white max-w-xl mx-auto leading-snug">
-              We&apos;ve mapped exactly where you&apos;re losing revenue — and how much it&apos;s costing you
+              We&apos;ve mapped where revenue is leaking — and what it&apos;s costing you
             </h2>
             <p className="text-gray-400 mb-5 text-sm max-w-lg mx-auto leading-relaxed">
-              We&apos;ve analyzed your structure and mapped exactly where your revenue is leaking — and what it&apos;s costing you every month
+              Unlock the full structural model for this scan: ARR at risk, close-rate compression, recovery range, and primary drivers — then optionally dial in your ARR/ACV to tighten the band.
             </p>
             <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">What you&apos;ll see</p>
             <div className="space-y-2.5 mb-6 text-left max-w-md mx-auto">
               {[
-                "Your exact revenue loss (in $)",
+                "Your modeled revenue at risk (in $)",
                 "Which pages are causing the loss",
                 "What's breaking your conversion (and why)",
                 "What to fix first to recover revenue",
@@ -815,46 +865,94 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* Financial Impact - Peer Estimate FIRST (after unlock, before form) */}
-        {unlocked && showFinancialImpact && !financialImpact && !showImpactForm && peerEstimate && (
-          <div id="financial-impact-peer" className="p-6 sm:p-8 bg-gradient-to-br from-cyan-950/20 via-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/25 mb-6">
+        {/* Immediate full report after email — same model, default mid-market ARR/ACV priors */}
+        {unlocked && showFinancialImpact && !financialImpact && instantFinancials && !isBlocked && (
+          <div id="financial-impact-instant" className="p-6 sm:p-8 bg-gradient-to-br from-cyan-950/25 via-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/25 mb-6">
             <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">Ready for you</p>
-            <h3 className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-5">
+            <h3 className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-3">
               Your full revenue analysis is ready
             </h3>
-            <p className="text-lg sm:text-xl font-semibold text-white mb-3">
-              You&apos;re already losing{" "}
-              <span className="text-orange-400">
-                {formatCurrency(peerEstimate.low)}–{formatCurrency(peerEstimate.high)}
-              </span>{" "}
-              per year due to messaging gaps
-            </p>
-            <p className="text-sm text-gray-300 mb-5 leading-relaxed max-w-xl">
-              We&apos;ve analyzed your structure and mapped exactly where your revenue is leaking — and what it&apos;s costing you. Cross-checked with patterns from{" "}
-              <span className="text-gray-400">250+ B2B companies analyzed</span>.
+            <p className="text-xs text-gray-500 mb-4 max-w-xl">
+              Built from your live scan scores. Dollar ranges use a mid-market prior (≈ $3M–$10M ARR, typical ACV) until you personalize — not generic placeholders.
             </p>
 
-            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">What you&apos;ll see</p>
-            <ul className="text-sm text-gray-300 space-y-2 mb-6 max-w-md">
-              {[
-                "Your exact revenue loss (in $)",
-                "Which pages are causing the loss",
-                "What's breaking your conversion (and why)",
-                "What to fix first to recover revenue",
-              ].map((line) => (
-                <li key={line} className="flex items-start gap-2">
-                  <span className="text-cyan-400 mt-0.5">•</span>
-                  <span>{line}</span>
+            <p className="text-sm text-gray-300 mb-1">Based on your structure, you&apos;re losing approximately:</p>
+            <p className="text-2xl sm:text-3xl font-bold text-orange-400 mb-6">
+              {formatCurrency(instantFinancials.arrAtRiskLow)}–{formatCurrency(instantFinancials.arrAtRiskHigh)} per year
+            </p>
+
+            <div className="grid sm:grid-cols-2 gap-3 mb-6">
+              <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">ARR at risk (annual)</p>
+                <p className="text-xl font-bold text-white">
+                  {formatCurrency(instantFinancials.arrAtRiskLow)} – {formatCurrency(instantFinancials.arrAtRiskHigh)}
+                </p>
+              </div>
+              <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Close rate compression</p>
+                <p className="text-xl font-bold text-red-400">
+                  −{instantFinancials.closeRateDeltaLow}% to −{instantFinancials.closeRateDeltaHigh}%
+                </p>
+              </div>
+              <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Recovery potential (annual)</p>
+                <p className="text-xl font-bold text-emerald-400">
+                  {formatCurrency(instantFinancials.recoveryLow)} – {formatCurrency(instantFinancials.recoveryHigh)}
+                </p>
+              </div>
+              <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Exposure pace (if unchanged)</p>
+                <p className="text-lg font-bold text-amber-200/90">
+                  ~{formatCurrency(Math.round(instantFinancials.arrAtRiskLow / 12))}–{formatCurrency(Math.round(instantFinancials.arrAtRiskHigh / 12))}/mo
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">Here&apos;s what&apos;s happening</p>
+            <ul className="text-sm text-gray-300 space-y-2 mb-4 max-w-xl list-disc list-inside marker:text-cyan-500">
+              {buildStructureInsightBullets(
+                data,
+                instantFinancials.closeRateDeltaLow,
+                instantFinancials.closeRateDeltaHigh
+              ).map((line) => (
+                <li key={line} className="leading-relaxed pl-1">
+                  {line}
                 </li>
               ))}
             </ul>
 
-            <button
-              onClick={() => setShowImpactForm(true)}
-              className="w-full px-6 py-3.5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base shadow-lg shadow-cyan-500/15"
-            >
-              View your full report →
-            </button>
+            <div className="p-4 rounded-lg bg-emerald-950/20 border border-emerald-500/20 mb-6">
+              <p className="text-sm font-semibold text-emerald-300 mb-1">If structural fixes land, modeled recoverable range:</p>
+              <p className="text-lg font-bold text-emerald-400">
+                {formatCurrency(instantFinancials.recoveryLow)} – {formatCurrency(instantFinancials.recoveryHigh)} annually
+              </p>
+            </div>
+
+            <p className="text-xs text-gray-500 mb-2">
+              Confidence:{" "}
+              <span className="text-gray-300 font-medium">{instantFinancials.confidence}</span>
+              {" · "}
+              {instantFinancials.confidenceExplanation}
+            </p>
+            <div className="p-3 rounded-lg bg-[#0B0F19] border border-orange-500/20 mb-6">
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Primary driver</p>
+              <p className="text-sm text-orange-200">→ {instantFinancials.primaryDriver}</p>
+            </div>
+
+            {!showImpactForm && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setShowImpactForm(true)}
+                  className="w-full px-6 py-3.5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base shadow-lg shadow-cyan-500/15"
+                >
+                  Make this analysis precise for your business →
+                </button>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  Takes 60 seconds — improves accuracy by 3–5x
+                </p>
+              </>
+            )}
 
             <p className="text-sm text-amber-200/90 mt-4 text-center font-medium leading-relaxed max-w-md mx-auto">
               Every month this stays unfixed, your revenue loss compounds
@@ -862,18 +960,17 @@ function ScanResultsContent() {
             <p className="text-xs text-gray-500 mt-3 text-center">
               Instant access — no setup, no signup required
             </p>
-            <p className="text-xs text-gray-600 mt-2 text-center max-w-md mx-auto leading-relaxed">
-              One short step below personalizes dollar ranges — your email is already saved.
-            </p>
           </div>
         )}
 
-        {/* Financial Impact Form (after clicking "Make this accurate") */}
+        {/* Financial Impact Form — optional refinement after full instant report */}
         {unlocked && showFinancialImpact && !financialImpact && showImpactForm && (
           <div id="financial-impact-form" className="p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6">
             <div className="mb-4">
-              <h3 className="text-xl font-bold text-white mb-1">Personalize your full report</h3>
-              <p className="text-sm text-gray-400">No exact data needed — we&apos;ll use industry priors if you leave fields blank.</p>
+              <h3 className="text-xl font-bold text-white mb-1">Dial in your numbers</h3>
+              <p className="text-sm text-gray-400">
+                Same engine as above — your ARR, ACV, and traffic replace the default mid-market prior so the dollar bands match your business.
+              </p>
               <p className="text-xs text-gray-600 mt-2">
                 Your ARR band is saved for the next page — you won&apos;t have to re-pick the same range if you continue to full diagnostic.
               </p>
@@ -895,7 +992,7 @@ function ScanResultsContent() {
             >
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">
-                  To calculate your exact revenue loss: What's your ARR? <span className="text-red-400">*</span>
+                  Scale the model to your business — what&apos;s your ARR band? <span className="text-red-400">*</span>
                 </label>
                 <select
                   value={arrRange}
@@ -969,7 +1066,7 @@ function ScanResultsContent() {
                   <option value="40-100K">$40K – $100K</option>
                   <option value="100K+">$100K+</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">Best guess is OK</p>
+                <p className="text-xs text-gray-500 mt-1">Ranges are fine — we map to the same model midpoints</p>
               </div>
               
               <button
@@ -977,7 +1074,7 @@ function ScanResultsContent() {
                 disabled={calculatingImpact || !arrRange || !acvRange}
                 className="w-full px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
               >
-                {calculatingImpact ? "Calculating..." : "Calculate Impact"}
+                {calculatingImpact ? "Updating model…" : "Update my model →"}
               </button>
             </form>
           </div>
@@ -987,9 +1084,10 @@ function ScanResultsContent() {
         {financialImpact && (
           <div id="financial-impact-results" className="p-6 bg-gradient-to-br from-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/20 mb-6">
             <div className="mb-4">
-              <h3 className="text-xl font-bold text-white mb-1">Financial Impact (estimated)</h3>
+              <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-1">Updated model</p>
+              <h3 className="text-xl font-bold text-white mb-1">Refined from your inputs</h3>
               <p className="text-xs text-gray-400">
-                These estimates use your inputs + peers with similar structure. For exact modeling, finish the full diagnostic.
+                Same formulas as the instant report — now scaled to your ARR band, ACV, and optional traffic from the form above.
               </p>
             </div>
             
@@ -1008,6 +1106,14 @@ function ScanResultsContent() {
                   −{financialImpact.closeRateDeltaLow}% to −{financialImpact.closeRateDeltaHigh}%
                 </p>
                 <p className="text-xs text-gray-500 mt-1">Estimated compression from messaging misalignment</p>
+              </div>
+
+              <div className="p-4 bg-[#0B0F19] rounded-lg border border-emerald-500/15">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Recovery potential (annual)</p>
+                <p className="text-2xl font-bold text-emerald-400">
+                  {formatCurrency(financialImpact.recoveryLow)} – {formatCurrency(financialImpact.recoveryHigh)}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">Modeled if structural fixes from this scan land</p>
               </div>
               
               <div className="p-4 bg-[#0B0F19] rounded-lg border border-gray-800">
@@ -1034,7 +1140,7 @@ function ScanResultsContent() {
                 href="/onboarding"
                 className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
               >
-                Get exact impact for your business →
+                Get a precise ARR model & roadmap →
               </Link>
               <p className="text-xs text-gray-500 mt-2">
                 Complete full diagnostic for precise ARR modeling and recovery roadmap
@@ -1050,9 +1156,9 @@ function ScanResultsContent() {
         {showEmailCapture && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-[#111827] rounded-xl border border-gray-800 p-8 max-w-md w-full">
-              <h3 className="text-2xl font-bold mb-2 text-white">See your exact revenue impact</h3>
+              <h3 className="text-2xl font-bold mb-2 text-white">Unlock your full structural revenue model</h3>
               <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-                Enter your email to unlock your full revenue impact and recovery plan
+                Enter your email to see the complete analysis for this scan — dollar ranges, drivers, and recovery potential from your live signals. You can refine ARR/ACV right after for a tighter model.
               </p>
               
               <form onSubmit={handleEmailCapture} className="space-y-4">
