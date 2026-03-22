@@ -776,7 +776,7 @@ function ScanResultsContent() {
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold mb-3 text-white max-w-xl mx-auto leading-snug">
-              See exactly where you&apos;re losing revenue — and how much it&apos;s costing you
+              We&apos;ve mapped exactly where you&apos;re losing revenue — and how much it&apos;s costing you
             </h2>
             <p className="text-gray-400 mb-5 text-sm max-w-lg mx-auto leading-relaxed">
               We break down exactly where your revenue is leaking — and what it&apos;s costing you every month
@@ -801,13 +801,13 @@ function ScanResultsContent() {
               onClick={handleUnlock}
               className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
             >
-              Unlock your full revenue breakdown →
+              View your full report →
             </button>
             <p className="text-sm text-amber-200/90 mt-4 max-w-md mx-auto leading-relaxed font-medium">
               Every month this stays unfixed, you&apos;re losing more revenue
             </p>
             <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
-              Takes 30 seconds — instant access, no setup required
+              Instant access — no setup required
             </p>
           </div>
         )}
