@@ -132,8 +132,11 @@ export default function Home() {
             <br className="hidden md:block" />
             <span className="text-cyan-400"> We show you exactly where — and how much.</span>
           </h1>
-          <p className="text-lg md:text-xl text-gray-300 mb-10 leading-relaxed max-w-2xl mx-auto">
-            We analyze your website like a revenue system — and show where conversion breaks before it hits your pipeline.
+          <p className="text-lg md:text-xl text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto">
+            We analyze your site like a revenue system — and show exactly where you&apos;re losing deals before they hit your pipeline.
+          </p>
+          <p className="text-sm md:text-base text-amber-200/90 font-medium mb-10 max-w-2xl mx-auto">
+            Revenue loss compounds over time — most teams notice it too late.
           </p>
 
           {/* ── SCAN BOX ── */}
@@ -175,9 +178,14 @@ export default function Home() {
               <p>{scanPhases.current[scanPhase]}</p>
             </div>
           )}
-          <p className="text-xs text-gray-400 mb-8">
-            Takes 30 seconds · No signup required · See your revenue risk instantly
-          </p>
+          <div className="text-xs text-gray-400 mb-8 space-y-2">
+            <p>
+              Takes 30 seconds · No signup · See your revenue risk instantly
+            </p>
+            <p className="text-gray-500 max-w-md mx-auto leading-relaxed">
+              Used by revenue teams to catch hidden losses before they show in pipeline
+            </p>
+          </div>
 
           {/* ── Companies scanned counter (clickable → leaderboard) ── */}
           {scanCount !== null && scanCount > 0 && (
@@ -240,7 +248,11 @@ export default function Home() {
       {/* ── 3. PRODUCT VISUALIZATION ────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-6 text-center">Example Revenue Architecture Scan</p>
+          <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">Example Revenue Architecture Scan</p>
+          <p className="text-center text-base md:text-lg font-semibold text-white mb-6">
+            Example:{" "}
+            <span className="text-red-400">$287K</span> in revenue at risk detected
+          </p>
 
           {/* Mock Dashboard */}
           <div className="rounded-xl border border-gray-700 bg-[#111827] overflow-hidden shadow-2xl">
@@ -331,10 +343,22 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-4 mb-8">
             {[
-              { icon: "→", title: "Revenue objective alignment", desc: "Is your messaging actually driving the revenue outcome you sell?" },
-              { icon: "→", title: "ICP & positioning fit", desc: "Are you signaling the right buyer — or accidentally repelling them?" },
-              { icon: "→", title: "Value vs. price", desc: "Does what you charge line up with what you prove on the page?" },
-              { icon: "→", title: "Conversion triggers", desc: "Are the reasons to act obvious — or missing when it counts?" },
+              {
+                title: "Your messaging doesn't match your target buyer",
+                desc: "You're telling one story — your best customers need another.",
+              },
+              {
+                title: "Your ideal buyer can't tell you're for them",
+                desc: "Weak signals mean unqualified calls and wasted pipeline.",
+              },
+              {
+                title: "What you charge doesn't match what you prove",
+                desc: "Price lands before value — deals stall or go to cheaper alternatives.",
+              },
+              {
+                title: "Buyers don't see a clear reason to act",
+                desc: "No urgency, no proof, no next step they trust — so they bounce.",
+              },
             ].map(item => (
               <div key={item.title} className="p-5 bg-[#111827] rounded-lg border border-gray-800">
                 <p className="text-cyan-400 font-semibold mb-1">{item.title}</p>
