@@ -1024,9 +1024,9 @@ function ScanResultsContent() {
         {showEmailCapture && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-[#111827] rounded-xl border border-gray-800 p-8 max-w-md w-full">
-              <h3 className="text-2xl font-bold mb-2 text-white">See how much revenue you&apos;re losing (in $)</h3>
-              <p className="text-gray-400 mb-6 text-sm">
-                Enter your email to see your full dollar impact and recovery plan.
+              <h3 className="text-2xl font-bold mb-2 text-white">See your exact revenue impact</h3>
+              <p className="text-gray-400 mb-6 text-sm leading-relaxed">
+                Enter your email to unlock your full revenue impact and recovery plan
               </p>
               
               <form onSubmit={handleEmailCapture} className="space-y-4">
@@ -1060,13 +1060,13 @@ function ScanResultsContent() {
                     disabled={capturing || !email.trim()}
                     className="flex-1 px-4 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
                   >
-                    {capturing ? "Continuing…" : "Continue →"}
+                    {capturing ? "Unlocking…" : "Unlock full analysis →"}
                   </button>
                 </div>
               </form>
               
-              <p className="text-xs text-gray-600 mt-4 text-center">
-                We'll also send you the full report and improvement recommendations.
+              <p className="text-xs text-gray-500 mt-4 text-center">
+                No spam. Instant access.
               </p>
             </div>
           </div>
