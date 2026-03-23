@@ -3,13 +3,11 @@
 import { API_URL } from "@/lib/config"
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
 import { PLANS, type Plan } from "@/config/plans"
 
 const SALES_EMAIL = "hello@vectrios.com"
 
 export default function PricingPage() {
-  const searchParams = useSearchParams()
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
   const [isProcessing, setIsProcessing] = useState(false)
   const [selectedPlanName, setSelectedPlanName] = useState("")
@@ -89,7 +87,11 @@ export default function PricingPage() {
 
   const redirectToRequiredOnboarding = () => {
     const params = new URLSearchParams()
-    if (searchParams.get("from") === "scan") {
+    const from =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("from")
+        : null
+    if (from === "scan") {
       params.set("from", "scan")
     }
     const qs = params.toString()
