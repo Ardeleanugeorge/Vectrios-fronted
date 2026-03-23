@@ -486,6 +486,7 @@ function ScanResultsContent() {
   const [captureError, setCaptureError] = useState("")
   const [unlocked, setUnlocked] = useState(false)
   const [showFinancialImpact, setShowFinancialImpact] = useState(false)
+  const [unlockTransitioning, setUnlockTransitioning] = useState(false)
 
   const forceScrollToTop = () => {
     if (typeof window === "undefined") return
@@ -624,17 +625,22 @@ function ScanResultsContent() {
       }
       
       // Mark as unlocked — show full structural financial model immediately (default priors)
+      setUnlockTransitioning(true)
       setUnlocked(true)
       setShowEmailCapture(false)
       setShowFinancialImpact(true)
       setCapturing(false)
 
-      setTimeout(() => {
+      window.requestAnimationFrame(() => {
         forceScrollToTop()
-      }, 300)
+        window.setTimeout(() => {
+          setUnlockTransitioning(false)
+        }, 120)
+      })
     } catch (err: any) {
       setCaptureError(err.message || "Network error. Please try again.")
       setCapturing(false)
+      setUnlockTransitioning(false)
     }
   }
 
@@ -1124,6 +1130,18 @@ function ScanResultsContent() {
         )}
 
       </main>
+
+      {unlockTransitioning && (
+        <div className="fixed inset-0 z-[60] bg-[#0B0F19]/95 backdrop-blur-sm flex items-center justify-center">
+          <div className="text-center">
+            <svg className="animate-spin w-8 h-8 text-cyan-500 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+            <p className="text-sm text-gray-300">Unlocking your full results…</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
