@@ -2,6 +2,10 @@
 
 import { API_URL } from '@/lib/config'
 import { scanDomainKey } from '@/lib/scanPrefill'
+import {
+  mapOnboardingArrToFinancialArrRange,
+  writeScanResultsRefined,
+} from "@/lib/scanResultsRefine"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -391,7 +395,35 @@ export default function OnboardingPage() {
             }
           }
         }
-        router.push("/dashboard")
+
+        // Return to post-email scan results with updated $ model (same token, refined ARR band)
+        let redirectTo = "/dashboard"
+        try {
+          const fromScan =
+            typeof window !== "undefined" &&
+            new URLSearchParams(window.location.search).get("from") === "scan"
+          if (fromScan) {
+            const scanDataStr =
+              sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+            if (scanDataStr) {
+              const scanData = JSON.parse(scanDataStr) as { scan_token?: string }
+              const st = scanData?.scan_token
+              if (st && typeof st === "string") {
+                const arr_range = mapOnboardingArrToFinancialArrRange(form.arr_range)
+                writeScanResultsRefined({
+                  scan_token: st,
+                  arr_range,
+                  acv_range: "5-15K",
+                  monthlyTraffic: "",
+                })
+                redirectTo = `/scan-results?token=${encodeURIComponent(st)}`
+              }
+            }
+          }
+        } catch (e) {
+          console.error("[onboarding] redirect to scan-results:", e)
+        }
+        router.push(redirectTo)
       } else {
         let errorData
         try {

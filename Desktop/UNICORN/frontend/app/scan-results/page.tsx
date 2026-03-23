@@ -2,6 +2,11 @@
 
 import { API_URL } from '@/lib/config'
 import { buildScanPrefillPayload, persistScanDataForPrefill } from '@/lib/scanPrefill'
+import {
+  isScanUnlockedWithEmail,
+  markScanUnlockedWithEmail,
+  readScanResultsRefined,
+} from "@/lib/scanResultsRefine"
 
 import { useEffect, useState, useMemo, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -458,6 +463,20 @@ function ScanResultsContent() {
       .catch(() => setScanCount(0))
   }, [])
 
+  /** Restore post-email view if user already unlocked this scan (e.g. return from onboarding). */
+  useEffect(() => {
+    if (!token || typeof window === "undefined") return
+    try {
+      const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      if (auth && isScanUnlockedWithEmail(token)) {
+        setUnlocked(true)
+        setShowFinancialImpact(true)
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [token])
+
   const [showEmailCapture, setShowEmailCapture] = useState(false)
   const [email, setEmail] = useState("")
   const [capturing, setCapturing] = useState(false)
@@ -474,6 +493,29 @@ function ScanResultsContent() {
       monthlyTraffic: "",
     })
   }, [data])
+
+  /** After onboarding from this scan, same formulas with user’s ARR band from diagnostic. */
+  const refinedFinancials = useMemo(() => {
+    if (!data || !token) return null
+    const refined = readScanResultsRefined(token)
+    if (!refined) return null
+    return computeFinancialImpactFromScan(data, {
+      arrRange: refined.arr_range,
+      acvRange: refined.acv_range || DEFAULT_INSTANT_ACV,
+      monthlyTraffic: refined.monthlyTraffic || "",
+    })
+  }, [data, token])
+
+  const displayFinancials = refinedFinancials ?? instantFinancials
+  const modelFromOnboarding = refinedFinancials != null
+
+  useEffect(() => {
+    if (!modelFromOnboarding || !unlocked) return
+    const t = window.setTimeout(() => {
+      document.getElementById("financial-impact-instant")?.scrollIntoView({ behavior: "smooth", block: "center" })
+    }, 350)
+    return () => window.clearTimeout(t)
+  }, [modelFromOnboarding, unlocked, token])
 
   const handleUnlock = () => {
     setShowEmailCapture(true)
@@ -508,6 +550,9 @@ function ScanResultsContent() {
       // Save auth token and user data
       sessionStorage.setItem("auth_token", result.token)
       localStorage.setItem("auth_token", result.token)
+      if (token) {
+        markScanUnlockedWithEmail(token)
+      }
 
       // Try to derive a friendly company name from current scan domain
       const domain = data?.domain || ""
@@ -883,11 +928,21 @@ function ScanResultsContent() {
         )}
 
         {/* După email: pierdere → recovery (hero) → CTA monetizare (fără form pe loc) */}
-        {unlocked && showFinancialImpact && instantFinancials && !isBlocked && (
+        {unlocked && showFinancialImpact && displayFinancials && !isBlocked && (
           <div
             id="financial-impact-instant"
             className="p-6 sm:p-8 lg:p-10 bg-gradient-to-br from-cyan-950/25 via-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/25 mb-8"
           >
+            {modelFromOnboarding && (
+              <div className="mb-5 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/35 text-center lg:text-left">
+                <p className="text-sm font-semibold text-emerald-200">
+                  Model updated with your diagnostic
+                </p>
+                <p className="text-xs text-emerald-200/70 mt-1">
+                  Dollar ranges now use your onboarding ARR band (same scan + same formulas).
+                </p>
+              </div>
+            )}
             <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2 text-center lg:text-left">
               Unlocked · revenue-first
             </p>
@@ -901,12 +956,12 @@ function ScanResultsContent() {
                   You&apos;re losing (modeled)
                 </p>
                 <p className="text-3xl sm:text-4xl font-bold text-orange-300 tracking-tight">
-                  ~{formatCurrency(Math.round(instantFinancials.arrAtRiskLow / 12))}–
-                  {formatCurrency(Math.round(instantFinancials.arrAtRiskHigh / 12))}
+                  ~{formatCurrency(Math.round(displayFinancials.arrAtRiskLow / 12))}–
+                  {formatCurrency(Math.round(displayFinancials.arrAtRiskHigh / 12))}
                   <span className="text-lg sm:text-xl font-semibold text-orange-200/85"> / month</span>
                 </p>
                 <p className="text-xs text-gray-400 mt-3">
-                  ≈ {formatCurrency(instantFinancials.arrAtRiskLow)}–{formatCurrency(instantFinancials.arrAtRiskHigh)} / year
+                  ≈ {formatCurrency(displayFinancials.arrAtRiskLow)}–{formatCurrency(displayFinancials.arrAtRiskHigh)} / year
                   at risk if nothing changes
                 </p>
               </div>
@@ -916,7 +971,7 @@ function ScanResultsContent() {
                   You can recover (modeled)
                 </p>
                 <p className="text-3xl sm:text-4xl font-bold text-emerald-300 tracking-tight">
-                  {formatCurrency(instantFinancials.recoveryLow)} – {formatCurrency(instantFinancials.recoveryHigh)}
+                  {formatCurrency(displayFinancials.recoveryLow)} – {formatCurrency(displayFinancials.recoveryHigh)}
                   <span className="text-lg sm:text-xl font-semibold text-emerald-200/90"> / year</span>
                 </p>
                 <p className="text-sm text-emerald-100/80 mt-3 leading-relaxed">
@@ -931,10 +986,10 @@ function ScanResultsContent() {
                 className="flex flex-col w-full items-center justify-center px-6 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl transition text-base sm:text-lg shadow-lg shadow-cyan-500/20 text-center leading-snug"
               >
                 <span>
-                  Recover up to {formatCurrency(instantFinancials.recoveryHigh)}/year →
+                  Recover up to {formatCurrency(displayFinancials.recoveryHigh)}/year →
                 </span>
                 <span className="text-xs sm:text-sm font-semibold text-black/75 mt-1.5 normal-case tracking-normal">
-                  Fix ~{formatCurrency(Math.round(instantFinancials.arrAtRiskHigh / 12))}/mo bleed · plans &amp; 14-day trial
+                  Fix ~{formatCurrency(Math.round(displayFinancials.arrAtRiskHigh / 12))}/mo bleed · plans &amp; 14-day trial
                 </span>
               </Link>
               <ul className="mt-4 space-y-2 text-sm text-gray-400">
@@ -953,7 +1008,9 @@ function ScanResultsContent() {
                 href="/onboarding?from=scan"
                 className="mt-5 block text-center lg:text-left text-sm text-gray-500 hover:text-cyan-400/90 transition underline underline-offset-2 decoration-gray-600 hover:decoration-cyan-500/50"
               >
-                Optional: tighten your numbers (~30 sec) in the free diagnostic — ARR, ACV, close rates
+                {modelFromOnboarding
+                  ? "Update your numbers again (~30 sec) — re-runs this model when you finish"
+                  : "Optional: tighten your numbers (~30 sec) in the free diagnostic — ARR, ACV, close rates"}
               </Link>
             </div>
 
@@ -962,18 +1019,18 @@ function ScanResultsContent() {
                 <div className="p-4 bg-[#111827] rounded-lg border border-gray-800">
                   <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Annual ARR at risk</p>
                   <p className="text-xl font-bold text-white">
-                    {formatCurrency(instantFinancials.arrAtRiskLow)} – {formatCurrency(instantFinancials.arrAtRiskHigh)}
+                    {formatCurrency(displayFinancials.arrAtRiskLow)} – {formatCurrency(displayFinancials.arrAtRiskHigh)}
                   </p>
                 </div>
                 <div className="p-4 bg-[#111827] rounded-lg border border-gray-800">
                   <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Close rate compression</p>
                   <p className="text-xl font-bold text-red-400">
-                    −{instantFinancials.closeRateDeltaLow}% to −{instantFinancials.closeRateDeltaHigh}%
+                    −{displayFinancials.closeRateDeltaLow}% to −{displayFinancials.closeRateDeltaHigh}%
                   </p>
                 </div>
                 <div className="p-4 bg-[#111827] rounded-lg border border-orange-500/25 sm:col-span-2 lg:col-span-1">
                   <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Primary leak</p>
-                  <p className="text-sm text-orange-200 leading-snug">{instantFinancials.primaryDriver}</p>
+                  <p className="text-sm text-orange-200 leading-snug">{displayFinancials.primaryDriver}</p>
                 </div>
               </div>
               <div className="lg:col-span-7">
@@ -981,8 +1038,8 @@ function ScanResultsContent() {
                 <ul className="text-sm text-gray-300 space-y-2.5 list-disc list-inside marker:text-cyan-500">
                   {buildStructureInsightBullets(
                     data,
-                    instantFinancials.closeRateDeltaLow,
-                    instantFinancials.closeRateDeltaHigh
+                    displayFinancials.closeRateDeltaLow,
+                    displayFinancials.closeRateDeltaHigh
                   )
                     .slice(0, 3)
                     .map((line) => (
@@ -992,8 +1049,8 @@ function ScanResultsContent() {
                     ))}
                 </ul>
                 <p className="text-xs text-gray-600 mt-5">
-                  Confidence: <span className="text-gray-400">{instantFinancials.confidence}</span> —{" "}
-                  {instantFinancials.confidenceExplanation}
+                  Confidence: <span className="text-gray-400">{displayFinancials.confidence}</span> —{" "}
+                  {displayFinancials.confidenceExplanation}
                 </p>
               </div>
             </div>
