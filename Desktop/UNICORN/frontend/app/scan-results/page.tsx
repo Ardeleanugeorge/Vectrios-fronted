@@ -463,7 +463,7 @@ function ScanResultsContent() {
       .catch(() => setScanCount(0))
   }, [])
 
-  /** Restore post-email view if user already unlocked this scan (e.g. return from onboarding). */
+  /** Restore wide view after email unlock for this scan token. */
   useEffect(() => {
     if (!token || typeof window === "undefined") return
     try {
@@ -471,6 +471,9 @@ function ScanResultsContent() {
       if (auth && isScanUnlockedWithEmail(token)) {
         setUnlocked(true)
         setShowFinancialImpact(true)
+      } else {
+        setUnlocked(false)
+        setShowFinancialImpact(false)
       }
     } catch {
       /* ignore */
