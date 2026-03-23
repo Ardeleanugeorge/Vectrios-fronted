@@ -484,6 +484,17 @@ function ScanResultsContent() {
   const [unlocked, setUnlocked] = useState(false)
   const [showFinancialImpact, setShowFinancialImpact] = useState(false)
 
+  const forceScrollToTop = () => {
+    if (typeof window === "undefined") return
+    window.scrollTo(0, 0)
+    window.requestAnimationFrame(() => {
+      window.scrollTo(0, 0)
+    })
+    window.setTimeout(() => {
+      window.scrollTo(0, 0)
+    }, 120)
+  }
+
   /** Default mid-market priors: full report immediately after email (same engine as refined model). */
   const instantFinancials = useMemo(() => {
     if (!data) return null
@@ -512,7 +523,7 @@ function ScanResultsContent() {
   useEffect(() => {
     if (!modelFromOnboarding || !unlocked) return
     const t = window.setTimeout(() => {
-      document.getElementById("financial-impact-instant")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      forceScrollToTop()
     }, 350)
     return () => window.clearTimeout(t)
   }, [modelFromOnboarding, unlocked, token])
@@ -616,7 +627,7 @@ function ScanResultsContent() {
       setCapturing(false)
 
       setTimeout(() => {
-        document.getElementById("financial-impact-instant")?.scrollIntoView({ behavior: "smooth", block: "center" })
+        forceScrollToTop()
       }, 300)
     } catch (err: any) {
       setCaptureError(err.message || "Network error. Please try again.")

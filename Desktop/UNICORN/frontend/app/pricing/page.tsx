@@ -4,6 +4,7 @@ import { API_URL } from "@/lib/config"
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { PLANS, type Plan } from "@/config/plans"
+import { readScanResultsRefined } from "@/lib/scanResultsRefine"
 
 const SALES_EMAIL = "hello@vectrios.com"
 
@@ -73,8 +74,30 @@ export default function PricingPage() {
     }
   }
 
+  const currentScanTokenFromStorage = (): string | null => {
+    try {
+      const raw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+      if (!raw) return null
+      const parsed = JSON.parse(raw) as { scan_token?: string }
+      return parsed?.scan_token || null
+    } catch {
+      return null
+    }
+  }
+
   const hasCompletedRequiredOnboarding = (): boolean => {
     try {
+      const fromScan =
+        typeof window !== "undefined" &&
+        new URLSearchParams(window.location.search).get("from") === "scan"
+
+      // In scan flow we require the scan-specific refined onboarding step.
+      if (fromScan) {
+        const scanToken = currentScanTokenFromStorage()
+        if (!scanToken) return false
+        return readScanResultsRefined(scanToken) !== null
+      }
+
       const fullDiagnosticRaw =
         sessionStorage.getItem("diagnostic_result_full") || localStorage.getItem("diagnostic_result_full")
       if (!fullDiagnosticRaw) return false
