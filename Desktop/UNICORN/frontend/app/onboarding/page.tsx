@@ -248,6 +248,33 @@ export default function OnboardingPage() {
     }
   }, [form])
 
+  useEffect(() => {
+    try {
+      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      if (!token) return
+      const qs = typeof window !== "undefined" ? window.location.search : ""
+      fetch(`${API_URL}/progress/upsert`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          last_route: `/onboarding${qs || ""}`,
+          onboarding_step: String(currentStep),
+          draft_payload: {
+            website_url: form.website_url || "",
+            arr_range: form.arr_range || "",
+            current_close_rate: form.current_close_rate || "",
+            target_close_rate: form.target_close_rate || "",
+          },
+        }),
+      }).catch(() => {})
+    } catch {
+      // ignore
+    }
+  }, [currentStep, form.website_url, form.arr_range, form.current_close_rate, form.target_close_rate])
+
   const clearPrefill = () => {
     try {
       sessionStorage.removeItem("scan_data")

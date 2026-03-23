@@ -131,6 +131,27 @@ export default function PricingPage() {
       params.set("billing", intent.billingCycle)
     }
     const qs = params.toString()
+    try {
+      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      if (token) {
+        fetch(`${API_URL}/progress/upsert`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            last_route: qs ? `/pricing?${qs}` : "/pricing",
+            pending_intent:
+              intent.type === "trial"
+                ? { type: "trial" }
+                : { type: "plan", planName: intent.planName, billingCycle: intent.billingCycle },
+          }),
+        }).catch(() => {})
+      }
+    } catch {
+      // ignore
+    }
     window.location.href = qs ? `/onboarding?${qs}` : "/onboarding"
   }
 

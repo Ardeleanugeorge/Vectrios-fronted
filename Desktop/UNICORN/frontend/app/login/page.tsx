@@ -15,6 +15,8 @@ export default function LoginPage() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
+  const [sendingReset, setSendingReset] = useState(false)
+  const [resetMsg, setResetMsg] = useState("")
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -50,7 +52,7 @@ export default function LoginPage() {
             company_id: data.company_id || null
           }))
         }
-        router.push("/dashboard")
+        router.push(data.resume_target || "/dashboard")
       } else {
         const errorData = await response.json().catch(() => ({ detail: "Login failed" }))
         setError(errorData.detail || "Invalid email or password")
@@ -60,6 +62,34 @@ export default function LoginPage() {
       setError("Error logging in. Please try again.")
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  const handleSendReset = async () => {
+    setResetMsg("")
+    setError("")
+    if (!form.email.trim()) {
+      setError("Enter your email first.")
+      return
+    }
+    setSendingReset(true)
+    try {
+      const res = await fetch(`${API_URL}/set-password-request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email.trim() }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({ detail: "Request failed" }))
+        setError(data.detail || "Request failed")
+        setSendingReset(false)
+        return
+      }
+      setResetMsg("If this email exists, we sent a secure password link.")
+    } catch {
+      setError("Network error. Please try again.")
+    } finally {
+      setSendingReset(false)
     }
   }
 
@@ -107,6 +137,11 @@ export default function LoginPage() {
               {error}
             </div>
           )}
+          {resetMsg && (
+            <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-300 text-sm">
+              {resetMsg}
+            </div>
+          )}
 
           <button
             type="submit"
@@ -122,6 +157,14 @@ export default function LoginPage() {
               Sign up
             </Link>
           </p>
+          <button
+            type="button"
+            onClick={handleSendReset}
+            disabled={sendingReset}
+            className="w-full mt-3 text-sm text-gray-400 hover:text-cyan-300 transition"
+          >
+            {sendingReset ? "Sending reset link..." : "Forgot password? Send secure setup link"}
+          </button>
         </form>
       </div>
       </main>
