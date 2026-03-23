@@ -21,7 +21,7 @@ const getPlanDisplay = (plan: string | null, billingCycle?: string | null) => {
   return { label: plan.charAt(0).toUpperCase() + plan.slice(1), colorKey: plan }
 }
 
-export default function DashboardHeader() {
+export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadge?: boolean }) {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [showMenu, setShowMenu] = useState(false)
@@ -180,7 +180,7 @@ export default function DashboardHeader() {
           <div className="relative flex items-center gap-3">
 
             {/* Plan badge — vizibil tot timpul */}
-            {planLabel && (
+            {showPlanBadge && planLabel && (
               <span className={`hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${planColorClass}`}>
                 {planLabel}
                 {billingCycle === "trial" && trialDaysLeft !== null ? ` · ${trialDaysLeft}d left` : ""}
@@ -221,7 +221,7 @@ export default function DashboardHeader() {
                     {user?.email && (
                       <p className="text-xs text-gray-400 mt-0.5">{user.email}</p>
                     )}
-                    {planLabel && (
+                    {showPlanBadge && planLabel && (
                       <span className={`inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${planColorClass}`}>
                         {planLabel} Plan{billingCycle === "trial" && trialDaysLeft !== null ? ` · ${trialDaysLeft}d left` : ""}
                       </span>

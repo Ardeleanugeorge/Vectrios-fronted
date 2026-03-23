@@ -1028,14 +1028,14 @@ function ScanResultsContent() {
                   </li>
                 ))}
               </ul>
-              <Link
-                href="/onboarding?from=scan"
-                className="mt-5 block text-center lg:text-left text-sm text-gray-500 hover:text-cyan-400/90 transition underline underline-offset-2 decoration-gray-600 hover:decoration-cyan-500/50"
-              >
-                {modelFromOnboarding
-                  ? "Update your numbers again (~30 sec) — re-runs this model when you finish"
-                  : "Optional: tighten your numbers (~30 sec) in the free diagnostic — ARR, ACV, close rates"}
-              </Link>
+              {!modelFromOnboarding && (
+                <Link
+                  href="/onboarding?from=scan"
+                  className="mt-5 block text-center lg:text-left text-sm text-gray-500 hover:text-cyan-400/90 transition underline underline-offset-2 decoration-gray-600 hover:decoration-cyan-500/50"
+                >
+                  Optional: tighten your numbers (~30 sec) in the free diagnostic — ARR, ACV, close rates
+                </Link>
+              )}
             </div>
 
             <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 pt-8 border-t border-gray-800/80">

@@ -497,7 +497,7 @@ export default function OnboardingPage() {
   return (
     <main className="min-h-screen bg-[#0B0F19] text-white">
       {/* Shared app header with company + email + plan badge */}
-      <DashboardHeader />
+      <DashboardHeader showPlanBadge={false} />
       <div className="max-w-3xl mx-auto px-6 py-12">
         {/* PROGRESS INDICATOR */}
           <div className="mb-12">
