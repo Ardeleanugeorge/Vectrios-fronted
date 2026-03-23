@@ -20,6 +20,7 @@ export default function PricingPage() {
   const [company, setCompany] = useState("")
   const [message, setMessage] = useState("")
   const [resumeTriggered, setResumeTriggered] = useState(false)
+  const [isRouteTransitioning, setIsRouteTransitioning] = useState(false)
 
   const canSendContact = useMemo(() => {
     return name.trim().length > 0 && email.trim().length > 0 && message.trim().length > 0
@@ -111,6 +112,7 @@ export default function PricingPage() {
   }
 
   const redirectToRequiredOnboarding = (intent: { type: "trial" } | { type: "plan"; planName: string; billingCycle: "monthly" | "annual" }) => {
+    setIsRouteTransitioning(true)
     const params = new URLSearchParams()
     const from =
       typeof window !== "undefined"
@@ -170,6 +172,7 @@ export default function PricingPage() {
   const handleTrial = async () => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) {
+      setIsRouteTransitioning(true)
       window.location.href = "/login"
       return
     }
@@ -179,7 +182,7 @@ export default function PricingPage() {
     }
     const companyId = await resolveCompanyId(token)
     if (!companyId) {
-      alert("Company not found yet. Please complete onboarding first.")
+      setIsRouteTransitioning(true)
       window.location.href = "/onboarding"
       return
     }
@@ -195,6 +198,7 @@ export default function PricingPage() {
         const err = await res.json().catch(() => ({}))
         throw new Error(err.detail || "Failed to activate trial")
       }
+      setIsRouteTransitioning(true)
       window.location.href = "/dashboard?governance=activated&trial=activated"
     } catch (e: any) {
       alert(e?.message || "Failed to start trial")
@@ -206,6 +210,7 @@ export default function PricingPage() {
   const handleSelectPlan = async (planName: string) => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) {
+      setIsRouteTransitioning(true)
       window.location.href = "/login"
       return
     }
@@ -215,7 +220,7 @@ export default function PricingPage() {
     }
     const companyId = await resolveCompanyId(token)
     if (!companyId) {
-      alert("Company not found yet. Please complete onboarding first.")
+      setIsRouteTransitioning(true)
       window.location.href = "/onboarding"
       return
     }
@@ -242,6 +247,7 @@ export default function PricingPage() {
 
       const subData = await subRes.json().catch(() => ({}))
       if (subData?.checkout_url) {
+        setIsRouteTransitioning(true)
         window.location.href = subData.checkout_url
         return
       }
@@ -251,6 +257,7 @@ export default function PricingPage() {
         headers: { Authorization: `Bearer ${token}` },
       }).catch(() => {})
 
+      setIsRouteTransitioning(true)
       window.location.href = "/dashboard?governance=activated"
     } catch (e: any) {
       alert(e?.message || "Failed to activate plan")
@@ -513,6 +520,17 @@ export default function PricingPage() {
         </div>
       </main>
       <SiteFooter />
+      {isRouteTransitioning && (
+        <div className="fixed inset-0 z-[80] bg-[#0B0F19]/95 backdrop-blur-sm flex items-center justify-center">
+          <div className="text-center">
+            <svg className="animate-spin w-8 h-8 text-cyan-500 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+            <p className="text-sm text-gray-300">Continuing…</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

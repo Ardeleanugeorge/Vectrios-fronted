@@ -7,7 +7,7 @@ import {
   writeScanResultsRefined,
 } from "@/lib/scanResultsRefine"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import DashboardHeader from "@/components/DashboardHeader"
 import SiteFooter from "@/components/SiteFooter"
@@ -106,6 +106,8 @@ function QuestionBlock({
 export default function OnboardingPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
+  const [isRouteTransitioning, setIsRouteTransitioning] = useState(false)
+  const transitionLockRef = useRef(false)
 
   // Read scan prefill only in the browser (sessionStorage/localStorage do not exist on the server during `next build`)
   const getScanPrefillPatch = (): Partial<{
@@ -444,6 +446,8 @@ export default function OnboardingPage() {
         } catch (e) {
           console.error("[onboarding] redirect to scan-results:", e)
         }
+        transitionLockRef.current = true
+        setIsRouteTransitioning(true)
         router.push(redirectTo)
       } else {
         let errorData
@@ -483,7 +487,9 @@ export default function OnboardingPage() {
       alert("Error completing onboarding. Please try again.")
     } finally {
       clearInterval(phaseInterval)
-      setIsSubmitting(false)
+      if (!transitionLockRef.current) {
+        setIsSubmitting(false)
+      }
       setSubmitPhase(0)
     }
   }
@@ -868,6 +874,17 @@ export default function OnboardingPage() {
         </div>
       </div>
       <SiteFooter />
+      {isRouteTransitioning && (
+        <div className="fixed inset-0 z-[80] bg-[#0B0F19]/95 backdrop-blur-sm flex items-center justify-center">
+          <div className="text-center">
+            <svg className="animate-spin w-8 h-8 text-cyan-500 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+            <p className="text-sm text-gray-300">Building your results…</p>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
