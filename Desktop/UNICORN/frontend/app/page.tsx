@@ -8,6 +8,26 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
 
+type CookieConsent = {
+  necessary: true
+  functional: boolean
+  performance: boolean
+  targeting: boolean
+  consentGiven: boolean
+}
+
+const COOKIE_CONSENT_KEY = "vectrios_cookie_consent_v1"
+
+function defaultCookieConsent(): CookieConsent {
+  return {
+    necessary: true,
+    functional: false,
+    performance: false,
+    targeting: false,
+    consentGiven: false,
+  }
+}
+
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [scanUrl, setScanUrl] = useState("")
@@ -24,6 +44,9 @@ export default function Home() {
     "Estimating Revenue Impact Index…"
   ])
   const [scanPhase, setScanPhase] = useState(0)
+  const [showCookieBanner, setShowCookieBanner] = useState(false)
+  const [showCookiePreferences, setShowCookiePreferences] = useState(false)
+  const [cookieConsent, setCookieConsent] = useState<CookieConsent>(defaultCookieConsent())
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -41,6 +64,31 @@ export default function Home() {
         console.error("[SCAN-STATS] Fetch error:", err);
         setScanCount(0);
       })
+  }, [])
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(COOKIE_CONSENT_KEY)
+      if (!raw) {
+        setShowCookieBanner(true)
+        return
+      }
+      const parsed = JSON.parse(raw) as CookieConsent
+      if (!parsed?.consentGiven) {
+        setShowCookieBanner(true)
+        return
+      }
+      setCookieConsent({
+        necessary: true,
+        functional: !!parsed.functional,
+        performance: !!parsed.performance,
+        targeting: !!parsed.targeting,
+        consentGiven: true,
+      })
+      setShowCookieBanner(false)
+    } catch {
+      setShowCookieBanner(true)
+    }
   }, [])
 
   // Rotate fake scan phases while scanning
@@ -114,6 +162,45 @@ export default function Home() {
       }
       setScanning(false)
     }
+  }
+
+  const saveCookieConsent = (next: CookieConsent) => {
+    setCookieConsent(next)
+    try {
+      localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(next))
+    } catch {
+      // ignore
+    }
+    setShowCookieBanner(false)
+    setShowCookiePreferences(false)
+  }
+
+  const acceptAllCookies = () => {
+    saveCookieConsent({
+      necessary: true,
+      functional: true,
+      performance: true,
+      targeting: true,
+      consentGiven: true,
+    })
+  }
+
+  const rejectAllCookies = () => {
+    saveCookieConsent({
+      necessary: true,
+      functional: false,
+      performance: false,
+      targeting: false,
+      consentGiven: true,
+    })
+  }
+
+  const confirmCookieChoices = () => {
+    saveCookieConsent({
+      ...cookieConsent,
+      necessary: true,
+      consentGiven: true,
+    })
   }
 
   return (
@@ -511,6 +598,106 @@ export default function Home() {
           <p className="text-sm text-gray-600">© 2025 VectriOS. All rights reserved.</p>
         </div>
       </footer>
+
+      {showCookieBanner && (
+        <div className="fixed inset-x-0 bottom-0 z-[70] px-3 sm:px-6 pb-3 sm:pb-5">
+          <div className="max-w-6xl mx-auto rounded-xl border border-gray-700 bg-[#0f1524] shadow-2xl shadow-black/40">
+            <div className="p-4 sm:p-5">
+              <p className="text-sm text-gray-200 leading-relaxed">
+                <span className="font-semibold text-white">Our site uses cookies.</span>{" "}
+                Like most websites, VectriOS uses cookies to make the site work, improve experience, analyze usage,
+                and support marketing. Choose "Allow All" to accept all categories, or use "Manage Consent
+                Preferences" to customize.
+              </p>
+              <p className="text-xs text-gray-400 mt-2">
+                Cookie categories: Strictly Necessary (always active), Functional, Performance, and Targeting.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2 sm:gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowCookiePreferences((v) => !v)}
+                  className="px-4 py-2 rounded-lg border border-gray-600 text-gray-200 hover:border-cyan-500/50 hover:text-white text-sm"
+                >
+                  Manage Consent Preferences
+                </button>
+                <button
+                  type="button"
+                  onClick={rejectAllCookies}
+                  className="px-4 py-2 rounded-lg border border-gray-600 text-gray-200 hover:border-gray-500 text-sm"
+                >
+                  Reject All
+                </button>
+                <button
+                  type="button"
+                  onClick={acceptAllCookies}
+                  className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm"
+                >
+                  Allow All
+                </button>
+              </div>
+
+              {showCookiePreferences && (
+                <div className="mt-4 rounded-lg border border-gray-700 bg-[#0b111d] p-4">
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-white font-medium">Strictly Necessary Cookies</p>
+                        <p className="text-gray-400 text-xs">Always Active</p>
+                      </div>
+                      <span className="text-xs px-2 py-1 rounded border border-gray-600 text-gray-300">Always Active</span>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-gray-200">Functional Cookies</p>
+                      <input
+                        type="checkbox"
+                        checked={cookieConsent.functional}
+                        onChange={(e) => setCookieConsent((prev) => ({ ...prev, functional: e.target.checked }))}
+                        className="h-4 w-4 accent-cyan-500"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-gray-200">Performance Cookies</p>
+                      <input
+                        type="checkbox"
+                        checked={cookieConsent.performance}
+                        onChange={(e) => setCookieConsent((prev) => ({ ...prev, performance: e.target.checked }))}
+                        className="h-4 w-4 accent-cyan-500"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-gray-200">Targeting Cookies</p>
+                      <input
+                        type="checkbox"
+                        checked={cookieConsent.targeting}
+                        onChange={(e) => setCookieConsent((prev) => ({ ...prev, targeting: e.target.checked }))}
+                        className="h-4 w-4 accent-cyan-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={rejectAllCookies}
+                      className="px-4 py-2 rounded-lg border border-gray-600 text-gray-200 text-sm"
+                    >
+                      Reject All
+                    </button>
+                    <button
+                      type="button"
+                      onClick={confirmCookieChoices}
+                      className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm"
+                    >
+                      Confirm My Choices
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       </main>
     </div>

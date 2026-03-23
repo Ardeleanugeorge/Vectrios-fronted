@@ -396,12 +396,15 @@ export default function OnboardingPage() {
           }
         }
 
-        // Return to post-email scan results with updated $ model (same token, refined ARR band)
+        // Return to intended next step with updated scan-specific refined inputs.
         let redirectTo = "/dashboard"
         try {
-          const fromScan =
-            typeof window !== "undefined" &&
-            new URLSearchParams(window.location.search).get("from") === "scan"
+          const qs = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null
+          const fromScan = qs?.get("from") === "scan"
+          const returnTo = qs?.get("return_to")
+          const resume = qs?.get("resume")
+          const plan = qs?.get("plan")
+          const billing = qs?.get("billing")
           if (fromScan) {
             const scanDataStr =
               sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
@@ -416,7 +419,24 @@ export default function OnboardingPage() {
                   acv_range: "5-15K",
                   monthlyTraffic: "",
                 })
-                redirectTo = `/scan-results?token=${encodeURIComponent(st)}`
+                if (returnTo === "pricing") {
+                  const next = new URLSearchParams()
+                  next.set("from", "scan")
+                  if (resume === "trial") {
+                    next.set("return_to", "pricing")
+                    next.set("resume", "trial")
+                  } else if (resume === "plan" && plan) {
+                    next.set("return_to", "pricing")
+                    next.set("resume", "plan")
+                    next.set("plan", plan)
+                    if (billing === "monthly" || billing === "annual") {
+                      next.set("billing", billing)
+                    }
+                  }
+                  redirectTo = `/pricing?${next.toString()}`
+                } else {
+                  redirectTo = `/scan-results?token=${encodeURIComponent(st)}`
+                }
               }
             }
           }
@@ -507,6 +527,11 @@ export default function OnboardingPage() {
         {currentStep === 1 && (
           <div className="space-y-6">
             <div className="text-center mb-8">
+              <div className="mb-4 p-3 rounded-lg border border-cyan-500/30 bg-cyan-950/25 max-w-2xl mx-auto">
+                <p className="text-sm text-cyan-200 font-medium">
+                  To unlock accurate revenue-risk results and activate your selected plan/trial, complete these fields first.
+                </p>
+              </div>
               <h2 className="text-3xl font-bold mb-4">Want a precise model for your business?</h2>
               <p className="text-gray-400 mb-2">
                 Takes ~2 minutes · Used by revenue teams to model ARR risk

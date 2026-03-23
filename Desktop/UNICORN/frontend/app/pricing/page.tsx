@@ -18,6 +18,7 @@ export default function PricingPage() {
   const [email, setEmail] = useState("")
   const [company, setCompany] = useState("")
   const [message, setMessage] = useState("")
+  const [resumeTriggered, setResumeTriggered] = useState(false)
 
   const canSendContact = useMemo(() => {
     return name.trim().length > 0 && email.trim().length > 0 && message.trim().length > 0
@@ -108,7 +109,7 @@ export default function PricingPage() {
     }
   }
 
-  const redirectToRequiredOnboarding = () => {
+  const redirectToRequiredOnboarding = (intent: { type: "trial" } | { type: "plan"; planName: string; billingCycle: "monthly" | "annual" }) => {
     const params = new URLSearchParams()
     const from =
       typeof window !== "undefined"
@@ -116,6 +117,15 @@ export default function PricingPage() {
         : null
     if (from === "scan") {
       params.set("from", "scan")
+    }
+    if (intent.type === "trial") {
+      params.set("return_to", "pricing")
+      params.set("resume", "trial")
+    } else {
+      params.set("return_to", "pricing")
+      params.set("resume", "plan")
+      params.set("plan", intent.planName)
+      params.set("billing", intent.billingCycle)
     }
     const qs = params.toString()
     window.location.href = qs ? `/onboarding?${qs}` : "/onboarding"
@@ -163,8 +173,7 @@ export default function PricingPage() {
       return
     }
     if (!hasCompletedRequiredOnboarding()) {
-      alert("Before selecting a trial or plan, complete the 2-step onboarding so we can model exact ARR risk.")
-      redirectToRequiredOnboarding()
+      redirectToRequiredOnboarding({ type: "trial" })
       return
     }
     const companyId = await resolveCompanyId(token)
@@ -200,8 +209,7 @@ export default function PricingPage() {
       return
     }
     if (!hasCompletedRequiredOnboarding()) {
-      alert("Before selecting a trial or plan, complete the 2-step onboarding so we can model exact ARR risk.")
-      redirectToRequiredOnboarding()
+      redirectToRequiredOnboarding({ type: "plan", planName, billingCycle })
       return
     }
     const companyId = await resolveCompanyId(token)
@@ -265,6 +273,33 @@ export default function PricingPage() {
     )
     window.location.href = `mailto:${SALES_EMAIL}?subject=${subject}&body=${body}`
   }
+
+  useEffect(() => {
+    if (resumeTriggered) return
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams(window.location.search)
+    const returnTo = params.get("return_to")
+    const resume = params.get("resume")
+    if (returnTo !== "pricing" || !resume) return
+    if (!hasCompletedRequiredOnboarding()) return
+
+    setResumeTriggered(true)
+    const billing = params.get("billing")
+    if (billing === "monthly" || billing === "annual") {
+      setBillingCycle(billing)
+    }
+
+    if (resume === "trial") {
+      void handleTrial()
+      return
+    }
+    if (resume === "plan") {
+      const plan = params.get("plan")
+      if (plan) {
+        void handleSelectPlan(plan)
+      }
+    }
+  }, [resumeTriggered])
 
   return (
     <div className="min-h-screen bg-[#0A0E1A] text-white">
