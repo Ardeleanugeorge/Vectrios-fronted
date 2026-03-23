@@ -118,7 +118,9 @@ export default function SaaSRevenueIndex() {
       <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-          <span className="text-sm font-semibold text-white tracking-wide">VectriOS</span>
+          <span className="text-sm font-semibold text-white tracking-wide">
+            Vectri<span className="text-cyan-400">OS</span>
+          </span>
         </Link>
         <Link
           href="/"
@@ -369,7 +371,7 @@ export default function SaaSRevenueIndex() {
 
       {/* Footer */}
       <footer className="border-t border-white/5 px-6 py-6 text-center text-gray-600 text-xs">
-        VectriOS Revenue Architecture Index — data sourced from anonymous public website scans.
+        Vectri<span className="text-cyan-400">OS</span> Revenue Architecture Index — data sourced from anonymous public website scans.
         All scores based on structural messaging analysis only.
       </footer>
     </div>

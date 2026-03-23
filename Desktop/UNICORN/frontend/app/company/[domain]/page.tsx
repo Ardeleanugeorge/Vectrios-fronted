@@ -201,7 +201,9 @@ export default function CompanyProfilePage() {
       <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-          <span className="text-sm font-semibold text-white tracking-wide">VectriOS</span>
+          <span className="text-sm font-semibold text-white tracking-wide">
+            Vectri<span className="text-cyan-400">OS</span>
+          </span>
         </Link>
         <Link href="/saas-revenue-index" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
           ← Revenue Architecture Index

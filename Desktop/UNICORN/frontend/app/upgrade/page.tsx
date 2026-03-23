@@ -484,7 +484,7 @@ export default function UpgradePage() {
           {/* Footer */}
           <footer className="pt-8 border-t border-gray-800 text-center">
             <p className="text-sm text-gray-600">
-              © 2025 VectriOS. All rights reserved.
+              © 2025 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
             </p>
           </footer>
 

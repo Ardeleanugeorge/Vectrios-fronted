@@ -40,7 +40,7 @@ export default function PrivacyPage() {
             <div>
               <h3 className="font-semibold mb-3">Content URLs</h3>
               <p className="text-gray-400">
-                URLs to content assets (landing pages, sales pages, marketing materials) provided for structural analysis. VectriOS accesses publicly available content at these URLs. We do not access password-protected or private content unless explicitly granted access.
+                URLs to content assets (landing pages, sales pages, marketing materials) provided for structural analysis. Vectri<span className="text-cyan-400">OS</span> accesses publicly available content at these URLs. We do not access password-protected or private content unless explicitly granted access.
               </p>
             </div>
             <div>
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
           <h2 className="text-2xl font-bold mb-6">What We Do NOT Collect</h2>
           <div className="space-y-4 text-gray-300">
             <p className="text-gray-400 font-semibold">
-              VectriOS does not access customer CRM data unless explicitly provided.
+              Vectri<span className="text-cyan-400">OS</span> does not access customer CRM data unless explicitly provided.
             </p>
             <p className="text-gray-400">
               We do not collect:
@@ -127,7 +127,7 @@ export default function PrivacyPage() {
           <h2 className="text-2xl font-bold mb-6">Data Sharing</h2>
           <div className="space-y-4 text-gray-300">
             <p className="text-gray-400">
-              VectriOS does not sell, rent, or trade your data. We share data only in the following circumstances:
+              Vectri<span className="text-cyan-400">OS</span> does not sell, rent, or trade your data. We share data only in the following circumstances:
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-400 ml-4">
               <li><strong>Service Providers:</strong> With trusted third-party services (hosting, payment processing) under strict confidentiality agreements</li>

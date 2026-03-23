@@ -226,7 +226,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
 
       {/* Footer */}
       <div className="px-8 pb-5 pt-2 text-[10px] text-gray-700 border-t border-gray-800">
-        Benchmarks are computed from anonymized assessments across the VectriOS dataset.
+        Benchmarks are computed from anonymized assessments across the Vectri<span className="text-cyan-400">OS</span> dataset.
         Updated after each assessment run.
       </div>
     </div>

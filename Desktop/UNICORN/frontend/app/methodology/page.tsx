@@ -28,7 +28,7 @@ export default function MethodologyPage() {
               It begins in messaging architecture.
             </p>
             <p className="text-base text-gray-400 max-w-3xl mx-auto leading-relaxed mb-8">
-              Vectrios models misalignment between ICP clarity, positioning coherence, and revenue objectives — before close rate erosion becomes visible in pipeline metrics.
+              Vectri<span className="text-cyan-400">OS</span> models misalignment between ICP clarity, positioning coherence, and revenue objectives — before close rate erosion becomes visible in pipeline metrics.
             </p>
             <Link
               href="/signup"
@@ -63,15 +63,15 @@ export default function MethodologyPage() {
               Few govern integrity.
             </p>
             <p className="text-lg text-cyan-400 font-semibold">
-              Vectrios evaluates the structural revenue layer beneath performance metrics.
+              Vectri<span className="text-cyan-400">OS</span> evaluates the structural revenue layer beneath performance metrics.
             </p>
           </section>
 
           {/* WHAT VECTRIOS DOES NOT DO */}
           <section className="mb-16 border-t border-gray-800 pt-12">
-            <h2 className="text-3xl font-bold mb-6">What Vectrios Does Not Do</h2>
+            <h2 className="text-3xl font-bold mb-6">What Vectri<span className="text-cyan-400">OS</span> Does Not Do</h2>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">
-              Vectrios does not optimize:
+              Vectri<span className="text-cyan-400">OS</span> does not optimize:
             </p>
             <ul className="space-y-3 text-lg text-gray-400 mb-8 ml-6">
               <li className="list-disc">Impressions</li>
@@ -128,7 +128,7 @@ export default function MethodologyPage() {
               Traditional systems average signals.
             </p>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed font-semibold">
-              Vectrios does not.
+              Vectri<span className="text-cyan-400">OS</span> does not.
             </p>
             <ul className="space-y-3 text-lg text-gray-400 mb-8 ml-6">
               <li className="list-disc">Critical misalignment cannot be offset by secondary strength</li>
@@ -194,7 +194,7 @@ export default function MethodologyPage() {
               Risk is longitudinal.
             </p>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">
-              Vectrios enables:
+              Vectri<span className="text-cyan-400">OS</span> enables:
             </p>
             <ul className="space-y-3 text-lg text-gray-400 mb-8 ml-6">
               <li className="list-disc">Risk Index tracking</li>
@@ -219,7 +219,7 @@ export default function MethodologyPage() {
               Analytics detect decline.
             </p>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">
-              VectriOS detects directional compression before analytics.
+              Vectri<span className="text-cyan-400">OS</span> detects directional compression before analytics.
             </p>
             <p className="text-lg text-gray-400 leading-relaxed">
               Revenue-Stage Monitoring Infrastructure operates upstream from performance dashboards — quantifying revenue exposure before it becomes visible in metrics.
@@ -246,7 +246,7 @@ export default function MethodologyPage() {
               Structural Revenue Risk Modeling Infrastructure for B2B SaaS
             </p>
             <p className="text-sm text-gray-600">
-              © 2025 Vectrios. All rights reserved.
+              © 2025 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
             </p>
           </footer>
         </div>

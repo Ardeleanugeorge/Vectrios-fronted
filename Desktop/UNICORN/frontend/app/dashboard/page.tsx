@@ -513,7 +513,7 @@ export default function DashboardPage() {
           {/* FOOTER */}
           <footer className="mt-16 pt-8 border-t border-gray-800 text-center">
             <p className="text-sm text-gray-600">
-              © 2025 Vectrios. All rights reserved.
+              © 2025 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
             </p>
           </footer>
         </div>

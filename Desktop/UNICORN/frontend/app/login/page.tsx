@@ -71,7 +71,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">Sign In</h1>
           <p className="text-gray-400">
-            Access your VectriOS dashboard.
+            Access your Vectri<span className="text-cyan-400">OS</span> dashboard.
           </p>
         </div>
 

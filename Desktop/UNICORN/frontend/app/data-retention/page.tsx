@@ -20,7 +20,7 @@ export default function DataRetentionPage() {
         <section className="mb-12 border-b border-gray-800 pb-12">
           <h2 className="text-2xl font-bold mb-6">Overview</h2>
           <p className="text-gray-400 leading-relaxed">
-            This policy defines how VectriOS retains and deletes data. Retention periods are designed to balance service functionality, compliance requirements, and user privacy.
+            This policy defines how Vectri<span className="text-cyan-400">OS</span> retains and deletes data. Retention periods are designed to balance service functionality, compliance requirements, and user privacy.
           </p>
         </section>
 

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { PLANS, type Plan } from "@/config/plans"
 import { readScanResultsRefined } from "@/lib/scanResultsRefine"
+import SiteFooter from "@/components/SiteFooter"
 
 const SALES_EMAIL = "hello@vectrios.com"
 
@@ -308,9 +309,14 @@ export default function PricingPage() {
           <Link href="/" className="text-2xl font-bold">
             Vectri<span className="text-cyan-400">OS</span>
           </Link>
-          <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white">
-            Dashboard
-          </Link>
+          <div className="flex items-center gap-4 text-sm">
+            <Link href="/account" className="text-gray-400 hover:text-white">
+              Account
+            </Link>
+            <Link href="/dashboard" className="text-gray-400 hover:text-white">
+              Dashboard
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -335,7 +341,7 @@ export default function PricingPage() {
             <span className="text-amber-300">$120K–$300K/year</span>
           </p>
           <p className="text-center text-sm text-gray-400">
-            Vectrios helps recover a significant portion of that—before you spend more on traffic or headcount.
+            Vectri<span className="text-cyan-400">OS</span> helps recover a significant portion of that—before you spend more on traffic or headcount.
           </p>
         </div>
 
@@ -506,6 +512,7 @@ export default function PricingPage() {
           </div>
         </div>
       </main>
+      <SiteFooter />
     </div>
   )
 }

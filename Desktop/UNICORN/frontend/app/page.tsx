@@ -327,7 +327,7 @@ export default function Home() {
             None of this trips a dashboard alert. It quietly drains pipeline efficiency.
           </p>
           <p className="text-lg text-cyan-400 font-semibold mt-4">
-            See how VectriOS catches alignment drift before it hits your numbers.
+            See how Vectri<span className="text-cyan-400">OS</span> catches alignment drift before it hits your numbers.
           </p>
         </div>
       </section>
@@ -476,7 +476,7 @@ export default function Home() {
           </p>
           <h2 className="text-3xl font-bold mb-4">Messaging Translated to Revenue</h2>
           <p className="text-lg text-gray-300 mb-8">
-            When structural drift is detected, VectriOS estimates the financial impact:
+            When structural drift is detected, Vectri<span className="text-cyan-400">OS</span> estimates the financial impact:
           </p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
@@ -501,7 +501,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Continuous Revenue Monitoring</h2>
           <p className="text-lg text-gray-300 mb-8">
-            VectriOS monitors structural drift in your messaging and detects when alignment begins to degrade — before it shows up in quota attainment.
+            Vectri<span className="text-cyan-400">OS</span> monitors structural drift in your messaging and detects when alignment begins to degrade — before it shows up in quota attainment.
           </p>
           <div className="grid md:grid-cols-2 gap-4 mb-8">
             {[
@@ -556,7 +556,7 @@ export default function Home() {
 
           <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
             <p className="text-lg text-gray-300">
-              VectriOS is a revenue-stage monitoring layer — not a content tool.
+              Vectri<span className="text-cyan-400">OS</span> is a revenue-stage monitoring layer — not a content tool.
             </p>
           </div>
         </div>
@@ -595,7 +595,9 @@ export default function Home() {
             <Link href="/privacy" className="text-gray-500 hover:text-gray-400">Privacy</Link>
             <Link href="/data-retention" className="text-gray-500 hover:text-gray-400">Data Retention</Link>
           </div>
-          <p className="text-sm text-gray-600">© 2025 VectriOS. All rights reserved.</p>
+          <p className="text-sm text-gray-600">
+            © 2025 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
+          </p>
         </div>
       </footer>
 
@@ -605,7 +607,7 @@ export default function Home() {
             <div className="p-4 sm:p-5">
               <p className="text-sm text-gray-200 leading-relaxed">
                 <span className="font-semibold text-white">Our site uses cookies.</span>{" "}
-                Like most websites, VectriOS uses cookies to make the site work, improve experience, analyze usage,
+                Like most websites, Vectri<span className="text-cyan-400">OS</span> uses cookies to make the site work, improve experience, analyze usage,
                 and support marketing. Choose "Allow All" to accept all categories, or use "Manage Consent
                 Preferences" to customize.
               </p>

@@ -82,7 +82,7 @@ export default function QualifyPage() {
             Before You Apply
           </h1>
           <p className="text-xl text-gray-400 mb-2">
-            VectriOS performs structural revenue risk assessments for B2B SaaS companies with an active sales motion.
+            Vectri<span className="text-cyan-400">OS</span> performs structural revenue risk assessments for B2B SaaS companies with an active sales motion.
           </p>
           <p className="text-lg text-gray-500">
             To preserve diagnostic integrity, we onboard only companies that meet the following baseline criteria.

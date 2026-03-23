@@ -61,7 +61,7 @@ export default function SecurityPage() {
             <div>
               <h3 className="font-semibold mb-2">Data Collection</h3>
               <p className="text-gray-400 mb-2">
-                VectriOS collects the following data:
+                Vectri<span className="text-cyan-400">OS</span> collects the following data:
               </p>
               <ul className="list-disc list-inside space-y-1 text-gray-400 ml-4">
                 <li>Company profile information (name, website, ICP description, revenue objectives)</li>
@@ -71,7 +71,7 @@ export default function SecurityPage() {
                 <li>Monitoring configuration and drift events</li>
               </ul>
               <p className="text-gray-400 mt-4 font-semibold">
-                VectriOS does not access customer CRM data unless explicitly provided.
+                Vectri<span className="text-cyan-400">OS</span> does not access customer CRM data unless explicitly provided.
               </p>
             </div>
             <div>
@@ -102,7 +102,7 @@ export default function SecurityPage() {
             <div>
               <h3 className="font-semibold mb-2">Lawful Basis for Processing</h3>
               <p className="text-gray-400">
-                VectriOS processes personal data based on contractual necessity (service provision) and legitimate interest (monitoring and analysis). Consent is obtained during account creation.
+                Vectri<span className="text-cyan-400">OS</span> processes personal data based on contractual necessity (service provision) and legitimate interest (monitoring and analysis). Consent is obtained during account creation.
               </p>
             </div>
             <div>
@@ -155,7 +155,7 @@ export default function SecurityPage() {
           <h2 className="text-2xl font-bold mb-6">Compliance Roadmap</h2>
           <div className="space-y-4 text-gray-300">
             <p className="text-gray-400">
-              VectriOS is committed to enterprise-grade security and compliance. SOC 2 Type II certification is planned for Q3 2025. Current security practices align with SOC 2 requirements.
+              Vectri<span className="text-cyan-400">OS</span> is committed to enterprise-grade security and compliance. SOC 2 Type II certification is planned for Q3 2025. Current security practices align with SOC 2 requirements.
             </p>
             <p className="text-gray-400">
               For specific compliance requirements or security questionnaires, contact security@vectrios.com.

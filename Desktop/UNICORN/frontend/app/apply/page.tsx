@@ -123,7 +123,7 @@ export default function ApplyPage() {
             Apply for Strategic Revenue Diagnostic
           </h1>
           <p className="text-xl text-gray-400 mb-6 leading-relaxed">
-            VectriOS runs a structural revenue scan for qualified B2B SaaS teams.
+            Vectri<span className="text-cyan-400">OS</span> runs a structural revenue scan for qualified B2B SaaS teams.
           </p>
           <p className="text-lg text-gray-500 mb-4">
             This is not an automated content audit.

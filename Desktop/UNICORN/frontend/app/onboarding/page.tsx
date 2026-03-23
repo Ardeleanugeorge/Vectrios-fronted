@@ -10,6 +10,7 @@ import {
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import DashboardHeader from "@/components/DashboardHeader"
+import SiteFooter from "@/components/SiteFooter"
 
 // ─── QuestionBlock definit AFARA componentului principal ────────────────────
 // Dacă ar fi definit înăuntru, React îl tratează ca tip nou la fiecare render
@@ -866,6 +867,7 @@ export default function OnboardingPage() {
           )}
         </div>
       </div>
+      <SiteFooter />
     </main>
   )
 }

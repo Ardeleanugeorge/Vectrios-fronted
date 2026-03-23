@@ -11,6 +11,7 @@ import {
 import { useEffect, useState, useMemo, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import SiteFooter from "@/components/SiteFooter"
 
 interface ScanData {
   scan_token: string
@@ -702,6 +703,9 @@ function ScanResultsContent() {
               Vectri<span className="text-cyan-400">OS</span>
             </Link>
             <div className="flex items-center gap-4 text-sm">
+              <Link href="/account" className="text-gray-500 hover:text-cyan-400 transition hidden sm:inline">
+                Account
+              </Link>
               <Link href="/dashboard" className="text-gray-500 hover:text-cyan-400 transition hidden sm:inline">
                 Dashboard
               </Link>
@@ -1130,6 +1134,7 @@ function ScanResultsContent() {
         )}
 
       </main>
+      <SiteFooter />
 
       {unlockTransitioning && (
         <div className="fixed inset-0 z-[60] bg-[#0B0F19]/95 backdrop-blur-sm flex items-center justify-center">
