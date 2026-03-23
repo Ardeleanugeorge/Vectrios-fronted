@@ -3,11 +3,13 @@
 import { API_URL } from "@/lib/config"
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { PLANS, type Plan } from "@/config/plans"
 
 const SALES_EMAIL = "hello@vectrios.com"
 
 export default function PricingPage() {
+  const searchParams = useSearchParams()
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
   const [isProcessing, setIsProcessing] = useState(false)
   const [selectedPlanName, setSelectedPlanName] = useState("")
@@ -73,6 +75,49 @@ export default function PricingPage() {
     }
   }
 
+  const hasCompletedRequiredOnboarding = (): boolean => {
+    try {
+      const fullDiagnosticRaw =
+        sessionStorage.getItem("diagnostic_result_full") || localStorage.getItem("diagnostic_result_full")
+      if (fullDiagnosticRaw) {
+        const fullDiagnostic = JSON.parse(fullDiagnosticRaw)
+        if (!!fullDiagnostic && fullDiagnostic.is_partial === false) {
+          return true
+        }
+      }
+
+      // Backward compatibility: users who completed onboarding before full diagnostic
+      // storage existed still have company identity persisted.
+      const companyId =
+        localStorage.getItem("company_id") ||
+        sessionStorage.getItem("company_id") ||
+        (() => {
+          try {
+            const userDataRaw =
+              localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+            if (!userDataRaw) return null
+            const parsed = JSON.parse(userDataRaw)
+            return parsed?.company_id ? String(parsed.company_id) : null
+          } catch {
+            return null
+          }
+        })()
+
+      return !!companyId
+    } catch {
+      return false
+    }
+  }
+
+  const redirectToRequiredOnboarding = () => {
+    const params = new URLSearchParams()
+    if (searchParams.get("from") === "scan") {
+      params.set("from", "scan")
+    }
+    const qs = params.toString()
+    window.location.href = qs ? `/onboarding?${qs}` : "/onboarding"
+  }
+
   const ensurePlanIds = async (token: string) => {
     try {
       const res = await fetch(`${API_URL}/plans`, {
@@ -114,6 +159,11 @@ export default function PricingPage() {
       window.location.href = "/login"
       return
     }
+    if (!hasCompletedRequiredOnboarding()) {
+      alert("Before selecting a trial or plan, complete the 2-step onboarding so we can model exact ARR risk.")
+      redirectToRequiredOnboarding()
+      return
+    }
     const companyId = await resolveCompanyId(token)
     if (!companyId) {
       alert("Company not found yet. Please complete onboarding first.")
@@ -144,6 +194,11 @@ export default function PricingPage() {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) {
       window.location.href = "/login"
+      return
+    }
+    if (!hasCompletedRequiredOnboarding()) {
+      alert("Before selecting a trial or plan, complete the 2-step onboarding so we can model exact ARR risk.")
+      redirectToRequiredOnboarding()
       return
     }
     const companyId = await resolveCompanyId(token)
