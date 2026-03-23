@@ -79,31 +79,9 @@ export default function PricingPage() {
     try {
       const fullDiagnosticRaw =
         sessionStorage.getItem("diagnostic_result_full") || localStorage.getItem("diagnostic_result_full")
-      if (fullDiagnosticRaw) {
-        const fullDiagnostic = JSON.parse(fullDiagnosticRaw)
-        if (!!fullDiagnostic && fullDiagnostic.is_partial === false) {
-          return true
-        }
-      }
-
-      // Backward compatibility: users who completed onboarding before full diagnostic
-      // storage existed still have company identity persisted.
-      const companyId =
-        localStorage.getItem("company_id") ||
-        sessionStorage.getItem("company_id") ||
-        (() => {
-          try {
-            const userDataRaw =
-              localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
-            if (!userDataRaw) return null
-            const parsed = JSON.parse(userDataRaw)
-            return parsed?.company_id ? String(parsed.company_id) : null
-          } catch {
-            return null
-          }
-        })()
-
-      return !!companyId
+      if (!fullDiagnosticRaw) return false
+      const fullDiagnostic = JSON.parse(fullDiagnosticRaw)
+      return !!fullDiagnostic && fullDiagnostic.is_partial === false
     } catch {
       return false
     }
