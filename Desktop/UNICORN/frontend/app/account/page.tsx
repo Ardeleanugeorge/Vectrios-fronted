@@ -26,6 +26,7 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true)
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [companyId, setCompanyId] = useState<string | null>(null)
+  const [backToScanUrl, setBackToScanUrl] = useState<string | null>(null)
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -45,6 +46,19 @@ export default function AccountPage() {
         }
       } catch (e) {
         console.error("Error parsing user data:", e)
+      }
+    }
+
+    // Preserve a direct way back to the latest scan results flow.
+    const scanDataRaw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+    if (scanDataRaw) {
+      try {
+        const parsedScan = JSON.parse(scanDataRaw) as { scan_token?: string }
+        if (parsedScan?.scan_token) {
+          setBackToScanUrl(`/scan-results?token=${encodeURIComponent(parsedScan.scan_token)}`)
+        }
+      } catch (e) {
+        console.error("Error parsing scan_data:", e)
       }
     }
 
@@ -83,6 +97,22 @@ export default function AccountPage() {
       <DashboardHeader />
       <main className="py-12">
         <div className="max-w-4xl mx-auto px-6">
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            {backToScanUrl && (
+              <Link
+                href={backToScanUrl}
+                className="inline-flex items-center rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
+              >
+                ← Back to scan results
+              </Link>
+            )}
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
+            >
+              Go to dashboard
+            </Link>
+          </div>
           <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
 
           {/* Subscription Section */}
