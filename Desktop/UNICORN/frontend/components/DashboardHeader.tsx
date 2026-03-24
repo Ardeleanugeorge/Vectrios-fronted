@@ -172,7 +172,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link href="/dashboard" className="text-2xl font-bold text-white hover:text-cyan-400 transition">
+          <Link href="/account" className="text-2xl font-bold text-white hover:text-cyan-400 transition">
             Vectri<span className="text-cyan-400">OS</span>
           </Link>
 
@@ -229,11 +229,11 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                   </div>
 
                   <Link
-                    href="/dashboard"
+                    href="/account"
                     className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition"
                     onClick={() => setShowMenu(false)}
                   >
-                    Dashboard
+                    Account Home
                   </Link>
 
                   <Link

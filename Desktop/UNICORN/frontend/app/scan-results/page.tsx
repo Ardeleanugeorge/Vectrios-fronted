@@ -706,8 +706,8 @@ function ScanResultsContent() {
               <Link href="/account" className="text-gray-500 hover:text-cyan-400 transition hidden sm:inline">
                 Account
               </Link>
-              <Link href="/dashboard" className="text-gray-500 hover:text-cyan-400 transition hidden sm:inline">
-                Dashboard
+              <Link href="/pricing" className="text-gray-500 hover:text-cyan-400 transition hidden sm:inline">
+                Pricing
               </Link>
               <Link href="/" className="text-gray-500 hover:text-gray-300 whitespace-nowrap">
                 ← Run another scan

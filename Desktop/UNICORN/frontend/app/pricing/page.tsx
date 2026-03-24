@@ -220,7 +220,7 @@ export default function PricingPage() {
         throw new Error(err.detail || "Failed to activate trial")
       }
       setIsRouteTransitioning(true)
-      window.location.href = "/dashboard?governance=activated&trial=activated"
+      window.location.href = "/account?governance=activated&trial=activated"
     } catch (e: any) {
       alert(e?.message || "Failed to start trial")
     } finally {
@@ -279,7 +279,7 @@ export default function PricingPage() {
       }).catch(() => {})
 
       setIsRouteTransitioning(true)
-      window.location.href = "/dashboard?governance=activated"
+      window.location.href = "/account?governance=activated"
     } catch (e: any) {
       alert(e?.message || "Failed to activate plan")
     } finally {
@@ -344,8 +344,8 @@ export default function PricingPage() {
             <Link href="/account" className="text-gray-400 hover:text-white">
               Account
             </Link>
-            <Link href="/dashboard" className="text-gray-400 hover:text-white">
-              Dashboard
+            <Link href="/pricing" className="text-gray-400 hover:text-white">
+              Pricing
             </Link>
           </div>
         </div>

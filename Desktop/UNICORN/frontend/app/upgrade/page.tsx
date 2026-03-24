@@ -217,7 +217,7 @@ export default function UpgradePage() {
         // Small delay for UX
         await new Promise(resolve => setTimeout(resolve, 800))
         // Redirect to dashboard with activation flag
-        router.push("/dashboard?governance=activated")
+        router.push("/account?governance=activated")
       } else {
         const error = await response.json()
         alert(error.detail || "Failed to activate governance. Please try again.")

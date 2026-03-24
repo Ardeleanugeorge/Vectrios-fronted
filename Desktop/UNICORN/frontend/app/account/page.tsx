@@ -107,10 +107,10 @@ export default function AccountPage() {
               </Link>
             )}
             <Link
-              href="/dashboard"
+              href="/pricing"
               className="inline-flex items-center rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
             >
-              Go to dashboard
+              Go to pricing
             </Link>
           </div>
           <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
