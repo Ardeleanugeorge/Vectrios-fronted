@@ -463,6 +463,9 @@ export default function OnboardingPage() {
                       next.set("billing", billing)
                     }
                   }
+                  // Arm one-time pricing resume to avoid accidental auto-activation
+                  // from stale query params when users navigate manually.
+                  sessionStorage.setItem("pricing_resume_armed", "1")
                   redirectTo = `/pricing?${next.toString()}`
                 } else {
                   redirectTo = `/scan-results?token=${encodeURIComponent(st)}`

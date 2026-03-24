@@ -306,13 +306,16 @@ export default function PricingPage() {
   useEffect(() => {
     if (resumeTriggered) return
     if (typeof window === "undefined") return
+    const resumeArmed = sessionStorage.getItem("pricing_resume_armed") === "1"
     const params = new URLSearchParams(window.location.search)
     const returnTo = params.get("return_to")
     const resume = params.get("resume")
     if (returnTo !== "pricing" || !resume) return
+    if (!resumeArmed) return
     if (!hasCompletedRequiredOnboarding()) return
 
     setResumeTriggered(true)
+    sessionStorage.removeItem("pricing_resume_armed")
     const billing = params.get("billing")
     if (billing === "monthly" || billing === "annual") {
       setBillingCycle(billing)
