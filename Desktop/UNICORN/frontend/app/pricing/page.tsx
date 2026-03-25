@@ -21,6 +21,8 @@ export default function PricingPage() {
   const [message, setMessage] = useState("")
   const [resumeTriggered, setResumeTriggered] = useState(false)
   const [isRouteTransitioning, setIsRouteTransitioning] = useState(false)
+  const [activePlanFromQuery, setActivePlanFromQuery] = useState<string | null>(null)
+  const [showActivatedBanner, setShowActivatedBanner] = useState(false)
 
   const canSendContact = useMemo(() => {
     return name.trim().length > 0 && email.trim().length > 0 && message.trim().length > 0
@@ -86,6 +88,15 @@ export default function PricingPage() {
     } catch {
       return null
     }
+  }
+
+  const redirectToFullResults = () => {
+    const scanToken = currentScanTokenFromStorage()
+    if (scanToken) {
+      window.location.href = `/scan-results?token=${encodeURIComponent(scanToken)}`
+      return
+    }
+    window.location.href = "/scan-results"
   }
 
   const hasCompletedRequiredOnboarding = (): boolean => {
@@ -186,6 +197,21 @@ export default function PricingPage() {
   }
 
   useEffect(() => {
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams(window.location.search)
+    const governance = params.get("governance")
+    const activePlan = params.get("active_plan")
+    const billing = params.get("billing")
+    if (billing === "monthly" || billing === "annual") {
+      setBillingCycle(billing)
+    }
+    if (governance === "activated") {
+      setShowActivatedBanner(true)
+      if (activePlan) setActivePlanFromQuery(activePlan.toLowerCase())
+    }
+  }, [])
+
+  useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (token) ensurePlanIds(token)
   }, [])
@@ -220,7 +246,7 @@ export default function PricingPage() {
         throw new Error(err.detail || "Failed to activate trial")
       }
       setIsRouteTransitioning(true)
-      window.location.href = "/pricing?governance=activated&trial=activated&active_plan=scale"
+      redirectToFullResults()
     } catch (e: any) {
       alert(e?.message || "Failed to start trial")
     } finally {
@@ -279,9 +305,8 @@ export default function PricingPage() {
         headers: { Authorization: `Bearer ${token}` },
       }).catch(() => {})
 
-      const active = encodeURIComponent(planName.toLowerCase())
       setIsRouteTransitioning(true)
-      window.location.href = `/pricing?governance=activated&active_plan=${active}&billing=${billingCycle}`
+      redirectToFullResults()
       return
     } catch (e: any) {
       alert(e?.message || "Failed to activate plan")
@@ -355,6 +380,11 @@ export default function PricingPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-12">
+        {showActivatedBanner && (
+          <div className="mb-6 p-4 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-sm">
+            Plan activated successfully.
+          </div>
+        )}
         {isProcessing && (
           <div className="mb-6 p-4 rounded-lg bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-sm">
             Activating <span className="font-semibold">{selectedPlanName}</span>...
@@ -420,15 +450,23 @@ export default function PricingPage() {
         <div className="grid md:grid-cols-3 gap-6 mb-14">
           {plans.map((plan) => {
             const isGrowth = plan.name.toLowerCase() === "growth"
+            const isActivePlan = activePlanFromQuery === plan.name.toLowerCase()
             return (
               <div
                 key={plan.name}
                 className={`relative p-7 bg-[#111827] rounded-lg border transition flex flex-col ${
-                  isGrowth
+                  isActivePlan
+                    ? "border-emerald-500/80 shadow-[0_0_24px_-4px_rgba(16,185,129,0.35)]"
+                    : isGrowth
                     ? "border-cyan-500/80 shadow-[0_0_24px_-4px_rgba(34,211,238,0.35)] md:scale-[1.02] z-[1]"
                     : "border-gray-800 hover:border-cyan-500/40"
                 }`}
               >
+                {isActivePlan && (
+                  <span className="absolute -top-3 right-4 bg-emerald-500 text-black text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                    Active
+                  </span>
+                )}
                 {isGrowth && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide text-center max-w-[95%] leading-tight">
                     Most companies recover value here
@@ -459,16 +497,18 @@ export default function PricingPage() {
                 </ul>
                 <button
                   onClick={() => handleSelectPlan(plan.name)}
-                  disabled={isProcessing}
+                  disabled={isProcessing || isActivePlan}
                   className={`w-full py-3 font-semibold rounded-lg transition ${
                     isGrowth && !isProcessing
                       ? "bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20"
                       : isProcessing
                         ? "bg-gray-700 text-gray-500 cursor-not-allowed"
-                        : "bg-cyan-500 hover:bg-cyan-400 text-black"
+                        : isActivePlan
+                          ? "bg-emerald-600 text-white cursor-default"
+                          : "bg-cyan-500 hover:bg-cyan-400 text-black"
                   }`}
                 >
-                  {plan.ctaLabel}
+                  {isActivePlan ? "Activated" : plan.ctaLabel}
                 </button>
               </div>
             )

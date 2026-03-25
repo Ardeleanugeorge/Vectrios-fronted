@@ -216,8 +216,18 @@ export default function UpgradePage() {
       if (response.ok) {
         // Small delay for UX
         await new Promise(resolve => setTimeout(resolve, 800))
-        // Keep user in the package experience after activation (not Account Settings).
-        router.push("/pricing?governance=activated&trial=activated&active_plan=scale")
+        // After activation, send user to full results experience.
+        const scanToken = (() => {
+          try {
+            const raw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+            if (!raw) return null
+            const parsed = JSON.parse(raw) as { scan_token?: string }
+            return parsed?.scan_token || null
+          } catch {
+            return null
+          }
+        })()
+        router.push(scanToken ? `/scan-results?token=${encodeURIComponent(scanToken)}` : "/scan-results")
       } else {
         const error = await response.json()
         alert(error.detail || "Failed to activate governance. Please try again.")
