@@ -343,6 +343,8 @@ export default function PricingPage() {
     if (!hasCompletedRequiredOnboarding()) return
 
     setResumeTriggered(true)
+    // Prevent a visible flash of the pricing page while auto-resume activation runs.
+    setIsRouteTransitioning(true)
     sessionStorage.removeItem("pricing_resume_armed")
     const billing = params.get("billing")
     if (billing === "monthly" || billing === "annual") {
