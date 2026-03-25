@@ -220,7 +220,7 @@ export default function PricingPage() {
         throw new Error(err.detail || "Failed to activate trial")
       }
       setIsRouteTransitioning(true)
-      window.location.href = "/account?governance=activated&trial=activated"
+      window.location.href = "/pricing?governance=activated&trial=activated&active_plan=scale"
     } catch (e: any) {
       alert(e?.message || "Failed to start trial")
     } finally {

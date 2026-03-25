@@ -216,8 +216,8 @@ export default function UpgradePage() {
       if (response.ok) {
         // Small delay for UX
         await new Promise(resolve => setTimeout(resolve, 800))
-        // Redirect to dashboard with activation flag
-        router.push("/account?governance=activated")
+        // Keep user in the package experience after activation (not Account Settings).
+        router.push("/pricing?governance=activated&trial=activated&active_plan=scale")
       } else {
         const error = await response.json()
         alert(error.detail || "Failed to activate governance. Please try again.")
