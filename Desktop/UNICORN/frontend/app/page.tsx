@@ -32,6 +32,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [scanUrl, setScanUrl] = useState("")
   const [scanning, setScanning] = useState(false)
+  const scanInFlightRef = useRef(false)
   const [scanError, setScanError] = useState("")
   const [scanCount, setScanCount] = useState<number | null>(null)
   const router = useRouter()
@@ -106,8 +107,11 @@ export default function Home() {
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!scanUrl.trim()) return
+    // Guard against double-submit before React state updates.
+    if (scanInFlightRef.current) return
     setScanError("")
     setScanning(true)
+    scanInFlightRef.current = true
     
     // Create AbortController for timeout
     const controller = new AbortController()
@@ -161,7 +165,10 @@ export default function Home() {
         setScanError(`Unable to connect to the scan service. (${msg})`)
       }
       setScanning(false)
+      scanInFlightRef.current = false
     }
+    // Ensure ref always resets even if we successfully navigated.
+    scanInFlightRef.current = false
   }
 
   const saveCookieConsent = (next: CookieConsent) => {
