@@ -90,13 +90,13 @@ export default function PricingPage() {
     }
   }
 
-  const redirectToFullResults = () => {
+  const redirectToMonitoringConsole = () => {
     const scanToken = currentScanTokenFromStorage()
     if (scanToken) {
-      window.location.href = `/scan-results?token=${encodeURIComponent(scanToken)}`
+      window.location.href = `/dashboard?governance=activated&token=${encodeURIComponent(scanToken)}`
       return
     }
-    window.location.href = "/scan-results"
+    window.location.href = "/dashboard?governance=activated"
   }
 
   const hasCompletedRequiredOnboarding = (): boolean => {
@@ -246,7 +246,7 @@ export default function PricingPage() {
         throw new Error(err.detail || "Failed to activate trial")
       }
       setIsRouteTransitioning(true)
-      redirectToFullResults()
+      redirectToMonitoringConsole()
     } catch (e: any) {
       alert(e?.message || "Failed to start trial")
     } finally {
@@ -306,7 +306,7 @@ export default function PricingPage() {
       }).catch(() => {})
 
       setIsRouteTransitioning(true)
-      redirectToFullResults()
+      redirectToMonitoringConsole()
       return
     } catch (e: any) {
       alert(e?.message || "Failed to activate plan")
