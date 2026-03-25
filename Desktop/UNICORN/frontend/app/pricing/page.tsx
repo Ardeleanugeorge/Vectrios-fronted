@@ -272,14 +272,8 @@ export default function PricingPage() {
         window.location.href = subData.checkout_url
         return
       }
-
-      await fetch(`${API_URL}/monitoring/activate/${companyId}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      }).catch(() => {})
-
-      setIsRouteTransitioning(true)
-      window.location.href = "/account?governance=activated"
+      // Paid plan flow should continue to checkout; do not silently route to account.
+      throw new Error("Checkout session was not created. Please try again.")
     } catch (e: any) {
       alert(e?.message || "Failed to activate plan")
     } finally {
