@@ -3,6 +3,7 @@
 import { API_URL } from "@/lib/config"
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { PLANS, type Plan } from "@/config/plans"
 import { readScanResultsRefined } from "@/lib/scanResultsRefine"
 import SiteFooter from "@/components/SiteFooter"
@@ -10,6 +11,7 @@ import SiteFooter from "@/components/SiteFooter"
 const SALES_EMAIL = "hello@vectrios.com"
 
 export default function PricingPage() {
+  const router = useRouter()
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
   const [isProcessing, setIsProcessing] = useState(false)
   const [selectedPlanName, setSelectedPlanName] = useState("")
@@ -21,8 +23,14 @@ export default function PricingPage() {
   const [message, setMessage] = useState("")
   const [resumeTriggered, setResumeTriggered] = useState(false)
   const [isRouteTransitioning, setIsRouteTransitioning] = useState(false)
+  const [pendingActivationLabel, setPendingActivationLabel] = useState("")
   const [activePlanFromQuery, setActivePlanFromQuery] = useState<string | null>(null)
   const [showActivatedBanner, setShowActivatedBanner] = useState(false)
+  const [preparingAutoResume, setPreparingAutoResume] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false
+    const params = new URLSearchParams(window.location.search)
+    return params.get("return_to") === "pricing" && !!params.get("resume")
+  })
 
   const canSendContact = useMemo(() => {
     return name.trim().length > 0 && email.trim().length > 0 && message.trim().length > 0
@@ -93,10 +101,10 @@ export default function PricingPage() {
   const redirectToMonitoringConsole = () => {
     const scanToken = currentScanTokenFromStorage()
     if (scanToken) {
-      window.location.href = `/dashboard?governance=activated&token=${encodeURIComponent(scanToken)}`
+      router.replace(`/dashboard?governance=activated&token=${encodeURIComponent(scanToken)}`)
       return
     }
-    window.location.href = "/dashboard?governance=activated"
+    router.replace("/dashboard?governance=activated")
   }
 
   const hasCompletedRequiredOnboarding = (): boolean => {
@@ -163,7 +171,7 @@ export default function PricingPage() {
     } catch {
       // ignore
     }
-    window.location.href = qs ? `/onboarding?${qs}` : "/onboarding"
+    router.replace(qs ? `/onboarding?${qs}` : "/onboarding")
   }
 
   const ensurePlanIds = async (token: string) => {
@@ -220,7 +228,7 @@ export default function PricingPage() {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) {
       setIsRouteTransitioning(true)
-      window.location.href = "/login"
+      router.replace("/login")
       return
     }
     if (!hasCompletedRequiredOnboarding()) {
@@ -230,7 +238,7 @@ export default function PricingPage() {
     const companyId = await resolveCompanyId(token)
     if (!companyId) {
       setIsRouteTransitioning(true)
-      window.location.href = "/onboarding"
+      router.replace("/onboarding")
       return
     }
 
@@ -258,7 +266,7 @@ export default function PricingPage() {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) {
       setIsRouteTransitioning(true)
-      window.location.href = "/login"
+      router.replace("/login")
       return
     }
     if (!hasCompletedRequiredOnboarding()) {
@@ -268,7 +276,7 @@ export default function PricingPage() {
     const companyId = await resolveCompanyId(token)
     if (!companyId) {
       setIsRouteTransitioning(true)
-      window.location.href = "/onboarding"
+      router.replace("/onboarding")
       return
     }
 
@@ -339,8 +347,14 @@ export default function PricingPage() {
     const returnTo = params.get("return_to")
     const resume = params.get("resume")
     if (returnTo !== "pricing" || !resume) return
-    if (!resumeArmed) return
-    if (!hasCompletedRequiredOnboarding()) return
+    if (!resumeArmed) {
+      setPreparingAutoResume(false)
+      return
+    }
+    if (!hasCompletedRequiredOnboarding()) {
+      setPreparingAutoResume(false)
+      return
+    }
 
     setResumeTriggered(true)
     // Prevent a visible flash of the pricing page while auto-resume activation runs.
@@ -352,15 +366,21 @@ export default function PricingPage() {
     }
 
     if (resume === "trial") {
+      setSelectedPlanName("Trial (Scale)")
+      setPendingActivationLabel("Trial (Scale)")
       void handleTrial()
       return
     }
     if (resume === "plan") {
       const plan = params.get("plan")
       if (plan) {
+        setSelectedPlanName(plan)
+        setPendingActivationLabel(plan)
         void handleSelectPlan(plan)
+        return
       }
     }
+    setPreparingAutoResume(false)
   }, [resumeTriggered])
 
   return (
@@ -589,7 +609,7 @@ export default function PricingPage() {
         </div>
       </main>
       <SiteFooter />
-      {isRouteTransitioning && (
+      {(isRouteTransitioning || (preparingAutoResume && !resumeTriggered)) && (
         <div className="fixed inset-0 z-[80] bg-[#0B0F19]/95 backdrop-blur-sm flex items-center justify-center">
           <div className="text-center">
             <svg className="animate-spin w-8 h-8 text-cyan-500 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
@@ -597,6 +617,11 @@ export default function PricingPage() {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
             <p className="text-sm text-gray-300">Continuing…</p>
+            {(selectedPlanName || pendingActivationLabel) && (
+              <p className="text-xs text-cyan-300 mt-2">
+                Activating {selectedPlanName || pendingActivationLabel}...
+              </p>
+            )}
           </div>
         </div>
       )}
