@@ -876,7 +876,9 @@ function ScanResultsContent() {
             {!isBlocked && (
               <div className={`${wideLayout ? "text-left" : "text-center"}`}>
                 <p className="text-sm text-gray-300 font-medium">
-                  Companies at this level typically lose $8K–$25K/month
+                  {instantFinancials
+                    ? `Modeled impact: ~${formatCurrency(Math.round(instantFinancials.arrAtRiskLow / 12))}–${formatCurrency(Math.round(instantFinancials.arrAtRiskHigh / 12))}/month`
+                    : "Companies at this level typically lose $8K–$25K/month"}
                 </p>
                 {typeof data.percentile === "number" && (
                   <p className="text-xs text-gray-500 mt-1">
