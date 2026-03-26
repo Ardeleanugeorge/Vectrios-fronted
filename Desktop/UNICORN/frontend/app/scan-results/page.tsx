@@ -33,6 +33,15 @@ interface ScanData {
   created_at?: string
 }
 
+interface ScanSnapshot {
+  rii: number | null
+  alignment: number | null
+  icp_clarity: number | null
+  anchor_density: number | null
+  positioning: number | null
+  created_at: string
+}
+
 const SAAS_MEDIAN_RII = 56   // benchmark reference shown to user
 
 function RiskBadge({ level }: { level: string }) {
@@ -488,6 +497,7 @@ function ScanResultsContent() {
   const [unlocked, setUnlocked] = useState(false)
   const [showFinancialImpact, setShowFinancialImpact] = useState(false)
   const [unlockTransitioning, setUnlockTransitioning] = useState(false)
+  const [previousSnapshot, setPreviousSnapshot] = useState<ScanSnapshot | null>(null)
 
   const forceScrollToTop = () => {
     if (typeof window === "undefined") return
@@ -653,6 +663,54 @@ function ScanResultsContent() {
     }
     return `$${val.toFixed(0)}`
   }
+
+  const formatDelta = (v: number) => `${v > 0 ? "+" : ""}${v}`
+
+  const topCauses = useMemo(() => {
+    if (!data) return []
+    const causes = [
+      { label: "Messaging alignment dropped across revenue pages", value: data.alignment ?? 0 },
+      { label: "ICP clarity weakened and traffic quality likely declined", value: data.icp_clarity ?? 0 },
+      { label: "Proof and anchors are not strong enough at decision moments", value: data.anchor_density ?? 0 },
+      { label: "Positioning coherence shifted between key pages", value: data.positioning ?? 0 },
+    ]
+    return causes
+      .sort((a, b) => a.value - b.value)
+      .slice(0, 3)
+      .map((c) => c.label)
+  }, [data])
+
+  const riskDelta = useMemo(() => {
+    if (!data || data.rii === null || previousSnapshot?.rii === null || previousSnapshot?.rii === undefined) {
+      return null
+    }
+    return Math.round((data.rii as number) - (previousSnapshot.rii as number))
+  }, [data, previousSnapshot])
+
+  useEffect(() => {
+    if (!data?.domain || typeof window === "undefined") return
+    const key = `vectrios_last_scan_snapshot_${data.domain.toLowerCase()}`
+    try {
+      const raw = localStorage.getItem(key)
+      if (raw) {
+        const parsed = JSON.parse(raw) as ScanSnapshot
+        setPreviousSnapshot(parsed)
+      } else {
+        setPreviousSnapshot(null)
+      }
+      const nextSnapshot: ScanSnapshot = {
+        rii: data.rii,
+        alignment: data.alignment,
+        icp_clarity: data.icp_clarity,
+        anchor_density: data.anchor_density,
+        positioning: data.positioning,
+        created_at: new Date().toISOString(),
+      }
+      localStorage.setItem(key, JSON.stringify(nextSnapshot))
+    } catch {
+      setPreviousSnapshot(null)
+    }
+  }, [data])
 
   if (loading) return (
     <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center">
@@ -974,6 +1032,36 @@ function ScanResultsContent() {
               You&apos;re losing revenue right now — here&apos;s how much, and what you can get back
             </h3>
 
+            <div className="grid lg:grid-cols-12 gap-4 mb-7">
+              <div className="lg:col-span-5 p-4 rounded-xl bg-[#0f1626] border border-gray-700/70">
+                <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">What changed since last scan</p>
+                {previousSnapshot ? (
+                  <ul className="space-y-2 text-sm text-gray-300">
+                    <li>RII moved from {Math.round(previousSnapshot.rii ?? 0)} to {Math.round(data.rii ?? 0)}.</li>
+                    <li>Alignment: {Math.round(previousSnapshot.alignment ?? 0)} → {Math.round(data.alignment ?? 0)}.</li>
+                    <li>ICP clarity: {Math.round(previousSnapshot.icp_clarity ?? 0)} → {Math.round(data.icp_clarity ?? 0)}.</li>
+                  </ul>
+                ) : (
+                  <p className="text-sm text-gray-400">This is your baseline snapshot. Next scan will show exact deltas here.</p>
+                )}
+              </div>
+              <div className="lg:col-span-3 p-4 rounded-xl bg-[#0f1626] border border-gray-700/70">
+                <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Revenue risk delta</p>
+                <p className={`text-3xl font-bold ${riskDelta !== null && riskDelta > 0 ? "text-red-400" : riskDelta !== null && riskDelta < 0 ? "text-emerald-400" : "text-gray-300"}`}>
+                  {riskDelta !== null ? formatDelta(riskDelta) : "N/A"}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">vs previous scan for this domain</p>
+              </div>
+              <div className="lg:col-span-4 p-4 rounded-xl bg-[#0f1626] border border-gray-700/70">
+                <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Top 3 causes</p>
+                <ul className="space-y-2 text-sm text-gray-300">
+                  {topCauses.map((cause) => (
+                    <li key={cause} className="leading-snug">• {cause}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
             <div className="grid lg:grid-cols-2 gap-4 lg:gap-6 mb-8">
               <div className="p-5 sm:p-6 rounded-xl bg-orange-950/50 border border-orange-500/40">
                 <p className="text-xs font-semibold uppercase tracking-wider text-orange-200/90 mb-2">
@@ -1015,6 +1103,12 @@ function ScanResultsContent() {
                 <span className="text-xs sm:text-sm font-semibold text-black/75 mt-1.5 normal-case tracking-normal">
                   Fix ~{formatCurrency(Math.round(displayFinancials.arrAtRiskHigh / 12))}/mo bleed · plans &amp; 14-day trial
                 </span>
+              </Link>
+              <Link
+                href="/pricing?from=scan&focus=monitoring"
+                className="mt-3 inline-flex w-full items-center justify-center px-6 py-3 border border-cyan-500/40 text-cyan-300 hover:text-cyan-200 hover:border-cyan-400 rounded-xl transition font-semibold text-sm sm:text-base"
+              >
+                Enable weekly monitoring
               </Link>
               <ul className="mt-4 space-y-2 text-sm text-gray-400">
                 {[
