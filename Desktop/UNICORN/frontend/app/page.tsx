@@ -227,11 +227,11 @@ export default function Home() {
             <span className="text-cyan-400"> You just don't see it yet.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto">
-            Vectri<span className="text-cyan-400">OS</span> detects where your messaging starts breaking conversion —
-            and flags it before pipeline drops.
+            We show where your messaging is costing you deals —
+            before pipeline drops.
           </p>
           <p className="text-sm md:text-base text-amber-200/90 font-medium mb-10 max-w-2xl mx-auto">
-            Most B2B SaaS companies lose $20K–$200K/year from small messaging gaps that never show up in dashboards.
+            Teams like yours typically lose $20K–$200K/year from messaging gaps they never see.
           </p>
 
           {/* ── SCAN BOX ── */}
@@ -316,20 +316,20 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Revenue problems don't start in dashboards.
+            Your dashboard shows the result.
           </h2>
           <p className="text-2xl text-cyan-400 font-semibold mb-8">
-            They start in how your message lands with buyers.
+            Your messaging is the cause.
           </p>
-          <p className="text-xl text-gray-300 mb-6">It begins when:</p>
+          <p className="text-xl text-gray-300 mb-6">It happens when:</p>
           <ul className="space-y-4 text-lg text-gray-400 mb-8 ml-6">
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-              You attract the wrong customers
+              You attract leads that never convert
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-              Your value becomes harder to understand
+              Your value takes too long to understand
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
@@ -356,10 +356,10 @@ export default function Home() {
           <p className="text-center text-base md:text-lg font-semibold text-white mb-6 max-w-xl mx-auto leading-snug">
             Example:{" "}
             <span className="text-red-400">$287K</span> in revenue at risk —{" "}
-            <span className="text-gray-300 font-medium">messaging misalignment across pages and weak proof delaying decisions</span>
+            <span className="text-gray-300 font-medium">caused by messaging misalignment across pages and weak proof delaying decisions</span>
           </p>
           <p className="text-center text-sm md:text-base text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">
-            → pipeline efficiency dropped silently.
+            → pipeline slowed without being noticed.
           </p>
 
           {/* Mock Dashboard — ARR anchor overlay for “wow” */}
@@ -448,9 +448,9 @@ export default function Home() {
       {/* ── 4. WHAT IT DOES ─────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">Where revenue starts leaking</h2>
+          <h2 className="text-3xl font-bold mb-4">Why deals slow down (without you noticing)</h2>
           <p className="text-lg text-gray-300 mb-8">
-            Revenue leaks when your story stops landing consistently across the funnel.
+            Buyers don't say no. They just don't move forward.
           </p>
 
           <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
@@ -475,7 +475,7 @@ export default function Home() {
       {/* ── 5. FINANCIAL FRAMING ────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">Messaging translated to revenue</h2>
+          <h2 className="text-3xl font-bold mb-4">How messaging gaps turn into lost revenue</h2>
           <p className="text-lg text-gray-300 mb-8">
             Even small drops in clarity can quietly cost $3K–$10K/month.
             Most teams don&apos;t notice until pipeline slows.
@@ -500,7 +500,9 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Continuous revenue monitoring</h2>
           <p className="text-lg text-gray-300 mb-8">
-            Vectri<span className="text-cyan-400">OS</span> tracks drift — and alerts you when messaging stops converting.
+            Messaging drift happens constantly.
+            Without monitoring, it compounds for weeks before it shows in pipeline.
+            We catch it early.
           </p>
           <div className="p-6 bg-[#111827] rounded-lg border border-gray-800 mb-6">
             <ul className="space-y-4 text-lg text-gray-300">
@@ -551,7 +553,7 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 border-t border-gray-800">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Find where your revenue is leaking — before it compounds
+            Find what&apos;s already costing you revenue
           </h2>
           <p className="text-lg text-gray-300 mb-8">
             Scan your site to create a baseline in 30 seconds.
