@@ -734,7 +734,7 @@ function ScanResultsContent() {
               <div className={`${wideLayout ? "text-left" : "text-center"}`}>
                 <p className="text-sm text-gray-300 font-medium">
                   {!unlocked
-                    ? "Revenue impact detected — full breakdown after unlock"
+                    ? "Revenue loss detected — quantified breakdown available"
                     : financialImpact
                       ? `Modeled impact: ~${modeledMonthlyLossLabel}`
                       : "Revenue impact detected"}
@@ -961,7 +961,7 @@ function ScanResultsContent() {
                   <div className="grid lg:grid-cols-12 gap-6 mb-8">
                     <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-[#0f1626] border border-gray-700/70">
                       <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-3">
-                        Top revenue blockers (modeled)
+                        Where your revenue is leaking most
                       </p>
                       <div className="space-y-3">
                         {drivers.map((d: any, idx: number) => (
@@ -969,7 +969,7 @@ function ScanResultsContent() {
                             <div className="flex items-start justify-between gap-4">
                               <div>
                                 <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">
-                                  {idx === 0 ? "Highest impact" : idx === 1 ? "Mid impact" : "Lower impact"}
+                                  {idx + 1}. {idx === 0 ? "Primary driver" : idx === 1 ? "Secondary driver" : "Tertiary driver"}
                                 </p>
                                 <p className="text-sm font-semibold text-white">{d.title || "Structural gap"}</p>
                                 <p className="text-xs text-gray-400 mt-1 leading-relaxed">{d.description || ""}</p>
@@ -988,16 +988,28 @@ function ScanResultsContent() {
 
                     <div className="lg:col-span-5 p-4 sm:p-5 rounded-xl bg-[#111827] border border-gray-800/80">
                       <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
-                        Why this happens
+                        What to fix first
                       </p>
-                      <p className="text-sm text-gray-300 mb-3">
-                        These issues rarely break the funnel in one step — they weaken it across key pages and compound over time.
-                      </p>
-                      <ul className="space-y-2 text-sm text-gray-400">
-                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">•</span><span>Homepage clarity drops lead quality</span></li>
-                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">•</span><span>Product/proof gaps slow evaluation</span></li>
-                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">•</span><span>Positioning drift creates decision friction</span></li>
-                      </ul>
+                      {drivers.length > 0 ? (
+                        <>
+                          <p className="text-sm text-gray-300 mb-2">
+                            Highest impact fix path: <span className="text-white font-semibold">{drivers[0]?.title || "Primary structural gap"}</span>
+                          </p>
+                          <p className="text-xs text-gray-400 mb-3">
+                            Start with this first — it drives the largest share of your modeled monthly loss.
+                          </p>
+                          <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                            <p className="text-xs uppercase tracking-wider text-emerald-300/90 mb-1">Estimated recoverable from #1</p>
+                            <p className="text-sm font-semibold text-emerald-200">
+                              ~{formatCurrency(Number(drivers[0]?.monthly_low || 0))}–{formatCurrency(Number(drivers[0]?.monthly_high || 0))}/month
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <p className="text-sm text-gray-400">
+                          We&apos;ll prioritize fixes by impact once the full recovery layer is unlocked.
+                        </p>
+                      )}
                     </div>
                   </div>
                 </>
@@ -1064,7 +1076,7 @@ function ScanResultsContent() {
             <div className="bg-[#111827] rounded-xl border border-gray-800 p-8 max-w-md w-full">
               <h3 className="text-2xl font-bold mb-2 text-white">Unlock your full revenue breakdown</h3>
               <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-                We&apos;ve mapped your loss and recovery potential. Enter your email to unlock the full recovery model and save it to your account.
+                We&apos;ve already calculated your loss and recovery range. Enter your email to unlock your full model.
               </p>
               
               <form onSubmit={handleEmailCapture} className="space-y-4">
@@ -1098,7 +1110,7 @@ function ScanResultsContent() {
                     disabled={capturing || !email.trim()}
                     className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
                   >
-                    {capturing ? "Unlocking…" : "Unlock full analysis →"}
+                    {capturing ? "Unlocking…" : "See exactly what you're losing →"}
                   </button>
                 </div>
               </form>
