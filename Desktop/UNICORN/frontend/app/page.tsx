@@ -227,11 +227,14 @@ export default function Home() {
             <span className="text-cyan-400"> You just don't see it yet.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto">
-            We show where your messaging is costing you deals —
-            before pipeline drops.
+            Your messaging is already costing you deals.
+            We show you where — before pipeline drops.
           </p>
-          <p className="text-sm md:text-base text-amber-200/90 font-medium mb-10 max-w-2xl mx-auto">
-            Teams like yours typically lose $20K–$200K/year from messaging gaps they never see.
+          <p className="text-sm md:text-base text-amber-200/90 font-medium mb-6 max-w-2xl mx-auto">
+            Most teams don&apos;t realize they&apos;re losing $20K–$200K/year from messaging gaps until pipeline slows.
+          </p>
+          <p className="text-xs text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Analyzing revenue-stage messaging across B2B SaaS companies to surface hidden revenue loss before it hits pipeline.
           </p>
 
           {/* ── SCAN BOX ── */}
@@ -325,7 +328,7 @@ export default function Home() {
           <ul className="space-y-4 text-lg text-gray-400 mb-8 ml-6">
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-              You attract leads that never convert
+              You fill pipeline with deals that never close
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
@@ -355,8 +358,11 @@ export default function Home() {
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">Example Revenue Architecture Scan</p>
           <p className="text-center text-base md:text-lg font-semibold text-white mb-6 max-w-xl mx-auto leading-snug">
             Example:{" "}
-            <span className="text-red-400">$287K</span> in revenue at risk —{" "}
-            <span className="text-gray-300 font-medium">caused by messaging misalignment across pages and weak proof delaying decisions</span>
+            <span className="text-red-400">$287K</span> lost potential —{" "}
+            <span className="text-gray-300 font-medium">
+              caused by messaging misalignment across pages
+            </span>{" "}
+            and <span className="text-gray-300 font-medium">weak proof delaying decisions</span>
           </p>
           <p className="text-center text-sm md:text-base text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">
             → pipeline slowed without being noticed.
@@ -451,6 +457,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-4">Why deals slow down (without you noticing)</h2>
           <p className="text-lg text-gray-300 mb-8">
             Buyers don't say no. They just don't move forward.
+            Nothing looks broken. But conversion quietly drops.
           </p>
 
           <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
@@ -500,8 +507,9 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Continuous revenue monitoring</h2>
           <p className="text-lg text-gray-300 mb-8">
-            Messaging drift happens constantly.
-            Without monitoring, it compounds for weeks before it shows in pipeline.
+            Messaging drift doesn't happen once.
+            It keeps happening as your product, market, and positioning evolve.
+            Without monitoring, it compounds silently for weeks before it shows in pipeline.
             We catch it early.
           </p>
           <div className="p-6 bg-[#111827] rounded-lg border border-gray-800 mb-6">
@@ -553,7 +561,7 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 border-t border-gray-800">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Find what&apos;s already costing you revenue
+            Find what&apos;s already costing you revenue — before it compounds
           </h2>
           <p className="text-lg text-gray-300 mb-8">
             Scan your site to create a baseline in 30 seconds.
