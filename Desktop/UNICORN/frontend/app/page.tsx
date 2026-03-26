@@ -36,6 +36,8 @@ export default function Home() {
   const [scanError, setScanError] = useState("")
   const [scanCount, setScanCount] = useState<number | null>(null)
   const router = useRouter()
+  const [stripeLast7dDelta, setStripeLast7dDelta] = useState<number | null>(null)
+  const [stripePreviewLoaded, setStripePreviewLoaded] = useState(false)
 
   // Fake scan phases for perceived progress
   const scanPhases = useRef([
@@ -65,6 +67,61 @@ export default function Home() {
         console.error("[SCAN-STATS] Fetch error:", err);
         setScanCount(0);
       })
+  }, [])
+
+  useEffect(() => {
+    // Landing-page "Last 7 days" preview uses real backend history for Stripe as an example.
+    const stripeDomain = "stripe.com"
+    let cancelled = false
+
+    const loadStripePreview = async () => {
+      try {
+        const res = await fetch(`${API_URL}/company/${encodeURIComponent(stripeDomain)}/history`)
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const payload = await res.json()
+        const history: any[] = Array.isArray(payload?.history) ? payload.history : []
+        if (!history.length) {
+          if (!cancelled) setStripeLast7dDelta(null)
+          if (!cancelled) setStripePreviewLoaded(true)
+          return
+        }
+
+        const latest = history[history.length - 1]
+        const latestRii = typeof latest?.rii === "number" ? latest.rii : null
+        const latestScannedAt = latest?.scanned_at ? new Date(latest.scanned_at) : null
+        if (latestRii === null || !latestScannedAt || Number.isNaN(latestScannedAt.getTime())) {
+          if (!cancelled) setStripeLast7dDelta(null)
+          if (!cancelled) setStripePreviewLoaded(true)
+          return
+        }
+
+        const targetTs = latestScannedAt.getTime() - 7 * 24 * 60 * 60 * 1000
+        // Pick the last snapshot at or before the 7-day target (closest without going past).
+        const candidates = history
+          .map(h => ({ h, t: h?.scanned_at ? new Date(h.scanned_at).getTime() : NaN }))
+          .filter(x => Number.isFinite(x.t) && x.t <= targetTs)
+        const chosen = candidates.length ? candidates[candidates.length - 1].h : history[0]
+
+        const prevRii = typeof chosen?.rii === "number" ? chosen.rii : null
+        if (prevRii === null) {
+          if (!cancelled) setStripeLast7dDelta(null)
+        } else {
+          if (!cancelled) setStripeLast7dDelta(Math.round(latestRii - prevRii))
+        }
+        if (!cancelled) setStripePreviewLoaded(true)
+      } catch (e) {
+        console.error("[STRIPE-PREVIEW] Failed to load Stripe history preview:", e)
+        if (!cancelled) {
+          setStripeLast7dDelta(null)
+          setStripePreviewLoaded(true)
+        }
+      }
+    }
+
+    loadStripePreview()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   useEffect(() => {
@@ -270,7 +327,18 @@ export default function Home() {
           <div className="mb-4">
             <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-xs sm:text-sm text-amber-200">
               <span className="font-semibold">Last 7 days:</span>
-              <span className="text-amber-300">+6 risk points</span>
+              {stripePreviewLoaded && stripeLast7dDelta === null && (
+                <span className="text-amber-300">—</span>
+              )}
+              {stripePreviewLoaded && stripeLast7dDelta !== null && (
+                <span className="text-amber-300">
+                  {stripeLast7dDelta > 0 ? "+" : ""}
+                  {stripeLast7dDelta} risk points
+                </span>
+              )}
+              {!stripePreviewLoaded && (
+                <span className="text-amber-300">loading…</span>
+              )}
             </div>
           </div>
           {scanning && (
