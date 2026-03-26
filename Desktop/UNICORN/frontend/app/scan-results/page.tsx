@@ -734,7 +734,7 @@ function ScanResultsContent() {
               <div className={`${wideLayout ? "text-left" : "text-center"}`}>
                 <p className="text-sm text-gray-300 font-medium">
                   {!unlocked
-                    ? "Revenue loss detected — quantified breakdown available"
+                    ? "Revenue impact detected — full breakdown after unlock"
                     : financialImpact
                       ? `Modeled impact: ~${modeledMonthlyLossLabel}`
                       : "Revenue impact detected"}
@@ -1076,7 +1076,7 @@ function ScanResultsContent() {
             <div className="bg-[#111827] rounded-xl border border-gray-800 p-8 max-w-md w-full">
               <h3 className="text-2xl font-bold mb-2 text-white">Unlock your full revenue breakdown</h3>
               <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-                We&apos;ve already calculated your loss and recovery range. Enter your email to unlock your full model.
+                We&apos;ve mapped your loss and recovery potential. Enter your email to unlock the full recovery model and save it to your account.
               </p>
               
               <form onSubmit={handleEmailCapture} className="space-y-4">
@@ -1110,7 +1110,7 @@ function ScanResultsContent() {
                     disabled={capturing || !email.trim()}
                     className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
                   >
-                    {capturing ? "Unlocking…" : "See exactly what you're losing →"}
+                    {capturing ? "Unlocking…" : "Unlock full analysis →"}
                   </button>
                 </div>
               </form>
