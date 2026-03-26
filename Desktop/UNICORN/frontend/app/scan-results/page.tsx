@@ -934,16 +934,37 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* Score breakdown: o coloană înainte de email; 2 coloane după email */}
+        {/* Score breakdown: înainte de email doar zone + severitate; după email vizual complet */}
         <div className={`p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6 ${wideLayout ? "lg:p-8 lg:mb-8" : ""}`}>
           <p className="text-lg font-semibold text-white mb-1">Where you&apos;re losing revenue</p>
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-5">Leak severity by area (0–100)</p>
-          <div className={wideLayout ? "grid md:grid-cols-2 gap-x-10 gap-y-6" : "space-y-6"}>
-            <ScoreBar {...METRIC_ROWS[0]} value={data.alignment} />
-            <ScoreBar {...METRIC_ROWS[1]} value={data.icp_clarity} />
-            <ScoreBar {...METRIC_ROWS[2]} value={data.anchor_density} />
-            <ScoreBar {...METRIC_ROWS[3]} value={data.positioning} />
-          </div>
+          <p className="text-xs text-gray-500 uppercase tracking-widest mb-5">Leak severity by area</p>
+          {!unlocked ? (
+            <ul className="space-y-3 text-sm text-gray-300">
+              <li className="flex items-center justify-between gap-3">
+                <span>Your pages don&apos;t consistently convert</span>
+                <span className="text-xs text-gray-500">{metricImpactLabel(data.alignment ?? 0)}</span>
+              </li>
+              <li className="flex items-center justify-between gap-3">
+                <span>You&apos;re attracting low-fit visitors</span>
+                <span className="text-xs text-gray-500">{metricImpactLabel(data.icp_clarity ?? 0)}</span>
+              </li>
+              <li className="flex items-center justify-between gap-3">
+                <span>Proof and numbers are too thin to justify the next step</span>
+                <span className="text-xs text-gray-500">{metricImpactLabel(data.anchor_density ?? 0)}</span>
+              </li>
+              <li className="flex items-center justify-between gap-3">
+                <span>Your category story is inconsistent across pages</span>
+                <span className="text-xs text-gray-500">{metricImpactLabel(data.positioning ?? 0)}</span>
+              </li>
+            </ul>
+          ) : (
+            <div className={wideLayout ? "grid md:grid-cols-2 gap-x-10 gap-y-6" : "space-y-6"}>
+              <ScoreBar {...METRIC_ROWS[0]} value={data.alignment} />
+              <ScoreBar {...METRIC_ROWS[1]} value={data.icp_clarity} />
+              <ScoreBar {...METRIC_ROWS[2]} value={data.anchor_density} />
+              <ScoreBar {...METRIC_ROWS[3]} value={data.positioning} />
+            </div>
+          )}
         </div>
 
         {/* Primary signal — pain-first */}
@@ -987,18 +1008,19 @@ function ScanResultsContent() {
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold mb-5 text-white max-w-xl mx-auto leading-snug">
-              We&apos;ve mapped where revenue is leaking — and what it&apos;s costing you
+              You&apos;re losing ~$13K–$25K/month — we know exactly why
             </h2>
             <p className="text-gray-400 mb-5 text-sm max-w-lg mx-auto leading-relaxed">
-              Unlock the full structural model for this scan: ARR at risk, close-rate compression, recovery range, and primary drivers — then optionally dial in your ARR/ACV to tighten the band.
+              We&apos;ve identified the exact pages and structural breaks causing this loss, and the order to fix them in —
+              but the full recovery plan is part of the paid layer.
             </p>
             <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">What you&apos;ll see</p>
             <div className="space-y-2.5 mb-6 text-left max-w-md mx-auto">
               {[
-                "Your modeled revenue at risk (in $)",
-                "Which pages are causing the loss",
-                "What's breaking your conversion (and why)",
-                "What to fix first to recover revenue",
+                "Exact pages causing the loss",
+                "What’s breaking your conversion (and why)",
+                "Step-by-step recovery plan",
+                "Revenue recovery timeline",
               ].map((line) => (
                 <div key={line} className="flex items-start gap-2 text-sm text-gray-200">
                   <svg className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1012,7 +1034,7 @@ function ScanResultsContent() {
               onClick={handleUnlock}
               className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
             >
-              See your recovery numbers →
+              Unlock my recovery plan →
             </button>
             <p className="text-xs text-gray-400 mt-4 max-w-md mx-auto text-center leading-relaxed">
               Email for instant unlock — see your leak, then choose a plan to recover revenue.
