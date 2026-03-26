@@ -10,6 +10,7 @@ import SnapshotLayer from "@/components/dashboard/SnapshotLayer"
 import MonitoringLayer from "@/components/dashboard/MonitoringLayer"
 import RevenueRiskIndex from "@/components/dashboard/RevenueRiskIndex"
 import type { ActionLayerPayload } from "@/components/dashboard/ActionableInsights"
+import { buildScanPrefillPayload, persistScanDataForPrefill } from "@/lib/scanPrefill"
 
 interface DiagnosticResult {
   risk_level?: string
@@ -108,6 +109,95 @@ export default function DashboardPage() {
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
+  const [calibrationArr, setCalibrationArr] = useState<string>("3-10M")
+  const [calibrationAcv, setCalibrationAcv] = useState<string>("5-15K")
+  const [calibrationCloseRate, setCalibrationCloseRate] = useState<string>("1-3%")
+  const [calibrationRescanning, setCalibrationRescanning] = useState(false)
+  const [calibrationError, setCalibrationError] = useState("")
+
+  const CALIBRATION_KEY = "vectrios_calibration_v1"
+
+  const arrOptions = ["<1M", "1-3M", "3-10M", "10-25M", "25-50M", "50-100M", "100M+"]
+  const acvOptions = ["<2K", "2-5K", "5-15K", "15-40K", "40-100K", "100K+"]
+  const closeRateOptions = ["<1%", "1-3%", "3-7%", "7-12%", "12%+"]
+
+  const readCurrentDomainFromStorage = (): string | null => {
+    try {
+      const raw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+      if (!raw) return null
+      const parsed = JSON.parse(raw) as { domain?: string; website_url?: string }
+      const domain = (parsed?.domain || parsed?.website_url || "").toString()
+      return domain.replace(/^https?:\/\//i, "").replace(/^www\./i, "").split("/")[0] || null
+    } catch {
+      return null
+    }
+  }
+
+  const saveCalibration = () => {
+    try {
+      const payload = {
+        arr_range: calibrationArr,
+        acv_range: calibrationAcv,
+        close_rate_band: calibrationCloseRate,
+        updated_at: new Date().toISOString(),
+      }
+      localStorage.setItem(CALIBRATION_KEY, JSON.stringify(payload))
+      sessionStorage.setItem(CALIBRATION_KEY, JSON.stringify(payload))
+    } catch {
+      /* ignore */
+    }
+  }
+
+  const handleCalibrateAndRescan = async () => {
+    setCalibrationError("")
+    saveCalibration()
+
+    const domain = readCurrentDomainFromStorage()
+    if (!domain) {
+      setCalibrationError("No domain found yet. Run a scan first, then calibrate.")
+      return
+    }
+
+    setCalibrationRescanning(true)
+    try {
+      const res = await fetch(`${API_URL}/scan`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: `https://${domain}`, force_refresh: true }),
+      })
+      if (!res.ok) {
+        const text = await res.text().catch(() => "")
+        throw new Error(text || `HTTP ${res.status}`)
+      }
+      const data = await res.json()
+
+      // Keep scan_data aligned for downstream pages.
+      try {
+        if (data?.scan_token && data?.domain) {
+          persistScanDataForPrefill(
+            buildScanPrefillPayload({
+              domain: data.domain,
+              inferred_icp: data.inferred_icp,
+              pages_scanned: data.pages_scanned,
+              scan_token: data.scan_token,
+            })
+          )
+        }
+      } catch {
+        /* ignore */
+      }
+
+      if (data?.scan_token) {
+        router.push(`/scan-results?token=${encodeURIComponent(data.scan_token)}`)
+        return
+      }
+      router.push("/scan-results")
+    } catch (e: any) {
+      setCalibrationError(`Rescan failed. ${e?.message ? String(e.message) : ""}`.trim())
+    } finally {
+      setCalibrationRescanning(false)
+    }
+  }
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -170,6 +260,20 @@ export default function DashboardPage() {
 
     setLoading(false)
   }, [companyId, router])
+
+  useEffect(() => {
+    // Load prior calibration (if any).
+    try {
+      const raw = sessionStorage.getItem(CALIBRATION_KEY) || localStorage.getItem(CALIBRATION_KEY)
+      if (!raw) return
+      const parsed = JSON.parse(raw)
+      if (parsed?.arr_range) setCalibrationArr(String(parsed.arr_range))
+      if (parsed?.acv_range) setCalibrationAcv(String(parsed.acv_range))
+      if (parsed?.close_rate_band) setCalibrationCloseRate(String(parsed.close_rate_band))
+    } catch {
+      /* ignore */
+    }
+  }, [])
 
   // Check for governance activation from URL params
   useEffect(() => {
@@ -472,20 +576,84 @@ export default function DashboardPage() {
             /* STATE 2 — PARTIAL DIAGNOSTIC (from scan) — Always show SnapshotLayer with CTA */
             <>
               <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
-              <div className="mt-6 p-8 border border-cyan-500/20 rounded-lg bg-gradient-to-br from-cyan-950/30 to-[#111827] text-center">
-                <h3 className="text-xl font-bold text-white mb-2">Unlock Full Revenue Diagnostic</h3>
-                <p className="text-gray-400 mb-6 text-sm max-w-2xl mx-auto">
-                  You're viewing initial scan results. Complete a quick diagnostic to see ARR at risk, recovery potential, 12-month trajectory, and root cause analysis.
-                </p>
-                <Link
-                  href="/onboarding"
-                  className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
-                >
-                  Complete Full Diagnostic
-                </Link>
-                <p className="text-xs text-gray-600 mt-4">
-                  Takes 2-3 minutes · Just a few questions
-                </p>
+              <div className="mt-6 rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-950/20 via-[#111827] to-[#0d1320] p-8">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                  <div>
+                    <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
+                      Paid calibration
+                    </p>
+                    <h3 className="text-2xl font-bold text-white mb-2">
+                      Calibrate your model (2 minutes) → then rescan
+                    </h3>
+                    <p className="text-sm text-gray-400 max-w-2xl">
+                      This doesn&apos;t change your scan score. It tightens dollar impact ranges and unlocks the recovery workflow you&apos;ll use week to week.
+                    </p>
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    <span className="text-gray-500">Next:</span>{" "}
+                    <span className="text-white font-semibold">Rescan with calibration</span>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid md:grid-cols-3 gap-4">
+                  <div className="rounded-xl border border-gray-800 bg-[#0f1626] p-4">
+                    <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">ARR band</p>
+                    <select
+                      value={calibrationArr}
+                      onChange={(e) => setCalibrationArr(e.target.value)}
+                      className="w-full bg-[#0B0F19] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/40"
+                      disabled={calibrationRescanning}
+                    >
+                      {arrOptions.map((o) => (
+                        <option key={o} value={o}>{o}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="rounded-xl border border-gray-800 bg-[#0f1626] p-4">
+                    <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">ACV band</p>
+                    <select
+                      value={calibrationAcv}
+                      onChange={(e) => setCalibrationAcv(e.target.value)}
+                      className="w-full bg-[#0B0F19] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/40"
+                      disabled={calibrationRescanning}
+                    >
+                      {acvOptions.map((o) => (
+                        <option key={o} value={o}>{o}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="rounded-xl border border-gray-800 bg-[#0f1626] p-4">
+                    <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Close-rate band</p>
+                    <select
+                      value={calibrationCloseRate}
+                      onChange={(e) => setCalibrationCloseRate(e.target.value)}
+                      className="w-full bg-[#0B0F19] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/40"
+                      disabled={calibrationRescanning}
+                    >
+                      {closeRateOptions.map((o) => (
+                        <option key={o} value={o}>{o}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {calibrationError && (
+                  <p className="mt-4 text-sm text-red-400">{calibrationError}</p>
+                )}
+
+                <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                  <p className="text-xs text-gray-500">
+                    Saved to this account (local for now). We&apos;ll sync to backend next.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleCalibrateAndRescan}
+                    disabled={calibrationRescanning}
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition shadow-lg shadow-cyan-500/20"
+                  >
+                    {calibrationRescanning ? "Rescanning…" : "Rescan with calibration →"}
+                  </button>
+                </div>
               </div>
             </>
           ) : subscriptionLoading ? (
