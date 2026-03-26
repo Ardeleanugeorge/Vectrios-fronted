@@ -922,11 +922,17 @@ function ScanResultsContent() {
                 </span>
                 {(data.percentile ?? 0) >= 50 ? (
                   <span className="text-xs opacity-80">
-                    Estimated missed upside: $80K–$160K/year
+                    Estimated missed upside:{" "}
+                    {instantFinancials
+                      ? `${formatCurrency(instantFinancials.recoveryLow)}–${formatCurrency(instantFinancials.recoveryHigh)}/year`
+                      : "$80K–$160K/year"}
                   </span>
                 ) : (
                   <span className="text-xs opacity-80">
-                    Estimated preventable loss: $160K–$300K/year
+                    Estimated preventable loss:{" "}
+                    {instantFinancials
+                      ? `${formatCurrency(instantFinancials.arrAtRiskLow)}–${formatCurrency(instantFinancials.arrAtRiskHigh)}/year`
+                      : "$160K–$300K/year"}
                   </span>
                 )}
               </div>
