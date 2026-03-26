@@ -28,6 +28,23 @@ interface ScanData {
   primary_signal: string
   percentile: number | null
   percentile_label: string | null
+  financial_impact?: {
+    arr_at_risk_low: number
+    arr_at_risk_high: number
+    recovery_low: number
+    recovery_high: number
+    monthly_loss_low: number
+    monthly_loss_high: number
+    arr_range?: string | null
+    acv_range?: string | null
+  } | null
+  driver_impacts?: Array<{
+    key: string
+    title: string
+    description: string
+    monthly_low: number
+    monthly_high: number
+  }> | null
   status?: string  // success, partial, blocked, failed
   reason?: string  // waf, low_content, etc.
   created_at?: string
@@ -229,150 +246,7 @@ function primarySignalDisplay(signal: string): { headline: string } {
   }
 }
 
-/** Model output from scan signals + ARR/ACV inputs — same formulas everywhere (no placeholder numbers). */
-interface FinancialImpactComputed {
-  arrAtRiskLow: number
-  arrAtRiskHigh: number
-  closeRateDeltaLow: number
-  closeRateDeltaHigh: number
-  recoveryLow: number
-  recoveryHigh: number
-  confidence: string
-  confidenceExplanation: string
-  primaryDriver: string
-}
-
-const DEFAULT_INSTANT_ARR = "3-10M"
-const DEFAULT_INSTANT_ACV = "5-15K"
-
-function roundMoneyPair(low: number, high: number): { low: number; high: number } {
-  let l = low
-  let h = high
-  if (h >= 1000000) {
-    l = Math.round(l / 50000) * 50000
-    h = Math.round(h / 50000) * 50000
-  } else if (h >= 200000) {
-    l = Math.round(l / 10000) * 10000
-    h = Math.round(h / 10000) * 10000
-  } else {
-    l = Math.round(l / 5000) * 5000
-    h = Math.round(h / 5000) * 5000
-  }
-  return { low: l, high: h }
-}
-
-function computeFinancialImpactFromScan(
-  data: ScanData,
-  inputs: { arrRange: string; acvRange: string; monthlyTraffic: string }
-): FinancialImpactComputed | null {
-  if (!inputs.arrRange || !inputs.acvRange) return null
-
-  const arrMidpoints: Record<string, number> = {
-    "<1M": 0.5,
-    "1-3M": 2,
-    "3-10M": 6.5,
-    "10-25M": 17.5,
-    "25-50M": 37.5,
-    "50-100M": 75,
-    "100M+": 150,
-  }
-  const arrEst = (arrMidpoints[inputs.arrRange] || 2) * 1000000
-
-  const acvMidpoints: Record<string, number> = {
-    "<2K": 1,
-    "2-5K": 3.5,
-    "5-15K": 10,
-    "15-40K": 27.5,
-    "40-100K": 70,
-    "100K+": 150,
-  }
-  const acvEst = acvMidpoints[inputs.acvRange] || 10
-
-  const rii = data.rii ?? 50
-  let baseRiskMultiplier = 0
-  if (rii < 45) {
-    baseRiskMultiplier = 0.035
-  } else if (rii < 60) {
-    baseRiskMultiplier = 0.0175
-  } else {
-    baseRiskMultiplier = 0.0065
-  }
-
-  let signalAdjustment = 1.0
-  if (data.icp_clarity && data.icp_clarity < 30) signalAdjustment += 0.3
-  if (data.anchor_density && data.anchor_density < 30) signalAdjustment += 0.2
-  if (data.positioning && data.positioning < 40) signalAdjustment += 0.15
-
-  if (acvEst < 5) {
-    signalAdjustment += 0.25
-  } else if (acvEst > 40) {
-    signalAdjustment -= 0.2
-  }
-
-  const trafficNum = inputs.monthlyTraffic ? parseInt(inputs.monthlyTraffic, 10) : NaN
-  if (!Number.isNaN(trafficNum) && trafficNum < 10000) {
-    signalAdjustment += 0.2
-  } else if (!Number.isNaN(trafficNum) && trafficNum > 50000) {
-    signalAdjustment -= 0.2
-  }
-
-  const riskPercent = Math.min(baseRiskMultiplier * signalAdjustment, 0.08)
-  const arrAtRiskBase = arrEst * riskPercent
-  let arrAtRiskLow = Math.round(arrAtRiskBase * 0.7)
-  let arrAtRiskHigh = Math.round(arrAtRiskBase * 1.3)
-  const arrR = roundMoneyPair(arrAtRiskLow, arrAtRiskHigh)
-  arrAtRiskLow = arrR.low
-  arrAtRiskHigh = arrR.high
-
-  let closeRateDeltaBase = 0
-  if (data.icp_clarity && data.icp_clarity < 30) closeRateDeltaBase += 1.2
-  if (data.anchor_density && data.anchor_density < 30) closeRateDeltaBase += 0.8
-  if (data.alignment && data.alignment < 40) closeRateDeltaBase += 0.6
-
-  const closeRateDeltaLow = Math.round(closeRateDeltaBase * 0.8 * 10) / 10
-  const closeRateDeltaHigh = Math.round(closeRateDeltaBase * 1.2 * 10) / 10
-
-  let confidence = "Medium"
-  let confidenceExplanation = ""
-  if (data.confidence && data.confidence >= 80 && data.pages_scanned >= 5) {
-    confidence = "High"
-    confidenceExplanation = `High (based on ${data.pages_scanned} pages analyzed)`
-  } else if ((data.confidence && data.confidence < 50) || data.pages_scanned < 3) {
-    confidence = "Low"
-    confidenceExplanation = `Low (limited data from ${data.pages_scanned} pages)`
-  } else {
-    confidenceExplanation = `Medium (based on ${data.pages_scanned} pages analyzed)`
-  }
-
-  let primaryDriver = ""
-  if (data.icp_clarity && data.icp_clarity < 30) {
-    primaryDriver = `ICP clarity is too broad for your ACV (${acvEst >= 40 ? "high-value" : "mid-value"} deals require precise targeting)`
-  } else if (data.anchor_density && data.anchor_density < 30) {
-    primaryDriver = `Anchor density is insufficient for your ${acvEst < 15 ? "high-volume" : "sales-led"} model`
-  } else if (data.alignment && data.alignment < 40) {
-    primaryDriver = `Messaging misalignment across revenue pages reduces conversion consistency`
-  } else {
-    primaryDriver = `Structural misalignment detected across multiple revenue signals`
-  }
-
-  let recoveryLow = Math.round(arrAtRiskLow * 0.55)
-  let recoveryHigh = Math.round(arrAtRiskHigh * 0.82)
-  const recR = roundMoneyPair(recoveryLow, recoveryHigh)
-  recoveryLow = recR.low
-  recoveryHigh = recR.high
-
-  return {
-    arrAtRiskLow,
-    arrAtRiskHigh,
-    closeRateDeltaLow,
-    closeRateDeltaHigh,
-    recoveryLow,
-    recoveryHigh,
-    confidence,
-    confidenceExplanation,
-    primaryDriver,
-  }
-}
+// NOTE: Financial numbers are now provided by backend (`financial_impact` + `driver_impacts`).
 
 function buildStructureInsightBullets(data: ScanData, closeLow: number, closeHigh: number): string[] {
   const bullets: string[] = []
@@ -418,6 +292,8 @@ function closeRateDeltaBase(data: ScanData): number {
   if (data.alignment && data.alignment < 40) b += 0.6
   return b
 }
+
+// Driver impacts are provided by backend (`driver_impacts`) — no frontend allocation.
 
 function LockedInsight({ label }: { label: string }) {
   return (
@@ -514,38 +390,9 @@ function ScanResultsContent() {
     }, 120)
   }
 
-  /** Default mid-market priors: full report immediately after email (same engine as refined model). */
-  const instantFinancials = useMemo(() => {
-    if (!data) return null
-    return computeFinancialImpactFromScan(data, {
-      arrRange: DEFAULT_INSTANT_ARR,
-      acvRange: DEFAULT_INSTANT_ACV,
-      monthlyTraffic: "",
-    })
-  }, [data])
-
-  /** After onboarding from this scan, same formulas with user’s ARR band from diagnostic. */
-  const refinedFinancials = useMemo(() => {
-    if (!data || !token) return null
-    const refined = readScanResultsRefined(token)
-    if (!refined) return null
-    return computeFinancialImpactFromScan(data, {
-      arrRange: refined.arr_range,
-      acvRange: refined.acv_range || DEFAULT_INSTANT_ACV,
-      monthlyTraffic: refined.monthlyTraffic || "",
-    })
-  }, [data, token])
-
-  const displayFinancials = refinedFinancials ?? instantFinancials
-  const modelFromOnboarding = refinedFinancials != null
-
-  useEffect(() => {
-    if (!modelFromOnboarding || !unlocked) return
-    const t = window.setTimeout(() => {
-      forceScrollToTop()
-    }, 350)
-    return () => window.clearTimeout(t)
-  }, [modelFromOnboarding, unlocked, token])
+  // Financial numbers must come from backend only.
+  const financialImpact = data?.financial_impact || null
+  const driverImpacts = Array.isArray(data?.driver_impacts) ? (data?.driver_impacts as any[]) : []
 
   const handleUnlock = () => {
     setShowEmailCapture(true)
@@ -770,15 +617,13 @@ function ScanResultsContent() {
   const wideLayout = unlocked
 
   const modeledMonthlyLossLabel = (() => {
-    if (!instantFinancials) return null
-    const low = Math.round(instantFinancials.arrAtRiskLow / 12)
-    const high = Math.round(instantFinancials.arrAtRiskHigh / 12)
-    return `${formatCurrency(low)}–${formatCurrency(high)}/month`
+    if (!financialImpact) return null
+    return `${formatCurrency(financialImpact.monthly_loss_low)}–${formatCurrency(financialImpact.monthly_loss_high)}/month`
   })()
 
   const modeledAnnualLossLabel = (() => {
-    if (!instantFinancials) return null
-    return `${formatCurrency(instantFinancials.arrAtRiskLow)}–${formatCurrency(instantFinancials.arrAtRiskHigh)}/year`
+    if (!financialImpact) return null
+    return `${formatCurrency(financialImpact.arr_at_risk_low)}–${formatCurrency(financialImpact.arr_at_risk_high)}/year`
   })()
 
   return (
@@ -842,7 +687,7 @@ function ScanResultsContent() {
             wideLayout ? "p-6 lg:p-8 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start text-left" : "p-8 text-center"
           }`}
         >
-          {!wideLayout && !isBlocked && instantFinancials && (
+          {!wideLayout && !isBlocked && financialImpact && (
             <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-orange-950/50 to-[#0d1320] border border-orange-500/30 text-left">
               <p className="text-lg font-semibold text-white leading-snug mb-2">
                 Your website is silently losing revenue right now
@@ -852,7 +697,7 @@ function ScanResultsContent() {
               </p>
             </div>
           )}
-          {!wideLayout && !isBlocked && !instantFinancials && (
+          {!wideLayout && !isBlocked && !financialImpact && (
             <div className="mb-6 p-4 rounded-xl bg-orange-950/30 border border-orange-500/20 text-left">
               <p className="text-lg font-semibold text-white leading-snug">
                 Your website is silently losing revenue right now
@@ -888,7 +733,7 @@ function ScanResultsContent() {
             {!isBlocked && (
               <div className={`${wideLayout ? "text-left" : "text-center"}`}>
                 <p className="text-sm text-gray-300 font-medium">
-                  {instantFinancials
+                  {financialImpact
                     ? `Modeled impact: ~${modeledMonthlyLossLabel}`
                     : "Companies at this level typically lose $8K–$25K/month"}
                 </p>
@@ -937,15 +782,15 @@ function ScanResultsContent() {
                 {(data.percentile ?? 0) >= 50 ? (
                   <span className="text-xs opacity-80">
                     You're still missing{" "}
-                    {instantFinancials
-                      ? `~${formatCurrency(instantFinancials.recoveryLow)}–${formatCurrency(instantFinancials.recoveryHigh)}/year`
+                    {financialImpact
+                      ? `~${formatCurrency(financialImpact.recovery_low)}–${formatCurrency(financialImpact.recovery_high)}/year`
                       : "$80K–$160K/year"}
                   </span>
                 ) : (
                   <span className="text-xs opacity-80">
                     Estimated preventable loss:{" "}
-                    {instantFinancials
-                      ? `${formatCurrency(instantFinancials.arrAtRiskLow)}–${formatCurrency(instantFinancials.arrAtRiskHigh)}/year`
+                    {financialImpact
+                      ? `${formatCurrency(financialImpact.arr_at_risk_low)}–${formatCurrency(financialImpact.arr_at_risk_high)}/year`
                       : "$160K–$300K/year"}
                   </span>
                 )}
@@ -1096,61 +941,100 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* După email: doar pierderea și motivele macro; planul de recuperare rămâne blocat */}
-        {unlocked && showFinancialImpact && displayFinancials && !isBlocked && (
+        {/* După email: progressive insights (numbers from backend only) */}
+        {unlocked && showFinancialImpact && financialImpact && !isBlocked && (
           <div
             id="financial-impact-instant"
             className="p-6 sm:p-8 lg:p-10 bg-gradient-to-br from-cyan-950/25 via-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/25 mb-8"
           >
             <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2 text-center lg:text-left">
-              You&apos;ve unlocked your loss baseline
+              You&apos;ve unlocked your recovery model
             </p>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-4 text-center lg:text-left max-w-4xl">
-              You&apos;re losing ~
-              {formatCurrency(Math.round(displayFinancials.arrAtRiskLow / 12))}–
-              {formatCurrency(Math.round(displayFinancials.arrAtRiskHigh / 12))}
-              <span className="text-lg sm:text-xl font-semibold text-orange-200/85"> / month</span>
-            </h3>
-            <p className="text-sm text-gray-400 mb-6 max-w-2xl text-center lg:text-left">
-              This is modeled from your scan — most teams don&apos;t realize this loss until pipeline slows.
-            </p>
+            {(() => {
+              const mLow = financialImpact.monthly_loss_low
+              const mHigh = financialImpact.monthly_loss_high
+              const drivers = driverImpacts
+              return (
+                <>
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight mb-3 text-center lg:text-left max-w-4xl">
+                    You&apos;re losing ~{formatCurrency(mLow)}–{formatCurrency(mHigh)}/month — here&apos;s where it actually comes from
+                  </h3>
+                  <p className="text-sm text-gray-400 mb-6 max-w-3xl text-center lg:text-left">
+                    The loss isn&apos;t evenly spread. It concentrates in a few structural gaps that weaken conversion at every step.
+                  </p>
 
-            <div className="grid lg:grid-cols-12 gap-6 mb-8">
-              <div className="lg:col-span-5 p-4 rounded-xl bg-[#0f1626] border border-gray-700/70">
-                <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Why this is happening (high level)</p>
-                <ul className="space-y-2 text-sm text-gray-300">
-                  {topCauses.slice(0, 3).map((cause) => (
-                    <li key={cause} className="leading-snug">• {cause}</li>
-                  ))}
-                </ul>
-              </div>
-              <div className="lg:col-span-7 p-4 rounded-xl bg-[#111827] border border-gray-800/80">
-                <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
-                  Full recovery plan locked
-                </p>
-                <p className="text-sm text-gray-300 mb-3">
-                  We&apos;ve mapped exact pages, structural breaks, and a prioritized fix plan — but that&apos;s part of the paid recovery layer.
-                </p>
-                <ul className="space-y-2 text-sm text-gray-400 mb-4">
-                  {[
-                    "Exact pages causing the loss",
-                    "What’s breaking conversion (and why)",
-                    "Step-by-step recovery plan",
-                    "Revenue recovery timeline",
-                  ].map((line) => (
-                    <li key={line} className="flex items-start gap-2">
-                      <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
-                      <span>{line}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/pricing?from=scan&focus=recovery"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
-                >
-                  Show me how to recover this revenue →
-                </Link>
-              </div>
+                  <div className="grid lg:grid-cols-12 gap-6 mb-8">
+                    <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-[#0f1626] border border-gray-700/70">
+                      <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-3">
+                        Top revenue blockers (modeled)
+                      </p>
+                      <div className="space-y-3">
+                        {drivers.map((d: any) => (
+                          <div key={String(d.key || d.title)} className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <p className="text-sm font-semibold text-white">{d.title || "Structural gap"}</p>
+                                <p className="text-xs text-gray-400 mt-1 leading-relaxed">{d.description || ""}</p>
+                              </div>
+                              <div className="text-right shrink-0">
+                                <p className="text-sm font-bold text-orange-200 tabular-nums">
+                                  ~{formatCurrency(Number(d.monthly_low || 0))}–{formatCurrency(Number(d.monthly_high || 0))}/mo
+                                </p>
+                                <p className="text-[11px] text-gray-500 mt-0.5">estimated impact</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="lg:col-span-5 p-4 sm:p-5 rounded-xl bg-[#111827] border border-gray-800/80">
+                      <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
+                        Recovery preview
+                      </p>
+                      <p className="text-sm text-gray-300 mb-3">
+                        You&apos;ll get the exact page-by-page plan and priority order in the paid recovery layer.
+                      </p>
+                      <ul className="space-y-2 text-sm text-gray-400">
+                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">✓</span><span>Prioritized fixes by page</span></li>
+                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">✓</span><span>Expected impact and timeline</span></li>
+                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">✓</span><span>Monitoring + alerts when drift starts</span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </>
+              )
+            })()}
+
+            <div className="p-5 sm:p-6 rounded-xl bg-[#111827] border border-gray-800/80">
+              <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
+                Full recovery plan locked
+              </p>
+              <p className="text-sm text-gray-300 mb-3">
+                We&apos;ve mapped exact pages, structural breaks, and a prioritized fix plan — but that&apos;s part of the paid recovery layer.
+              </p>
+              <ul className="space-y-2 text-sm text-gray-400 mb-4">
+                {[
+                  "Exact pages causing the loss",
+                  "What’s breaking conversion (and why)",
+                  "Step-by-step recovery plan",
+                  "Revenue recovery timeline",
+                ].map((line) => (
+                  <li key={line} className="flex items-start gap-2">
+                    <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/pricing?from=scan&focus=recovery"
+                className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+              >
+                Show me how to recover this revenue →
+              </Link>
+              <p className="text-xs text-gray-500 mt-3">
+                Every month unfixed, this compounds.
+              </p>
             </div>
           </div>
         )}
@@ -1159,9 +1043,9 @@ function ScanResultsContent() {
         {showEmailCapture && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-[#111827] rounded-xl border border-gray-800 p-8 max-w-md w-full">
-              <h3 className="text-2xl font-bold mb-2 text-white">Unlock your full structural revenue model</h3>
+              <h3 className="text-2xl font-bold mb-2 text-white">Unlock your full revenue breakdown</h3>
               <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-                Unlock your leak and recovery range instantly. Next step after email: choose a plan or trial to get the playbook — optional free diagnostic later if you want tighter numbers.
+                We&apos;ve mapped your loss and recovery potential. Enter your email to unlock the full recovery model and save it to your account.
               </p>
               
               <form onSubmit={handleEmailCapture} className="space-y-4">
@@ -1201,7 +1085,7 @@ function ScanResultsContent() {
               </form>
               
               <p className="text-xs text-gray-500 mt-4 text-center leading-relaxed">
-                Instant access — no signup required
+                Instant access • No spam • Used to save your model
               </p>
             </div>
           </div>
