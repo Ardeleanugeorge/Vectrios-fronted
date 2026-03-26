@@ -288,6 +288,7 @@ export default function Home() {
           </p>
           <p className="text-sm md:text-base text-amber-200/90 font-medium mb-10 max-w-2xl mx-auto">
             Most B2B SaaS companies drift every 2–3 weeks without noticing — quietly reducing conversion quality and pipeline efficiency.
+            If you&apos;re not tracking this, it&apos;s already happening.
           </p>
 
           {/* ── SCAN BOX ── */}
@@ -340,6 +341,9 @@ export default function Home() {
                 <span className="text-amber-300">loading…</span>
               )}
             </div>
+            <p className="text-xs text-gray-500 mt-2">
+              Unmonitored drift compounds weekly.
+            </p>
           </div>
           {scanning && (
             <div className="mb-4 text-xs text-cyan-300/80 flex flex-col items-center gap-1">
@@ -517,20 +521,17 @@ export default function Home() {
             <ul className="space-y-4 text-lg text-gray-300">
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-                Your messaging doesn&apos;t match your best buyers
+                You&apos;re telling one story
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-                Your value is harder to understand
+                Your best buyers need another
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-                Your proof doesn&apos;t trigger action quickly
+                Wrong deals enter pipeline &rarr; close rates drop
               </li>
             </ul>
-            <p className="text-sm text-gray-500 mt-4">
-              This isn&apos;t visible in traditional analytics. It affects conversion directly.
-            </p>
           </div>
         </div>
       </section>
@@ -540,7 +541,8 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Messaging translated to revenue</h2>
           <p className="text-lg text-gray-300 mb-8">
-            Small drift changes deal flow. Even modest gaps can cost you $3K–$10K/month in lost efficiency.
+            Even small drops in clarity can quietly cost $3K–$10K/month.
+            Most teams don&apos;t notice until pipeline slows.
           </p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
@@ -613,20 +615,30 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 border-t border-gray-800">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Start monitoring before revenue slips
+            See your revenue risk now
           </h2>
           <p className="text-lg text-gray-300 mb-8">
-            Detect drift early. Fix it before it compounds.
+            Check your drift in 30 seconds. Get your baseline score and start tracking weekly.
           </p>
           <Link
             href="/signup"
             className="inline-block px-12 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-lg"
           >
-            Start monitoring →
+            Check my drift →
           </Link>
-          <p className="text-sm text-gray-500 mt-4">
-            Start with one scan · Then track deltas weekly · No credit card required
-          </p>
+          <div className="mt-4">
+            <p className="text-sm text-gray-500">
+              Takes 30 seconds:
+            </p>
+            <ul className="mt-2 space-y-1 text-sm text-gray-500">
+              <li>Get your baseline risk score</li>
+              <li>See where revenue is leaking</li>
+              <li>Start tracking drift weekly</li>
+            </ul>
+            <p className="text-sm text-gray-500 mt-4">
+              No credit card required
+            </p>
+          </div>
         </div>
       </section>
 
