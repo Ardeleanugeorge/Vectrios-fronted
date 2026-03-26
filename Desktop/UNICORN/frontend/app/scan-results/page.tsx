@@ -1023,167 +1023,60 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* După email: pierdere → recovery (hero) → CTA monetizare (fără form pe loc) */}
+        {/* După email: doar pierderea și motivele macro; planul de recuperare rămâne blocat */}
         {unlocked && showFinancialImpact && displayFinancials && !isBlocked && (
           <div
             id="financial-impact-instant"
             className="p-6 sm:p-8 lg:p-10 bg-gradient-to-br from-cyan-950/25 via-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/25 mb-8"
           >
-            {modelFromOnboarding && (
-              <div className="mb-5 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/35 text-center lg:text-left">
-                <p className="text-sm font-semibold text-emerald-200">
-                  Model updated with your diagnostic
-                </p>
-                <p className="text-xs text-emerald-200/70 mt-1">
-                  Dollar ranges now use your onboarding ARR band (same scan + same formulas).
-                </p>
-              </div>
-            )}
             <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2 text-center lg:text-left">
-              Unlocked · revenue-first
+              You&apos;ve unlocked your loss baseline
             </p>
-            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-6 text-center lg:text-left max-w-4xl">
-              You&apos;re losing revenue right now — here&apos;s how much, and what you can get back
+            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight mb-4 text-center lg:text-left max-w-4xl">
+              You&apos;re losing ~
+              {formatCurrency(Math.round(displayFinancials.arrAtRiskLow / 12))}–
+              {formatCurrency(Math.round(displayFinancials.arrAtRiskHigh / 12))}
+              <span className="text-lg sm:text-xl font-semibold text-orange-200/85"> / month</span>
             </h3>
+            <p className="text-sm text-gray-400 mb-6 max-w-2xl text-center lg:text-left">
+              This is modeled from your scan — most teams don&apos;t realize this loss until pipeline slows.
+            </p>
 
-            <div className="grid lg:grid-cols-12 gap-4 mb-7">
+            <div className="grid lg:grid-cols-12 gap-6 mb-8">
               <div className="lg:col-span-5 p-4 rounded-xl bg-[#0f1626] border border-gray-700/70">
-                <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">What changed since last scan</p>
-                {previousSnapshot ? (
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li>RII moved from {Math.round(previousSnapshot.rii ?? 0)} to {Math.round(data.rii ?? 0)}.</li>
-                    <li>Alignment: {Math.round(previousSnapshot.alignment ?? 0)} → {Math.round(data.alignment ?? 0)}.</li>
-                    <li>ICP clarity: {Math.round(previousSnapshot.icp_clarity ?? 0)} → {Math.round(data.icp_clarity ?? 0)}.</li>
-                  </ul>
-                ) : (
-                  <p className="text-sm text-gray-400">No earlier backend snapshot found for this domain yet. This scan is your baseline.</p>
-                )}
-              </div>
-              <div className="lg:col-span-3 p-4 rounded-xl bg-[#0f1626] border border-gray-700/70">
-                <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Revenue risk delta</p>
-                <p className={`text-3xl font-bold ${riskDelta !== null && riskDelta > 0 ? "text-red-400" : riskDelta !== null && riskDelta < 0 ? "text-emerald-400" : "text-gray-300"}`}>
-                  {riskDelta !== null ? formatDelta(riskDelta) : "N/A"}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">vs previous scan for this domain</p>
-              </div>
-              <div className="lg:col-span-4 p-4 rounded-xl bg-[#0f1626] border border-gray-700/70">
-                <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Top 3 causes</p>
+                <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Why this is happening (high level)</p>
                 <ul className="space-y-2 text-sm text-gray-300">
-                  {topCauses.map((cause) => (
+                  {topCauses.slice(0, 3).map((cause) => (
                     <li key={cause} className="leading-snug">• {cause}</li>
                   ))}
                 </ul>
               </div>
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-4 lg:gap-6 mb-8">
-              <div className="p-5 sm:p-6 rounded-xl bg-orange-950/50 border border-orange-500/40">
-                <p className="text-xs font-semibold uppercase tracking-wider text-orange-200/90 mb-2">
-                  You&apos;re losing (modeled)
+              <div className="lg:col-span-7 p-4 rounded-xl bg-[#111827] border border-gray-800/80">
+                <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
+                  Full recovery plan locked
                 </p>
-                <p className="text-3xl sm:text-4xl font-bold text-orange-300 tracking-tight">
-                  ~{formatCurrency(Math.round(displayFinancials.arrAtRiskLow / 12))}–
-                  {formatCurrency(Math.round(displayFinancials.arrAtRiskHigh / 12))}
-                  <span className="text-lg sm:text-xl font-semibold text-orange-200/85"> / month</span>
+                <p className="text-sm text-gray-300 mb-3">
+                  We&apos;ve mapped exact pages, structural breaks, and a prioritized fix plan — but that&apos;s part of the paid recovery layer.
                 </p>
-                <p className="text-xs text-gray-400 mt-3">
-                  ≈ {formatCurrency(displayFinancials.arrAtRiskLow)}–{formatCurrency(displayFinancials.arrAtRiskHigh)} / year
-                  at risk if nothing changes
-                </p>
-              </div>
-
-              <div className="p-5 sm:p-6 rounded-xl bg-gradient-to-br from-emerald-950/60 to-[#0d2818]/80 border border-emerald-500/45 shadow-[0_0_40px_-12px_rgba(52,211,153,0.35)]">
-                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-200/95 mb-2">
-                  You can recover (modeled)
-                </p>
-                <p className="text-3xl sm:text-4xl font-bold text-emerald-300 tracking-tight">
-                  {formatCurrency(displayFinancials.recoveryLow)} – {formatCurrency(displayFinancials.recoveryHigh)}
-                  <span className="text-lg sm:text-xl font-semibold text-emerald-200/90"> / year</span>
-                </p>
-                <p className="text-sm text-emerald-100/80 mt-3 leading-relaxed">
-                  If structural fixes from this scan land — this is the modeled band you could claw back.
-                </p>
-              </div>
-            </div>
-
-            <div className="max-w-2xl mx-auto lg:mx-0 lg:max-w-xl mb-8">
-              <Link
-                href="/pricing?from=scan"
-                className="flex flex-col w-full items-center justify-center px-6 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl transition text-base sm:text-lg shadow-lg shadow-cyan-500/20 text-center leading-snug"
-              >
-                <span>
-                  Recover up to {formatCurrency(displayFinancials.recoveryHigh)}/year →
-                </span>
-                <span className="text-xs sm:text-sm font-semibold text-black/75 mt-1.5 normal-case tracking-normal">
-                  Fix ~{formatCurrency(Math.round(displayFinancials.arrAtRiskHigh / 12))}/mo bleed · plans &amp; 14-day trial
-                </span>
-              </Link>
-              <Link
-                href="/pricing?from=scan&focus=monitoring"
-                className="mt-3 inline-flex w-full items-center justify-center px-6 py-3 border border-cyan-500/40 text-cyan-300 hover:text-cyan-200 hover:border-cyan-400 rounded-xl transition font-semibold text-sm sm:text-base"
-              >
-                Enable weekly monitoring
-              </Link>
-              <ul className="mt-4 space-y-2 text-sm text-gray-400">
-                {[
-                  "See exact fixes (page-by-page)",
-                  "Prioritized recovery plan for your funnel",
-                  "Timeline to recover revenue — not more spreadsheets",
-                ].map((line) => (
-                  <li key={line} className="flex items-start gap-2">
-                    <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
-                    <span>{line}</span>
-                  </li>
-                ))}
-              </ul>
-              {!modelFromOnboarding && (
-                <Link
-                  href="/onboarding?from=scan"
-                  className="mt-5 block text-center lg:text-left text-sm text-gray-500 hover:text-cyan-400/90 transition underline underline-offset-2 decoration-gray-600 hover:decoration-cyan-500/50"
-                >
-                  Optional: tighten your numbers (~30 sec) in the free diagnostic — ARR, ACV, close rates
-                </Link>
-              )}
-            </div>
-
-            <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 pt-8 border-t border-gray-800/80">
-              <div className="lg:col-span-5 grid sm:grid-cols-2 lg:grid-cols-1 gap-3">
-                <div className="p-4 bg-[#111827] rounded-lg border border-gray-800">
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Annual ARR at risk</p>
-                  <p className="text-xl font-bold text-white">
-                    {formatCurrency(displayFinancials.arrAtRiskLow)} – {formatCurrency(displayFinancials.arrAtRiskHigh)}
-                  </p>
-                </div>
-                <div className="p-4 bg-[#111827] rounded-lg border border-gray-800">
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Close rate compression</p>
-                  <p className="text-xl font-bold text-red-400">
-                    −{displayFinancials.closeRateDeltaLow}% to −{displayFinancials.closeRateDeltaHigh}%
-                  </p>
-                </div>
-                <div className="p-4 bg-[#111827] rounded-lg border border-orange-500/25 sm:col-span-2 lg:col-span-1">
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Primary leak</p>
-                  <p className="text-sm text-orange-200 leading-snug">{displayFinancials.primaryDriver}</p>
-                </div>
-              </div>
-              <div className="lg:col-span-7">
-                <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">Why the model says this</p>
-                <ul className="text-sm text-gray-300 space-y-2.5 list-disc list-inside marker:text-cyan-500">
-                  {buildStructureInsightBullets(
-                    data,
-                    displayFinancials.closeRateDeltaLow,
-                    displayFinancials.closeRateDeltaHigh
-                  )
-                    .slice(0, 3)
-                    .map((line) => (
-                      <li key={line} className="leading-relaxed pl-1">
-                        {line}
-                      </li>
-                    ))}
+                <ul className="space-y-2 text-sm text-gray-400 mb-4">
+                  {[
+                    "Exact pages causing the loss",
+                    "What’s breaking conversion (and why)",
+                    "Step-by-step recovery plan",
+                    "Revenue recovery timeline",
+                  ].map((line) => (
+                    <li key={line} className="flex items-start gap-2">
+                      <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
+                      <span>{line}</span>
+                    </li>
+                  ))}
                 </ul>
-                <p className="text-xs text-gray-600 mt-5">
-                  Confidence: <span className="text-gray-400">{displayFinancials.confidence}</span> —{" "}
-                  {displayFinancials.confidenceExplanation}
-                </p>
+                <Link
+                  href="/pricing?from=scan&focus=recovery"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+                >
+                  Unlock my recovery plan →
+                </Link>
               </div>
             </div>
           </div>
