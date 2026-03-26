@@ -39,7 +39,7 @@ interface ScanSnapshot {
   icp_clarity: number | null
   anchor_density: number | null
   positioning: number | null
-  created_at: string
+  scanned_at: string | null
 }
 
 const SAAS_MEDIAN_RII = 56   // benchmark reference shown to user
@@ -688,29 +688,43 @@ function ScanResultsContent() {
   }, [data, previousSnapshot])
 
   useEffect(() => {
-    if (!data?.domain || typeof window === "undefined") return
-    const key = `vectrios_last_scan_snapshot_${data.domain.toLowerCase()}`
-    try {
-      const raw = localStorage.getItem(key)
-      if (raw) {
-        const parsed = JSON.parse(raw) as ScanSnapshot
-        setPreviousSnapshot(parsed)
-      } else {
-        setPreviousSnapshot(null)
+    if (!data?.domain) return
+    let cancelled = false
+
+    const loadHistory = async () => {
+      try {
+        const res = await fetch(`${API_URL}/company/${encodeURIComponent(data.domain)}/history`)
+        if (!res.ok) {
+          setPreviousSnapshot(null)
+          return
+        }
+        const payload = await res.json()
+        const history = Array.isArray(payload?.history) ? payload.history : []
+        if (history.length < 2) {
+          if (!cancelled) setPreviousSnapshot(null)
+          return
+        }
+        const prev = history[history.length - 2]
+        if (!cancelled) {
+          setPreviousSnapshot({
+            rii: prev?.rii ?? null,
+            alignment: prev?.alignment ?? null,
+            icp_clarity: prev?.icp_clarity ?? null,
+            anchor_density: prev?.anchor_density ?? null,
+            positioning: prev?.positioning ?? null,
+            scanned_at: prev?.scanned_at ?? null,
+          })
+        }
+      } catch {
+        if (!cancelled) setPreviousSnapshot(null)
       }
-      const nextSnapshot: ScanSnapshot = {
-        rii: data.rii,
-        alignment: data.alignment,
-        icp_clarity: data.icp_clarity,
-        anchor_density: data.anchor_density,
-        positioning: data.positioning,
-        created_at: new Date().toISOString(),
-      }
-      localStorage.setItem(key, JSON.stringify(nextSnapshot))
-    } catch {
-      setPreviousSnapshot(null)
     }
-  }, [data])
+
+    loadHistory()
+    return () => {
+      cancelled = true
+    }
+  }, [data?.domain])
 
   if (loading) return (
     <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center">
@@ -1042,7 +1056,7 @@ function ScanResultsContent() {
                     <li>ICP clarity: {Math.round(previousSnapshot.icp_clarity ?? 0)} → {Math.round(data.icp_clarity ?? 0)}.</li>
                   </ul>
                 ) : (
-                  <p className="text-sm text-gray-400">This is your baseline snapshot. Next scan will show exact deltas here.</p>
+                  <p className="text-sm text-gray-400">No earlier backend snapshot found for this domain yet. This scan is your baseline.</p>
                 )}
               </div>
               <div className="lg:col-span-3 p-4 rounded-xl bg-[#0f1626] border border-gray-700/70">
