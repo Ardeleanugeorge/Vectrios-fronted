@@ -786,14 +786,14 @@ function ScanResultsContent() {
                     You're still missing{" "}
                     {financialImpact
                       ? `~${formatCurrency(financialImpact.recovery_low)}–${formatCurrency(financialImpact.recovery_high)}/year`
-                      : "$80K–$160K/year"}
+                      : "a modeled recovery range (available after backend financial load)"}
                   </span>
                 ) : (
                   <span className="text-xs opacity-80">
                     Estimated preventable loss:{" "}
                     {financialImpact
                       ? `${formatCurrency(financialImpact.arr_at_risk_low)}–${formatCurrency(financialImpact.arr_at_risk_high)}/year`
-                      : "$160K–$300K/year"}
+                      : "modeled range unavailable for this cached scan"}
                   </span>
                 )}
               </div>
