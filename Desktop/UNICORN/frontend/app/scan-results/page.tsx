@@ -733,9 +733,11 @@ function ScanResultsContent() {
             {!isBlocked && (
               <div className={`${wideLayout ? "text-left" : "text-center"}`}>
                 <p className="text-sm text-gray-300 font-medium">
-                  {financialImpact
-                    ? `Modeled impact: ~${modeledMonthlyLossLabel}`
-                    : "Companies at this level typically lose $8K–$25K/month"}
+                  {!unlocked
+                    ? "Revenue impact detected — full breakdown after unlock"
+                    : financialImpact
+                      ? `Modeled impact: ~${modeledMonthlyLossLabel}`
+                      : "Revenue impact detected"}
                 </p>
                 {typeof data.percentile === "number" && (
                   <p className="text-xs text-gray-500 mt-1">
@@ -826,12 +828,11 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* Score breakdown: înainte de email doar zone + severitate; după email vizual complet */}
-        <div className={`p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6 ${wideLayout ? "lg:p-8 lg:mb-8" : ""}`}>
-          <p className="text-lg font-semibold text-white mb-1">Where you&apos;re losing revenue</p>
-          <p className="text-sm text-gray-400 mb-1">These issues are actively reducing your conversion rate</p>
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-5">Leak severity by area</p>
-          {!unlocked ? (
+        {!unlocked && (
+          <div className={`p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6 ${wideLayout ? "lg:p-8 lg:mb-8" : ""}`}>
+            <p className="text-lg font-semibold text-white mb-1">Where you&apos;re losing revenue</p>
+            <p className="text-sm text-gray-400 mb-1">These issues are actively reducing your conversion rate</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest mb-5">Leak severity by area</p>
             <ul className="space-y-3 text-sm text-gray-300">
               <li className="flex items-center justify-between gap-3">
                 <span>Your pages don&apos;t consistently convert</span>
@@ -850,29 +851,23 @@ function ScanResultsContent() {
                 <span className="text-xs text-gray-500">{metricImpactLabel(data.positioning ?? 0)}</span>
               </li>
             </ul>
-          ) : (
-            <div className={wideLayout ? "grid md:grid-cols-2 gap-x-10 gap-y-6" : "space-y-6"}>
-              <ScoreBar {...METRIC_ROWS[0]} value={data.alignment} />
-              <ScoreBar {...METRIC_ROWS[1]} value={data.icp_clarity} />
-              <ScoreBar {...METRIC_ROWS[2]} value={data.anchor_density} />
-              <ScoreBar {...METRIC_ROWS[3]} value={data.positioning} />
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Primary signal — pain-first */}
-        <div className="p-5 bg-[#0d1320] rounded-xl border border-orange-500/20 mb-6">
-          <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Primary signal</p>
-          <p className="text-orange-200 font-semibold text-lg mb-2 leading-snug">
-            {primarySignalDisplay(data.primary_signal).headline}
-          </p>
-          <p className="text-sm text-gray-400">
-            → This directly reduces conversion rates
-          </p>
-          {data.inferred_icp && (
-            <p className="text-xs text-gray-600 mt-3">Detected audience: {data.inferred_icp}</p>
-          )}
-        </div>
+        {!unlocked && (
+          <div className="p-5 bg-[#0d1320] rounded-xl border border-orange-500/20 mb-6">
+            <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Primary signal</p>
+            <p className="text-orange-200 font-semibold text-lg mb-2 leading-snug">
+              {primarySignalDisplay(data.primary_signal).headline}
+            </p>
+            <p className="text-sm text-gray-400">
+              → This directly reduces conversion rates
+            </p>
+            {data.inferred_icp && (
+              <p className="text-xs text-gray-600 mt-3">Detected audience: {data.inferred_icp}</p>
+            )}
+          </div>
+        )}
 
         {/* Locked insights — hide after unlock (full numbers shown below, no fake “locked” tease) */}
         {!unlocked && (
@@ -957,10 +952,10 @@ function ScanResultsContent() {
               return (
                 <>
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight mb-3 text-center lg:text-left max-w-4xl">
-                    You&apos;re losing ~{formatCurrency(mLow)}–{formatCurrency(mHigh)}/month — here&apos;s where it actually comes from
+                    Your revenue loss comes from 3 specific breakdowns
                   </h3>
                   <p className="text-sm text-gray-400 mb-6 max-w-3xl text-center lg:text-left">
-                    The loss isn&apos;t evenly spread. It concentrates in a few structural gaps that weaken conversion at every step.
+                    Current modeled loss baseline: ~{formatCurrency(mLow)}–{formatCurrency(mHigh)}/month. This is where it concentrates.
                   </p>
 
                   <div className="grid lg:grid-cols-12 gap-6 mb-8">
@@ -969,10 +964,13 @@ function ScanResultsContent() {
                         Top revenue blockers (modeled)
                       </p>
                       <div className="space-y-3">
-                        {drivers.map((d: any) => (
+                        {drivers.map((d: any, idx: number) => (
                           <div key={String(d.key || d.title)} className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
                             <div className="flex items-start justify-between gap-4">
                               <div>
+                                <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">
+                                  {idx === 0 ? "Highest impact" : idx === 1 ? "Mid impact" : "Lower impact"}
+                                </p>
                                 <p className="text-sm font-semibold text-white">{d.title || "Structural gap"}</p>
                                 <p className="text-xs text-gray-400 mt-1 leading-relaxed">{d.description || ""}</p>
                               </div>
@@ -990,15 +988,15 @@ function ScanResultsContent() {
 
                     <div className="lg:col-span-5 p-4 sm:p-5 rounded-xl bg-[#111827] border border-gray-800/80">
                       <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
-                        Recovery preview
+                        Why this happens
                       </p>
                       <p className="text-sm text-gray-300 mb-3">
-                        You&apos;ll get the exact page-by-page plan and priority order in the paid recovery layer.
+                        These issues rarely break the funnel in one step — they weaken it across key pages and compound over time.
                       </p>
                       <ul className="space-y-2 text-sm text-gray-400">
-                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">✓</span><span>Prioritized fixes by page</span></li>
-                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">✓</span><span>Expected impact and timeline</span></li>
-                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">✓</span><span>Monitoring + alerts when drift starts</span></li>
+                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">•</span><span>Homepage clarity drops lead quality</span></li>
+                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">•</span><span>Product/proof gaps slow evaluation</span></li>
+                        <li className="flex items-start gap-2"><span className="text-emerald-400 mt-0.5 shrink-0">•</span><span>Positioning drift creates decision friction</span></li>
                       </ul>
                     </div>
                   </div>
@@ -1030,7 +1028,7 @@ function ScanResultsContent() {
                 href="/pricing?from=scan&focus=recovery"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
               >
-                Show me how to recover this revenue →
+                Get my recovery plan →
               </Link>
               <p className="text-xs text-gray-500 mt-3">
                 Every month unfixed, this compounds.
@@ -1055,7 +1053,7 @@ function ScanResultsContent() {
               href="/pricing?from=scan&focus=recovery"
               className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
             >
-              Show me how to recover this revenue →
+              Get my recovery plan →
             </Link>
           </div>
         )}
