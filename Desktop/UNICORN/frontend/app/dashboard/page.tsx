@@ -163,7 +163,12 @@ export default function DashboardPage() {
       const res = await fetch(`${API_URL}/scan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: `https://${domain}`, force_refresh: true }),
+        body: JSON.stringify({
+          url: `https://${domain}`,
+          force_refresh: true,
+          arr_range: calibrationArr,
+          acv_range: calibrationAcv,
+        }),
       })
       if (!res.ok) {
         const text = await res.text().catch(() => "")
