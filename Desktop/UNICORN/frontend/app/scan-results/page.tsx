@@ -222,7 +222,11 @@ function primarySignalDisplay(signal: string): { headline: string } {
       headline: "Proof and conversion anchors are too thin — buyers stall before they act",
     }
   }
-  return { headline: signal || "Structural revenue leak detected in your messaging" }
+  return {
+    headline:
+      signal ||
+      "Your growth is being limited by subtle messaging gaps — you're still leaving revenue on the table",
+  }
 }
 
 /** Model output from scan signals + ARR/ACV inputs — same formulas everywhere (no placeholder numbers). */
@@ -869,6 +873,21 @@ function ScanResultsContent() {
               {data.pages_scanned} revenue page{data.pages_scanned !== 1 ? "s" : ""} analyzed
             </p>
 
+            {!isBlocked && (
+              <div className={`${wideLayout ? "text-left" : "text-center"}`}>
+                <p className="text-sm text-gray-300 font-medium">
+                  Companies at this level typically lose $8K–$25K/month
+                </p>
+                {typeof data.percentile === "number" && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    {data.percentile >= 50
+                      ? `Top ${Math.round(data.percentile)}% of SaaS — but still below optimal revenue efficiency`
+                      : `You’re performing worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of similar SaaS companies`}
+                  </p>
+                )}
+              </div>
+            )}
+
             {!isBlocked && data.confidence !== null && (
               <div
                 className={`flex items-center gap-2 text-sm text-gray-500 mb-4 ${
@@ -898,9 +917,18 @@ function ScanResultsContent() {
               >
                 <span>
                   {(data.percentile ?? 0) < 50
-                    ? "Your messaging underperforms compared to similar B2B sites"
-                    : "Your messaging outperforms many comparable B2B sites"}
+                    ? "You're underperforming — this is actively leaking revenue"
+                    : "You're performing above average — but still leaving revenue on the table"}
                 </span>
+                {(data.percentile ?? 0) >= 50 ? (
+                  <span className="text-xs opacity-80">
+                    Estimated missed upside: $80K–$160K/year
+                  </span>
+                ) : (
+                  <span className="text-xs opacity-80">
+                    Estimated preventable loss: $160K–$300K/year
+                  </span>
+                )}
               </div>
             ) : (
               !isBlocked && benchmarkLabel ? (
@@ -926,7 +954,7 @@ function ScanResultsContent() {
               <span className="font-semibold text-gray-300 group-hover:text-white transition-colors">
                 {scanCount.toLocaleString("en-US")}
               </span>
-              <span className="text-gray-500">revenue architectures scanned</span>
+              <span className="text-gray-500">Benchmarking against 500+ SaaS companies</span>
               <span className="text-cyan-500 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                 View index →
               </span>
@@ -937,6 +965,7 @@ function ScanResultsContent() {
         {/* Score breakdown: înainte de email doar zone + severitate; după email vizual complet */}
         <div className={`p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6 ${wideLayout ? "lg:p-8 lg:mb-8" : ""}`}>
           <p className="text-lg font-semibold text-white mb-1">Where you&apos;re losing revenue</p>
+          <p className="text-sm text-gray-400 mb-1">These issues are actively reducing your conversion rate</p>
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-5">Leak severity by area</p>
           {!unlocked ? (
             <ul className="space-y-3 text-sm text-gray-300">
@@ -1008,7 +1037,7 @@ function ScanResultsContent() {
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold mb-5 text-white max-w-xl mx-auto leading-snug">
-              You&apos;re losing ~$13K–$25K/month — we know exactly why
+              You&apos;re losing ~$13K–$25K/month — and it&apos;s fixable
             </h2>
             <p className="text-gray-400 mb-5 text-sm max-w-lg mx-auto leading-relaxed">
               We&apos;ve identified the exact pages and structural breaks causing this loss, and the order to fix them in —
@@ -1034,7 +1063,7 @@ function ScanResultsContent() {
               onClick={handleUnlock}
               className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
             >
-              Unlock my recovery plan →
+              Get my recovery plan →
             </button>
             <p className="text-xs text-gray-400 mt-4 max-w-md mx-auto text-center leading-relaxed">
               Email for instant unlock — see your leak, then choose a plan to recover revenue.
@@ -1097,7 +1126,7 @@ function ScanResultsContent() {
                   href="/pricing?from=scan&focus=recovery"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
-                  Unlock my recovery plan →
+                  Get my recovery plan →
                 </Link>
               </div>
             </div>
