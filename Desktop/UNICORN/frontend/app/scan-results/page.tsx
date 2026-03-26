@@ -1039,6 +1039,27 @@ function ScanResultsContent() {
           </div>
         )}
 
+        {/* Fallback: keep progression CTA visible even if backend financial payload is not available yet */}
+        {unlocked && showFinancialImpact && !financialImpact && !isBlocked && (
+          <div className="p-6 sm:p-8 bg-[#111827] rounded-xl border border-cyan-500/25 mb-8">
+            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
+              Recovery layer
+            </p>
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+              Your recovery plan is ready
+            </h3>
+            <p className="text-sm text-gray-400 mb-5 max-w-2xl">
+              We couldn&apos;t load the financial breakdown for this cached scan yet, but you can continue to the plan selection and unlock the page-by-page recovery workflow.
+            </p>
+            <Link
+              href="/pricing?from=scan&focus=recovery"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+            >
+              Show me how to recover this revenue →
+            </Link>
+          </div>
+        )}
+
         {/* Email Capture Modal */}
         {showEmailCapture && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
