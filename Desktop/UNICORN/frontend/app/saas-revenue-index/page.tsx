@@ -134,34 +134,38 @@ export default function SaaSRevenueIndex() {
 
         {/* Hero */}
         <div className="text-center mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            LIVE DATASET · Updated with every scan
-          </div>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
             SaaS Revenue Architecture Index
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            The first public benchmark of revenue-stage messaging alignment across SaaS companies.
-            Lower RII = stronger revenue architecture.
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-2">
+            Most SaaS companies are losing $120K–$300K/year from messaging gaps they don&apos;t see.
+          </p>
+          <p className="text-gray-500 text-sm max-w-2xl mx-auto">
+            This index shows how clearly each company&apos;s story supports revenue — so you can see where you stand.
           </p>
         </div>
 
         {/* Stats bar */}
         {s && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-            {[
-              { label: "Companies Analyzed", value: s.total_companies, color: "text-white" },
-              { label: "Average RII",         value: s.average_rii !== null ? s.average_rii.toFixed(1) : "—", color: "text-yellow-400" },
-              { label: "High Exposure",        value: s.high_exposure,     color: "text-red-400" },
-              { label: "Low Exposure",         value: s.low_exposure,      color: "text-green-400" },
-            ].map(stat => (
-              <div key={stat.label} className="rounded-xl bg-white/[0.03] border border-white/5 p-5 text-center">
-                <div className={`text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
-                <div className="text-xs text-gray-500">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
+              {[
+                { label: "Companies Analyzed", value: s.total_companies, color: "text-white" },
+                { label: "Average RII (lower = better)", value: s.average_rii !== null ? s.average_rii.toFixed(1) : "—", color: "text-yellow-400" },
+              ].map(stat => (
+                <div key={stat.label} className="rounded-xl bg-white/[0.03] border border-white/5 p-5 text-center">
+                  <div className={`text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
+                  <div className="text-xs text-gray-500">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs sm:text-sm text-gray-500 mb-10 max-w-3xl mx-auto text-center">
+              Companies in this dataset quietly lose an estimated
+              <span className="text-amber-300 font-semibold"> $8K–$25K/month</span>{" "}
+              from messaging gaps that never show up in dashboards.
+              Use this benchmark to understand how risky your own revenue architecture might be — then run your scan to see your exact exposure.
+            </p>
+          </>
         )}
 
         {/* ── Top 10 / Worst 10 ── */}
