@@ -209,7 +209,7 @@ function primarySignalDisplay(signal: string): { headline: string } {
   }
   if (s.includes("icp") || s.includes("clarity")) {
     return {
-      headline: "Your ICP story is weak — you're pulling in visitors who will never buy",
+      headline: "Your ICP is too broad — you're attracting visitors who will never convert",
     }
   }
   if (s.includes("alignment") || s.includes("messaging")) {
@@ -769,6 +769,18 @@ function ScanResultsContent() {
 
   const wideLayout = unlocked
 
+  const modeledMonthlyLossLabel = (() => {
+    if (!instantFinancials) return null
+    const low = Math.round(instantFinancials.arrAtRiskLow / 12)
+    const high = Math.round(instantFinancials.arrAtRiskHigh / 12)
+    return `${formatCurrency(low)}–${formatCurrency(high)}/month`
+  })()
+
+  const modeledAnnualLossLabel = (() => {
+    if (!instantFinancials) return null
+    return `${formatCurrency(instantFinancials.arrAtRiskLow)}–${formatCurrency(instantFinancials.arrAtRiskHigh)}/year`
+  })()
+
   return (
     <div className="min-h-screen bg-[#0B0F19] text-white">
       {/* Înainte de email: același header îngust ca landing-ul de rezultate. După email: lățime dashboard. */}
@@ -833,17 +845,17 @@ function ScanResultsContent() {
           {!wideLayout && !isBlocked && instantFinancials && (
             <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-orange-950/50 to-[#0d1320] border border-orange-500/30 text-left">
               <p className="text-lg font-semibold text-white leading-snug mb-2">
-                You&apos;re already losing revenue due to messaging misalignment
+                Your website is silently losing revenue right now
               </p>
               <p className="text-base text-orange-300 font-semibold">
-                Estimated impact: {formatCurrency(instantFinancials.arrAtRiskLow)}–{formatCurrency(instantFinancials.arrAtRiskHigh)}/year at risk
+                Estimated impact: {modeledAnnualLossLabel} at risk
               </p>
             </div>
           )}
           {!wideLayout && !isBlocked && !instantFinancials && (
             <div className="mb-6 p-4 rounded-xl bg-orange-950/30 border border-orange-500/20 text-left">
               <p className="text-lg font-semibold text-white leading-snug">
-                You&apos;re already losing revenue due to messaging misalignment
+                Your website is silently losing revenue right now
               </p>
               <p className="text-sm text-gray-400 mt-1">Loading model from your scan…</p>
             </div>
@@ -877,13 +889,13 @@ function ScanResultsContent() {
               <div className={`${wideLayout ? "text-left" : "text-center"}`}>
                 <p className="text-sm text-gray-300 font-medium">
                   {instantFinancials
-                    ? `Modeled impact: ~${formatCurrency(Math.round(instantFinancials.arrAtRiskLow / 12))}–${formatCurrency(Math.round(instantFinancials.arrAtRiskHigh / 12))}/month`
+                    ? `Modeled impact: ~${modeledMonthlyLossLabel}`
                     : "Companies at this level typically lose $8K–$25K/month"}
                 </p>
                 {typeof data.percentile === "number" && (
                   <p className="text-xs text-gray-500 mt-1">
                     {data.percentile >= 50
-                      ? `Top ${Math.round(data.percentile)}% of SaaS — but still below optimal revenue efficiency`
+                      ? `Better than ${Math.round(data.percentile)}% of SaaS — but still leaving significant revenue on the table`
                       : `You’re performing worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of similar SaaS companies`}
                   </p>
                 )}
@@ -924,9 +936,9 @@ function ScanResultsContent() {
                 </span>
                 {(data.percentile ?? 0) >= 50 ? (
                   <span className="text-xs opacity-80">
-                    Estimated missed upside:{" "}
+                    You're still missing{" "}
                     {instantFinancials
-                      ? `${formatCurrency(instantFinancials.recoveryLow)}–${formatCurrency(instantFinancials.recoveryHigh)}/year`
+                      ? `~${formatCurrency(instantFinancials.recoveryLow)}–${formatCurrency(instantFinancials.recoveryHigh)}/year`
                       : "$80K–$160K/year"}
                   </span>
                 ) : (
@@ -959,10 +971,9 @@ function ScanResultsContent() {
               className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 hover:border-cyan-500/30 hover:bg-white/[0.06] transition-all text-sm text-gray-500"
             >
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shrink-0" />
-              <span className="font-semibold text-gray-300 group-hover:text-white transition-colors">
-                {scanCount.toLocaleString("en-US")}
+              <span className="text-gray-300 group-hover:text-white transition-colors">
+                Benchmarked against 500+ SaaS companies
               </span>
-              <span className="text-gray-500">Benchmarking against 500+ SaaS companies</span>
               <span className="text-cyan-500 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                 View index →
               </span>
@@ -1045,7 +1056,7 @@ function ScanResultsContent() {
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold mb-5 text-white max-w-xl mx-auto leading-snug">
-              You&apos;re losing ~$13K–$25K/month — and it&apos;s fixable
+              You&apos;re losing {modeledMonthlyLossLabel ? `~${modeledMonthlyLossLabel}` : "~$13K–$25K/month"} — and it&apos;s fixable within weeks
             </h2>
             <p className="text-gray-400 mb-5 text-sm max-w-lg mx-auto leading-relaxed">
               We&apos;ve identified the exact pages and structural breaks causing this loss, and the order to fix them in —
@@ -1071,10 +1082,13 @@ function ScanResultsContent() {
               onClick={handleUnlock}
               className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
             >
-              Get my recovery plan →
+              Show me how to recover this revenue →
             </button>
             <p className="text-xs text-gray-400 mt-4 max-w-md mx-auto text-center leading-relaxed">
               Email for instant unlock — see your leak, then choose a plan to recover revenue.
+            </p>
+            <p className="text-xs text-gray-500 mt-2 max-w-md mx-auto text-center leading-relaxed">
+              Every week this stays unfixed, conversion typically drops further.
             </p>
             <p className="text-sm text-amber-200/90 mt-3 max-w-md mx-auto leading-relaxed font-medium text-center">
               Every month unfixed, loss compounds
@@ -1134,7 +1148,7 @@ function ScanResultsContent() {
                   href="/pricing?from=scan&focus=recovery"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
-                  Get my recovery plan →
+                  Show me how to recover this revenue →
                 </Link>
               </div>
             </div>
