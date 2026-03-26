@@ -3,6 +3,7 @@
 import { API_URL } from '@/lib/config'
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import RevenueSystemStatus from "./RevenueSystemStatus"
 import CumulativeExposureCard from "./CumulativeExposureCard"
 import StructuralRiskOverview from "./StructuralRiskOverview"
@@ -117,6 +118,7 @@ export default function MonitoringLayer({
   companyId,
   currentPlan = null
 }: MonitoringLayerProps) {
+  const router = useRouter()
 
   // Fetch forecast data for FinancialExposureCard
   const [forecast, setForecast] = useState<any>(null)
@@ -241,6 +243,92 @@ export default function MonitoringLayer({
     ? diagnostic.recommendations[0] 
     : null
 
+  // ── Calibrate & Rescan (post-activation) ────────────────────────────────────
+  const [calibrationArr, setCalibrationArr] = useState<string>("3-10M")
+  const [calibrationAcv, setCalibrationAcv] = useState<string>("5-15K")
+  const [calibrationCloseRate, setCalibrationCloseRate] = useState<string>("1-3%")
+  const [calibrationRescanning, setCalibrationRescanning] = useState(false)
+  const [calibrationError, setCalibrationError] = useState("")
+
+  const CALIBRATION_KEY = "vectrios_calibration_v1"
+  const arrOptions = ["<1M", "1-3M", "3-10M", "10-25M", "25-50M", "50-100M", "100M+"]
+  const acvOptions = ["<2K", "2-5K", "5-15K", "15-40K", "40-100K", "100K+"]
+  const closeRateOptions = ["<1%", "1-3%", "3-7%", "7-12%", "12%+"]
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(CALIBRATION_KEY) || localStorage.getItem(CALIBRATION_KEY)
+      if (!raw) return
+      const parsed = JSON.parse(raw)
+      if (parsed?.arr_range) setCalibrationArr(String(parsed.arr_range))
+      if (parsed?.acv_range) setCalibrationAcv(String(parsed.acv_range))
+      if (parsed?.close_rate_band) setCalibrationCloseRate(String(parsed.close_rate_band))
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
+  const readCurrentDomainFromStorage = (): string | null => {
+    try {
+      const raw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+      if (!raw) return null
+      const parsed = JSON.parse(raw) as { domain?: string; website_url?: string }
+      const domain = (parsed?.domain || parsed?.website_url || "").toString()
+      return domain.replace(/^https?:\/\//i, "").replace(/^www\./i, "").split("/")[0] || null
+    } catch {
+      return null
+    }
+  }
+
+  const saveCalibration = () => {
+    try {
+      const payload = {
+        arr_range: calibrationArr,
+        acv_range: calibrationAcv,
+        close_rate_band: calibrationCloseRate,
+        updated_at: new Date().toISOString(),
+      }
+      localStorage.setItem(CALIBRATION_KEY, JSON.stringify(payload))
+      sessionStorage.setItem(CALIBRATION_KEY, JSON.stringify(payload))
+    } catch {
+      /* ignore */
+    }
+  }
+
+  const handleCalibrateAndRescan = async () => {
+    setCalibrationError("")
+    saveCalibration()
+
+    const domain = readCurrentDomainFromStorage()
+    if (!domain) {
+      setCalibrationError("No domain found yet. Run a scan first, then calibrate.")
+      return
+    }
+
+    setCalibrationRescanning(true)
+    try {
+      const res = await fetch(`${API_URL}/scan`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: `https://${domain}`, force_refresh: true }),
+      })
+      if (!res.ok) {
+        const text = await res.text().catch(() => "")
+        throw new Error(text || `HTTP ${res.status}`)
+      }
+      const data = await res.json()
+      if (data?.scan_token) {
+        router.push(`/scan-results?token=${encodeURIComponent(data.scan_token)}`)
+        return
+      }
+      router.push("/scan-results")
+    } catch (e: any) {
+      setCalibrationError(`Rescan failed. ${e?.message ? String(e.message) : ""}`.trim())
+    } finally {
+      setCalibrationRescanning(false)
+    }
+  }
+
   return (
     <div className="space-y-6 lg:space-y-8">
       
@@ -282,6 +370,90 @@ export default function MonitoringLayer({
         )}
         <p className="text-xs text-gray-500 mt-2">{trendText}</p>
       </div>
+
+      {/* CALIBRATE & RESCAN — shown inside the package console (paid layer) */}
+      {!!currentPlan && (
+        <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-950/20 via-[#111827] to-[#0d1320] p-6 lg:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div>
+              <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
+                Calibrate & Rescan
+              </p>
+              <h3 className="text-xl lg:text-2xl font-bold text-white mb-2">
+                Tighten your impact model — then rescan
+              </h3>
+              <p className="text-sm text-gray-400 max-w-2xl">
+                Set your ARR/ACV/close-rate bands to make the recovery numbers precise for your business.
+              </p>
+            </div>
+            <div className="text-sm text-gray-400">
+              <span className="text-gray-500">Active package:</span>{" "}
+              <span className="text-white font-semibold">{currentPlan.toUpperCase()}</span>
+              {trialDays ? <span className="text-gray-500"> · Trial day {trialDays}</span> : null}
+            </div>
+          </div>
+
+          <div className="mt-6 grid md:grid-cols-3 gap-4">
+            <div className="rounded-xl border border-gray-800 bg-[#0f1626] p-4">
+              <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">ARR band</p>
+              <select
+                value={calibrationArr}
+                onChange={(e) => setCalibrationArr(e.target.value)}
+                className="w-full bg-[#0B0F19] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/40"
+                disabled={calibrationRescanning}
+              >
+                {arrOptions.map((o) => (
+                  <option key={o} value={o}>{o}</option>
+                ))}
+              </select>
+            </div>
+            <div className="rounded-xl border border-gray-800 bg-[#0f1626] p-4">
+              <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">ACV band</p>
+              <select
+                value={calibrationAcv}
+                onChange={(e) => setCalibrationAcv(e.target.value)}
+                className="w-full bg-[#0B0F19] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/40"
+                disabled={calibrationRescanning}
+              >
+                {acvOptions.map((o) => (
+                  <option key={o} value={o}>{o}</option>
+                ))}
+              </select>
+            </div>
+            <div className="rounded-xl border border-gray-800 bg-[#0f1626] p-4">
+              <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Close-rate band</p>
+              <select
+                value={calibrationCloseRate}
+                onChange={(e) => setCalibrationCloseRate(e.target.value)}
+                className="w-full bg-[#0B0F19] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/40"
+                disabled={calibrationRescanning}
+              >
+                {closeRateOptions.map((o) => (
+                  <option key={o} value={o}>{o}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {calibrationError && (
+            <p className="mt-4 text-sm text-red-400">{calibrationError}</p>
+          )}
+
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+            <p className="text-xs text-gray-500">
+              Saved to this account (local for now). We&apos;ll sync to backend next.
+            </p>
+            <button
+              type="button"
+              onClick={handleCalibrateAndRescan}
+              disabled={calibrationRescanning}
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition shadow-lg shadow-cyan-500/20"
+            >
+              {calibrationRescanning ? "Rescanning…" : "Rescan with calibration →"}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action */}
       {diagnostic && (

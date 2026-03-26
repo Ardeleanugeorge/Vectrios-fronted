@@ -231,14 +231,10 @@ export default function PricingPage() {
       router.replace("/login")
       return
     }
-    if (!hasCompletedRequiredOnboarding()) {
-      redirectToRequiredOnboarding({ type: "trial" })
-      return
-    }
     const companyId = await resolveCompanyId(token)
     if (!companyId) {
       setIsRouteTransitioning(true)
-      router.replace("/onboarding")
+      router.replace("/account")
       return
     }
 
@@ -269,14 +265,10 @@ export default function PricingPage() {
       router.replace("/login")
       return
     }
-    if (!hasCompletedRequiredOnboarding()) {
-      redirectToRequiredOnboarding({ type: "plan", planName, billingCycle })
-      return
-    }
     const companyId = await resolveCompanyId(token)
     if (!companyId) {
       setIsRouteTransitioning(true)
-      router.replace("/onboarding")
+      router.replace("/account")
       return
     }
 
@@ -348,10 +340,6 @@ export default function PricingPage() {
     const resume = params.get("resume")
     if (returnTo !== "pricing" || !resume) return
     if (!resumeArmed) {
-      setPreparingAutoResume(false)
-      return
-    }
-    if (!hasCompletedRequiredOnboarding()) {
       setPreparingAutoResume(false)
       return
     }
