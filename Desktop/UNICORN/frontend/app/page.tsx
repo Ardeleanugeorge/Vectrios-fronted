@@ -219,19 +219,19 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 pt-12 pb-16 md:pt-16 md:pb-20">
         <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-8 uppercase tracking-wider">
-            Continuous Revenue Monitoring
+            Revenue Loss Early Warning
           </div>
           <h1 className="text-4xl md:text-6xl text-white mb-6 font-bold leading-tight">
-            Monitor revenue risk before it hits pipeline.
+            Your website is already losing revenue.
             <br className="hidden md:block" />
-            <span className="text-cyan-400"> Detect drift weekly, not after missed targets.</span>
+            <span className="text-cyan-400"> You just don't see it yet.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto">
-            Vectri<span className="text-cyan-400">OS</span> monitors messaging drift over time and flags the moments your conversion story starts to slip.
+            Vectri<span className="text-cyan-400">OS</span> detects where your messaging starts breaking conversion —
+            and flags it before pipeline drops.
           </p>
           <p className="text-sm md:text-base text-amber-200/90 font-medium mb-10 max-w-2xl mx-auto">
-            Most B2B SaaS companies drift every 2–3 weeks without noticing — quietly reducing conversion quality and pipeline efficiency.
-            If you&apos;re not tracking this, it&apos;s already happening.
+            Most B2B SaaS companies lose $20K–$200K/year from small messaging gaps that never show up in dashboards.
           </p>
 
           {/* ── SCAN BOX ── */}
@@ -261,7 +261,7 @@ export default function Home() {
                     </svg>
                     Scanning…
                   </span>
-                ) : "Start monitoring"}
+                ) : "Scan my site → detect revenue risk"}
               </button>
             </div>
             {scanError && (
@@ -284,10 +284,10 @@ export default function Home() {
           )}
           <div className="text-xs sm:text-sm text-gray-400 mb-8 space-y-3 max-w-lg mx-auto">
             <p className="font-medium">
-              Takes 30 seconds · No signup · Clear risk baseline in one pass
+              Takes 30 seconds · No signup · Instant baseline
             </p>
             <p className="text-gray-500 leading-relaxed border-t border-gray-800/80 pt-3">
-              Used by SaaS teams to track narrative consistency and conversion risk over time
+              Get your baseline risk score, see where revenue leaks, then track drift weekly.
             </p>
           </div>
 
@@ -316,31 +316,35 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Pipeline friction rarely starts in dashboards.
+            Revenue problems don't start in dashboards.
           </h2>
           <p className="text-2xl text-cyan-400 font-semibold mb-8">
-            It starts in how your message lands with buyers.
+            They start in how your message lands with buyers.
           </p>
-          <p className="text-xl text-gray-300 mb-6">Revenue drift looks like this:</p>
+          <p className="text-xl text-gray-300 mb-6">It begins when:</p>
           <ul className="space-y-4 text-lg text-gray-400 mb-8 ml-6">
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-              You begin attracting lower-quality leads
+              You attract the wrong customers
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-              Buyers take longer to understand your value
+              Your value becomes harder to understand
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-              Deals stall before they should
+              Buyers hesitate instead of moving forward
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
+              Deals stall without a clear reason
             </li>
           </ul>
           <p className="text-lg text-gray-300 leading-relaxed mb-2">
-            This doesn&apos;t show up in dashboards. It compounds every week.
+            None of this triggers alerts. It quietly reduces conversion every week.
           </p>
           <p className="text-lg text-cyan-400 font-semibold mt-4">
-            Detect drift early — and protect conversion quality.
+            We detect it early — before it compounds.
           </p>
         </div>
       </section>
@@ -352,7 +356,7 @@ export default function Home() {
           <p className="text-center text-base md:text-lg font-semibold text-white mb-6 max-w-xl mx-auto leading-snug">
             Example:{" "}
             <span className="text-red-400">$287K</span> in revenue at risk —{" "}
-            <span className="text-gray-300 font-medium">the company didn&apos;t notice messaging drift for weeks</span>
+            <span className="text-gray-300 font-medium">messaging misalignment across pages and weak proof delaying decisions</span>
           </p>
           <p className="text-center text-sm md:text-base text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">
             → pipeline efficiency dropped silently.
@@ -446,22 +450,22 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Where revenue starts leaking</h2>
           <p className="text-lg text-gray-300 mb-8">
-            Revenue drift usually comes from one thing: your story stops landing consistently across the funnel.
+            Revenue leaks when your story stops landing consistently across the funnel.
           </p>
 
           <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
             <ul className="space-y-4 text-lg text-gray-300">
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-                You&apos;re telling one story
+                Your homepage targets one audience
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-                Your best buyers need another
+                Your pricing page speaks to another
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-                Wrong deals enter pipeline &rarr; close rates drop
+                Your proof doesn&apos;t justify the next step
               </li>
             </ul>
           </div>
@@ -496,14 +500,10 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Continuous revenue monitoring</h2>
           <p className="text-lg text-gray-300 mb-8">
-            Vectri<span className="text-cyan-400">OS</span> alerts you when drift starts — before it shows up in pipeline metrics.
+            Vectri<span className="text-cyan-400">OS</span> tracks drift — and alerts you when messaging stops converting.
           </p>
           <div className="p-6 bg-[#111827] rounded-lg border border-gray-800 mb-6">
             <ul className="space-y-4 text-lg text-gray-300">
-              <li className="flex items-start gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 shrink-0" />
-                Your messaging starts drifting
-              </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 shrink-0" />
                 Your ICP becomes less clear
@@ -511,6 +511,10 @@ export default function Home() {
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 shrink-0" />
                 Your positioning weakens
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 shrink-0" />
+                Your proof stops converting
               </li>
             </ul>
           </div>
@@ -547,16 +551,17 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 border-t border-gray-800">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            See your revenue risk now
+            Find where your revenue is leaking — before it compounds
           </h2>
           <p className="text-lg text-gray-300 mb-8">
-            Check your drift in 30 seconds. Get your baseline score and start tracking weekly.
+            Scan your site to create a baseline in 30 seconds.
+            Then track drift weekly so you catch problems while they&apos;re still small.
           </p>
           <Link
             href="/signup"
             className="inline-block px-12 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-lg"
           >
-            Check my drift →
+            Scan my site → detect revenue risk
           </Link>
           <div className="mt-4">
             <p className="text-sm text-gray-500">
