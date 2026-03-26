@@ -219,18 +219,18 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 md:py-28">
         <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-8 uppercase tracking-wider">
-            Revenue Architecture Scanner
+            Continuous Revenue Monitoring
           </div>
           <h1 className="text-4xl md:text-6xl text-white mb-6 font-bold leading-tight">
-            Most B2B sites are silently losing revenue.
+            Monitor revenue risk before it hits pipeline.
             <br className="hidden md:block" />
-            <span className="text-cyan-400"> We show you exactly where — and how much.</span>
+            <span className="text-cyan-400"> Detect drift weekly, not after missed targets.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto">
-            We analyze your site like a revenue system — and show exactly where you&apos;re losing deals and why they don&apos;t convert.
+            Vectri<span className="text-cyan-400">OS</span> tracks messaging changes over time and flags the moments your conversion story starts leaking revenue.
           </p>
           <p className="text-sm md:text-base text-amber-200/90 font-medium mb-10 max-w-2xl mx-auto">
-            Revenue loss compounds over time — most teams notice it too late.
+            Small positioning shifts compound fast when they go unchecked.
           </p>
 
           {/* ── SCAN BOX ── */}
@@ -260,13 +260,19 @@ export default function Home() {
                     </svg>
                     Scanning…
                   </span>
-                ) : "Run Free Scan"}
+                ) : "Start monitoring"}
               </button>
             </div>
             {scanError && (
               <p className="text-red-400 text-sm mt-2">{scanError}</p>
             )}
           </form>
+          <div className="mb-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-xs sm:text-sm text-amber-200">
+              <span className="font-semibold">Last 7 days:</span>
+              <span className="text-amber-300">+6 risk points</span>
+            </div>
+          </div>
           {scanning && (
             <div className="mb-4 text-xs text-cyan-300/80 flex flex-col items-center gap-1">
               <p>{scanPhases.current[scanPhase]}</p>
@@ -274,10 +280,10 @@ export default function Home() {
           )}
           <div className="text-xs sm:text-sm text-gray-400 mb-8 space-y-3 max-w-lg mx-auto">
             <p className="font-medium">
-              Takes 30 seconds · No signup · See your revenue risk instantly
+              Takes 30 seconds · No signup · Clear risk baseline in one pass
             </p>
             <p className="text-gray-500 leading-relaxed border-t border-gray-800/80 pt-3">
-              Used by revenue teams to catch hidden losses before they impact pipeline
+              Used by SaaS teams to track narrative consistency and conversion risk over time
             </p>
           </div>
 
@@ -306,10 +312,10 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Revenue problems rarely start in dashboards.
+            Pipeline friction rarely starts in dashboards.
           </h2>
           <p className="text-2xl text-cyan-400 font-semibold mb-8">
-            They start in messaging.
+            It starts in how your message lands with buyers.
           </p>
           <p className="text-xl text-gray-300 mb-6">It begins when:</p>
           <ul className="space-y-4 text-lg text-gray-400 mb-8 ml-6">
@@ -331,7 +337,7 @@ export default function Home() {
             </li>
           </ul>
           <p className="text-lg text-gray-300 leading-relaxed mb-2">
-            None of this trips a dashboard alert. It quietly drains pipeline efficiency.
+            Most of this does not trigger traditional analytics alerts, but it still degrades conversion quality.
           </p>
           <p className="text-lg text-cyan-400 font-semibold mt-4">
             See how Vectri<span className="text-cyan-400">OS</span> catches alignment drift before it hits your numbers.
@@ -346,7 +352,7 @@ export default function Home() {
           <p className="text-center text-base md:text-lg font-semibold text-white mb-6 max-w-xl mx-auto leading-snug">
             Example:{" "}
             <span className="text-red-400">$287K</span> in revenue at risk —{" "}
-            <span className="text-gray-300 font-medium">caused by messaging misalignment</span>
+            <span className="text-gray-300 font-medium">linked to structural messaging gaps</span>
           </p>
 
           {/* Mock Dashboard — ARR anchor overlay for “wow” */}
@@ -426,7 +432,7 @@ export default function Home() {
               <span className="text-amber-300">$20K–$200K</span> in hidden revenue loss.
             </p>
             <p className="text-sm text-gray-400 mt-2">
-              Real dollars left on the table — not a “content score.”
+              Financial exposure estimates, not vanity content metrics.
             </p>
           </div>
         </div>
@@ -437,7 +443,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">What we find that costs you revenue</h2>
           <p className="text-lg text-gray-300 mb-8">
-            We map your site like a revenue system — and flag where money leaks:
+            We map your site as a buyer decision journey and flag where message clarity breaks:
           </p>
 
           <div className="grid md:grid-cols-2 gap-4 mb-8">
@@ -467,9 +473,9 @@ export default function Home() {
           </div>
 
           <div className="p-6 bg-[#111827] rounded-lg border border-cyan-500/20">
-            <p className="text-lg text-gray-300">The output is not a content score.</p>
+            <p className="text-lg text-gray-300">The output is not a generic content grade.</p>
             <p className="text-lg text-cyan-400 font-semibold mt-1">
-              It is a quantified revenue-stage exposure signal.
+              It is a quantified view of revenue exposure.
             </p>
           </div>
         </div>
@@ -483,7 +489,7 @@ export default function Home() {
           </p>
           <h2 className="text-3xl font-bold mb-4">Messaging Translated to Revenue</h2>
           <p className="text-lg text-gray-300 mb-8">
-            When structural drift is detected, Vectri<span className="text-cyan-400">OS</span> estimates the financial impact:
+            When positioning drift is detected, Vectri<span className="text-cyan-400">OS</span> translates it into estimated financial impact:
           </p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
@@ -508,7 +514,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Continuous Revenue Monitoring</h2>
           <p className="text-lg text-gray-300 mb-8">
-            Vectri<span className="text-cyan-400">OS</span> monitors structural drift in your messaging and detects when alignment begins to degrade — before it shows up in quota attainment.
+            Vectri<span className="text-cyan-400">OS</span> tracks messaging drift and flags degradation before it appears in revenue performance.
           </p>
           <div className="grid md:grid-cols-2 gap-4 mb-8">
             {[
@@ -527,7 +533,7 @@ export default function Home() {
             ))}
           </div>
           <p className="text-lg text-gray-300 font-semibold">
-            Continuous monitoring transforms reactive optimization into proactive containment.
+            This keeps teams proactive instead of reacting after performance drops.
           </p>
         </div>
       </section>
@@ -573,19 +579,19 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 border-t border-gray-800">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Revenue compression compounds quietly.
+            Keep messaging risk under control before pipeline slows.
           </h2>
           <p className="text-lg text-gray-300 mb-8">
-            Monitor it before it surfaces in pipeline metrics.
+            Review weekly signals, detect regressions early, and act while impact is still small.
           </p>
           <Link
             href="/signup"
             className="inline-block px-12 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-lg"
           >
-            Find your revenue leaks →
+            Start monitoring →
           </Link>
           <p className="text-sm text-gray-500 mt-4">
-            Run your scan → find your revenue leaks · Takes 30 seconds · No credit card required
+            Start with one scan · Then track deltas weekly · No credit card required
           </p>
         </div>
       </section>
