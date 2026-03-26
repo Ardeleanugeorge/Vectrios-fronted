@@ -227,10 +227,10 @@ export default function Home() {
             <span className="text-cyan-400"> Detect drift weekly, not after missed targets.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto">
-            Vectri<span className="text-cyan-400">OS</span> tracks messaging changes over time and flags the moments your conversion story starts leaking revenue.
+            Vectri<span className="text-cyan-400">OS</span> monitors messaging drift over time and flags the moments your conversion story starts to slip.
           </p>
           <p className="text-sm md:text-base text-amber-200/90 font-medium mb-10 max-w-2xl mx-auto">
-            Small positioning shifts compound fast when they go unchecked.
+            Most B2B SaaS companies drift every 2–3 weeks without noticing — quietly reducing conversion quality and pipeline efficiency.
           </p>
 
           {/* ── SCAN BOX ── */}
@@ -317,30 +317,26 @@ export default function Home() {
           <p className="text-2xl text-cyan-400 font-semibold mb-8">
             It starts in how your message lands with buyers.
           </p>
-          <p className="text-xl text-gray-300 mb-6">It begins when:</p>
+          <p className="text-xl text-gray-300 mb-6">Revenue drift looks like this:</p>
           <ul className="space-y-4 text-lg text-gray-400 mb-8 ml-6">
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-              You&apos;re attracting the wrong customers
-            </li>
-            <li className="flex items-center gap-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-              Pricing sugar-coats the gap between price and perceived value
+              You begin attracting lower-quality leads
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-              Your value proposition gets fuzzy — buyers can&apos;t compare you clearly
+              Buyers take longer to understand your value
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-              Buyers don&apos;t see why they should choose you
+              Deals stall before they should
             </li>
           </ul>
           <p className="text-lg text-gray-300 leading-relaxed mb-2">
-            Most of this does not trigger traditional analytics alerts, but it still degrades conversion quality.
+            This doesn&apos;t show up in dashboards. It compounds every week.
           </p>
           <p className="text-lg text-cyan-400 font-semibold mt-4">
-            See how Vectri<span className="text-cyan-400">OS</span> catches alignment drift before it hits your numbers.
+            Detect drift early — and protect conversion quality.
           </p>
         </div>
       </section>
@@ -352,7 +348,10 @@ export default function Home() {
           <p className="text-center text-base md:text-lg font-semibold text-white mb-6 max-w-xl mx-auto leading-snug">
             Example:{" "}
             <span className="text-red-400">$287K</span> in revenue at risk —{" "}
-            <span className="text-gray-300 font-medium">linked to structural messaging gaps</span>
+            <span className="text-gray-300 font-medium">the company didn&apos;t notice messaging drift for weeks</span>
+          </p>
+          <p className="text-center text-sm md:text-base text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">
+            → pipeline efficiency dropped silently.
           </p>
 
           {/* Mock Dashboard — ARR anchor overlay for “wow” */}
@@ -441,41 +440,28 @@ export default function Home() {
       {/* ── 4. WHAT IT DOES ─────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">What we find that costs you revenue</h2>
+          <h2 className="text-3xl font-bold mb-4">Where revenue starts leaking</h2>
           <p className="text-lg text-gray-300 mb-8">
-            We map your site as a buyer decision journey and flag where message clarity breaks:
+            Revenue drift usually comes from one thing: your story stops landing consistently across the funnel.
           </p>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-8">
-            {[
-              {
-                title: "Your messaging doesn't match your target buyer",
-                desc: "You're telling one story — your best customers need another.",
-              },
-              {
-                title: "Your ideal buyer can't tell you're for them",
-                desc: "Weak signals mean unqualified calls and wasted pipeline.",
-              },
-              {
-                title: "What you charge doesn't match what you prove",
-                desc: "Price lands before value — deals stall or go to cheaper alternatives.",
-              },
-              {
-                title: "Buyers don't see a clear reason to act",
-                desc: "No urgency, no proof, no next step they trust — so they bounce.",
-              },
-            ].map(item => (
-              <div key={item.title} className="p-5 bg-[#111827] rounded-lg border border-gray-800">
-                <p className="text-cyan-400 font-semibold mb-1">{item.title}</p>
-                <p className="text-sm text-gray-400">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="p-6 bg-[#111827] rounded-lg border border-cyan-500/20">
-            <p className="text-lg text-gray-300">The output is not a generic content grade.</p>
-            <p className="text-lg text-cyan-400 font-semibold mt-1">
-              It is a quantified view of revenue exposure.
+          <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
+            <ul className="space-y-4 text-lg text-gray-300">
+              <li className="flex items-center gap-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                Your messaging doesn&apos;t match your best buyers
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                Your value is harder to understand
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                Your proof doesn&apos;t trigger action quickly
+              </li>
+            </ul>
+            <p className="text-sm text-gray-500 mt-4">
+              This isn&apos;t visible in traditional analytics. It affects conversion directly.
             </p>
           </div>
         </div>
@@ -484,18 +470,15 @@ export default function Home() {
       {/* ── 5. FINANCIAL FRAMING ────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
-          <p className="text-lg md:text-xl font-semibold text-cyan-400 mb-3">
-            We don&apos;t just detect issues — we quantify their impact.
-          </p>
-          <h2 className="text-3xl font-bold mb-4">Messaging Translated to Revenue</h2>
+          <h2 className="text-3xl font-bold mb-4">Messaging translated to revenue</h2>
           <p className="text-lg text-gray-300 mb-8">
-            When positioning drift is detected, Vectri<span className="text-cyan-400">OS</span> translates it into estimated financial impact:
+            Small drift changes deal flow. Even modest gaps can cost you $3K–$10K/month in lost efficiency.
           </p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
-              { metric: "Close-rate compression", desc: "Estimated % drop in conversion from current structural drift" },
-              { metric: "Monthly revenue exposure", desc: "Dollar value of ARR at risk based on your pipeline" },
-              { metric: "30-day cumulative impact", desc: "Compounding effect of unresolved messaging misalignment" },
+              { metric: "Lower clarity", desc: "Fewer qualified opportunities reach the next step" },
+              { metric: "Weak proof", desc: "Slower deals and lower conversion speed" },
+              { metric: "Misalignment", desc: "Lower close rates when buyers compare alternatives" },
             ].map(item => (
               <div key={item.metric} className="p-5 bg-[#111827] rounded-lg border border-gray-800">
                 <p className="text-cyan-400 font-semibold mb-2">{item.metric}</p>
@@ -503,38 +486,32 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <p className="text-lg text-gray-300 font-semibold">
-            Revenue teams act before performance degradation compounds.
-          </p>
         </div>
       </section>
 
       {/* ── 6. MONITORING LAYER ─────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">Continuous Revenue Monitoring</h2>
+          <h2 className="text-3xl font-bold mb-4">Continuous revenue monitoring</h2>
           <p className="text-lg text-gray-300 mb-8">
-            Vectri<span className="text-cyan-400">OS</span> tracks messaging drift and flags degradation before it appears in revenue performance.
+            Vectri<span className="text-cyan-400">OS</span> alerts you when drift starts — before it shows up in pipeline metrics.
           </p>
-          <div className="grid md:grid-cols-2 gap-4 mb-8">
-            {[
-              { label: "Drift Detection", desc: "Identifies when messaging architecture shifts away from revenue objectives" },
-              { label: "Volatility Tracking", desc: "Measures consistency of signals across messaging touchpoints" },
-              { label: "Revenue Risk Scoring", desc: "Quantifies exposure using the Revenue Impact Index (RII)" },
-              { label: "Impact Forecasting", desc: "Projects 12-month ARR trajectory based on current structural state" },
-            ].map(item => (
-              <div key={item.label} className="flex items-start gap-3 p-4 bg-[#111827] rounded-lg border border-gray-800">
-                <div className="w-2 h-2 rounded-full bg-cyan-400 mt-2 shrink-0" />
-                <div>
-                  <p className="text-white font-semibold">{item.label}</p>
-                  <p className="text-sm text-gray-400 mt-0.5">{item.desc}</p>
-                </div>
-              </div>
-            ))}
+          <div className="p-6 bg-[#111827] rounded-lg border border-gray-800 mb-6">
+            <ul className="space-y-4 text-lg text-gray-300">
+              <li className="flex items-start gap-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 shrink-0" />
+                Your messaging starts drifting
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 shrink-0" />
+                Your ICP becomes less clear
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 shrink-0" />
+                Your positioning weakens
+              </li>
+            </ul>
           </div>
-          <p className="text-lg text-gray-300 font-semibold">
-            This keeps teams proactive instead of reacting after performance drops.
-          </p>
         </div>
       </section>
 
@@ -542,24 +519,13 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-8">Built For</h2>
-          <div className="grid md:grid-cols-2 gap-6 mb-10">
+          <div className="grid md:grid-cols-1 gap-6 mb-10">
             <div>
               <p className="text-lg text-gray-300 mb-4 font-semibold text-cyan-400">Built for:</p>
               <ul className="space-y-3 text-lg text-gray-300">
-                {["B2B SaaS companies", "CROs", "Revenue Operations", "Growth Leaders managing pipeline efficiency"].map(r => (
+                {["B2B SaaS companies", "CROs responsible for pipeline performance", "Revenue teams protecting conversion quality", "Operators tracking consistency week over week"].map(r => (
                   <li key={r} className="flex items-center gap-3">
                     <span className="text-cyan-400">✓</span>
-                    {r}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-lg text-gray-300 mb-4 font-semibold text-gray-500">Not built for:</p>
-              <ul className="space-y-3 text-lg text-gray-500">
-                {["Content generation", "Traffic experimentation", "Engagement analytics"].map(r => (
-                  <li key={r} className="flex items-center gap-3">
-                    <span className="text-gray-600">✕</span>
                     {r}
                   </li>
                 ))}
@@ -579,10 +545,10 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 border-t border-gray-800">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Keep messaging risk under control before pipeline slows.
+            Start monitoring before revenue slips
           </h2>
           <p className="text-lg text-gray-300 mb-8">
-            Review weekly signals, detect regressions early, and act while impact is still small.
+            Detect drift early. Fix it before it compounds.
           </p>
           <Link
             href="/signup"
