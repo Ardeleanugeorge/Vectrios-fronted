@@ -318,131 +318,6 @@ export default function MonitoringLayer({
     ? diagnostic.recommendations[0] 
     : null
 
-  // ── Calibrate & Rescan (post-activation) ────────────────────────────────────
-  const [calibrationArr, setCalibrationArr] = useState<string>("3-10M")
-  const [calibrationAcv, setCalibrationAcv] = useState<string>("5-15K")
-  const [calibrationCloseRate, setCalibrationCloseRate] = useState<string>("1-3%")
-  const [calibrationRescanning, setCalibrationRescanning] = useState(false)
-  const [calibrationError, setCalibrationError] = useState("")
-
-  const CALIBRATION_KEY = "vectrios_calibration_v1"
-  const arrOptions = ["<1M", "1-3M", "3-10M", "10-25M", "25-50M", "50-100M", "100M+"]
-  const acvOptions = ["<2K", "2-5K", "5-15K", "15-40K", "40-100K", "100K+"]
-  const closeRateOptions = ["<1%", "1-3%", "3-7%", "7-12%", "12%+"]
-
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(CALIBRATION_KEY) || localStorage.getItem(CALIBRATION_KEY)
-      if (!raw) return
-      const parsed = JSON.parse(raw)
-      if (parsed?.arr_range) setCalibrationArr(String(parsed.arr_range))
-      if (parsed?.acv_range) setCalibrationAcv(String(parsed.acv_range))
-      if (parsed?.close_rate_band) setCalibrationCloseRate(String(parsed.close_rate_band))
-    } catch {
-      /* ignore */
-    }
-  }, [])
-
-  const readCurrentDomainFromStorage = (): string | null => {
-    try {
-      const raw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
-      if (!raw) return null
-      const parsed = JSON.parse(raw) as { domain?: string; website_url?: string }
-      const domain = (parsed?.domain || parsed?.website_url || "").toString()
-      return domain.replace(/^https?:\/\//i, "").replace(/^www\./i, "").split("/")[0] || null
-    } catch {
-      return null
-    }
-  }
-
-  const saveCalibration = () => {
-    try {
-      const payload = {
-        arr_range: calibrationArr,
-        acv_range: calibrationAcv,
-        close_rate_band: calibrationCloseRate,
-        updated_at: new Date().toISOString(),
-      }
-      localStorage.setItem(CALIBRATION_KEY, JSON.stringify(payload))
-      sessionStorage.setItem(CALIBRATION_KEY, JSON.stringify(payload))
-    } catch {
-      /* ignore */
-    }
-  }
-
-  const handleCalibrateAndRescan = async () => {
-    setCalibrationError("")
-    saveCalibration()
-
-    const domain = readCurrentDomainFromStorage()
-    if (!domain) {
-      setCalibrationError("No domain found yet. Run a scan first, then calibrate.")
-      return
-    }
-
-    setCalibrationRescanning(true)
-    try {
-      const res = await fetch(`${API_URL}/scan`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: `https://${domain}`,
-          force_refresh: true,
-          arr_range: calibrationArr,
-          acv_range: calibrationAcv,
-        }),
-      })
-      if (!res.ok) {
-        const text = await res.text().catch(() => "")
-        throw new Error(text || `HTTP ${res.status}`)
-      }
-      const data = await res.json()
-      try {
-        // Keep scan token/domain aligned for the current company context.
-        const scanData = {
-          domain: data?.domain || domain,
-          website_url: data?.domain ? `https://${data.domain}` : `https://${domain}`,
-          inferred_icp: data?.inferred_icp || "",
-          pages_scanned: data?.pages_scanned || 0,
-          prefill_created_at: Date.now(),
-          scan_token: data?.scan_token || "",
-        }
-        sessionStorage.setItem("scan_data", JSON.stringify(scanData))
-        localStorage.setItem("scan_data", JSON.stringify(scanData))
-
-        // Refresh dashboard metrics from latest scan (partial diagnostic source).
-        const partialDiagnostic = {
-          risk_level: data?.risk_level || "MODERATE",
-          risk_score: data?.rii ?? null,
-          alignment_score: data?.alignment ?? null,
-          anchor_density_score: data?.anchor_density ?? null,
-          icp_clarity_score: data?.icp_clarity ?? null,
-          positioning_coherence_score: data?.positioning ?? null,
-          confidence: data?.confidence ?? null,
-          inferred_icp: data?.inferred_icp || "",
-          primary_signal: data?.primary_signal || "",
-          pages_scanned: data?.pages_scanned || 0,
-          is_partial: true,
-          source: "instant_scan",
-          scan_token: data?.scan_token || null,
-        }
-        sessionStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
-        localStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
-      } catch {
-        // ignore persistence issues
-      }
-
-      // Stay in package console and refresh in place (no jump back to scan-results).
-      const next = data?.scan_token
-        ? `/dashboard?governance=activated&token=${encodeURIComponent(data.scan_token)}&calibrated=1`
-        : "/dashboard?governance=activated&calibrated=1"
-      window.location.assign(next)
-    } catch (e: any) {
-      setCalibrationError(`Rescan failed. ${e?.message ? String(e.message) : ""}`.trim())
-    } finally {
-      setCalibrationRescanning(false)
-    }
-  }
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -486,19 +361,19 @@ export default function MonitoringLayer({
         <p className="text-xs text-gray-500 mt-2">{trendText}</p>
       </div>
 
-      {/* CALIBRATE & RESCAN — shown inside the package console (paid layer) */}
+      {/* MANUAL MONITORING RUN */}
       {!!currentPlan && (
         <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-950/20 via-[#111827] to-[#0d1320] p-6 lg:p-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
               <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
-                Calibrate & Rescan
+                Monitoring Cycle
               </p>
               <h3 className="text-xl lg:text-2xl font-bold text-white mb-2">
-                Tighten your impact model — then rescan
+                Run monitoring on demand
               </h3>
               <p className="text-sm text-gray-400 max-w-2xl">
-                Set your ARR/ACV/close-rate bands to make the recovery numbers precise for your business.
+                Run on demand with guardrails: cooldown by plan + 1 emergency override/day + queue when early.
               </p>
             </div>
             <div className="text-sm text-gray-400">
@@ -507,78 +382,11 @@ export default function MonitoringLayer({
               {trialDays ? <span className="text-gray-500"> · Trial day {trialDays}</span> : null}
             </div>
           </div>
-
-          <div className="mt-6 grid md:grid-cols-3 gap-4">
-            <div className="rounded-xl border border-gray-800 bg-[#0f1626] p-4">
-              <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">ARR band</p>
-              <select
-                value={calibrationArr}
-                onChange={(e) => setCalibrationArr(e.target.value)}
-                className="w-full bg-[#0B0F19] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/40"
-                disabled={calibrationRescanning}
-              >
-                {arrOptions.map((o) => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
-            </div>
-            <div className="rounded-xl border border-gray-800 bg-[#0f1626] p-4">
-              <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">ACV band</p>
-              <select
-                value={calibrationAcv}
-                onChange={(e) => setCalibrationAcv(e.target.value)}
-                className="w-full bg-[#0B0F19] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/40"
-                disabled={calibrationRescanning}
-              >
-                {acvOptions.map((o) => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
-            </div>
-            <div className="rounded-xl border border-gray-800 bg-[#0f1626] p-4">
-              <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Close-rate band</p>
-              <select
-                value={calibrationCloseRate}
-                onChange={(e) => setCalibrationCloseRate(e.target.value)}
-                className="w-full bg-[#0B0F19] border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/40"
-                disabled={calibrationRescanning}
-              >
-                {closeRateOptions.map((o) => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {calibrationError && (
-            <p className="mt-4 text-sm text-red-400">{calibrationError}</p>
-          )}
-
-          <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-            <p className="text-xs text-gray-500">
-              Saved to this account (local for now). We&apos;ll sync to backend next.
-            </p>
-            <button
-              type="button"
-              onClick={handleCalibrateAndRescan}
-              disabled={calibrationRescanning}
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition shadow-lg shadow-cyan-500/20"
-            >
-              {calibrationRescanning ? "Rescanning…" : "Rescan with calibration →"}
-            </button>
-          </div>
-          <p className="mt-3 text-xs text-gray-500">
-            Calibration updates the financial model ($ impact ranges). RII is structural and usually changes only when website messaging changes.
-          </p>
-
-          <div className="mt-5 pt-5 border-t border-gray-800/80">
+          <div className="mt-6 pt-5 border-t border-gray-800/80">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-1">Monitoring Cycle</p>
-                <p className="text-xs text-gray-500">
-                  Run on demand with guardrails: cooldown by plan + 1 emergency override/day + queue when early.
-                </p>
-              </div>
+              <p className="text-xs text-gray-500">
+                Manual runs are rate-limited by plan to keep monitoring signal quality stable.
+              </p>
               <button
                 type="button"
                 onClick={handleRunMonitoringNow}
