@@ -1,6 +1,7 @@
 "use client"
 
 import { API_URL } from '@/lib/config'
+import { isScanUnlockedWithEmail } from "@/lib/scanResultsRefine"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -182,6 +183,78 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const planLabel = planDisplay?.label ?? null
   const planColorClass = planDisplay ? (PLAN_COLORS[planDisplay.colorKey] || PLAN_COLORS.starter) : ""
 
+  const readPreferredScanToken = (): string | null => {
+    try {
+      const tokenCandidates: string[] = []
+      const pushToken = (value: unknown) => {
+        const t = typeof value === "string" ? value.trim() : ""
+        if (t && !tokenCandidates.includes(t)) tokenCandidates.push(t)
+      }
+      const readJson = (raw: string | null) => {
+        if (!raw) return null
+        try {
+          return JSON.parse(raw) as { scan_token?: string }
+        } catch {
+          return null
+        }
+      }
+      const diagFull =
+        readJson(sessionStorage.getItem("diagnostic_result_full")) ||
+        readJson(localStorage.getItem("diagnostic_result_full"))
+      const diagPartial =
+        readJson(sessionStorage.getItem("diagnostic_result")) ||
+        readJson(localStorage.getItem("diagnostic_result"))
+      const scanData =
+        readJson(sessionStorage.getItem("scan_data")) ||
+        readJson(localStorage.getItem("scan_data"))
+      pushToken(diagFull?.scan_token)
+      pushToken(diagPartial?.scan_token)
+      pushToken(scanData?.scan_token)
+      return tokenCandidates.find((t) => isScanUnlockedWithEmail(t)) || tokenCandidates[0] || null
+    } catch {
+      return null
+    }
+  }
+
+  const handleSmartDashboard = async () => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) {
+      router.push("/login")
+      return
+    }
+    const activeToken = readPreferredScanToken()
+    const companyId = user?.company_id || null
+    try {
+      if (companyId) {
+        const qs = activeToken ? `?scan_token=${encodeURIComponent(activeToken)}` : ""
+        const res = await fetch(`${API_URL}/monitoring/status/${companyId}${qs}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (res.ok) {
+          const status = await res.json()
+          if (status?.monitoring_active) {
+            const dashQs = new URLSearchParams()
+            dashQs.set("governance", "activated")
+            if (activeToken) dashQs.set("token", activeToken)
+            router.push(`/dashboard?${dashQs.toString()}`)
+            setShowMenu(false)
+            return
+          }
+        }
+      }
+      if (activeToken) {
+        router.push(`/scan-results?token=${encodeURIComponent(activeToken)}`)
+        setShowMenu(false)
+        return
+      }
+      router.push("/dashboard")
+      setShowMenu(false)
+    } catch {
+      router.push("/dashboard")
+      setShowMenu(false)
+    }
+  }
+
   return (
     <header className="border-b border-gray-800 bg-[#0B0F19] sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-6 py-4">
@@ -243,6 +316,13 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                       </span>
                     )}
                   </div>
+
+                  <button
+                    onClick={handleSmartDashboard}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition"
+                  >
+                    Dashboard
+                  </button>
 
                   <Link
                     href="/account"
