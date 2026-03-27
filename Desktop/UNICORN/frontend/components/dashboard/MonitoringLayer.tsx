@@ -120,11 +120,6 @@ export default function MonitoringLayer({
   currentPlan = null
 }: MonitoringLayerProps) {
   const router = useRouter()
-  const MANUAL_RESCAN_COOLDOWN_HOURS = 6
-  const [manualRescanLoading, setManualRescanLoading] = useState(false)
-  const [manualRescanError, setManualRescanError] = useState("")
-  const [manualRescanSuccess, setManualRescanSuccess] = useState("")
-  const [cooldownTick, setCooldownTick] = useState(0)
 
   // Fetch forecast data for FinancialExposureCard
   const [forecast, setForecast] = useState<any>(null)
@@ -201,75 +196,6 @@ export default function MonitoringLayer({
   const improvementsDetected =
     typeof riskDelta === "number" && riskDelta < 0 ? Math.max(1, Math.round(Math.abs(riskDelta))) : (uiState === "low" ? 2 : 0)
 
-  useEffect(() => {
-    const timer = setInterval(() => setCooldownTick((v) => v + 1), 1000)
-    return () => clearInterval(timer)
-  }, [])
-
-  const cooldownSecondsRemaining = (() => {
-    void cooldownTick
-    const last = monitoringStatus.last_evaluated_at || monitoringStatus.created_at
-    if (!last) return 0
-    const lastMs = new Date(last).getTime()
-    if (!Number.isFinite(lastMs)) return 0
-    const cooldownMs = MANUAL_RESCAN_COOLDOWN_HOURS * 60 * 60 * 1000
-    const remainingMs = lastMs + cooldownMs - Date.now()
-    return remainingMs > 0 ? Math.ceil(remainingMs / 1000) : 0
-  })()
-
-  const formatRemaining = (seconds: number): string => {
-    const h = Math.floor(seconds / 3600)
-    const m = Math.floor((seconds % 3600) / 60)
-    if (h > 0) return `${h}h ${m}m`
-    const s = Math.max(0, seconds % 60)
-    return `${m}m ${s}s`
-  }
-
-  const handleRunMonitoringNow = async () => {
-    if (!companyId || manualRescanLoading) return
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) return
-    setManualRescanError("")
-    setManualRescanSuccess("")
-    setManualRescanLoading(true)
-    try {
-      const response = await fetch(`${API_URL}/monitoring/rescan/${companyId}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      const payload = await response.json().catch(() => null)
-      if (!response.ok) {
-        const detail = payload?.detail
-        setManualRescanError(
-          typeof detail === "string"
-            ? detail
-            : detail?.message || "Failed to run monitoring cycle."
-        )
-        return
-      }
-      if (payload?.status === "queued") {
-        const wait = Number(payload?.retry_after_seconds || 0)
-        setManualRescanSuccess(
-          wait > 0
-            ? `Queued. Next automatic run in ${formatRemaining(wait)}.`
-            : "Queued. It will run in the next allowed window."
-        )
-      } else if (payload?.source === "emergency") {
-        setManualRescanSuccess("Emergency monitoring rescan completed. Refreshing metrics...")
-        router.refresh()
-        setTimeout(() => window.location.reload(), 500)
-      } else {
-        setManualRescanSuccess("Monitoring cycle completed. Refreshing metrics...")
-        router.refresh()
-        setTimeout(() => window.location.reload(), 500)
-      }
-    } catch {
-      setManualRescanError("Network error while running monitoring cycle.")
-    } finally {
-      setManualRescanLoading(false)
-    }
-  }
-  
   // Extract and simplify primary risk driver from recommendations or diagnostic
   const simplifyRiskDriver = (text: string): string => {
     if (!text) return "Messaging Architecture Misalignment"
@@ -367,13 +293,13 @@ export default function MonitoringLayer({
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
               <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
-                Monitoring Cycle
+                Daily Automatic Revenue Monitoring
               </p>
               <h3 className="text-xl lg:text-2xl font-bold text-white mb-2">
-                Run monitoring on demand
+                We monitor your revenue structure continuously
               </h3>
               <p className="text-sm text-gray-400 max-w-2xl">
-                Run on demand with guardrails: cooldown by plan + 1 emergency override/day + queue when early.
+                Continuous 24-hour scans keep your signal fresh and surface structural drift automatically.
               </p>
             </div>
             <div className="text-sm text-gray-400">
@@ -383,25 +309,9 @@ export default function MonitoringLayer({
             </div>
           </div>
           <div className="mt-6 pt-5 border-t border-gray-800/80">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <p className="text-xs text-gray-500">
-                Manual runs are rate-limited by plan to keep monitoring signal quality stable.
-              </p>
-              <button
-                type="button"
-                onClick={handleRunMonitoringNow}
-                disabled={manualRescanLoading || !companyId}
-                className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition shadow-lg shadow-emerald-500/20"
-              >
-                {manualRescanLoading
-                  ? "Running monitoring..."
-                  : cooldownSecondsRemaining > 0
-                    ? `Queue run (${formatRemaining(cooldownSecondsRemaining)})`
-                    : "Run monitoring now →"}
-              </button>
-            </div>
-            {manualRescanError && <p className="mt-2 text-xs text-red-400">{manualRescanError}</p>}
-            {manualRescanSuccess && <p className="mt-2 text-xs text-emerald-300">{manualRescanSuccess}</p>}
+            <p className="text-xs text-gray-500">
+              Manual trigger is disabled. Monitoring runs automatically every 24 hours.
+            </p>
           </div>
         </div>
       )}
