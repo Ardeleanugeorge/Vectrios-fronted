@@ -25,7 +25,12 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true)
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [companyId, setCompanyId] = useState<string | null>(null)
-  const [user, setUser] = useState<{ email?: string; company_name?: string } | null>(null)
+  const [user, setUser] = useState<{ email?: string; company_name?: string; company_id?: string } | null>(null)
+  const [profileEmail, setProfileEmail] = useState("")
+  const [profileCompanyName, setProfileCompanyName] = useState("")
+  const [profileLoading, setProfileLoading] = useState(false)
+  const [profileError, setProfileError] = useState("")
+  const [profileSuccess, setProfileSuccess] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [passwordLoading, setPasswordLoading] = useState(false)
@@ -46,6 +51,8 @@ export default function AccountPage() {
       try {
         const parsed = JSON.parse(userData)
         setUser(parsed)
+        setProfileEmail(parsed?.email || "")
+        setProfileCompanyName(parsed?.company_name || "")
         if (parsed.company_id) {
           setCompanyId(parsed.company_id)
           loadSubscription(token, parsed.company_id)
@@ -55,7 +62,34 @@ export default function AccountPage() {
       }
     }
 
-    setLoading(false)
+    ;(async () => {
+      try {
+        const profileRes = await fetch(`${API_URL}/account/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (profileRes.ok) {
+          const profile = await profileRes.json()
+          const nextUser = {
+            email: profile?.email || "",
+            company_name: profile?.company_name || "",
+            company_id: profile?.company_id || null,
+          }
+          setUser(nextUser)
+          setProfileEmail(nextUser.email || "")
+          setProfileCompanyName(nextUser.company_name || "")
+          localStorage.setItem("user_data", JSON.stringify(nextUser))
+          sessionStorage.setItem("user_data", JSON.stringify(nextUser))
+          if (nextUser.company_id) {
+            setCompanyId(nextUser.company_id)
+            loadSubscription(token, nextUser.company_id)
+          }
+        }
+      } catch {
+        /* keep local profile fallback */
+      } finally {
+        setLoading(false)
+      }
+    })()
   }, [router])
 
   useEffect(() => {
@@ -130,6 +164,50 @@ export default function AccountPage() {
     router.push("/login")
   }
 
+  const handleProfileSave = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setProfileError("")
+    setProfileSuccess("")
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) {
+      router.push("/login")
+      return
+    }
+    setProfileLoading(true)
+    try {
+      const res = await fetch(`${API_URL}/account/profile`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          email: profileEmail.trim(),
+          company_name: profileCompanyName.trim(),
+        }),
+      })
+      const payload = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setProfileError(payload?.detail || "Could not update profile.")
+        return
+      }
+      const nextProfile = payload?.profile || {}
+      const nextUser = {
+        email: nextProfile.email || profileEmail.trim(),
+        company_name: nextProfile.company_name || profileCompanyName.trim(),
+        company_id: nextProfile.company_id || user?.company_id || null,
+      }
+      setUser(nextUser)
+      localStorage.setItem("user_data", JSON.stringify(nextUser))
+      sessionStorage.setItem("user_data", JSON.stringify(nextUser))
+      setProfileSuccess("Profile updated successfully.")
+    } catch {
+      setProfileError("Network error while updating profile.")
+    } finally {
+      setProfileLoading(false)
+    }
+  }
+
   const handleGoBack = () => {
     if (typeof window !== "undefined" && window.history.length > 1) {
       router.back()
@@ -182,16 +260,41 @@ export default function AccountPage() {
           {/* Profile Section */}
           <div className="p-8 bg-[#111827] rounded-lg border border-gray-800 mb-6">
             <h2 className="text-xl font-bold mb-6">Profile</h2>
-            <div className="grid md:grid-cols-2 gap-6">
+            <form onSubmit={handleProfileSave} className="grid md:grid-cols-2 gap-6">
               <div>
-                <div className="text-sm text-gray-400 mb-1">Email</div>
-                <div className="text-lg font-medium text-white break-all">{user?.email || "—"}</div>
+                <label className="block text-sm text-gray-400 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={profileEmail}
+                  onChange={(e) => setProfileEmail(e.target.value)}
+                  className="w-full rounded-lg border border-gray-700 bg-[#0B0F19] px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
+                  required
+                  disabled={profileLoading}
+                />
               </div>
               <div>
-                <div className="text-sm text-gray-400 mb-1">Company</div>
-                <div className="text-lg font-medium text-white">{user?.company_name || "—"}</div>
+                <label className="block text-sm text-gray-400 mb-1">Company name</label>
+                <input
+                  type="text"
+                  value={profileCompanyName}
+                  onChange={(e) => setProfileCompanyName(e.target.value)}
+                  className="w-full rounded-lg border border-gray-700 bg-[#0B0F19] px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
+                  required
+                  disabled={profileLoading}
+                />
               </div>
-            </div>
+              <div className="md:col-span-2 flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={profileLoading}
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold transition"
+                >
+                  {profileLoading ? "Saving..." : "Save profile"}
+                </button>
+                {profileError && <p className="text-sm text-red-400">{profileError}</p>}
+                {profileSuccess && <p className="text-sm text-emerald-300">{profileSuccess}</p>}
+              </div>
+            </form>
           </div>
 
           {/* Subscription Section */}
@@ -285,6 +388,30 @@ export default function AccountPage() {
                 {passwordLoading ? "Updating..." : "Change password"}
               </button>
             </form>
+          </div>
+
+          {/* Billing & Payment Section */}
+          <div className="p-8 bg-[#111827] rounded-lg border border-gray-800 mb-6">
+            <h2 className="text-xl font-bold mb-6">Billing & Payment</h2>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                href="/pricing"
+                className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-bold transition"
+              >
+                Manage plan
+              </Link>
+              <button
+                type="button"
+                disabled
+                className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-gray-800 text-gray-500 cursor-not-allowed"
+                title="Coming soon with Stripe Billing Portal integration"
+              >
+                Payment method (coming soon)
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-3">
+              Stripe billing portal integration will enable card updates, invoices, and cancellation controls.
+            </p>
           </div>
 
           {/* Features Section */}
