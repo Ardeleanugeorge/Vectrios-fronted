@@ -175,32 +175,55 @@ export default function AccountPage() {
     }
     setProfileLoading(true)
     try {
-      const res = await fetch(`${API_URL}/account/profile`, {
+      const trimmedEmail = profileEmail.trim().toLowerCase()
+      const currentEmail = (user?.email || "").trim().toLowerCase()
+      const emailChanged = !!trimmedEmail && trimmedEmail !== currentEmail
+
+      if (emailChanged) {
+        const emailRes = await fetch(`${API_URL}/account/email-change-request`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ new_email: trimmedEmail }),
+        })
+        const emailPayload = await emailRes.json().catch(() => ({}))
+        if (!emailRes.ok) {
+          setProfileError(emailPayload?.detail || "Could not request email verification.")
+          return
+        }
+        setProfileSuccess("Verification link sent to new email. Confirm it to complete email change.")
+      }
+
+      const companyRes = await fetch(`${API_URL}/account/profile`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          email: profileEmail.trim(),
           company_name: profileCompanyName.trim(),
         }),
       })
-      const payload = await res.json().catch(() => ({}))
-      if (!res.ok) {
-        setProfileError(payload?.detail || "Could not update profile.")
+      const companyPayload = await companyRes.json().catch(() => ({}))
+      if (!companyRes.ok) {
+        setProfileError(companyPayload?.detail || "Could not update profile.")
         return
       }
-      const nextProfile = payload?.profile || {}
+      const nextProfile = companyPayload?.profile || {}
       const nextUser = {
-        email: nextProfile.email || profileEmail.trim(),
+        email: nextProfile.email || user?.email || "",
         company_name: nextProfile.company_name || profileCompanyName.trim(),
         company_id: nextProfile.company_id || user?.company_id || null,
       }
       setUser(nextUser)
+      setProfileEmail(nextUser.email || "")
       localStorage.setItem("user_data", JSON.stringify(nextUser))
       sessionStorage.setItem("user_data", JSON.stringify(nextUser))
-      setProfileSuccess("Profile updated successfully.")
+      if (!emailChanged) {
+        setProfileSuccess("Profile updated successfully.")
+      }
     } catch {
       setProfileError("Network error while updating profile.")
     } finally {
