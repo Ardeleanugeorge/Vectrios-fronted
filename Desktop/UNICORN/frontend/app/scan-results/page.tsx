@@ -952,17 +952,26 @@ function ScanResultsContent() {
               return (
                 <>
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight mb-3 text-center lg:text-left max-w-4xl">
-                    Your revenue loss comes from 3 specific breakdowns
+                    You&apos;re losing ~{formatCurrency(mLow)}–{formatCurrency(mHigh)}/month
                   </h3>
                   <p className="text-sm text-gray-400 mb-6 max-w-3xl text-center lg:text-left">
-                    Current modeled loss baseline: ~{formatCurrency(mLow)}–{formatCurrency(mHigh)}/month. This is where it concentrates.
+                    Modeled from your messaging structure and benchmark vs 500+ SaaS companies.
                   </p>
 
                   <div className="grid lg:grid-cols-12 gap-6 mb-8">
                     <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-[#0f1626] border border-gray-700/70">
-                      <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-3">
-                        Where your revenue is leaking most
+                      <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-3">Where your revenue is leaking most</p>
+                      <p className="text-xs text-gray-400 mb-3">
+                        This loss is not visible in your dashboard. It appears as slower deal cycles, lower close rates, and unqualified pipeline.
                       </p>
+                      <div className="rounded-lg border border-white/10 bg-white/[0.02] p-3 mb-3">
+                        <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Why this is happening</p>
+                        <ul className="space-y-1.5 text-xs text-gray-300">
+                          <li>Your ICP is too broad -&gt; wrong buyers enter funnel</li>
+                          <li>Proof is not strong at decision stage</li>
+                          <li>Messaging shifts across key pages</li>
+                        </ul>
+                      </div>
                       <div className="space-y-3">
                         {drivers.map((d: any, idx: number) => (
                           <div key={String(d.key || d.title)} className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
@@ -1004,6 +1013,9 @@ function ScanResultsContent() {
                               ~{formatCurrency(Number(drivers[0]?.monthly_low || 0))}–{formatCurrency(Number(drivers[0]?.monthly_high || 0))}/month
                             </p>
                           </div>
+                          <p className="text-xs text-gray-500 mt-3">
+                            Companies at your level typically recover ~{formatCurrency(financialImpact.recovery_low)}–{formatCurrency(financialImpact.recovery_high)}/year.
+                          </p>
                         </>
                       ) : (
                         <p className="text-sm text-gray-400">
@@ -1021,14 +1033,14 @@ function ScanResultsContent() {
                 Full recovery plan locked
               </p>
               <p className="text-sm text-gray-300 mb-3">
-                We&apos;ve mapped exact pages, structural breaks, and a prioritized fix plan — but that&apos;s part of the paid recovery layer.
+                We&apos;ve mapped exactly which pages are causing the loss, where conversion breaks, what to fix first, and how much you can recover.
               </p>
               <ul className="space-y-2 text-sm text-gray-400 mb-4">
                 {[
                   "Exact pages causing the loss",
-                  "What’s breaking conversion (and why)",
-                  "Step-by-step recovery plan",
-                  "Revenue recovery timeline",
+                  "Where conversion breaks (and why)",
+                  "What to fix first to recover revenue",
+                  "Modeled recovery by priority and timeline",
                 ].map((line) => (
                   <li key={line} className="flex items-start gap-2">
                     <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
@@ -1040,10 +1052,10 @@ function ScanResultsContent() {
                 href="/pricing?from=scan&focus=recovery"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
               >
-                Get my recovery plan →
+                See exactly what&apos;s costing you revenue →
               </Link>
               <p className="text-xs text-gray-500 mt-3">
-                Every month unfixed, this compounds.
+                Takes 30 seconds · Instant access · No spam
               </p>
             </div>
           </div>
@@ -1056,17 +1068,20 @@ function ScanResultsContent() {
               Recovery layer
             </p>
             <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
-              Your recovery plan is ready
+              Revenue loss detected
             </h3>
             <p className="text-sm text-gray-400 mb-5 max-w-2xl">
-              This cached scan doesn&apos;t include the full financial breakdown yet. Continue to plan selection to unlock page-by-page recovery workflow.
+              We&apos;ve mapped where conversion breaks across key pages. Continue to unlock the full page-by-page recovery plan.
             </p>
             <Link
               href="/pricing?from=scan&focus=recovery"
               className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
             >
-              Get my recovery plan →
+              See exactly what&apos;s costing you revenue →
             </Link>
+            <p className="text-xs text-gray-500 mt-3">
+              Takes 30 seconds · Instant access · No spam
+            </p>
           </div>
         )}
 

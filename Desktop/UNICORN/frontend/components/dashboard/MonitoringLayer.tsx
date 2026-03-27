@@ -492,6 +492,9 @@ export default function MonitoringLayer({
               {calibrationRescanning ? "Rescanning…" : "Rescan with calibration →"}
             </button>
           </div>
+          <p className="mt-3 text-xs text-gray-500">
+            Calibration updates the financial model ($ impact ranges). RII is structural and usually changes only when website messaging changes.
+          </p>
         </div>
       )}
 
