@@ -5,15 +5,14 @@ import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { PLANS, type Plan } from "@/config/plans"
-import { isScanUnlockedWithEmail, readScanResultsRefined } from "@/lib/scanResultsRefine"
+import { readScanResultsRefined } from "@/lib/scanResultsRefine"
+import Header from "@/components/Header"
 import SiteFooter from "@/components/SiteFooter"
 
 const SALES_EMAIL = "hello@vectrios.com"
 
 export default function PricingPage() {
   const router = useRouter()
-  const [hasHistory, setHasHistory] = useState(false)
-  const [dashboardRouting, setDashboardRouting] = useState(false)
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
   const [isProcessing, setIsProcessing] = useState(false)
   const [selectedPlanName, setSelectedPlanName] = useState("")
@@ -33,12 +32,6 @@ export default function PricingPage() {
     const params = new URLSearchParams(window.location.search)
     return params.get("return_to") === "pricing" && !!params.get("resume")
   })
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setHasHistory(window.history.length > 1)
-    }
-  }, [])
 
   const canSendContact = useMemo(() => {
     return name.trim().length > 0 && email.trim().length > 0 && message.trim().length > 0
@@ -103,75 +96,6 @@ export default function PricingPage() {
       return parsed?.scan_token || null
     } catch {
       return null
-    }
-  }
-
-  const readPreferredScanToken = (): string | null => {
-    try {
-      const tokenCandidates: string[] = []
-      const pushToken = (value: unknown) => {
-        const t = typeof value === "string" ? value.trim() : ""
-        if (t && !tokenCandidates.includes(t)) tokenCandidates.push(t)
-      }
-      const readJson = (raw: string | null) => {
-        if (!raw) return null
-        try {
-          return JSON.parse(raw) as { scan_token?: string }
-        } catch {
-          return null
-        }
-      }
-      const diagFull =
-        readJson(sessionStorage.getItem("diagnostic_result_full")) ||
-        readJson(localStorage.getItem("diagnostic_result_full"))
-      const diagPartial =
-        readJson(sessionStorage.getItem("diagnostic_result")) ||
-        readJson(localStorage.getItem("diagnostic_result"))
-      const scanData =
-        readJson(sessionStorage.getItem("scan_data")) ||
-        readJson(localStorage.getItem("scan_data"))
-      pushToken(diagFull?.scan_token)
-      pushToken(diagPartial?.scan_token)
-      pushToken(scanData?.scan_token)
-      return tokenCandidates.find((t) => isScanUnlockedWithEmail(t)) || tokenCandidates[0] || null
-    } catch {
-      return null
-    }
-  }
-
-  const handleSmartDashboard = async () => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) {
-      router.push("/login")
-      return
-    }
-    setDashboardRouting(true)
-    const activeToken = readPreferredScanToken() || currentScanTokenFromStorage()
-    try {
-      const companyId = await resolveCompanyId(token)
-      if (companyId) {
-        const qs = activeToken ? `?scan_token=${encodeURIComponent(activeToken)}` : ""
-        const res = await fetch(`${API_URL}/monitoring/status/${companyId}${qs}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        if (res.ok) {
-          const status = await res.json()
-          if (status?.monitoring_active) {
-            const dashQs = new URLSearchParams()
-            dashQs.set("governance", "activated")
-            if (activeToken) dashQs.set("token", activeToken)
-            router.push(`/dashboard?${dashQs.toString()}`)
-            return
-          }
-        }
-      }
-      if (activeToken) {
-        router.push(`/scan-results?token=${encodeURIComponent(activeToken)}`)
-        return
-      }
-      router.push("/dashboard")
-    } finally {
-      setDashboardRouting(false)
     }
   }
 
@@ -455,44 +379,7 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0E1A] text-white">
-      <header className="border-b border-gray-800">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => {
-                if (hasHistory) {
-                  router.back()
-                  return
-                }
-                router.push("/dashboard")
-              }}
-              className="inline-flex items-center rounded-lg border border-gray-700 px-3 py-1.5 text-sm text-gray-300 hover:bg-gray-800"
-            >
-              ← Back
-            </button>
-            <Link href="/" className="text-2xl font-bold">
-              Vectri<span className="text-cyan-400">OS</span>
-            </Link>
-          </div>
-          <div className="flex items-center gap-4 text-sm">
-            <button
-              type="button"
-              onClick={handleSmartDashboard}
-              disabled={dashboardRouting}
-              className="inline-flex items-center rounded-lg border border-gray-700 px-3 py-1.5 text-gray-300 hover:bg-gray-800 disabled:bg-gray-800/60 disabled:cursor-not-allowed transition"
-            >
-              {dashboardRouting ? "Opening dashboard..." : "Dashboard"}
-            </button>
-            <Link href="/account" className="text-gray-400 hover:text-white">
-              Account
-            </Link>
-            <Link href="/pricing" className="text-gray-400 hover:text-white">
-              Pricing
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="max-w-6xl mx-auto px-6 py-12">
         {showActivatedBanner && (
