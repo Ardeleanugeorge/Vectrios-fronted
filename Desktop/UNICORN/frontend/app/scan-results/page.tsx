@@ -895,20 +895,35 @@ function ScanResultsContent() {
                 🔒 Full Diagnostic
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold mb-5 text-white max-w-xl mx-auto leading-snug">
-              You&apos;re losing {modeledMonthlyLossLabel ? `~${modeledMonthlyLossLabel}` : "~$13K–$25K/month"} — and it&apos;s fixable within weeks
+            <h2 className="text-xl sm:text-2xl font-bold mb-2 text-white max-w-xl mx-auto leading-snug">
+              You&apos;re losing {modeledMonthlyLossLabel ? `~${modeledMonthlyLossLabel}` : "~$13K-$25K/month"}
             </h2>
-            <p className="text-gray-400 mb-5 text-sm max-w-lg mx-auto leading-relaxed">
-              We&apos;ve identified the exact pages and structural breaks causing this loss, and the order to fix them in —
-              but the full recovery plan is part of the paid layer.
+            <p className="text-gray-400 mb-5 text-sm max-w-2xl mx-auto leading-relaxed">
+              Modeled from your messaging structure and benchmark vs 500+ SaaS companies.
             </p>
-            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">What you&apos;ll see</p>
-            <div className="space-y-2.5 mb-6 text-left max-w-md mx-auto">
+            <div className="text-left max-w-2xl mx-auto mb-5">
+              <p className="text-sm text-gray-300 mb-2">
+                This loss is not visible in your dashboard.
+              </p>
+              <p className="text-sm text-gray-400">
+                It shows up as slower deal cycles, lower close rates, and unqualified pipeline.
+              </p>
+            </div>
+            <div className="text-left max-w-2xl mx-auto mb-6 rounded-lg border border-white/10 bg-white/[0.02] p-4">
+              <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Why this is happening</p>
+              <ul className="space-y-1.5 text-sm text-gray-300">
+                <li>Your ICP is too broad -&gt; wrong buyers enter funnel</li>
+                <li>Proof is not strong at decision stage</li>
+                <li>Messaging shifts across key pages</li>
+              </ul>
+            </div>
+            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">We&apos;ve mapped exactly</p>
+            <div className="space-y-2.5 mb-4 text-left max-w-md mx-auto">
               {[
-                "Exact pages causing the loss",
-                "What’s breaking your conversion (and why)",
-                "Step-by-step recovery plan",
-                "Revenue recovery timeline",
+                "Which pages are causing the loss",
+                "Where conversion breaks",
+                "What to fix first to recover revenue",
+                "How much you can recover (modeled)",
               ].map((line) => (
                 <div key={line} className="flex items-start gap-2 text-sm text-gray-200">
                   <svg className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -918,20 +933,17 @@ function ScanResultsContent() {
                 </div>
               ))}
             </div>
+            <p className="text-xs text-gray-500 mb-5">
+              Companies at your level typically recover $80K-$220K/year.
+            </p>
             <button
               onClick={handleUnlock}
               className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
             >
-              Show me how to recover this revenue →
+              See exactly what&apos;s costing you revenue →
             </button>
-            <p className="text-xs text-gray-400 mt-4 max-w-md mx-auto text-center leading-relaxed">
-              Email for instant unlock — see your leak, then choose a plan to recover revenue.
-            </p>
-            <p className="text-xs text-gray-500 mt-2 max-w-md mx-auto text-center leading-relaxed">
-              Every week this stays unfixed, conversion typically drops further.
-            </p>
-            <p className="text-sm text-amber-200/90 mt-3 max-w-md mx-auto leading-relaxed font-medium text-center">
-              Every month unfixed, loss compounds
+            <p className="text-xs text-gray-500 mt-3 max-w-md mx-auto text-center leading-relaxed">
+              Takes 30 seconds - Instant access - No spam
             </p>
           </div>
         )}
