@@ -226,7 +226,7 @@ export default function MonitoringLayer({
   }
 
   const handleRunMonitoringNow = async () => {
-    if (!companyId || manualRescanLoading || cooldownSecondsRemaining > 0) return
+    if (!companyId || manualRescanLoading) return
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
     setManualRescanError("")
@@ -237,23 +237,32 @@ export default function MonitoringLayer({
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       })
+      const payload = await response.json().catch(() => null)
       if (!response.ok) {
-        const payload = await response.json().catch(() => null)
         const detail = payload?.detail
-        if (response.status === 429 && detail?.retry_after_seconds) {
-          setManualRescanError(`Available in ${formatRemaining(Number(detail.retry_after_seconds))}.`)
-        } else {
-          setManualRescanError(
-            typeof detail === "string"
-              ? detail
-              : detail?.message || "Failed to run monitoring cycle."
-          )
-        }
+        setManualRescanError(
+          typeof detail === "string"
+            ? detail
+            : detail?.message || "Failed to run monitoring cycle."
+        )
         return
       }
-      setManualRescanSuccess("Monitoring cycle completed. Refreshing metrics...")
-      router.refresh()
-      setTimeout(() => window.location.reload(), 500)
+      if (payload?.status === "queued") {
+        const wait = Number(payload?.retry_after_seconds || 0)
+        setManualRescanSuccess(
+          wait > 0
+            ? `Queued. Next automatic run in ${formatRemaining(wait)}.`
+            : "Queued. It will run in the next allowed window."
+        )
+      } else if (payload?.source === "emergency") {
+        setManualRescanSuccess("Emergency monitoring rescan completed. Refreshing metrics...")
+        router.refresh()
+        setTimeout(() => window.location.reload(), 500)
+      } else {
+        setManualRescanSuccess("Monitoring cycle completed. Refreshing metrics...")
+        router.refresh()
+        setTimeout(() => window.location.reload(), 500)
+      }
     } catch {
       setManualRescanError("Network error while running monitoring cycle.")
     } finally {
@@ -567,19 +576,19 @@ export default function MonitoringLayer({
               <div>
                 <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-1">Monitoring Cycle</p>
                 <p className="text-xs text-gray-500">
-                  Run a full monitoring cycle on demand (limited to once every {MANUAL_RESCAN_COOLDOWN_HOURS}h).
+                  Run on demand with guardrails: cooldown by plan + 1 emergency override/day + queue when early.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleRunMonitoringNow}
-                disabled={manualRescanLoading || cooldownSecondsRemaining > 0 || !companyId}
+                disabled={manualRescanLoading || !companyId}
                 className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition shadow-lg shadow-emerald-500/20"
               >
                 {manualRescanLoading
                   ? "Running monitoring..."
                   : cooldownSecondsRemaining > 0
-                    ? `Available in ${formatRemaining(cooldownSecondsRemaining)}`
+                    ? `Queue run (${formatRemaining(cooldownSecondsRemaining)})`
                     : "Run monitoring now →"}
               </button>
             </div>
