@@ -62,7 +62,12 @@ export default function RevenueTrajectorySimulation({ companyId }: Props) {
   useEffect(() => {
     if (!companyId) { setLoading(false); return }
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`${API_URL}/revenue-trajectory-simulation/${companyId}`, {
+    const params = new URLSearchParams(window.location.search)
+    const scanToken = params.get("token")
+    const simulationUrl = scanToken
+      ? `${API_URL}/revenue-trajectory-simulation/${companyId}?scan_token=${encodeURIComponent(scanToken)}`
+      : `${API_URL}/revenue-trajectory-simulation/${companyId}`
+    fetch(simulationUrl, {
       headers: { "Authorization": `Bearer ${token || ""}` }
     })
       .then(r => r.ok ? r.json() : null)
