@@ -7,6 +7,17 @@ export default function Header() {
         <Link href="/" className="text-2xl font-bold text-white hover:text-cyan-400 transition">
           Vectri<span className="text-cyan-400">OS</span>
         </Link>
+        <div className="flex items-center gap-3 text-sm">
+          <Link href="/login" className="text-gray-400 hover:text-white transition">
+            Log in
+          </Link>
+          <Link
+            href="/account"
+            className="inline-flex items-center rounded-lg border border-gray-700 px-3 py-1.5 text-gray-300 hover:bg-gray-800 transition"
+          >
+            Account
+          </Link>
+        </div>
       </div>
     </header>
   )

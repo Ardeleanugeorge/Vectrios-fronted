@@ -11,6 +11,9 @@ export default function SiteFooter() {
           Revenue-Stage Monitoring Infrastructure for B2B SaaS
         </p>
         <div className="flex flex-wrap justify-center gap-6 mb-5 text-sm">
+          <Link href="/login" className="text-gray-500 hover:text-gray-300">
+            Login
+          </Link>
           <Link href="/security" className="text-gray-500 hover:text-gray-300">
             Security
           </Link>
