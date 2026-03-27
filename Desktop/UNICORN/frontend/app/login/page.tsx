@@ -15,6 +15,7 @@ export default function LoginPage() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
+  const [showCreateAccountCta, setShowCreateAccountCta] = useState(false)
   const [sendingReset, setSendingReset] = useState(false)
   const [resetMsg, setResetMsg] = useState("")
 
@@ -22,6 +23,7 @@ export default function LoginPage() {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
     setError("")
+    setShowCreateAccountCta(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,7 +57,9 @@ export default function LoginPage() {
         router.push(data.resume_target || "/dashboard")
       } else {
         const errorData = await response.json().catch(() => ({ detail: "Login failed" }))
-        setError(errorData.detail || "Invalid email or password")
+        const message = errorData.detail || "Invalid email or password"
+        setError(message)
+        setShowCreateAccountCta(true)
       }
     } catch (error) {
       console.error("Login error:", error)
@@ -135,6 +139,17 @@ export default function LoginPage() {
           {error && (
             <div className="p-4 bg-red-500/10 border border-red-500 rounded-lg text-red-400 text-sm">
               {error}
+            </div>
+          )}
+          {showCreateAccountCta && (
+            <div className="p-4 bg-[#111827] border border-gray-700 rounded-lg text-sm flex items-center justify-between gap-3">
+              <span className="text-gray-300">No account yet?</span>
+              <Link
+                href="/signup"
+                className="inline-flex items-center rounded-md bg-cyan-500 hover:bg-cyan-400 px-3 py-1.5 text-black font-semibold transition"
+              >
+                Create account
+              </Link>
             </div>
           )}
           {resetMsg && (
