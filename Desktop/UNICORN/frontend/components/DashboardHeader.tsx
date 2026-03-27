@@ -45,30 +45,10 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     // Load user data
     const loadUserData = () => {
       try {
-        const storedUser = localStorage.getItem("user_data")
-        if (storedUser) {
-          const userData = JSON.parse(storedUser)
+        const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+        if (raw) {
+          const userData = JSON.parse(raw)
           setUser(userData)
-
-          // Load plan if company_id exists
-          if (userData.company_id) {
-            fetch(`${API_URL}/subscription/${userData.company_id}`, {
-              headers: { "Authorization": `Bearer ${token}` }
-            })
-              .then(r => r.ok ? r.json() : null)
-              .then(data => {
-                // Trial users should have full access equivalent to Scale.
-                if (data?.billing_cycle === "trial") {
-                  setCurrentPlan("scale")
-                  setTrialDaysLeft(typeof data?.trial_days_left === "number" ? data.trial_days_left : null)
-                } else if (data?.plan) {
-                  setCurrentPlan(data.plan.toLowerCase())
-                  setTrialDaysLeft(null)
-                }
-                if (data?.billing_cycle) setBillingCycle(data.billing_cycle)
-              })
-              .catch(() => {})
-          }
         } else {
           setUser({ company_name: "Account", email: "" })
         }
@@ -77,37 +57,73 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       }
     }
 
+    const loadSubscriptionForCompany = (companyId: string) => {
+      fetch(`${API_URL}/subscription/${companyId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          // Trial users should have full access equivalent to Scale.
+          if (data?.billing_cycle === "trial") {
+            setCurrentPlan("scale")
+            setTrialDaysLeft(typeof data?.trial_days_left === "number" ? data.trial_days_left : null)
+          } else if (data?.plan) {
+            setCurrentPlan(data.plan.toLowerCase())
+            setTrialDaysLeft(null)
+          } else {
+            setCurrentPlan(null)
+            setTrialDaysLeft(null)
+          }
+          if (data?.billing_cycle) setBillingCycle(data.billing_cycle)
+        })
+        .catch(() => {})
+    }
+
+    // Ensure company_id is present even when older flows saved partial user_data.
+    const ensureProfileContext = async () => {
+      try {
+        const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+        const local = raw ? JSON.parse(raw) as any : {}
+        const needsProfileRefresh = !local?.company_id
+        if (!needsProfileRefresh) {
+          loadSubscriptionForCompany(String(local.company_id))
+          return
+        }
+
+        const res = await fetch(`${API_URL}/account/profile`, {
+          headers: { "Authorization": `Bearer ${token}` },
+        })
+        if (!res.ok) return
+        const profile = await res.json()
+        const merged = {
+          user_id: local?.user_id || profile?.user_id || null,
+          email: profile?.email || local?.email || "",
+          company_name: profile?.company_name || local?.company_name || "",
+          company_id: profile?.company_id || local?.company_id || null,
+        }
+        setUser(merged)
+        localStorage.setItem("user_data", JSON.stringify(merged))
+        sessionStorage.setItem("user_data", JSON.stringify(merged))
+        if (merged.company_id) {
+          loadSubscriptionForCompany(String(merged.company_id))
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
     loadUserData()
+    void ensureProfileContext()
 
     // Reload subscription function
     const reloadSubscription = () => {
-      const storedUser = localStorage.getItem("user_data")
+      const storedUser = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
       if (storedUser) {
         try {
           const userData = JSON.parse(storedUser)
           if (userData.company_id) {
             console.log("[HEADER] Reloading subscription for company_id:", userData.company_id)
-            fetch(`${API_URL}/subscription/${userData.company_id}`, {
-              headers: { "Authorization": `Bearer ${token}` }
-            })
-              .then(r => r.ok ? r.json() : null)
-              .then(data => {
-                console.log("[HEADER] Subscription data:", { plan: data?.plan, billing_cycle: data?.billing_cycle })
-                if (data?.billing_cycle === "trial") {
-                  console.log("[HEADER] Setting currentPlan to 'scale' (trial has full access)")
-                  setCurrentPlan("scale")
-                  setBillingCycle("trial")
-                  setTrialDaysLeft(typeof data?.trial_days_left === "number" ? data.trial_days_left : null)
-                } else if (data?.plan) {
-                  console.log("[HEADER] Setting currentPlan to:", data.plan.toLowerCase())
-                  setCurrentPlan(data.plan.toLowerCase())
-                  if (data?.billing_cycle) setBillingCycle(data.billing_cycle)
-                  setTrialDaysLeft(null)
-                }
-              })
-              .catch((e) => {
-                console.error("[HEADER] Error reloading subscription:", e)
-              })
+            loadSubscriptionForCompany(String(userData.company_id))
           }
         } catch (e) {
           console.error("[HEADER] Error parsing user_data:", e)
