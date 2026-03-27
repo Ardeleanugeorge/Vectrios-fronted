@@ -6,7 +6,6 @@ import { isScanUnlockedWithEmail } from "@/lib/scanResultsRefine"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import DashboardHeader from "@/components/DashboardHeader"
 
 interface Subscription {
   plan: string | null
@@ -35,6 +34,7 @@ export default function AccountPage() {
   const [passwordLoading, setPasswordLoading] = useState(false)
   const [passwordError, setPasswordError] = useState("")
   const [passwordSuccess, setPasswordSuccess] = useState("")
+  const [hasHistory, setHasHistory] = useState(false)
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -105,6 +105,12 @@ export default function AccountPage() {
     setLoading(false)
   }, [router])
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasHistory(window.history.length > 1)
+    }
+  }, [])
+
   const loadSubscription = async (token: string, companyId: string) => {
     try {
       const response = await fetch(`${API_URL}/subscription/${companyId}`, {
@@ -171,6 +177,18 @@ export default function AccountPage() {
     router.push("/login")
   }
 
+  const handleGoBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back()
+      return
+    }
+    if (backToScanUrl) {
+      router.push(backToScanUrl)
+      return
+    }
+    router.push("/dashboard")
+  }
+
   const planLabel = subscription?.billing_cycle === "trial"
     ? `${subscription?.plan?.toUpperCase() || "SCALE"} (Trial${typeof subscription?.trial_days_left === "number" ? ` · ${subscription.trial_days_left}d left` : ""})`
     : (subscription?.plan ? subscription.plan.toUpperCase() : "No active plan")
@@ -187,30 +205,27 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen bg-[#0B0F19] text-white">
-      <DashboardHeader />
+      <header className="border-b border-gray-800 bg-[#0B0F19] sticky top-0 z-40">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+          <p className="text-lg font-semibold text-white">Account Home</p>
+          <button
+            type="button"
+            onClick={handleGoBack}
+            className="inline-flex items-center rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
+          >
+            ← Back
+          </button>
+        </div>
+      </header>
       <main className="py-12">
         <div className="max-w-4xl mx-auto px-6">
           <div className="mb-6 flex flex-wrap items-center gap-3">
-            {backToScanUrl && (
-              <Link
-                href={backToScanUrl}
-                className="inline-flex items-center rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
-              >
-                ← Back to scan results
-              </Link>
-            )}
-            <Link
-              href="/pricing"
-              className="inline-flex items-center rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
-            >
-              Go to pricing
-            </Link>
             <button
               type="button"
-              onClick={handleSignOut}
+              onClick={handleGoBack}
               className="inline-flex items-center rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
             >
-              Sign out
+              {hasHistory ? "← Back to previous page" : "← Back"}
             </button>
           </div>
           <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
@@ -258,23 +273,25 @@ export default function AccountPage() {
                 )}
 
                 <div className="pt-4 border-t border-gray-800">
-                  <Link
-                    href="/pricing"
-                    className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-medium rounded-lg transition"
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="inline-block px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium rounded-lg transition"
                   >
-                    Upgrade Plan
-                  </Link>
+                    Sign out
+                  </button>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
                 <p className="text-gray-400">No active subscription</p>
-                <Link
-                  href="/pricing"
-                  className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-medium rounded-lg transition"
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="inline-block px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium rounded-lg transition"
                 >
-                  Choose a Plan
-                </Link>
+                  Sign out
+                </button>
               </div>
             )}
           </div>
