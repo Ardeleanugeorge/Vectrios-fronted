@@ -961,9 +961,29 @@ function ScanResultsContent() {
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight mb-3 text-center lg:text-left max-w-4xl">
                     You&apos;re losing ~{formatCurrency(mLow)}–{formatCurrency(mHigh)}/month
                   </h3>
+                  <p className="text-base font-semibold text-orange-300 mb-2 text-center lg:text-left">
+                    Modeled annual impact: ~{formatCurrency(financialImpact.arr_at_risk_low)}–{formatCurrency(financialImpact.arr_at_risk_high)}/year
+                  </p>
                   <p className="text-sm text-gray-400 mb-6 max-w-3xl text-center lg:text-left">
                     Modeled from your messaging structure and benchmark vs 500+ SaaS companies.
                   </p>
+                  <div className="max-w-3xl mb-6 rounded-lg border border-cyan-500/20 bg-cyan-500/[0.04] p-4">
+                    <p className="text-[11px] uppercase tracking-wider text-cyan-300 mb-2">We&apos;ve built a full revenue model for your business</p>
+                    <ul className="space-y-1.5 text-sm text-gray-300">
+                      <li>Annual revenue at risk</li>
+                      <li>Recoverable revenue range</li>
+                      <li>Close rate impact</li>
+                      <li>Revenue trajectory over time</li>
+                    </ul>
+                  </div>
+                  <div className="max-w-3xl mb-6">
+                    <p className="text-sm font-semibold text-red-300">
+                      Every month this goes unfixed, you&apos;re losing another ~{formatCurrency(mLow)}–{formatCurrency(mHigh)}.
+                    </p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Most teams don&apos;t notice this until pipeline slows down.
+                    </p>
+                  </div>
 
                   <div className="grid lg:grid-cols-12 gap-6 mb-8">
                     <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-[#0f1626] border border-gray-700/70">
