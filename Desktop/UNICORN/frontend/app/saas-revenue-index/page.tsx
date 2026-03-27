@@ -4,6 +4,7 @@ import { API_URL } from '@/lib/config'
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface CompanyRow {
   rank: number;
@@ -75,10 +76,19 @@ function ScoreCell({ value }: { value: number | null }) {
 }
 
 export default function SaaSRevenueIndex() {
+  const router = useRouter();
   const [data, setData]       = useState<IndexData | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter]   = useState<"all" | "high" | "moderate" | "low">("all");
   const [search, setSearch]   = useState("");
+
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push("/scan-results");
+  };
 
   useEffect(() => {
     fetch(`${API_URL}/saas-revenue-index`)
@@ -122,12 +132,21 @@ export default function SaaSRevenueIndex() {
             Vectri<span className="text-cyan-400">OS</span>
           </span>
         </Link>
-        <Link
-          href="/"
-          className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
-        >
-          ← Run your own scan
-        </Link>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="text-xs text-gray-400 hover:text-white transition-colors"
+          >
+            ← Back
+          </button>
+          <Link
+            href="/"
+            className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+          >
+            Run your own scan
+          </Link>
+        </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-16">
