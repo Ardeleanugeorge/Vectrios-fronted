@@ -943,8 +943,8 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* După email: progressive insights (numbers from backend only) */}
-        {unlocked && showFinancialImpact && financialImpact && !isBlocked && (
+        {/* După email: single Page 4 experience (uses backend numbers when available, safe fallbacks otherwise). */}
+        {unlocked && showFinancialImpact && !isBlocked && (
           <div
             id="financial-impact-instant"
             className="p-6 sm:p-8 lg:p-10 bg-gradient-to-br from-cyan-950/25 via-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/25 mb-8"
@@ -953,16 +953,21 @@ function ScanResultsContent() {
               You&apos;ve unlocked your recovery model
             </p>
             {(() => {
-              const mLow = financialImpact.monthly_loss_low
-              const mHigh = financialImpact.monthly_loss_high
+              const impact = financialImpact
+              const mLow = impact?.monthly_loss_low ?? null
+              const mHigh = impact?.monthly_loss_high ?? null
               const drivers = driverImpacts
               return (
                 <>
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight mb-3 text-center lg:text-left max-w-4xl">
-                    You&apos;re losing ~{formatCurrency(mLow)}–{formatCurrency(mHigh)}/month
+                    {impact && mLow !== null && mHigh !== null
+                      ? `You’re losing ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}/month`
+                      : "You’re already losing revenue every month"}
                   </h3>
                   <p className="text-base font-semibold text-orange-300 mb-2 text-center lg:text-left">
-                    Modeled annual impact: ~{formatCurrency(financialImpact.arr_at_risk_low)}–{formatCurrency(financialImpact.arr_at_risk_high)}/year
+                    {impact
+                      ? `Modeled annual impact: ~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year`
+                      : "Modeled annual impact: calculating from current scan coverage"}
                   </p>
                   <p className="text-sm text-gray-400 mb-6 max-w-3xl text-center lg:text-left">
                     Modeled from your messaging structure and benchmark vs 500+ SaaS companies.
@@ -978,7 +983,9 @@ function ScanResultsContent() {
                   </div>
                   <div className="max-w-3xl mb-6">
                     <p className="text-sm font-semibold text-red-300">
-                      Every month this goes unfixed, you&apos;re losing another ~{formatCurrency(mLow)}–{formatCurrency(mHigh)}.
+                      {impact && mLow !== null && mHigh !== null
+                        ? `Every month this goes unfixed, you’re losing another ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}.`
+                        : "Every month this goes unfixed, revenue leakage continues to compound."}
                     </p>
                     <p className="text-sm text-gray-400 mt-1">
                       Most teams don&apos;t notice this until pipeline slows down.
@@ -990,13 +997,17 @@ function ScanResultsContent() {
                     <div className="grid sm:grid-cols-3 gap-3 blur-[1px]">
                       <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
                         <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Annual loss</p>
-                        <p className="text-xl font-bold text-red-300">~{formatCurrency(financialImpact.arr_at_risk_low)}–{formatCurrency(financialImpact.arr_at_risk_high)}/year</p>
-                        <p className="text-[11px] text-gray-400">Modeled annual downside</p>
+                        <p className="text-xl font-bold text-red-300">
+                          {impact ? `~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year` : "Pending full crawl"}
+                        </p>
+                        <p className="text-[11px] text-gray-400">{impact ? "Modeled annual downside" : "Needs more page coverage"}</p>
                       </div>
                       <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
                         <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Recoverable</p>
-                        <p className="text-xl font-bold text-emerald-300">~{formatCurrency(financialImpact.recovery_low)}–{formatCurrency(financialImpact.recovery_high)}/year</p>
-                        <p className="text-[11px] text-gray-400">If messaging is aligned</p>
+                        <p className="text-xl font-bold text-emerald-300">
+                          {impact ? `~${formatCurrency(impact.recovery_low)}–${formatCurrency(impact.recovery_high)}/year` : "Pending full crawl"}
+                        </p>
+                        <p className="text-[11px] text-gray-400">{impact ? "If messaging is aligned" : "Available after full model pass"}</p>
                       </div>
                       <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
                         <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Close-rate gap</p>
@@ -1066,7 +1077,9 @@ function ScanResultsContent() {
                             </p>
                           </div>
                           <p className="text-xs text-gray-500 mt-3">
-                            Companies at your level typically recover ~{formatCurrency(financialImpact.recovery_low)}–{formatCurrency(financialImpact.recovery_high)}/year.
+                            {impact
+                              ? `Companies at your level typically recover ~${formatCurrency(impact.recovery_low)}–${formatCurrency(impact.recovery_high)}/year.`
+                              : "Recovery range unlocks after a full crawl model pass."}
                           </p>
                         </>
                       ) : (
@@ -1110,99 +1123,6 @@ function ScanResultsContent() {
                 Takes 30 seconds · Instant access · No spam
               </p>
             </div>
-          </div>
-        )}
-
-        {/* Fallback: keep progression CTA visible even if backend financial payload is not available yet */}
-        {unlocked && showFinancialImpact && !financialImpact && !isBlocked && (
-          <div className="p-6 sm:p-8 bg-[#111827] rounded-xl border border-cyan-500/25 mb-8">
-            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
-              Recovery model (partial)
-            </p>
-            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
-              You&apos;re already losing revenue - this is happening right now
-            </h3>
-            <p className="text-base font-semibold text-orange-300 mb-2">
-              Modeled annual impact: ~$160K-$300K/year
-            </p>
-            <p className="text-sm text-gray-400 mb-5 max-w-2xl">
-              We already mapped structural risk and primary conversion leaks for this scan. Because confidence is limited, ARR-at-risk and recovery ranges are held until more page coverage is captured.
-            </p>
-            <div className="max-w-3xl mb-5 rounded-lg border border-cyan-500/20 bg-cyan-500/[0.04] p-4">
-              <p className="text-[11px] uppercase tracking-wider text-cyan-300 mb-2">We&apos;ve built a full revenue model for your business</p>
-              <ul className="space-y-1.5 text-sm text-gray-300">
-                <li>Annual revenue at risk</li>
-                <li>Recoverable revenue range</li>
-                <li>Close rate impact</li>
-                <li>Revenue trajectory over time</li>
-              </ul>
-            </div>
-            <div className="max-w-3xl mb-5 rounded-lg border border-cyan-500/20 bg-[#0d1320] p-4 relative overflow-hidden">
-              <p className="text-[11px] uppercase tracking-wider text-cyan-300 mb-1">Preview of your recovery model</p>
-              <p className="text-[11px] text-gray-500 mb-3">Based on 500+ SaaS revenue architectures</p>
-              <div className="grid sm:grid-cols-3 gap-3 blur-[1px]">
-                <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Annual loss</p>
-                  <p className="text-xl font-bold text-red-300">~$181K/year</p>
-                  <p className="text-[11px] text-gray-400">Modeled annual downside</p>
-                </div>
-                <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Recoverable</p>
-                  <p className="text-xl font-bold text-emerald-300">~$120K/year</p>
-                  <p className="text-[11px] text-gray-400">If messaging is aligned</p>
-                </div>
-                <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Close-rate gap</p>
-                  <p className="text-xl font-bold text-orange-300">{modeledCloseRateGapLabel || "-1.4%"}</p>
-                  <p className="text-[11px] text-gray-400">Estimated structural compression</p>
-                </div>
-              </div>
-              <div className="pointer-events-none absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/40 border border-white/15 text-[10px] text-gray-300">
-                <span>🔒</span>
-                <span>Unlock full model</span>
-              </div>
-            </div>
-            <div className="grid sm:grid-cols-3 gap-3 mb-5">
-              <div className="rounded-lg border border-white/10 bg-[#0d1320] p-3">
-                <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">RII</p>
-                <p className="text-lg font-bold text-white">{hasRii ? Math.round(rii as number) : "—"}</p>
-                <p className="text-xs text-gray-400">{data.risk_level}</p>
-              </div>
-              <div className="rounded-lg border border-white/10 bg-[#0d1320] p-3">
-                <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Benchmark signal</p>
-                <p className="text-xs text-gray-300 leading-relaxed">
-                  {typeof data.percentile === "number"
-                    ? data.percentile >= 50
-                      ? `Better than ${Math.round(data.percentile)}% of comparable SaaS companies`
-                      : `Worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of comparable SaaS companies`
-                    : "Benchmarking signal captured"}
-                </p>
-              </div>
-              <div className="rounded-lg border border-white/10 bg-[#0d1320] p-3">
-                <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Primary driver</p>
-                <p className="text-xs text-gray-300 leading-relaxed">
-                  {primarySignalDisplay(data.primary_signal).headline}
-                </p>
-              </div>
-            </div>
-            <p className="text-sm font-semibold text-red-300 mb-1">
-              Every month this goes unfixed, you&apos;re losing another ~$13K-$25K.
-            </p>
-            <p className="text-sm text-gray-400 mb-4">
-              Most teams don&apos;t notice this until pipeline slows down.
-            </p>
-            <p className="text-xs text-yellow-300/90 mb-5">
-              Low confidence detected for this crawl. Run a deeper monitoring pass to unlock exact ARR impact ranges from full coverage.
-            </p>
-            <Link
-              href="/pricing?from=scan&focus=recovery"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
-            >
-              Unlock full recovery breakdown →
-            </Link>
-            <p className="text-xs text-gray-500 mt-3">
-              Takes 30 seconds · Instant access · No spam
-            </p>
           </div>
         )}
 
