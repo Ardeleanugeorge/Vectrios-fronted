@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import DashboardHeader from "@/components/DashboardHeader"
+import SiteFooter from "@/components/SiteFooter"
 import SnapshotLayer from "@/components/dashboard/SnapshotLayer"
 import MonitoringLayer from "@/components/dashboard/MonitoringLayer"
 import RevenueRiskIndex from "@/components/dashboard/RevenueRiskIndex"
@@ -779,14 +780,9 @@ export default function DashboardPage() {
             )
           )}
 
-          {/* FOOTER */}
-          <footer className="mt-16 pt-8 border-t border-gray-800 text-center">
-            <p className="text-sm text-gray-600">
-              © 2025 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
-            </p>
-          </footer>
         </div>
       </main>
+      <SiteFooter />
     </div>
   )
 }
