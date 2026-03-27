@@ -4,6 +4,7 @@ import { API_URL } from '@/lib/config'
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 interface Subscription {
   plan: string | null
