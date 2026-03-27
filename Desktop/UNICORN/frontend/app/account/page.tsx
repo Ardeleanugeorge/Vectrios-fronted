@@ -258,7 +258,7 @@ export default function AccountPage() {
     <div className="min-h-screen bg-[#0B0F19] text-white">
       <header className="border-b border-gray-800 bg-[#0B0F19] sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <p className="text-lg font-semibold text-white">Account Home</p>
+          <p className="text-lg font-semibold text-white">Account Settings</p>
           <button
             type="button"
             onClick={handleGoBack}
