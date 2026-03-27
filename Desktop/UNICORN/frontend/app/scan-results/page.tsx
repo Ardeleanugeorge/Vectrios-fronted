@@ -961,35 +961,52 @@ function ScanResultsContent() {
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight mb-3 text-center lg:text-left max-w-4xl">
                     You&apos;re losing ~{formatCurrency(mLow)}–{formatCurrency(mHigh)}/month
                   </h3>
+                  <p className="text-base font-semibold text-orange-300 mb-2 text-center lg:text-left">
+                    Modeled annual impact: ~{formatCurrency(financialImpact.arr_at_risk_low)}–{formatCurrency(financialImpact.arr_at_risk_high)}/year
+                  </p>
                   <p className="text-sm text-gray-400 mb-6 max-w-3xl text-center lg:text-left">
                     Modeled from your messaging structure and benchmark vs 500+ SaaS companies.
                   </p>
+                  <div className="max-w-3xl mb-6 rounded-lg border border-cyan-500/20 bg-cyan-500/[0.04] p-4">
+                    <p className="text-[11px] uppercase tracking-wider text-cyan-300 mb-2">We&apos;ve built a full revenue model for your business</p>
+                    <ul className="space-y-1.5 text-sm text-gray-300">
+                      <li>Annual revenue at risk</li>
+                      <li>Recoverable revenue range</li>
+                      <li>Close rate impact</li>
+                      <li>Revenue trajectory over time</li>
+                    </ul>
+                  </div>
+                  <div className="max-w-3xl mb-6">
+                    <p className="text-sm font-semibold text-red-300">
+                      Every month this goes unfixed, you&apos;re losing another ~{formatCurrency(mLow)}–{formatCurrency(mHigh)}.
+                    </p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Most teams don&apos;t notice this until pipeline slows down.
+                    </p>
+                  </div>
                   <div className="max-w-3xl mb-6 rounded-lg border border-cyan-500/20 bg-[#0d1320] p-4 relative overflow-hidden">
-                    <p className="text-[11px] uppercase tracking-wider text-cyan-300 mb-3">Revenue monitoring console preview</p>
+                    <p className="text-[11px] uppercase tracking-wider text-cyan-300 mb-1">Preview of your recovery model</p>
+                    <p className="text-[11px] text-gray-500 mb-3">Based on 500+ SaaS revenue architectures</p>
                     <div className="grid sm:grid-cols-3 gap-3 blur-[1px]">
                       <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">RII score</p>
-                        <p className="text-xl font-bold text-orange-300">{hasRii && !isBlocked ? Math.round(rii as number) : 50}</p>
-                        <p className="text-[11px] text-gray-400">{data.risk_level || "Moderate Exposure"}</p>
-                      </div>
-                      <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">ARR at risk</p>
+                        <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Annual loss</p>
                         <p className="text-xl font-bold text-red-300">~{formatCurrency(financialImpact.arr_at_risk_low)}–{formatCurrency(financialImpact.arr_at_risk_high)}/year</p>
                         <p className="text-[11px] text-gray-400">Modeled annual downside</p>
                       </div>
                       <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Recovery potential</p>
+                        <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Recoverable</p>
                         <p className="text-xl font-bold text-emerald-300">~{formatCurrency(financialImpact.recovery_low)}–{formatCurrency(financialImpact.recovery_high)}/year</p>
                         <p className="text-[11px] text-gray-400">If messaging is aligned</p>
                       </div>
-                    </div>
-                    <div className="mt-3 rounded-lg border border-white/10 bg-white/[0.02] p-3 blur-[1px]">
-                      <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">Revenue risk trajectory (teaser)</p>
-                      <div className="h-10 w-full rounded bg-gradient-to-r from-red-500/15 via-orange-500/10 to-cyan-500/10 border border-white/10" />
+                      <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                        <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Close-rate gap</p>
+                        <p className="text-xl font-bold text-orange-300">{modeledCloseRateGapLabel || "-1.4%"}</p>
+                        <p className="text-[11px] text-gray-400">Estimated structural compression</p>
+                      </div>
                     </div>
                     <div className="pointer-events-none absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/40 border border-white/15 text-[10px] text-gray-300">
                       <span>🔒</span>
-                      <span>Dashboard preview</span>
+                      <span>Unlock full model</span>
                     </div>
                   </div>
 
@@ -1103,7 +1120,7 @@ function ScanResultsContent() {
               Recovery model (partial)
             </p>
             <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
-              Your revenue risk model is live — deeper financial ranges need a fuller crawl
+              You&apos;re already losing revenue - this is happening right now
             </h3>
             <p className="text-sm text-gray-400 mb-4 max-w-2xl">
               We already mapped structural risk and primary conversion leaks for this scan. Because confidence is limited, ARR-at-risk and recovery ranges are held until more page coverage is captured.
