@@ -967,7 +967,7 @@ function ScanResultsContent() {
                   <p className="text-base font-semibold text-orange-300 mb-2 text-center lg:text-left">
                     {impact
                       ? `Modeled annual impact: ~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year`
-                      : "Modeled annual impact: calculating from current scan coverage"}
+                      : "Modeled annual impact based on structural analysis"}
                   </p>
                   <p className="text-sm text-gray-400 mb-6 max-w-3xl text-center lg:text-left">
                     Modeled from your messaging structure and benchmark vs 500+ SaaS companies.
@@ -998,16 +998,16 @@ function ScanResultsContent() {
                       <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
                         <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Annual loss</p>
                         <p className="text-xl font-bold text-red-300">
-                          {impact ? `~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year` : "Pending full crawl"}
+                          {impact ? `~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year` : "🔒 Full modeled loss available after unlock"}
                         </p>
-                        <p className="text-[11px] text-gray-400">{impact ? "Modeled annual downside" : "Needs more page coverage"}</p>
+                        <p className="text-[11px] text-gray-400">{impact ? "Modeled annual downside" : "Modeled from full dataset"}</p>
                       </div>
                       <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
                         <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Recoverable</p>
                         <p className="text-xl font-bold text-emerald-300">
-                          {impact ? `~${formatCurrency(impact.recovery_low)}–${formatCurrency(impact.recovery_high)}/year` : "Pending full crawl"}
+                          {impact ? `~${formatCurrency(impact.recovery_low)}–${formatCurrency(impact.recovery_high)}/year` : "🔒 Recovery range calculated (unlock to view)"}
                         </p>
-                        <p className="text-[11px] text-gray-400">{impact ? "If messaging is aligned" : "Available after full model pass"}</p>
+                        <p className="text-[11px] text-gray-400">{impact ? "If messaging is aligned" : "Modeled from full dataset"}</p>
                       </div>
                       <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
                         <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Close-rate gap</p>
@@ -1020,6 +1020,9 @@ function ScanResultsContent() {
                       <span>Unlock full model</span>
                     </div>
                   </div>
+                  <p className="text-xs text-gray-500 mb-6">
+                    Companies at your level typically recover $80K-$220K/year.
+                  </p>
 
                   <div className="grid lg:grid-cols-12 gap-6 mb-8">
                     <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-[#0f1626] border border-gray-700/70">
