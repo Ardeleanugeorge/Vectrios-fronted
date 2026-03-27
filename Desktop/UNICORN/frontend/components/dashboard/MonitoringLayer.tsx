@@ -3,7 +3,6 @@
 import { API_URL } from '@/lib/config'
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import RevenueSystemStatus from "./RevenueSystemStatus"
 import CumulativeExposureCard from "./CumulativeExposureCard"
 import StructuralRiskOverview from "./StructuralRiskOverview"
@@ -119,7 +118,12 @@ export default function MonitoringLayer({
   companyId,
   currentPlan = null
 }: MonitoringLayerProps) {
-  const router = useRouter()
+  const [calibrationArr, setCalibrationArr] = useState("")
+  const [calibrationCurrentCloseRate, setCalibrationCurrentCloseRate] = useState("")
+  const [calibrationTargetCloseRate, setCalibrationTargetCloseRate] = useState("")
+  const [calibrationLoading, setCalibrationLoading] = useState(false)
+  const [calibrationError, setCalibrationError] = useState("")
+  const [calibrationSuccess, setCalibrationSuccess] = useState("")
 
   // Fetch forecast data for FinancialExposureCard
   const [forecast, setForecast] = useState<any>(null)
@@ -133,6 +137,62 @@ export default function MonitoringLayer({
       .then(data => { if (data) setForecast(data) })
       .catch(() => {})
   }, [companyId])
+
+  useEffect(() => {
+    if (!companyId) return
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    fetch(`${API_URL}/calibration/${companyId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data) return
+        setCalibrationArr(typeof data.arr === "number" ? String(Math.round(data.arr)) : "")
+        setCalibrationCurrentCloseRate(
+          typeof data.current_close_rate === "number" ? String(data.current_close_rate) : ""
+        )
+        setCalibrationTargetCloseRate(
+          typeof data.target_close_rate === "number" ? String(data.target_close_rate) : ""
+        )
+      })
+      .catch(() => {})
+  }, [companyId])
+
+  const saveCalibration = async () => {
+    if (!companyId || calibrationLoading) return
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    setCalibrationError("")
+    setCalibrationSuccess("")
+    setCalibrationLoading(true)
+    try {
+      const payload = {
+        arr: calibrationArr.trim() ? Number(calibrationArr) : null,
+        current_close_rate: calibrationCurrentCloseRate.trim() ? Number(calibrationCurrentCloseRate) : null,
+        target_close_rate: calibrationTargetCloseRate.trim() ? Number(calibrationTargetCloseRate) : null,
+      }
+      const response = await fetch(`${API_URL}/calibration/${companyId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      })
+      const data = await response.json().catch(() => null)
+      if (!response.ok) {
+        setCalibrationError(data?.detail || "Could not save calibration values.")
+        return
+      }
+      setCalibrationSuccess("Calibration saved. Refreshing financial model...")
+      setTimeout(() => window.location.reload(), 400)
+    } catch {
+      setCalibrationError("Network error while saving calibration.")
+    } finally {
+      setCalibrationLoading(false)
+    }
+  }
 
   // Check for critical alerts to show banner
   const criticalAlerts = alerts.filter(a => !a.is_read && a.severity_level === "critical")
@@ -313,6 +373,73 @@ export default function MonitoringLayer({
               Manual trigger is disabled. Monitoring runs automatically every 24 hours.
             </p>
           </div>
+        </div>
+      )}
+
+      {/* CALIBRATION INPUTS — improves financial precision using real business numbers */}
+      {!!currentPlan && (
+        <div className="rounded-2xl border border-gray-800 bg-[#111827] p-6 lg:p-8">
+          <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
+            Financial Calibration
+          </p>
+          <h3 className="text-lg lg:text-xl font-bold text-white mb-2">
+            Improve model accuracy with your real numbers
+          </h3>
+          <p className="text-sm text-gray-400 mb-5">
+            Structural risk comes from website scan signals. These values calibrate financial impact estimates.
+          </p>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs text-gray-400 mb-2">ARR (USD)</label>
+              <input
+                type="number"
+                min={1}
+                value={calibrationArr}
+                onChange={(e) => setCalibrationArr(e.target.value)}
+                placeholder="1000000"
+                className="w-full px-3 py-2.5 rounded-lg bg-[#0B0F19] border border-gray-700 text-white text-sm outline-none focus:border-cyan-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-2">Current close rate (%)</label>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                step="0.1"
+                value={calibrationCurrentCloseRate}
+                onChange={(e) => setCalibrationCurrentCloseRate(e.target.value)}
+                placeholder="12.5"
+                className="w-full px-3 py-2.5 rounded-lg bg-[#0B0F19] border border-gray-700 text-white text-sm outline-none focus:border-cyan-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-2">Target close rate (%)</label>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                step="0.1"
+                value={calibrationTargetCloseRate}
+                onChange={(e) => setCalibrationTargetCloseRate(e.target.value)}
+                placeholder="18.0"
+                className="w-full px-3 py-2.5 rounded-lg bg-[#0B0F19] border border-gray-700 text-white text-sm outline-none focus:border-cyan-500"
+              />
+            </div>
+          </div>
+          <div className="mt-5 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={saveCalibration}
+              disabled={calibrationLoading || !companyId}
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+            >
+              {calibrationLoading ? "Saving..." : "Save calibration"}
+            </button>
+            <p className="text-xs text-gray-500">Updates financial impact, recovery range, and trajectory estimates.</p>
+          </div>
+          {calibrationError && <p className="mt-2 text-xs text-red-400">{calibrationError}</p>}
+          {calibrationSuccess && <p className="mt-2 text-xs text-emerald-300">{calibrationSuccess}</p>}
         </div>
       )}
 
