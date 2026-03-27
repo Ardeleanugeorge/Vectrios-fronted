@@ -14,10 +14,11 @@ const PLAN_COLORS: Record<string, string> = {
   trial:   "text-yellow-400 bg-yellow-500/10 border-yellow-500/30",
 }
 
-const getPlanDisplay = (plan: string | null, billingCycle?: string | null) => {
+const getPlanDisplay = (plan: string | null, billingCycle?: string | null, trialDaysLeft?: number | null) => {
   if (!plan) return null
   if (billingCycle === "trial") {
-    return { label: "Scale (Trial · 14 days)", colorKey: "trial" }
+    const trialSuffix = typeof trialDaysLeft === "number" ? ` (${trialDaysLeft}d left)` : ""
+    return { label: `Scale Trial${trialSuffix}`, colorKey: "trial" }
   }
   return { label: plan.charAt(0).toUpperCase() + plan.slice(1), colorKey: plan }
 }
@@ -179,7 +180,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     router.push("/login")
   }
 
-  const planDisplay = getPlanDisplay(currentPlan, billingCycle)
+  const planDisplay = getPlanDisplay(currentPlan, billingCycle, trialDaysLeft)
   const planLabel = planDisplay?.label ?? null
   const planColorClass = planDisplay ? (PLAN_COLORS[planDisplay.colorKey] || PLAN_COLORS.starter) : ""
 
@@ -272,7 +273,6 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
             {showPlanBadge && planLabel && (
               <span className={`hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${planColorClass}`}>
                 {planLabel}
-                {billingCycle === "trial" && trialDaysLeft !== null ? ` · ${trialDaysLeft}d left` : ""}
               </span>
             )}
 
@@ -312,7 +312,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                     )}
                     {showPlanBadge && planLabel && (
                       <span className={`inline-flex items-center mt-2 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${planColorClass}`}>
-                        {planLabel} Plan{billingCycle === "trial" && trialDaysLeft !== null ? ` · ${trialDaysLeft}d left` : ""}
+                        {planLabel}
                       </span>
                     )}
                   </div>

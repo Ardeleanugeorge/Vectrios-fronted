@@ -227,7 +227,7 @@ export default function AccountPage() {
   }
 
   const planLabel = subscription?.billing_cycle === "trial"
-    ? `${subscription?.plan?.toUpperCase() || "SCALE"} (Trial${typeof subscription?.trial_days_left === "number" ? ` · ${subscription.trial_days_left}d left` : ""})`
+    ? `Scale Trial${typeof subscription?.trial_days_left === "number" ? ` (${subscription.trial_days_left}d left)` : ""}`
     : (subscription?.plan ? subscription.plan.toUpperCase() : "No active plan")
 
   if (loading) {
