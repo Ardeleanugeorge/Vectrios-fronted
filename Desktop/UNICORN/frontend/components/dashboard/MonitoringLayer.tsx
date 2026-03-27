@@ -28,6 +28,7 @@ import ActionableInsights, { type ActionLayerPayload } from "./ActionableInsight
 interface MonitoringStatus {
   monitoring_active: boolean
   created_at?: string
+  last_evaluated_at?: string
   ui_state_payload?: {
     ui_state: "low" | "medium" | "high"
     financial_mode: "opportunity" | "recoverable" | "risk"
@@ -119,6 +120,11 @@ export default function MonitoringLayer({
   currentPlan = null
 }: MonitoringLayerProps) {
   const router = useRouter()
+  const MANUAL_RESCAN_COOLDOWN_HOURS = 6
+  const [manualRescanLoading, setManualRescanLoading] = useState(false)
+  const [manualRescanError, setManualRescanError] = useState("")
+  const [manualRescanSuccess, setManualRescanSuccess] = useState("")
+  const [cooldownTick, setCooldownTick] = useState(0)
 
   // Fetch forecast data for FinancialExposureCard
   const [forecast, setForecast] = useState<any>(null)
@@ -169,7 +175,7 @@ export default function MonitoringLayer({
     diagnostic?.positioning_coherence_score ?? 0
 
   // Get last scan date from monitoring status
-  const lastScan = monitoringStatus.created_at || new Date().toISOString()
+  const lastScan = monitoringStatus.last_evaluated_at || monitoringStatus.created_at || new Date().toISOString()
 
   // Extract RII for health indicator
   const rii = diagnostic?.risk_score || null
@@ -194,6 +200,66 @@ export default function MonitoringLayer({
   )
   const improvementsDetected =
     typeof riskDelta === "number" && riskDelta < 0 ? Math.max(1, Math.round(Math.abs(riskDelta))) : (uiState === "low" ? 2 : 0)
+
+  useEffect(() => {
+    const timer = setInterval(() => setCooldownTick((v) => v + 1), 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const cooldownSecondsRemaining = (() => {
+    void cooldownTick
+    const last = monitoringStatus.last_evaluated_at || monitoringStatus.created_at
+    if (!last) return 0
+    const lastMs = new Date(last).getTime()
+    if (!Number.isFinite(lastMs)) return 0
+    const cooldownMs = MANUAL_RESCAN_COOLDOWN_HOURS * 60 * 60 * 1000
+    const remainingMs = lastMs + cooldownMs - Date.now()
+    return remainingMs > 0 ? Math.ceil(remainingMs / 1000) : 0
+  })()
+
+  const formatRemaining = (seconds: number): string => {
+    const h = Math.floor(seconds / 3600)
+    const m = Math.floor((seconds % 3600) / 60)
+    if (h > 0) return `${h}h ${m}m`
+    const s = Math.max(0, seconds % 60)
+    return `${m}m ${s}s`
+  }
+
+  const handleRunMonitoringNow = async () => {
+    if (!companyId || manualRescanLoading || cooldownSecondsRemaining > 0) return
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    setManualRescanError("")
+    setManualRescanSuccess("")
+    setManualRescanLoading(true)
+    try {
+      const response = await fetch(`${API_URL}/monitoring/rescan/${companyId}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null)
+        const detail = payload?.detail
+        if (response.status === 429 && detail?.retry_after_seconds) {
+          setManualRescanError(`Available in ${formatRemaining(Number(detail.retry_after_seconds))}.`)
+        } else {
+          setManualRescanError(
+            typeof detail === "string"
+              ? detail
+              : detail?.message || "Failed to run monitoring cycle."
+          )
+        }
+        return
+      }
+      setManualRescanSuccess("Monitoring cycle completed. Refreshing metrics...")
+      router.refresh()
+      setTimeout(() => window.location.reload(), 500)
+    } catch {
+      setManualRescanError("Network error while running monitoring cycle.")
+    } finally {
+      setManualRescanLoading(false)
+    }
+  }
   
   // Extract and simplify primary risk driver from recommendations or diagnostic
   const simplifyRiskDriver = (text: string): string => {
@@ -495,6 +561,31 @@ export default function MonitoringLayer({
           <p className="mt-3 text-xs text-gray-500">
             Calibration updates the financial model ($ impact ranges). RII is structural and usually changes only when website messaging changes.
           </p>
+
+          <div className="mt-5 pt-5 border-t border-gray-800/80">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-1">Monitoring Cycle</p>
+                <p className="text-xs text-gray-500">
+                  Run a full monitoring cycle on demand (limited to once every {MANUAL_RESCAN_COOLDOWN_HOURS}h).
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleRunMonitoringNow}
+                disabled={manualRescanLoading || cooldownSecondsRemaining > 0 || !companyId}
+                className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition shadow-lg shadow-emerald-500/20"
+              >
+                {manualRescanLoading
+                  ? "Running monitoring..."
+                  : cooldownSecondsRemaining > 0
+                    ? `Available in ${formatRemaining(cooldownSecondsRemaining)}`
+                    : "Run monitoring now →"}
+              </button>
+            </div>
+            {manualRescanError && <p className="mt-2 text-xs text-red-400">{manualRescanError}</p>}
+            {manualRescanSuccess && <p className="mt-2 text-xs text-emerald-300">{manualRescanSuccess}</p>}
+          </div>
         </div>
       )}
 
