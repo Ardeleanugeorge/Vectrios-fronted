@@ -1,6 +1,7 @@
 "use client"
 
 import { API_URL } from '@/lib/config'
+import { isScanUnlockedWithEmail } from "@/lib/scanResultsRefine"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -49,17 +50,48 @@ export default function AccountPage() {
       }
     }
 
-    // Preserve a direct way back to the latest scan results flow.
-    const scanDataRaw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
-    if (scanDataRaw) {
-      try {
-        const parsedScan = JSON.parse(scanDataRaw) as { scan_token?: string }
-        if (parsedScan?.scan_token) {
-          setBackToScanUrl(`/scan-results?token=${encodeURIComponent(parsedScan.scan_token)}`)
-        }
-      } catch (e) {
-        console.error("Error parsing scan_data:", e)
+    // Preserve a direct way back to the appropriate scan results flow.
+    // Prefer tokens already unlocked via email, so users don't bounce to pre-email state.
+    try {
+      const tokenCandidates: string[] = []
+      const pushToken = (value: unknown) => {
+        const t = typeof value === "string" ? value.trim() : ""
+        if (t && !tokenCandidates.includes(t)) tokenCandidates.push(t)
       }
+
+      const readJson = (raw: string | null) => {
+        if (!raw) return null
+        try {
+          return JSON.parse(raw) as { scan_token?: string }
+        } catch {
+          return null
+        }
+      }
+
+      const diagFull =
+        readJson(sessionStorage.getItem("diagnostic_result_full")) ||
+        readJson(localStorage.getItem("diagnostic_result_full"))
+      const diagPartial =
+        readJson(sessionStorage.getItem("diagnostic_result")) ||
+        readJson(localStorage.getItem("diagnostic_result"))
+      const scanData =
+        readJson(sessionStorage.getItem("scan_data")) ||
+        readJson(localStorage.getItem("scan_data"))
+
+      pushToken(diagFull?.scan_token)
+      pushToken(diagPartial?.scan_token)
+      pushToken(scanData?.scan_token)
+
+      const preferred =
+        tokenCandidates.find((t) => isScanUnlockedWithEmail(t)) ||
+        tokenCandidates[0] ||
+        null
+
+      if (preferred) {
+        setBackToScanUrl(`/scan-results?token=${encodeURIComponent(preferred)}`)
+      }
+    } catch (e) {
+      console.error("Error resolving back-to-scan token:", e)
     }
 
     setLoading(false)
