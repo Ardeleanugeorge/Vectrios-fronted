@@ -378,6 +378,8 @@ function ScanResultsContent() {
   const [showFinancialImpact, setShowFinancialImpact] = useState(false)
   const [unlockTransitioning, setUnlockTransitioning] = useState(false)
   const [previousSnapshot, setPreviousSnapshot] = useState<ScanSnapshot | null>(null)
+  const [generatingBreakdown, setGeneratingBreakdown] = useState(false)
+  const [generateBreakdownError, setGenerateBreakdownError] = useState("")
 
   const forceScrollToTop = () => {
     if (typeof window === "undefined") return
@@ -396,6 +398,53 @@ function ScanResultsContent() {
 
   const handleUnlock = () => {
     setShowEmailCapture(true)
+  }
+
+  const handleGenerateFullBreakdown = async () => {
+    if (!data?.domain) return
+    setGenerateBreakdownError("")
+    setGeneratingBreakdown(true)
+    try {
+      let arrRange = "3-10M"
+      let acvRange = "5-15K"
+      try {
+        const raw = sessionStorage.getItem("vectrios_calibration_v1") || localStorage.getItem("vectrios_calibration_v1")
+        if (raw) {
+          const parsed = JSON.parse(raw)
+          if (parsed?.arr_range) arrRange = String(parsed.arr_range)
+          if (parsed?.acv_range) acvRange = String(parsed.acv_range)
+        }
+      } catch {
+        // ignore calibration parse errors
+      }
+
+      const res = await fetch(`${API_URL}/scan`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: `https://${data.domain}`,
+          force_refresh: true,
+          arr_range: arrRange,
+          acv_range: acvRange,
+        }),
+      })
+      if (!res.ok) {
+        const text = await res.text().catch(() => "")
+        throw new Error(text || `HTTP ${res.status}`)
+      }
+      const payload = await res.json()
+      if (payload?.scan_token) {
+        router.replace(`/scan-results?token=${encodeURIComponent(payload.scan_token)}`)
+        return
+      }
+      if (payload) {
+        setData(payload)
+      }
+    } catch (e: any) {
+      setGenerateBreakdownError(e?.message ? String(e.message) : "Failed to generate full breakdown.")
+    } finally {
+      setGeneratingBreakdown(false)
+    }
   }
 
   const handleEmailCapture = async (e: React.FormEvent) => {
@@ -786,14 +835,14 @@ function ScanResultsContent() {
                     You're still missing{" "}
                     {financialImpact
                       ? `~${formatCurrency(financialImpact.recovery_low)}–${formatCurrency(financialImpact.recovery_high)}/year`
-                      : "a modeled recovery range (available after backend financial load)"}
+                      : "a modeled recovery range"}
                   </span>
                 ) : (
                   <span className="text-xs opacity-80">
                     Estimated preventable loss:{" "}
                     {financialImpact
                       ? `${formatCurrency(financialImpact.arr_at_risk_low)}–${formatCurrency(financialImpact.arr_at_risk_high)}/year`
-                      : "modeled range unavailable for this cached scan"}
+                      : "modeled range loading"}
                   </span>
                 )}
               </div>
@@ -1056,16 +1105,30 @@ function ScanResultsContent() {
               Recovery layer
             </p>
             <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
-              Your recovery plan is ready
+              Generate your full financial breakdown
             </h3>
             <p className="text-sm text-gray-400 mb-5 max-w-2xl">
-              We couldn&apos;t load the financial breakdown for this cached scan yet, but you can continue to the plan selection and unlock the page-by-page recovery workflow.
+              This scan was loaded from cache without the full financial payload. Generate a fresh breakdown to unlock cause-level revenue impact and prioritized recovery direction.
+            </p>
+            {generateBreakdownError && (
+              <p className="text-sm text-red-400 mb-4">{generateBreakdownError}</p>
+            )}
+            <button
+              type="button"
+              onClick={handleGenerateFullBreakdown}
+              disabled={generatingBreakdown}
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+            >
+              {generatingBreakdown ? "Generating full breakdown…" : "Generate full breakdown →"}
+            </button>
+            <p className="text-xs text-gray-500 mt-3">
+              Or continue directly to package selection if you prefer.
             </p>
             <Link
               href="/pricing?from=scan&focus=recovery"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+              className="inline-flex items-center justify-center mt-3 px-4 py-2 rounded-lg border border-gray-700 text-gray-300 hover:text-white hover:border-cyan-500/40 text-sm transition"
             >
-              Get my recovery plan →
+              Continue to plans →
             </Link>
           </div>
         )}
