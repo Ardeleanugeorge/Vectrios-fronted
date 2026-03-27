@@ -192,11 +192,34 @@ export default function DashboardPage() {
         /* ignore */
       }
 
-      if (data?.scan_token) {
-        router.push(`/scan-results?token=${encodeURIComponent(data.scan_token)}`)
-        return
+      try {
+        const partialDiagnostic = {
+          risk_level: data?.risk_level || "MODERATE",
+          risk_score: data?.rii ?? null,
+          alignment_score: data?.alignment ?? null,
+          anchor_density_score: data?.anchor_density ?? null,
+          icp_clarity_score: data?.icp_clarity ?? null,
+          positioning_coherence_score: data?.positioning ?? null,
+          confidence: data?.confidence ?? null,
+          inferred_icp: data?.inferred_icp || "",
+          primary_signal: data?.primary_signal || "",
+          pages_scanned: data?.pages_scanned || 0,
+          is_partial: true,
+          source: "instant_scan",
+          scan_token: data?.scan_token || null,
+        }
+        // Dashboard loads from diagnostic_result / diagnostic_result_full on boot.
+        localStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
+        sessionStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
+      } catch {
+        /* ignore */
       }
-      router.push("/scan-results")
+
+      // Stay on dashboard and refresh metrics in-place.
+      const next = data?.scan_token
+        ? `/dashboard?governance=activated&token=${encodeURIComponent(data.scan_token)}&calibrated=1`
+        : "/dashboard?governance=activated&calibrated=1"
+      window.location.assign(next)
     } catch (e: any) {
       setCalibrationError(`Rescan failed. ${e?.message ? String(e.message) : ""}`.trim())
     } finally {

@@ -322,11 +322,46 @@ export default function MonitoringLayer({
         throw new Error(text || `HTTP ${res.status}`)
       }
       const data = await res.json()
-      if (data?.scan_token) {
-        router.push(`/scan-results?token=${encodeURIComponent(data.scan_token)}`)
-        return
+      try {
+        // Keep scan token/domain aligned for the current company context.
+        const scanData = {
+          domain: data?.domain || domain,
+          website_url: data?.domain ? `https://${data.domain}` : `https://${domain}`,
+          inferred_icp: data?.inferred_icp || "",
+          pages_scanned: data?.pages_scanned || 0,
+          prefill_created_at: Date.now(),
+          scan_token: data?.scan_token || "",
+        }
+        sessionStorage.setItem("scan_data", JSON.stringify(scanData))
+        localStorage.setItem("scan_data", JSON.stringify(scanData))
+
+        // Refresh dashboard metrics from latest scan (partial diagnostic source).
+        const partialDiagnostic = {
+          risk_level: data?.risk_level || "MODERATE",
+          risk_score: data?.rii ?? null,
+          alignment_score: data?.alignment ?? null,
+          anchor_density_score: data?.anchor_density ?? null,
+          icp_clarity_score: data?.icp_clarity ?? null,
+          positioning_coherence_score: data?.positioning ?? null,
+          confidence: data?.confidence ?? null,
+          inferred_icp: data?.inferred_icp || "",
+          primary_signal: data?.primary_signal || "",
+          pages_scanned: data?.pages_scanned || 0,
+          is_partial: true,
+          source: "instant_scan",
+          scan_token: data?.scan_token || null,
+        }
+        sessionStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
+        localStorage.setItem("diagnostic_result", JSON.stringify(partialDiagnostic))
+      } catch {
+        // ignore persistence issues
       }
-      router.push("/scan-results")
+
+      // Stay in package console and refresh in place (no jump back to scan-results).
+      const next = data?.scan_token
+        ? `/dashboard?governance=activated&token=${encodeURIComponent(data.scan_token)}&calibrated=1`
+        : "/dashboard?governance=activated&calibrated=1"
+      window.location.assign(next)
     } catch (e: any) {
       setCalibrationError(`Rescan failed. ${e?.message ? String(e.message) : ""}`.trim())
     } finally {
