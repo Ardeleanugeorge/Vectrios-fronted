@@ -1,11 +1,11 @@
 "use client"
 
 import { API_URL } from '@/lib/config'
-import { isScanUnlockedWithEmail } from "@/lib/scanResultsRefine"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Header from "@/components/Header"
 
 interface Subscription {
   plan: string | null
@@ -38,7 +38,6 @@ export default function AccountPage() {
   const [passwordLoading, setPasswordLoading] = useState(false)
   const [passwordError, setPasswordError] = useState("")
   const [passwordSuccess, setPasswordSuccess] = useState("")
-  const [dashboardRouting, setDashboardRouting] = useState(false)
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -227,74 +226,6 @@ export default function AccountPage() {
     }
   }
 
-  const readPreferredScanToken = (): string | null => {
-    try {
-      const tokenCandidates: string[] = []
-      const pushToken = (value: unknown) => {
-        const t = typeof value === "string" ? value.trim() : ""
-        if (t && !tokenCandidates.includes(t)) tokenCandidates.push(t)
-      }
-      const readJson = (raw: string | null) => {
-        if (!raw) return null
-        try {
-          return JSON.parse(raw) as { scan_token?: string }
-        } catch {
-          return null
-        }
-      }
-      const diagFull =
-        readJson(sessionStorage.getItem("diagnostic_result_full")) ||
-        readJson(localStorage.getItem("diagnostic_result_full"))
-      const diagPartial =
-        readJson(sessionStorage.getItem("diagnostic_result")) ||
-        readJson(localStorage.getItem("diagnostic_result"))
-      const scanData =
-        readJson(sessionStorage.getItem("scan_data")) ||
-        readJson(localStorage.getItem("scan_data"))
-      pushToken(diagFull?.scan_token)
-      pushToken(diagPartial?.scan_token)
-      pushToken(scanData?.scan_token)
-      return tokenCandidates.find((t) => isScanUnlockedWithEmail(t)) || tokenCandidates[0] || null
-    } catch {
-      return null
-    }
-  }
-
-  const handleGoDashboard = async () => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) {
-      router.push("/login")
-      return
-    }
-    const activeToken = readPreferredScanToken()
-    setDashboardRouting(true)
-    try {
-      if (companyId) {
-        const qs = activeToken ? `?scan_token=${encodeURIComponent(activeToken)}` : ""
-        const res = await fetch(`${API_URL}/monitoring/status/${companyId}${qs}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        if (res.ok) {
-          const status = await res.json()
-          if (status?.monitoring_active) {
-            const dashQs = new URLSearchParams()
-            dashQs.set("governance", "activated")
-            if (activeToken) dashQs.set("token", activeToken)
-            router.push(`/dashboard?${dashQs.toString()}`)
-            return
-          }
-        }
-      }
-      if (activeToken) {
-        router.push(`/scan-results?token=${encodeURIComponent(activeToken)}`)
-        return
-      }
-      router.push("/dashboard")
-    } finally {
-      setDashboardRouting(false)
-    }
-  }
-
   const planLabel = subscription?.billing_cycle === "trial"
     ? `${subscription?.plan?.toUpperCase() || "SCALE"} (Trial${typeof subscription?.trial_days_left === "number" ? ` · ${subscription.trial_days_left}d left` : ""})`
     : (subscription?.plan ? subscription.plan.toUpperCase() : "No active plan")
@@ -311,19 +242,7 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen bg-[#0B0F19] text-white">
-      <header className="border-b border-gray-800 bg-[#0B0F19] sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <p className="text-lg font-semibold text-white">Account Settings</p>
-          <button
-            type="button"
-            onClick={handleGoDashboard}
-            disabled={dashboardRouting}
-            className="inline-flex items-center rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 disabled:bg-gray-800/60 disabled:cursor-not-allowed"
-          >
-            {dashboardRouting ? "Opening dashboard..." : "Dashboard"}
-          </button>
-        </div>
-      </header>
+      <Header />
       <main className="py-12">
         <div className="max-w-4xl mx-auto px-6">
           <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
