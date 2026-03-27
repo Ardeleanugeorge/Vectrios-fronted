@@ -963,6 +963,38 @@ function ScanResultsContent() {
                 <span>Unlock full model</span>
               </div>
             </div>
+            <div className="text-left max-w-2xl mx-auto mb-5 rounded-lg border border-cyan-500/20 bg-[#0d1320] p-4 relative overflow-hidden">
+              <p className="text-[11px] uppercase tracking-wider text-cyan-300 mb-3">Revenue monitoring console preview</p>
+              <div className="grid sm:grid-cols-3 gap-3 blur-[1px]">
+                <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                  <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">RII score</p>
+                  <p className="text-xl font-bold text-orange-300">{hasRii && !isBlocked ? Math.round(rii as number) : 50}</p>
+                  <p className="text-[11px] text-gray-400">{data.risk_level || "Moderate Exposure"}</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                  <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">ARR at risk</p>
+                  <p className="text-xl font-bold text-red-300">{modeledAnnualLossLabel ? `~${modeledAnnualLossLabel}` : "~$181K/year"}</p>
+                  <p className="text-[11px] text-gray-400">Modeled annual downside</p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                  <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Recovery potential</p>
+                  <p className="text-xl font-bold text-emerald-300">{modeledRecoverableLabel ? `~${modeledRecoverableLabel}` : "~$120K/year"}</p>
+                  <p className="text-[11px] text-gray-400">If messaging is aligned</p>
+                </div>
+              </div>
+              <div className="mt-3 rounded-lg border border-white/10 bg-white/[0.02] p-3 blur-[1px]">
+                <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">Revenue risk trajectory (teaser)</p>
+                <div className="h-10 w-full rounded bg-gradient-to-r from-red-500/15 via-orange-500/10 to-cyan-500/10 border border-white/10" />
+              </div>
+              <p className="text-xs text-gray-500 mt-3">
+                After unlock: full trajectory, benchmark intelligence, incidents, and page-level fixes.
+              </p>
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0d1320]/70 via-transparent to-transparent" />
+              <div className="pointer-events-none absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/40 border border-white/15 text-[10px] text-gray-300">
+                <span>🔒</span>
+                <span>Dashboard preview</span>
+              </div>
+            </div>
             <div className="max-w-2xl mx-auto mb-5 text-left">
               <p className="text-sm font-semibold text-red-300">
                 Every month this goes unfixed, you&apos;re losing another {modeledMonthlyLossLabel ? `~${modeledMonthlyLossLabel}` : "~$13K-$25K"}.
