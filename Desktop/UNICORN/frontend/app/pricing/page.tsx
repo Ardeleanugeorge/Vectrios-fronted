@@ -12,6 +12,7 @@ const SALES_EMAIL = "hello@vectrios.com"
 
 export default function PricingPage() {
   const router = useRouter()
+  const [hasHistory, setHasHistory] = useState(false)
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
   const [isProcessing, setIsProcessing] = useState(false)
   const [selectedPlanName, setSelectedPlanName] = useState("")
@@ -31,6 +32,12 @@ export default function PricingPage() {
     const params = new URLSearchParams(window.location.search)
     return params.get("return_to") === "pricing" && !!params.get("resume")
   })
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasHistory(window.history.length > 1)
+    }
+  }, [])
 
   const canSendContact = useMemo(() => {
     return name.trim().length > 0 && email.trim().length > 0 && message.trim().length > 0
@@ -380,9 +387,24 @@ export default function PricingPage() {
     <div className="min-h-screen bg-[#0A0E1A] text-white">
       <header className="border-b border-gray-800">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold">
-            Vectri<span className="text-cyan-400">OS</span>
-          </Link>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => {
+                if (hasHistory) {
+                  router.back()
+                  return
+                }
+                router.push("/dashboard")
+              }}
+              className="inline-flex items-center rounded-lg border border-gray-700 px-3 py-1.5 text-sm text-gray-300 hover:bg-gray-800"
+            >
+              ← Back
+            </button>
+            <Link href="/" className="text-2xl font-bold">
+              Vectri<span className="text-cyan-400">OS</span>
+            </Link>
+          </div>
           <div className="flex items-center gap-4 text-sm">
             <Link href="/account" className="text-gray-400 hover:text-white">
               Account
