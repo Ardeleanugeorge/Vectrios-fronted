@@ -98,13 +98,18 @@ export default function PricingPage() {
     }
   }
 
-  const redirectToMonitoringConsole = () => {
+  const redirectToMonitoringConsole = (opts?: { trialActivated?: boolean; activePlan?: string }) => {
     const scanToken = currentScanTokenFromStorage()
+    const qs = new URLSearchParams()
+    qs.set("governance", "activated")
+    if (opts?.trialActivated) qs.set("trial", "activated")
+    if (opts?.activePlan) qs.set("active_plan", opts.activePlan)
     if (scanToken) {
-      router.replace(`/dashboard?governance=activated&token=${encodeURIComponent(scanToken)}`)
+      qs.set("token", scanToken)
+      router.replace(`/dashboard?${qs.toString()}`)
       return
     }
-    router.replace("/dashboard?governance=activated")
+    router.replace(`/dashboard?${qs.toString()}`)
   }
 
   const hasCompletedRequiredOnboarding = (): boolean => {
@@ -250,7 +255,7 @@ export default function PricingPage() {
         throw new Error(err.detail || "Failed to activate trial")
       }
       setIsRouteTransitioning(true)
-      redirectToMonitoringConsole()
+      redirectToMonitoringConsole({ trialActivated: true, activePlan: "scale" })
     } catch (e: any) {
       alert(e?.message || "Failed to start trial")
     } finally {
@@ -306,7 +311,7 @@ export default function PricingPage() {
       }).catch(() => {})
 
       setIsRouteTransitioning(true)
-      redirectToMonitoringConsole()
+      redirectToMonitoringConsole({ activePlan: planName.toLowerCase() })
       return
     } catch (e: any) {
       alert(e?.message || "Failed to activate plan")
