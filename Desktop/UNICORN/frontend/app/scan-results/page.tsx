@@ -1072,19 +1072,45 @@ function ScanResultsContent() {
         {unlocked && showFinancialImpact && !financialImpact && !isBlocked && (
           <div className="p-6 sm:p-8 bg-[#111827] rounded-xl border border-cyan-500/25 mb-8">
             <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
-              Recovery layer
+              Recovery model (partial)
             </p>
             <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
-              You&apos;re already losing revenue - this is happening right now
+              Your revenue risk model is live — deeper financial ranges need a fuller crawl
             </h3>
-            <p className="text-sm text-gray-400 mb-5 max-w-2xl">
-              We&apos;ve mapped where conversion breaks across key pages. Continue to unlock the full page-by-page recovery plan.
+            <p className="text-sm text-gray-400 mb-4 max-w-2xl">
+              We already mapped structural risk and primary conversion leaks for this scan. Because confidence is limited, ARR-at-risk and recovery ranges are held until more page coverage is captured.
+            </p>
+            <div className="grid sm:grid-cols-3 gap-3 mb-5">
+              <div className="rounded-lg border border-white/10 bg-[#0d1320] p-3">
+                <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">RII</p>
+                <p className="text-lg font-bold text-white">{hasRii ? Math.round(rii as number) : "—"}</p>
+                <p className="text-xs text-gray-400">{data.risk_level}</p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-[#0d1320] p-3">
+                <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Benchmark signal</p>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  {typeof data.percentile === "number"
+                    ? data.percentile >= 50
+                      ? `Better than ${Math.round(data.percentile)}% of comparable SaaS companies`
+                      : `Worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of comparable SaaS companies`
+                    : "Benchmarking signal captured"}
+                </p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-[#0d1320] p-3">
+                <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Primary driver</p>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  {primarySignalDisplay(data.primary_signal).headline}
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-yellow-300/90 mb-5">
+              Low confidence detected for this crawl. Run a deeper monitoring pass to unlock full ARR impact ranges.
             </p>
             <Link
               href="/pricing?from=scan&focus=recovery"
               className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
             >
-              See exactly what&apos;s costing you revenue →
+              Unlock full recovery breakdown →
             </Link>
             <p className="text-xs text-gray-500 mt-3">
               Takes 30 seconds · Instant access · No spam
