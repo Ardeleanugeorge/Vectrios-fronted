@@ -47,6 +47,7 @@ interface DiagnosticResult {
   is_partial?: boolean
   /** Full-diagnostic playbook (backend) */
   action_layer?: ActionLayerPayload | null
+  scan_token?: string | null
 }
 
 interface MonitoringStatus {
@@ -128,6 +129,27 @@ export default function DashboardPage() {
       const parsed = JSON.parse(raw) as { domain?: string; website_url?: string }
       const domain = (parsed?.domain || parsed?.website_url || "").toString()
       return domain.replace(/^https?:\/\//i, "").replace(/^www\./i, "").split("/")[0] || null
+    } catch {
+      return null
+    }
+  }
+
+  const readActiveScanToken = (): string | null => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const tokenFromUrl = params.get("token")
+      if (tokenFromUrl) return tokenFromUrl
+    } catch {
+      /* ignore */
+    }
+
+    if (diagnostic?.scan_token) return diagnostic.scan_token
+
+    try {
+      const raw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+      if (!raw) return null
+      const parsed = JSON.parse(raw) as { scan_token?: string }
+      return parsed?.scan_token || null
     } catch {
       return null
     }
@@ -248,15 +270,34 @@ export default function DashboardPage() {
       }
     }
 
-    // Check for diagnostic result from onboarding or scan
-    const diagnosticData =
-      sessionStorage.getItem("diagnostic_result_full") ||
-      localStorage.getItem("diagnostic_result_full") ||
-      sessionStorage.getItem("diagnostic_result") ||
-      localStorage.getItem("diagnostic_result")
-    if (diagnosticData) {
+    // Check for diagnostic result from onboarding or scan.
+    // Priority: active scan token match > full diagnostic > partial diagnostic.
+    const parseStoredDiagnostic = (raw: string | null): DiagnosticResult | null => {
       try {
-        const parsed = JSON.parse(diagnosticData)
+        return raw ? (JSON.parse(raw) as DiagnosticResult) : null
+      } catch {
+        return null
+      }
+    }
+
+    const params = new URLSearchParams(window.location.search)
+    const activeScanToken = params.get("token")
+    const fullDiagnostic =
+      parseStoredDiagnostic(sessionStorage.getItem("diagnostic_result_full")) ||
+      parseStoredDiagnostic(localStorage.getItem("diagnostic_result_full"))
+    const partialDiagnostic =
+      parseStoredDiagnostic(sessionStorage.getItem("diagnostic_result")) ||
+      parseStoredDiagnostic(localStorage.getItem("diagnostic_result"))
+
+    const tokenMatchedDiagnostic =
+      activeScanToken
+        ? [partialDiagnostic, fullDiagnostic].find((d) => d?.scan_token === activeScanToken) || null
+        : null
+
+    const selectedDiagnostic = tokenMatchedDiagnostic || fullDiagnostic || partialDiagnostic
+    if (selectedDiagnostic) {
+      try {
+        const parsed = selectedDiagnostic
         console.log("[DASHBOARD] Loaded diagnostic:", { hasPartial: parsed.is_partial, riskScore: parsed.risk_score })
         setDiagnostic(parsed)
         setHasDiagnostic(true)  // Set to true even for partial diagnostics
@@ -281,7 +322,7 @@ export default function DashboardPage() {
 
     // Load monitoring status and subscription if company ID available
     if (companyId) {
-      loadMonitoringStatus(token, companyId)
+      loadMonitoringStatus(token, companyId, readActiveScanToken())
       loadAlerts(token, companyId)
       loadSubscription(token, companyId)
     }
@@ -303,22 +344,47 @@ export default function DashboardPage() {
     }
   }, [])
 
-  // Check for governance activation from URL params
+    // Check for governance activation from URL params
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get("governance") === "activated" && companyId) {
+      // Prevent stale full-diagnostic payload from overriding current scan score after activation.
+      const activatedToken = params.get("token")
+      try {
+        ;(["diagnostic_result_full"] as const).forEach((key) => {
+          const sessionRaw = sessionStorage.getItem(key)
+          if (sessionRaw) {
+            const parsed = JSON.parse(sessionRaw) as DiagnosticResult
+            if (!activatedToken || parsed?.scan_token !== activatedToken) {
+              sessionStorage.removeItem(key)
+            }
+          }
+          const localRaw = localStorage.getItem(key)
+          if (localRaw) {
+            const parsed = JSON.parse(localRaw) as DiagnosticResult
+            if (!activatedToken || parsed?.scan_token !== activatedToken) {
+              localStorage.removeItem(key)
+            }
+          }
+        })
+      } catch {
+        sessionStorage.removeItem("diagnostic_result_full")
+        localStorage.removeItem("diagnostic_result_full")
+      }
+
       // Reload monitoring status and subscription to reflect activation
       const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
       if (token) {
+        const activeScanToken = params.get("token")
         // Immediate reload - subscription first to set currentPlan
         loadSubscription(token, companyId)  // ← Critical: reload subscription FIRST to get trial plan
-        loadMonitoringStatus(token, companyId)
+        loadMonitoringStatus(token, companyId, activeScanToken)
         loadAlerts(token, companyId)
         
         // Also reload after delay to ensure backend processed
         setTimeout(() => {
           loadSubscription(token, companyId)  // Reload subscription again to ensure it's set
-          loadMonitoringStatus(token, companyId)
+          loadMonitoringStatus(token, companyId, activeScanToken)
           loadAlerts(token, companyId)
           // Trigger custom event to update DashboardHeader
           window.dispatchEvent(new CustomEvent("subscription_updated"))
@@ -334,9 +400,12 @@ export default function DashboardPage() {
     }
   }, [companyId])
 
-  const loadMonitoringStatus = async (token: string, companyId: string) => {
+  const loadMonitoringStatus = async (token: string, companyId: string, scanToken?: string | null) => {
     try {
-      const response = await fetch(`${API_URL}/monitoring/status/${companyId}`, {
+      const statusUrl = scanToken
+        ? `${API_URL}/monitoring/status/${companyId}?scan_token=${encodeURIComponent(scanToken)}`
+        : `${API_URL}/monitoring/status/${companyId}`
+      const response = await fetch(statusUrl, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -449,7 +518,11 @@ export default function DashboardPage() {
     if (!token) return
 
     try {
-      const response = await fetch(`${API_URL}/monitoring/activate/${companyId}`, {
+      const activeScanToken = readActiveScanToken()
+      const activateUrl = activeScanToken
+        ? `${API_URL}/monitoring/activate/${companyId}?scan_token=${encodeURIComponent(activeScanToken)}`
+        : `${API_URL}/monitoring/activate/${companyId}`
+      const response = await fetch(activateUrl, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -458,7 +531,7 @@ export default function DashboardPage() {
       
       if (response.ok) {
         // Reload monitoring status and subscription (trial is auto-assigned on activation)
-        loadMonitoringStatus(token, companyId)
+        loadMonitoringStatus(token, companyId, readActiveScanToken())
         loadAlerts(token, companyId)
         loadSubscription(token, companyId)
       } else {
