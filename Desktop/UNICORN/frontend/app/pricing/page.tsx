@@ -33,6 +33,38 @@ export default function PricingPage() {
     return params.get("return_to") === "pricing" && !!params.get("resume")
   })
 
+  // Scan impact banner
+  const [scanMonthlyLoss, setScanMonthlyLoss] = useState<{ low: number; high: number } | null>(null)
+  const formatCurrency = (val: number) => {
+    if (val >= 1000000) return `$${(val / 1000000).toFixed(1)}M`
+    if (val >= 1000) return `$${(val / 1000).toFixed(0)}K`
+    return `$${val.toFixed(0)}`
+  }
+  useEffect(() => {
+    try {
+      const tokenInQuery = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("token") : null
+      const storageRaw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+      const storageToken = (() => {
+        try {
+          if (!storageRaw) return null
+          const p = JSON.parse(storageRaw as string) as { scan_token?: string }
+          return p?.scan_token || null
+        } catch { return null }
+      })()
+      const scanToken = tokenInQuery || storageToken
+      if (!scanToken) return
+      fetch(`${API_URL}/scan/${scanToken}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          const fi = d?.financial_impact
+          if (fi && typeof fi.monthly_loss_low === "number" && typeof fi.monthly_loss_high === "number") {
+            setScanMonthlyLoss({ low: fi.monthly_loss_low, high: fi.monthly_loss_high })
+          }
+        })
+        .catch(() => {})
+    } catch {}
+  }, [])
+
   const canSendContact = useMemo(() => {
     return name.trim().length > 0 && email.trim().length > 0 && message.trim().length > 0
   }, [name, email, message])
@@ -382,6 +414,14 @@ export default function PricingPage() {
       <Header />
 
       <main className="max-w-6xl mx-auto px-6 py-12">
+        {scanMonthlyLoss && (
+          <div className="mb-6 p-4 rounded-lg bg-amber-950/40 border border-amber-500/40 text-amber-200 text-sm text-center">
+            Based on your scan, you&apos;re losing approximately{" "}
+            <span className="font-semibold text-amber-300">
+              {formatCurrency(scanMonthlyLoss.low)}–{formatCurrency(scanMonthlyLoss.high)}/month
+            </span>
+          </div>
+        )}
         {showActivatedBanner && (
           <div className="mb-6 p-4 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-sm">
             Plan activated successfully.

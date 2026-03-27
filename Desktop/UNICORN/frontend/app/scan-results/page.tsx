@@ -931,6 +931,11 @@ function ScanResultsContent() {
             <p className="text-xs text-gray-500 mb-5">
               Companies at your level typically recover $80K-$220K/year.
             </p>
+            {modeledAnnualLossLabel && (
+              <p className="text-sm text-amber-300 font-semibold mb-4">
+                Estimated impact: ~{modeledAnnualLossLabel} at risk
+              </p>
+            )}
             <button
               onClick={handleUnlock}
               className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
@@ -1133,9 +1138,9 @@ function ScanResultsContent() {
         {showEmailCapture && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-[#111827] rounded-xl border border-gray-800 p-8 max-w-md w-full">
-              <h3 className="text-2xl font-bold mb-2 text-white">Unlock your full revenue breakdown</h3>
+              <h3 className="text-2xl font-bold mb-2 text-white">Get your full revenue breakdown</h3>
               <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-                We&apos;ve mapped your loss and recovery potential. Enter your email to unlock the full recovery model and save it to your account.
+                We&apos;ve analyzed your site and identified where revenue is leaking. Enter your email to unlock the full analysis and save it to your account.
               </p>
               
               <form onSubmit={handleEmailCapture} className="space-y-4">
@@ -1169,7 +1174,7 @@ function ScanResultsContent() {
                     disabled={capturing || !email.trim()}
                     className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
                   >
-                    {capturing ? "Unlocking…" : "Unlock full analysis →"}
+                    {capturing ? "Unlocking…" : "See full analysis →"}
                   </button>
                 </div>
               </form>
