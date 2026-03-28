@@ -233,6 +233,28 @@ export default function AccountPage() {
 
   const trialExpired = isTrial && subscription?.trial_days_left === 0
 
+  // ── Plan feature map (static, always shown) ──────────────────────────
+  const ALL_FEATURES: Array<{ icon: string; key: string; label: string; desc: string; minPlan: "starter" | "growth" | "scale" }> = [
+    { icon: "📡", key: "signals",      label: "Revenue Signals",         desc: "Granular structural change signals per scan",         minPlan: "growth" },
+    { icon: "🚨", key: "alerts",       label: "Revenue Alerts",          desc: "Real-time drift alerts when risk changes",            minPlan: "growth" },
+    { icon: "📈", key: "forecast",     label: "Forecast Engine",         desc: "30-day revenue compression prediction",               minPlan: "growth" },
+    { icon: "⚡", key: "incidents",    label: "Revenue Incidents",       desc: "Severity-ranked active revenue incidents",            minPlan: "scale"  },
+    { icon: "🎯", key: "trajectory",   label: "Risk Trajectory",         desc: "30/60/90-day forward-looking risk projections",       minPlan: "scale"  },
+    { icon: "🏆", key: "benchmark",    label: "Benchmark Intelligence",  desc: "Compare vs 500+ SaaS companies in your tier",        minPlan: "scale"  },
+    { icon: "📊", key: "arr_sim",      label: "12-Month ARR Simulation", desc: "Model revenue with vs without messaging fixes",       minPlan: "scale"  },
+    { icon: "👥", key: "team",         label: "Team Monitoring",         desc: "Unlimited seats, shared dashboard access",           minPlan: "scale"  },
+  ]
+
+  const planTier = (p: string | null | undefined): 0 | 1 | 2 => {
+    const name = (p || "").toLowerCase()
+    if (name === "scale") return 2
+    if (name === "growth") return 1
+    return 0
+  }
+  const userTier = isTrial ? 2 : planTier(planName) // trial = scale-level access
+  const featureTier = (f: typeof ALL_FEATURES[0]) =>
+    f.minPlan === "scale" ? 2 : f.minPlan === "growth" ? 1 : 0
+
   // Smart dashboard redirect
   const getDashboardUrl = () => {
     try {
@@ -461,28 +483,73 @@ export default function AccountPage() {
                 </div>
           </div>
 
-              {/* Features card */}
-              {subscription?.features && Object.keys(subscription.features).length > 0 && (
-                <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-                  <div className="p-6 border-b border-gray-800">
+              {/* Included features — always visible, static per plan */}
+              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-800 flex items-center justify-between">
+                  <div>
                     <h2 className="text-lg font-semibold">Included features</h2>
+                    <p className="text-gray-500 text-sm mt-0.5">
+                      {planLabel ? `Active on your ${planLabel} plan` : "Start a plan to unlock these features"}
+                    </p>
                   </div>
-                  <div className="p-6 grid sm:grid-cols-2 gap-3">
-                {Object.entries(subscription.features).map(([feature, enabled]) => (
-                      <div key={feature} className={`flex items-center gap-3 p-3 rounded-xl border ${
-                        enabled ? 'border-cyan-500/20 bg-cyan-500/5' : 'border-gray-800 opacity-40'
-                      }`}>
-                        <span className={`text-lg ${enabled ? 'text-cyan-400' : 'text-gray-600'}`}>
-                          {enabled ? '✓' : '✗'}
-                    </span>
-                        <span className={`text-sm capitalize ${enabled ? 'text-gray-300' : 'text-gray-600'}`}>
-                          {feature.replace(/_/g, ' ')}
-                    </span>
+                  {userTier < 2 && (
+                    <Link href="/upgrade" className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition">
+                      Unlock all →
+                    </Link>
+                  )}
+                </div>
+                <div className="p-6 grid sm:grid-cols-2 gap-3">
+                  {ALL_FEATURES.map(feat => {
+                    const enabled = userTier >= featureTier(feat)
+                    return (
+                      <div
+                        key={feat.key}
+                        className={`flex items-start gap-3 p-3.5 rounded-xl border transition ${
+                          enabled
+                            ? "border-cyan-500/20 bg-cyan-500/5"
+                            : "border-gray-800/60 bg-gray-900/20 opacity-50"
+                        }`}
+                      >
+                        <span className="text-xl mt-0.5 shrink-0">{feat.icon}</span>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm font-medium ${enabled ? "text-gray-200" : "text-gray-500"}`}>
+                              {feat.label}
+                            </span>
+                            {enabled ? (
+                              <span className="text-[10px] text-emerald-400 font-bold">✓</span>
+                            ) : (
+                              <span className="text-[10px] text-gray-600 px-1.5 py-0.5 rounded bg-gray-800 font-medium uppercase tracking-wider">
+                                {feat.minPlan === "scale" ? "Scale" : "Growth"}+
+                              </span>
+                            )}
+                          </div>
+                          <p className={`text-xs mt-0.5 ${enabled ? "text-gray-500" : "text-gray-700"}`}>
+                            {feat.desc}
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                {userTier < 2 && (
+                  <div className="px-6 pb-5">
+                    <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 flex items-center justify-between gap-4 flex-wrap">
+                      <p className="text-sm text-amber-300/80">
+                        {userTier === 0
+                          ? "Upgrade to Growth to unlock alerts, signals, and forecast engine."
+                          : "Upgrade to Scale to unlock incidents, trajectory, benchmark, and team access."}
+                      </p>
+                      <Link
+                        href="/upgrade"
+                        className="shrink-0 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs transition"
+                      >
+                        Upgrade →
+                      </Link>
+                    </div>
                   </div>
-                ))}
+                )}
               </div>
-            </div>
-          )}
 
               {/* Billing card */}
               <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
