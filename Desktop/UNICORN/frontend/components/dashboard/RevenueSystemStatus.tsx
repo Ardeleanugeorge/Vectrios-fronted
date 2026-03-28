@@ -64,17 +64,13 @@ export default function RevenueSystemStatus({
         </div>
       )}
       
-      {/* Premium details */}
-      <div className="mt-6 pt-4 border-t border-gray-800 flex items-center gap-6 text-xs text-gray-500">
-        <div>
-          <span className="text-gray-500">Monitoring Coverage: </span>
-          <span className="text-gray-400 font-medium">Revenue-Stage Messaging</span>
-        </div>
-        <div>
-          <span className="text-gray-500">Risk Signal Confidence: </span>
+      {/* Model confidence note */}
+      {(modelConfidence || impactConfidence) && (
+        <div className="mt-6 pt-4 border-t border-gray-800 text-xs text-gray-500">
+          <span>Risk Signal Confidence: </span>
           <span className="text-gray-400 font-medium capitalize">{modelConfidence || impactConfidence}</span>
         </div>
-      </div>
+      )}
     </div>
   )
 }

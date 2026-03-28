@@ -61,7 +61,7 @@ function LockedCard({ title, description, ctaLabel }: {
           <p className="text-sm font-semibold text-white mb-1">{title}</p>
           <p className="text-xs text-gray-500 mb-3">{description}</p>
           <Link
-            href="/pricing"
+            href="/upgrade"
             className="inline-block px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-xs text-center leading-snug"
           >
             {ctaLabel}
@@ -160,7 +160,7 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
         <LockedCard
           title="Recover lost revenue"
           description="Full fix plan, ARR at risk, close-rate impact, and page-by-page breakdown."
-          ctaLabel="See how to recover $185K/year"
+          ctaLabel="See full recovery plan"
         />
         <LockedCard
           title="Maximize revenue performance"
@@ -179,13 +179,13 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
-            href="/pricing"
+            href="/upgrade"
             className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-sm text-center"
           >
             View plans & recover revenue
           </Link>
           <Link
-            href="/pricing"
+            href="/upgrade"
             className="inline-block px-6 py-3 bg-transparent hover:bg-gray-800 text-cyan-400 font-medium rounded-lg border border-cyan-700 transition text-sm text-center"
           >
             Try risk-free — 14-day full access

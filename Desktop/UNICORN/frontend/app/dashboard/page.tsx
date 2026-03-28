@@ -117,6 +117,7 @@ export default function DashboardPage() {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
+  const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const [monitoringLoading, setMonitoringLoading] = useState(true)
 
@@ -305,27 +306,6 @@ export default function DashboardPage() {
     }
   }
 
-  const calculateTrialDays = (status: MonitoringStatus | null): number | null => {
-    if (!status || !status.monitoring_active) return null
-    
-    // Use last_evaluated_at if available, otherwise created_at
-    const startDateStr = status.last_evaluated_at || status.created_at
-    if (!startDateStr) return null
-    
-    try {
-      const startDate = new Date(startDateStr)
-      const today = new Date()
-      const diffTime = Math.abs(today.getTime() - startDate.getTime())
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-      
-      // Return day number (1-14), capped at 14
-      return Math.min(diffDays + 1, 14)
-    } catch (e) {
-      console.error("Error calculating trial days:", e)
-      return null
-    }
-  }
-
   const loadSubscription = async (token: string, companyId: string) => {
     setSubscriptionLoading(true)
     try {
@@ -342,9 +322,11 @@ export default function DashboardPage() {
         if (data.billing_cycle === "trial") {
           console.log("[DASHBOARD] Setting currentPlan to 'scale' (trial has full access)")
           setCurrentPlan("scale")
+          setTrialDaysLeft(typeof data.trial_days_left === "number" ? data.trial_days_left : null)
         } else {
           console.log("[DASHBOARD] Setting currentPlan to:", data.plan || null)
           setCurrentPlan(data.plan || null)
+          setTrialDaysLeft(null)
         }
       } else {
         console.error("[DASHBOARD] Failed to load subscription:", response.status, response.statusText)
@@ -567,7 +549,7 @@ export default function DashboardPage() {
               diagnostic={diagnostic}
               alerts={alerts}
               onMarkAlertRead={markAlertRead}
-              trialDays={calculateTrialDays(monitoringStatus)}
+              trialDays={trialDaysLeft}
               companyId={companyId}
               currentPlan={currentPlan}
             />
