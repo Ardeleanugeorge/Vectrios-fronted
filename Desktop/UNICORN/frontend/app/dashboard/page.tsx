@@ -534,20 +534,26 @@ export default function DashboardPage() {
           </div>
 
           {/* REVENUE RISK INDEX - Visible when diagnostic OR monitoring structural scores exist */}
-          {(hasDiagnostic && diagnostic) || (isMonitoringActive && monitoringStatus?.structural_health?.structural_health_score) ? (
-            <RevenueRiskIndex
-              riskScore={
-                diagnostic?.risk_score ??
-                monitoringStatus?.structural_scores?.rii_score ??
-                monitoringStatus?.structural_health?.structural_health_score ??
-                null
-              }
-              riskLevel={diagnostic?.risk_level || "MODERATE"}
-              confidence={confidence}
-              overrideTriggered={overrideTriggered}
-              scoreSource={diagnostic?.is_partial ? "instant_scan" : hasDiagnostic ? "full_diagnostic" : undefined}
-            />
-          ) : null}
+          {(() => {
+            const riiScore =
+              diagnostic?.risk_score ??
+              monitoringStatus?.structural_scores?.rii_score ??
+              monitoringStatus?.structural_health?.structural_health_score ??
+              null
+            const shouldShowRII =
+              (hasDiagnostic && diagnostic) ||
+              (isMonitoringActive && riiScore !== null && riiScore !== undefined)
+            if (!shouldShowRII) return null
+            return (
+              <RevenueRiskIndex
+                riskScore={riiScore}
+                riskLevel={diagnostic?.risk_level || "MODERATE"}
+                confidence={confidence}
+                overrideTriggered={overrideTriggered}
+                scoreSource={diagnostic?.is_partial ? "instant_scan" : hasDiagnostic ? "full_diagnostic" : undefined}
+              />
+            )
+          })()}
 
           {/* While monitoring status is loading from API, show spinner */}
           {monitoringLoading && companyId ? (
