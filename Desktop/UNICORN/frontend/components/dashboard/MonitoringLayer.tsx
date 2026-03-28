@@ -344,34 +344,76 @@ export default function MonitoringLayer({
         <p className="text-xs text-gray-500 mt-2">{trendText}</p>
       </div>
 
-      {/* MANUAL MONITORING RUN */}
-      {!!currentPlan && (
-        <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-950/20 via-[#111827] to-[#0d1320] p-6 lg:p-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div>
-              <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
-                Daily Automatic Revenue Monitoring
-              </p>
-              <h3 className="text-xl lg:text-2xl font-bold text-white mb-2">
-                We monitor your revenue structure continuously
-              </h3>
-              <p className="text-sm text-gray-400 max-w-2xl">
-                Continuous 24-hour scans keep your signal fresh and surface structural drift automatically.
-              </p>
+      {/* MONITORING STATUS STRIP */}
+      {!!currentPlan && (() => {
+        const lastEval = monitoringStatus.last_evaluated_at
+          ? new Date(monitoringStatus.last_evaluated_at)
+          : null
+        const nowMs = Date.now()
+
+        const formatAgo = (d: Date) => {
+          const diffMs = nowMs - d.getTime()
+          const diffH = Math.floor(diffMs / 3_600_000)
+          const diffM = Math.floor(diffMs / 60_000)
+          if (diffH >= 24) return `${Math.floor(diffH / 24)}d ago`
+          if (diffH >= 1) return `${diffH}h ago`
+          if (diffM >= 1) return `${diffM}m ago`
+          return "just now"
+        }
+
+        const formatNextIn = (d: Date) => {
+          const nextMs = d.getTime() + 24 * 3_600_000
+          const diffMs = nextMs - nowMs
+          if (diffMs <= 0) return "soon"
+          const h = Math.floor(diffMs / 3_600_000)
+          const m = Math.floor((diffMs % 3_600_000) / 60_000)
+          if (h >= 1) return `~${h}h`
+          return `~${m}m`
+        }
+
+        const lastScanLabel = lastEval ? formatAgo(lastEval) : "—"
+        const nextScanLabel = lastEval ? formatNextIn(lastEval) : "~24h"
+        const planLabel = currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)
+        const trialLabel = trialDays ? ` · Trial day ${trialDays}` : ""
+
+        return (
+          <div className="flex flex-wrap items-center gap-px rounded-2xl overflow-hidden border border-gray-800 bg-[#0d1117] text-sm">
+            {/* Status dot */}
+            <div className="flex items-center gap-2.5 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span className="text-emerald-400 font-medium text-xs uppercase tracking-wide">Live</span>
             </div>
-            <div className="text-sm text-gray-400">
-              <span className="text-gray-500">Active package:</span>{" "}
-              <span className="text-white font-semibold">{currentPlan.toUpperCase()}</span>
-              {trialDays ? <span className="text-gray-500"> · Trial day {trialDays}</span> : null}
+
+            {/* Last scan */}
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+              <span className="text-gray-600 text-xs">Last scan</span>
+              <span className="text-white font-semibold text-xs">{lastScanLabel}</span>
+            </div>
+
+            {/* Next scan */}
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+              <span className="text-gray-600 text-xs">Next</span>
+              <span className="text-cyan-400 font-semibold text-xs">{nextScanLabel}</span>
+            </div>
+
+            {/* Cadence */}
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+              <span className="text-gray-600 text-xs">Cadence</span>
+              <span className="text-gray-300 font-medium text-xs">24h auto</span>
+            </div>
+
+            {/* Plan */}
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] ml-auto">
+              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-semibold text-xs tracking-wide">
+                {planLabel}{trialLabel}
+              </span>
             </div>
           </div>
-          <div className="mt-6 pt-5 border-t border-gray-800/80">
-            <p className="text-xs text-gray-500">
-              Manual trigger is disabled. Monitoring runs automatically every 24 hours.
-            </p>
-          </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action */}
       {diagnostic && (
