@@ -239,26 +239,29 @@ export default function AccountPage() {
     minPlan: "starter" | "growth" | "scale"
   }> = [
     // ── Starter base ──────────────────────────────────────────────────
-    { icon: "📊", key: "rii",          label: "RII Score",                desc: "Revenue Impact Index — structural risk on a 0–100 scale",       minPlan: "starter" },
-    { icon: "🔍", key: "leak",         label: "Revenue Leak Detection",   desc: "Identify primary messaging gaps costing pipeline",              minPlan: "starter" },
-    { icon: "📝", key: "breakdown",    label: "Messaging Breakdown",      desc: "Page-by-page structural analysis from live crawl",              minPlan: "starter" },
-    { icon: "⚡", key: "fix1",         label: "Top Fix Recommendation",   desc: "Highest-impact fix with Before/After copy + $/month estimate",  minPlan: "starter" },
+    { icon: "📊", key: "rii",          label: "RII Score",                 desc: "Revenue Impact Index — structural risk on a 0–100 scale",            minPlan: "starter" },
+    { icon: "🔍", key: "leak",         label: "Revenue Leak Detection",    desc: "Identify primary messaging gaps costing pipeline",                   minPlan: "starter" },
+    { icon: "📝", key: "breakdown",    label: "Messaging Breakdown",       desc: "Page-by-page structural analysis from live crawl",                   minPlan: "starter" },
+    { icon: "🎯", key: "action",       label: "Action Engine",             desc: "Top fix with priority, $/month impact estimate and 🔴 Start here",   minPlan: "starter" },
     // ── Growth ────────────────────────────────────────────────────────
-    { icon: "📋", key: "playbook",     label: "Full Fix Playbook",        desc: "3-fix step-by-step plan with Copy-ready suggested copy",        minPlan: "growth"  },
-    { icon: "💰", key: "arr_risk",     label: "ARR at Risk Calculation",  desc: "Dollar-level exposure tied to your actual ARR",                 minPlan: "growth"  },
-    { icon: "📉", key: "close_rate",   label: "Close Rate Impact Model",  desc: "How messaging gaps compress your current close rate",           minPlan: "growth"  },
-    { icon: "📡", key: "signals",      label: "Revenue Signals",          desc: "Granular structural change signals after each scan",            minPlan: "growth"  },
-    { icon: "🚨", key: "alerts",       label: "Revenue Alerts",           desc: "Real-time drift alerts when structural risk changes",           minPlan: "growth"  },
-    { icon: "📈", key: "forecast",     label: "Forecast Engine",          desc: "30-day revenue compression prediction",                         minPlan: "growth"  },
+    { icon: "✂️", key: "autofix",      label: "Auto-Fix Engine",           desc: "Before/After copy per fix — copy-ready text with 📋 Copy button",   minPlan: "growth"  },
+    { icon: "📋", key: "playbook",     label: "Full Fix Playbook",         desc: "3-fix step-by-step plan, each with page target + $/month recovery",  minPlan: "growth"  },
+    { icon: "💰", key: "arr_risk",     label: "ARR at Risk Calculation",   desc: "Dollar-level exposure tied to your actual ARR + calibration",        minPlan: "growth"  },
+    { icon: "📉", key: "close_rate",   label: "Close Rate Impact Model",   desc: "How messaging gaps compress your current close rate",                minPlan: "growth"  },
+    { icon: "📡", key: "signals",      label: "Revenue Signals",           desc: "Granular structural change signals after each scan",                 minPlan: "growth"  },
+    { icon: "🚨", key: "alerts",       label: "Revenue Alerts",            desc: "Real-time drift alerts when structural risk changes",                minPlan: "growth"  },
+    { icon: "📈", key: "forecast",     label: "Forecast Engine",           desc: "30-day revenue compression prediction",                              minPlan: "growth"  },
     // ── Scale ─────────────────────────────────────────────────────────
-    { icon: "🔄", key: "monitoring",   label: "24h Continuous Monitoring","desc": "Daily automatic re-scan — always-fresh RII and signals",       minPlan: "scale"  },
-    { icon: "🎯", key: "trajectory",   label: "Risk Trajectory",          desc: "30/60/90-day forward-looking risk projections",                 minPlan: "scale"  },
-    { icon: "⚡", key: "incidents",    label: "Revenue Incidents",        desc: "Severity-ranked active incidents with suggested response",       minPlan: "scale"  },
-    { icon: "🏆", key: "benchmark",    label: "Benchmark Intelligence",   desc: "Compare vs 500+ SaaS companies in your revenue tier",          minPlan: "scale"  },
-    { icon: "📊", key: "arr_sim",      label: "12-Month ARR Simulation",  desc: "Model revenue trajectory with vs without fixes applied",        minPlan: "scale"  },
-    { icon: "🔗", key: "apis",         label: "GSC + GA4 Modifiers",      desc: "Real search + behavior data applied to revenue model",          minPlan: "scale"  },
-    { icon: "📧", key: "executive",    label: "Executive Risk Summaries", desc: "Weekly board-ready summaries of structural drift",              minPlan: "scale"  },
-    { icon: "👥", key: "team",         label: "Team Monitoring",          desc: "Unlimited seats with shared dashboard access",                  minPlan: "scale"  },
+    { icon: "🔄", key: "monitoring",   label: "24h Continuous Monitoring", desc: "Daily automatic re-scan — always-fresh RII and signals",             minPlan: "scale"  },
+    { icon: "📊", key: "delta",        label: "Revenue Delta Engine",      desc: "+$X/month worse vs last scan — with WHY drivers (ICP, alignment…)",  minPlan: "scale"  },
+    { icon: "🔴", key: "delta_action", label: "Delta + Action Combo",      desc: "'Fix this first' shown instantly when revenue leak increases",       minPlan: "scale"  },
+    { icon: "🎯", key: "trajectory",   label: "Risk Trajectory",           desc: "30/60/90-day forward-looking risk projections",                      minPlan: "scale"  },
+    { icon: "⚡", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale"  },
+    { icon: "🏆", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Compare vs 500+ SaaS companies in your revenue tier",               minPlan: "scale"  },
+    { icon: "📊", key: "arr_sim",      label: "12-Month ARR Simulation",   desc: "Model revenue trajectory with vs without fixes applied",             minPlan: "scale"  },
+    { icon: "🔗", key: "apis",         label: "GSC + GA4 Modifiers",       desc: "Real search + behavior data applied to revenue model",               minPlan: "scale"  },
+    { icon: "📧", key: "executive",    label: "Executive Risk Summaries",  desc: "Weekly board-ready summaries of structural drift",                   minPlan: "scale"  },
+    { icon: "👥", key: "team",         label: "Team Monitoring",           desc: "Unlimited seats with shared dashboard access",                       minPlan: "scale"  },
   ]
 
   const planTier = (p: string | null | undefined): 0 | 1 | 2 => {

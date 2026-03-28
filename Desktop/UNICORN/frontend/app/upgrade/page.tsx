@@ -15,11 +15,12 @@ const PLAN_FEATURES: Record<string, string[]> = {
     '📊 RII Score — structural risk 0–100',
     '🔍 Revenue leak detection',
     '📝 Messaging breakdown (page-by-page)',
-    '⚡ Top fix with Before/After copy + $/month',
+    '🎯 Action Engine — top fix + $/month + 🔴 Start here',
   ],
   growth: [
     'Everything in Starter, plus:',
-    '📋 Full fix playbook — 3 copy-ready fixes',
+    '✂️ Auto-Fix Engine — Before/After copy + 📋 Copy button',
+    '📋 Full fix playbook — 3 fixes with page targets',
     '💰 ARR at risk calculation',
     '📉 Close rate impact modeling',
     '📡 Revenue signals after each scan',
@@ -29,6 +30,8 @@ const PLAN_FEATURES: Record<string, string[]> = {
   scale: [
     'Everything in Growth, plus:',
     '🔄 24h continuous monitoring',
+    '📊 Revenue Delta Engine — +$X/month vs last scan + WHY drivers',
+    '🔴 Delta + Action combo — "Fix this first" on leak increase',
     '🎯 Risk trajectory — 30/60/90-day view',
     '⚡ Revenue incidents (severity-ranked)',
     '🏆 Benchmark vs 500+ SaaS companies',
