@@ -545,7 +545,7 @@ export default function DashboardPage() {
               riskLevel={diagnostic?.risk_level || "MODERATE"}
               confidence={confidence}
               overrideTriggered={overrideTriggered}
-              scoreSource={diagnostic?.is_partial ? "instant_scan" : hasDiagnostic ? "full_diagnostic" : "monitoring"}
+              scoreSource={diagnostic?.is_partial ? "instant_scan" : hasDiagnostic ? "full_diagnostic" : undefined}
             />
           ) : null}
 
