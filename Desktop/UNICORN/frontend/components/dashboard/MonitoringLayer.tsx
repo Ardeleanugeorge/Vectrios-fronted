@@ -132,6 +132,7 @@ export default function MonitoringLayer({
     delta_rii?: number
     direction?: "worse" | "better" | "stable"
     trend_last_4?: "worsening" | "improving" | "stable" | "insufficient_data"
+    drivers?: string[]
   }>(null)
   useEffect(() => {
     if (!companyId) return
@@ -298,27 +299,81 @@ export default function MonitoringLayer({
 
       {/* REVENUE DELTA — +$/-$/stable vs last scan */}
       {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
-        <div className={`p-4 rounded-lg border ${
+        <div className={`rounded-xl border overflow-hidden ${
           revenueDelta.direction === "worse"
             ? "border-red-700/40 bg-red-950/10"
             : revenueDelta.direction === "better"
             ? "border-emerald-700/40 bg-emerald-950/10"
             : "border-gray-700/40 bg-[#0B0F19]"
         }`}>
-          <p className="text-sm text-gray-300">
-            <span className="font-semibold text-white">
-              {revenueDelta.delta_monthly_loss > 0 ? `+ $${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month worse` :
-               revenueDelta.delta_monthly_loss < 0 ? `↓ $${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month improvement` :
-               "No change vs last scan"}
-            </span>
-            {typeof revenueDelta.delta_rii === "number" && (
-              <span className="text-gray-400"> · RII {revenueDelta.delta_rii > 0 ? `+${revenueDelta.delta_rii}` : revenueDelta.delta_rii}</span>
+          {/* Header row */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
+            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Revenue Change (last scan)</p>
+            {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                revenueDelta.trend_last_4 === "worsening" ? "text-red-400 bg-red-400/10" :
+                revenueDelta.trend_last_4 === "improving" ? "text-emerald-400 bg-emerald-400/10" :
+                "text-gray-400 bg-gray-800"
+              }`}>
+                {revenueDelta.trend_last_4 === "worsening" ? "🔺 Worsening" :
+                 revenueDelta.trend_last_4 === "improving" ? "🔻 Improving" : "→ Stable"}
+              </span>
             )}
-          </p>
-          {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (
-            <p className="text-xs text-gray-500 mt-1">
-              Trend: {revenueDelta.trend_last_4 === "worsening" ? "worsening" : revenueDelta.trend_last_4}
+          </div>
+
+          {/* Main number */}
+          <div className="px-5 py-4">
+            <p className={`text-2xl font-bold ${
+              revenueDelta.direction === "worse" ? "text-red-400" :
+              revenueDelta.direction === "better" ? "text-emerald-400" : "text-gray-300"
+            }`}>
+              {revenueDelta.delta_monthly_loss > 0
+                ? `+$${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month worse`
+                : revenueDelta.delta_monthly_loss < 0
+                ? `↓ $${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month better`
+                : "No change vs last scan"}
             </p>
+            {typeof revenueDelta.delta_rii === "number" && revenueDelta.delta_rii !== 0 && (
+              <p className="text-xs text-gray-500 mt-1">
+                RII {revenueDelta.delta_rii > 0 ? `+${revenueDelta.delta_rii}` : revenueDelta.delta_rii} pts since last scan
+              </p>
+            )}
+          </div>
+
+          {/* Drivers */}
+          {revenueDelta.drivers && revenueDelta.drivers.length > 0 && (
+            <div className="px-5 pb-4 border-t border-white/5 pt-3">
+              <p className="text-xs text-gray-500 mb-2">Driven by:</p>
+              <ul className="space-y-1">
+                {revenueDelta.drivers.map((d, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs text-gray-300">
+                    <span className={`mt-0.5 shrink-0 ${
+                      revenueDelta.direction === "worse" ? "text-red-400" :
+                      revenueDelta.direction === "better" ? "text-emerald-400" : "text-gray-500"
+                    }`}>•</span>
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Fix this first — delta + action combo (killer UX) */}
+          {revenueDelta.direction === "worse" && diagnostic?.action_layer?.fixes?.[0] && (
+            <div className="mx-4 mb-4 px-4 py-3 rounded-lg bg-orange-950/20 border border-orange-500/20">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400 mb-1.5">
+                🔴 Fix this first
+              </p>
+              <p className="text-sm font-semibold text-white">
+                {diagnostic.action_layer.fixes[0].title}
+              </p>
+              {diagnostic.action_layer.fixes[0].impact_contribution?.monthly_impact &&
+               diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact !== "—" && (
+                <p className="text-xs text-emerald-400 mt-1">
+                  → expected recovery: <span className="font-bold">{diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact}</span>
+                </p>
+              )}
+            </div>
           )}
         </div>
       )}

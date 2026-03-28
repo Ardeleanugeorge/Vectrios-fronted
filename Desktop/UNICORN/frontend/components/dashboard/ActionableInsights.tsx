@@ -5,6 +5,8 @@ import FeatureGate from "./FeatureGate"
 export type FixImpactContribution = {
   close_rate: string
   arr_recovery: string
+  monthly_impact?: string
+  monthly_impact_hi_raw?: number
 }
 
 export type ActionFix = {
@@ -15,6 +17,12 @@ export type ActionFix = {
   impact_contribution?: FixImpactContribution
 }
 
+export type TopAction = {
+  title: string
+  monthly_impact: string
+  monthly_impact_hi_raw?: number
+}
+
 export type ActionLayerPayload = {
   issue_type: string
   primary_issue: { title: string; description: string }
@@ -22,6 +30,7 @@ export type ActionLayerPayload = {
   fixes: ActionFix[]
   expected_impact: { close_rate_improvement: string; arr_recovery: string }
   priority: { level: string; reason: string; display_line?: string }
+  top_action?: TopAction | null
 }
 
 /** When backend has no action_layer (older diagnostics): same UI shape, score-driven copy */
@@ -54,10 +63,16 @@ export function buildLightweightActionLayer(
   const n = 3
   const fmt = (x: number) =>
     x >= 1_000_000 ? `$${(x / 1_000_000).toFixed(1)}M` : `$${Math.round(x / 1000)}K`
-  const perFix = (i: number) => ({
-    close_rate: `+${(lo_cr / n).toFixed(2)}% – +${(hi_cr / n).toFixed(2)}% close rate (est., share)`,
-    arr_recovery: `${fmt(arr_lo / n)} – ${fmt(arr_hi / n)} ARR (est., share)`,
-  })
+  const perFix = (i: number) => {
+    const mo_lo = (arr_lo / n) / 12
+    const mo_hi = (arr_hi / n) / 12
+    return {
+      close_rate: `+${(lo_cr / n).toFixed(2)}% – +${(hi_cr / n).toFixed(2)}% close rate (est., share)`,
+      arr_recovery: `${fmt(arr_lo / n)} – ${fmt(arr_hi / n)} ARR (est., share)`,
+      monthly_impact: `+${fmt(mo_lo)} – ${fmt(mo_hi)}/month`,
+      monthly_impact_hi_raw: Math.round(mo_hi),
+    }
+  }
 
   const primary: Record<string, { title: string; description: string }> = {
     icp: {
@@ -277,12 +292,28 @@ export default function ActionableInsights({
           </ul>
         </div>
 
-        {/* 3. Fix #1 — always visible */}
+        {/* 3. Fix #1 — "Start here" callout + card */}
         <div className="mb-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
-            What to change first
-          </p>
-          <FixCard fix={first} index={1} />
+          {/* START HERE banner */}
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              What to change first
+            </p>
+            {first.impact_contribution?.monthly_impact && first.impact_contribution.monthly_impact !== "—" && (
+              <span className="text-xs font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1 rounded-full">
+                {first.impact_contribution.monthly_impact}
+              </span>
+            )}
+          </div>
+          <div className="relative">
+            <div className="absolute -left-0.5 top-0 bottom-0 w-0.5 rounded-full bg-gradient-to-b from-red-500 to-orange-500" />
+            <div className="pl-4">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-red-400 mb-1.5">
+                🔴 Start here
+              </p>
+              <FixCard fix={first} index={1} />
+            </div>
+          </div>
         </div>
 
         {/* 4–5. Additional fixes + impact + priority detail — Growth+ */}
