@@ -234,15 +234,31 @@ export default function AccountPage() {
   const trialExpired = isTrial && subscription?.trial_days_left === 0
 
   // ── Plan feature map (static, always shown) ──────────────────────────
-  const ALL_FEATURES: Array<{ icon: string; key: string; label: string; desc: string; minPlan: "starter" | "growth" | "scale" }> = [
-    { icon: "📡", key: "signals",      label: "Revenue Signals",         desc: "Granular structural change signals per scan",         minPlan: "growth" },
-    { icon: "🚨", key: "alerts",       label: "Revenue Alerts",          desc: "Real-time drift alerts when risk changes",            minPlan: "growth" },
-    { icon: "📈", key: "forecast",     label: "Forecast Engine",         desc: "30-day revenue compression prediction",               minPlan: "growth" },
-    { icon: "⚡", key: "incidents",    label: "Revenue Incidents",       desc: "Severity-ranked active revenue incidents",            minPlan: "scale"  },
-    { icon: "🎯", key: "trajectory",   label: "Risk Trajectory",         desc: "30/60/90-day forward-looking risk projections",       minPlan: "scale"  },
-    { icon: "🏆", key: "benchmark",    label: "Benchmark Intelligence",  desc: "Compare vs 500+ SaaS companies in your tier",        minPlan: "scale"  },
-    { icon: "📊", key: "arr_sim",      label: "12-Month ARR Simulation", desc: "Model revenue with vs without messaging fixes",       minPlan: "scale"  },
-    { icon: "👥", key: "team",         label: "Team Monitoring",         desc: "Unlimited seats, shared dashboard access",           minPlan: "scale"  },
+  const ALL_FEATURES: Array<{
+    icon: string; key: string; label: string; desc: string
+    minPlan: "starter" | "growth" | "scale"
+  }> = [
+    // ── Starter base ──────────────────────────────────────────────────
+    { icon: "📊", key: "rii",          label: "RII Score",                desc: "Revenue Impact Index — structural risk on a 0–100 scale",       minPlan: "starter" },
+    { icon: "🔍", key: "leak",         label: "Revenue Leak Detection",   desc: "Identify primary messaging gaps costing pipeline",              minPlan: "starter" },
+    { icon: "📝", key: "breakdown",    label: "Messaging Breakdown",      desc: "Page-by-page structural analysis from live crawl",              minPlan: "starter" },
+    { icon: "⚡", key: "fix1",         label: "Top Fix Recommendation",   desc: "Highest-impact fix with Before/After copy + $/month estimate",  minPlan: "starter" },
+    // ── Growth ────────────────────────────────────────────────────────
+    { icon: "📋", key: "playbook",     label: "Full Fix Playbook",        desc: "3-fix step-by-step plan with Copy-ready suggested copy",        minPlan: "growth"  },
+    { icon: "💰", key: "arr_risk",     label: "ARR at Risk Calculation",  desc: "Dollar-level exposure tied to your actual ARR",                 minPlan: "growth"  },
+    { icon: "📉", key: "close_rate",   label: "Close Rate Impact Model",  desc: "How messaging gaps compress your current close rate",           minPlan: "growth"  },
+    { icon: "📡", key: "signals",      label: "Revenue Signals",          desc: "Granular structural change signals after each scan",            minPlan: "growth"  },
+    { icon: "🚨", key: "alerts",       label: "Revenue Alerts",           desc: "Real-time drift alerts when structural risk changes",           minPlan: "growth"  },
+    { icon: "📈", key: "forecast",     label: "Forecast Engine",          desc: "30-day revenue compression prediction",                         minPlan: "growth"  },
+    // ── Scale ─────────────────────────────────────────────────────────
+    { icon: "🔄", key: "monitoring",   label: "24h Continuous Monitoring","desc": "Daily automatic re-scan — always-fresh RII and signals",       minPlan: "scale"  },
+    { icon: "🎯", key: "trajectory",   label: "Risk Trajectory",          desc: "30/60/90-day forward-looking risk projections",                 minPlan: "scale"  },
+    { icon: "⚡", key: "incidents",    label: "Revenue Incidents",        desc: "Severity-ranked active incidents with suggested response",       minPlan: "scale"  },
+    { icon: "🏆", key: "benchmark",    label: "Benchmark Intelligence",   desc: "Compare vs 500+ SaaS companies in your revenue tier",          minPlan: "scale"  },
+    { icon: "📊", key: "arr_sim",      label: "12-Month ARR Simulation",  desc: "Model revenue trajectory with vs without fixes applied",        minPlan: "scale"  },
+    { icon: "🔗", key: "apis",         label: "GSC + GA4 Modifiers",      desc: "Real search + behavior data applied to revenue model",          minPlan: "scale"  },
+    { icon: "📧", key: "executive",    label: "Executive Risk Summaries", desc: "Weekly board-ready summaries of structural drift",              minPlan: "scale"  },
+    { icon: "👥", key: "team",         label: "Team Monitoring",          desc: "Unlimited seats with shared dashboard access",                  minPlan: "scale"  },
   ]
 
   const planTier = (p: string | null | undefined): 0 | 1 | 2 => {
@@ -254,6 +270,12 @@ export default function AccountPage() {
   const userTier = isTrial ? 2 : planTier(planName) // trial = scale-level access
   const featureTier = (f: typeof ALL_FEATURES[0]) =>
     f.minPlan === "scale" ? 2 : f.minPlan === "growth" ? 1 : 0
+
+  const featGroups = [
+    { label: "Starter", tier: 0, color: "text-gray-400", dot: "bg-gray-600" },
+    { label: "Growth",  tier: 1, color: "text-cyan-400",  dot: "bg-cyan-500" },
+    { label: "Scale",   tier: 2, color: "text-violet-400", dot: "bg-violet-500" },
+  ] as const
 
   // Smart dashboard redirect
   const getDashboardUrl = () => {
@@ -483,13 +505,13 @@ export default function AccountPage() {
                 </div>
           </div>
 
-              {/* Included features — always visible, static per plan */}
+              {/* Included features — always visible, grouped by plan tier */}
               <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
                 <div className="px-6 py-5 border-b border-gray-800 flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-semibold">Included features</h2>
                     <p className="text-gray-500 text-sm mt-0.5">
-                      {planLabel ? `Active on your ${planLabel} plan` : "Start a plan to unlock these features"}
+                      {planLabel ? `What's active on your ${planLabel} plan` : "Start a plan to unlock features"}
                     </p>
                   </div>
                   {userTier < 2 && (
@@ -498,53 +520,99 @@ export default function AccountPage() {
                     </Link>
                   )}
                 </div>
-                <div className="p-6 grid sm:grid-cols-2 gap-3">
-                  {ALL_FEATURES.map(feat => {
-                    const enabled = userTier >= featureTier(feat)
+
+                <div className="divide-y divide-gray-800/60">
+                  {featGroups.map(group => {
+                    const groupFeatures = ALL_FEATURES.filter(f => featureTier(f) === group.tier)
+                    const groupEnabled = userTier >= group.tier
                     return (
-                      <div
-                        key={feat.key}
-                        className={`flex items-start gap-3 p-3.5 rounded-xl border transition ${
-                          enabled
-                            ? "border-cyan-500/20 bg-cyan-500/5"
-                            : "border-gray-800/60 bg-gray-900/20 opacity-50"
-                        }`}
-                      >
-                        <span className="text-xl mt-0.5 shrink-0">{feat.icon}</span>
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className={`text-sm font-medium ${enabled ? "text-gray-200" : "text-gray-500"}`}>
-                              {feat.label}
+                      <div key={group.label} className={`p-6 ${groupEnabled ? "" : "opacity-50"}`}>
+                        {/* Group header */}
+                        <div className="flex items-center gap-2 mb-4">
+                          <span className={`w-2 h-2 rounded-full ${group.dot}`} />
+                          <span className={`text-xs font-bold uppercase tracking-widest ${group.color}`}>
+                            {group.label}
+                          </span>
+                          {groupEnabled ? (
+                            <span className="ml-auto text-[10px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2 py-0.5 rounded-full">
+                              Active
                             </span>
-                            {enabled ? (
-                              <span className="text-[10px] text-emerald-400 font-bold">✓</span>
-                            ) : (
-                              <span className="text-[10px] text-gray-600 px-1.5 py-0.5 rounded bg-gray-800 font-medium uppercase tracking-wider">
-                                {feat.minPlan === "scale" ? "Scale" : "Growth"}+
-                              </span>
-                            )}
-                          </div>
-                          <p className={`text-xs mt-0.5 ${enabled ? "text-gray-500" : "text-gray-700"}`}>
-                            {feat.desc}
-                          </p>
+                          ) : (
+                            <Link
+                              href="/upgrade"
+                              className="ml-auto text-[10px] font-bold text-gray-500 bg-gray-800 border border-gray-700 px-2 py-0.5 rounded-full hover:text-gray-300 transition"
+                            >
+                              Upgrade →
+                            </Link>
+                          )}
+                        </div>
+                        {/* Features grid */}
+                        <div className="grid sm:grid-cols-2 gap-2.5">
+                          {groupFeatures.map(feat => (
+                            <div
+                              key={feat.key}
+                              className={`flex items-start gap-3 px-4 py-3 rounded-xl border ${
+                                groupEnabled
+                                  ? group.tier === 2
+                                    ? "border-violet-500/20 bg-violet-500/5"
+                                    : group.tier === 1
+                                      ? "border-cyan-500/20 bg-cyan-500/5"
+                                      : "border-gray-700/40 bg-gray-800/20"
+                                  : "border-gray-800/40 bg-gray-900/10"
+                              }`}
+                            >
+                              <span className="text-base mt-0.5 shrink-0">{feat.icon}</span>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <span className={`text-sm font-medium ${groupEnabled ? "text-gray-200" : "text-gray-600"}`}>
+                                    {feat.label}
+                                  </span>
+                                  {groupEnabled && (
+                                    <span className={`text-[10px] font-bold ${
+                                      group.tier === 2 ? "text-violet-400" :
+                                      group.tier === 1 ? "text-cyan-400" : "text-gray-400"
+                                    }`}>✓</span>
+                                  )}
+                                </div>
+                                <p className={`text-xs mt-0.5 leading-relaxed ${groupEnabled ? "text-gray-500" : "text-gray-700"}`}>
+                                  {feat.desc}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )
                   })}
                 </div>
+
+                {/* Upgrade CTA if not on Scale */}
                 {userTier < 2 && (
-                  <div className="px-6 pb-5">
-                    <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 flex items-center justify-between gap-4 flex-wrap">
-                      <p className="text-sm text-amber-300/80">
-                        {userTier === 0
-                          ? "Upgrade to Growth to unlock alerts, signals, and forecast engine."
-                          : "Upgrade to Scale to unlock incidents, trajectory, benchmark, and team access."}
-                      </p>
+                  <div className="px-6 pb-5 pt-2">
+                    <div className={`p-4 rounded-xl border flex items-center justify-between gap-4 flex-wrap ${
+                      userTier === 0
+                        ? "border-cyan-500/20 bg-cyan-500/5"
+                        : "border-violet-500/20 bg-violet-500/5"
+                    }`}>
+                      <div>
+                        <p className={`text-sm font-semibold ${userTier === 0 ? "text-cyan-300" : "text-violet-300"}`}>
+                          {userTier === 0 ? "Upgrade to Growth" : "Upgrade to Scale"}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {userTier === 0
+                            ? "Unlock full playbook, ARR at risk, alerts, signals, and forecast engine."
+                            : "Unlock 24h monitoring, incidents, trajectory, benchmark, and team access."}
+                        </p>
+                      </div>
                       <Link
                         href="/upgrade"
-                        className="shrink-0 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs transition"
+                        className={`shrink-0 px-4 py-2 rounded-xl font-bold text-xs transition ${
+                          userTier === 0
+                            ? "bg-cyan-500 hover:bg-cyan-400 text-black"
+                            : "bg-violet-500 hover:bg-violet-400 text-white"
+                        }`}
                       >
-                        Upgrade →
+                        Upgrade now →
                       </Link>
                     </div>
                   </div>
