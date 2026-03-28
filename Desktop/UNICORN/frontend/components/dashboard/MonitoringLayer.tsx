@@ -41,6 +41,14 @@ interface MonitoringStatus {
     health_classification: string
     structural_health_score: number | null
   }
+  structural_scores?: {
+    alignment_score: number | null
+    icp_clarity_score: number | null
+    anchor_density_score: number | null
+    positioning_coherence_score: number | null
+    primary_risk_driver: string | null
+    rii_score: number | null
+  }
   drift_status?: string
   trend_direction?: string
   volatility_classification?: string
@@ -229,31 +237,34 @@ export default function MonitoringLayer({
                         monitoringStatus.drift_status === "degrading" ? "moderate" : "none"
   const annualDelta: number | null = forecast?.annual_revenue_delta ?? null
 
-  // Extract diagnostic metrics (new API fields first, legacy fallbacks second)
+  // Extract diagnostic metrics — localStorage diagnostic first, then backend structural_scores fallback
+  const ss = monitoringStatus.structural_scores
   const alignmentScore =
     diagnostic?.alignment_score ??
     diagnostic?.strategic_alignment ??
-    diagnostic?.metrics_breakdown?.alignment_average ?? 0
+    diagnostic?.metrics_breakdown?.alignment_average ??
+    ss?.alignment_score ?? 0
   const anchorDensity =
     diagnostic?.anchor_density_score ??
     diagnostic?.conversion_anchor_density ??
-    diagnostic?.metrics_breakdown?.anchor_density_average ?? 0
+    diagnostic?.metrics_breakdown?.anchor_density_average ??
+    ss?.anchor_density_score ?? 0
   const icpClarity =
     diagnostic?.icp_clarity_score ??
     (diagnostic?.icp_mention_count
       ? Math.min((diagnostic.icp_mention_count / 5) * 100, 100)
       : diagnostic?.metrics_breakdown?.icp_mentions_total
         ? Math.min((diagnostic.metrics_breakdown.icp_mentions_total / 5) * 100, 100)
-        : 0)
+        : ss?.icp_clarity_score ?? 0)
 
   const positioningScore =
-    diagnostic?.positioning_coherence_score ?? 0
+    diagnostic?.positioning_coherence_score ?? ss?.positioning_coherence_score ?? 0
 
   // Get last scan date from monitoring status
   const lastScan = monitoringStatus.last_evaluated_at || monitoringStatus.created_at || new Date().toISOString()
 
-  // Extract RII for health indicator
-  const rii = diagnostic?.risk_score || null
+  // Extract RII for health indicator — diagnostic first, then monitoring structural scores fallback
+  const rii = diagnostic?.risk_score ?? ss?.rii_score ?? monitoringStatus.structural_health?.structural_health_score ?? null
   const riskDelta = monitoringStatus.risk_delta_since_last_scan || null
   const uiState: UiState =
     monitoringStatus.ui_state_payload?.ui_state ??
@@ -310,9 +321,11 @@ export default function MonitoringLayer({
   
   const primaryRiskDriver = diagnostic?.recommendations && diagnostic.recommendations.length > 0
     ? simplifyRiskDriver(diagnostic.recommendations[0])
-    : diagnostic?.primary_revenue_leak 
+    : diagnostic?.primary_revenue_leak
       ? simplifyRiskDriver(diagnostic.primary_revenue_leak)
-      : "Messaging Architecture Misalignment"
+      : ss?.primary_risk_driver
+        ? simplifyRiskDriver(ss.primary_risk_driver)
+        : "Messaging Architecture Misalignment"
   const displayRiskDriver = uiState === "low" && primaryRiskDriver.toLowerCase().includes("misalignment")
     ? "Minor messaging misalignment detected"
     : primaryRiskDriver
@@ -568,10 +581,11 @@ export default function MonitoringLayer({
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
       />
 
-      {/* 6. REVENUE-STAGE ALIGNMENT MAP — Diagnostic breakdown */}
+      {/* 6. REVENUE-STAGE ALIGNMENT MAP — Diagnostic breakdown (with backend structural_scores fallback) */}
       <StructuralBreakdownWithDelta 
         diagnostic={diagnostic}
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
+        structuralScoresFallback={ss ?? undefined}
       />
 
       {/* 7. RECENT STRUCTURAL SIGNALS — Growth+ */}

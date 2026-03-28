@@ -25,33 +25,47 @@ interface DiagnosticResult {
   }
 }
 
+interface StructuralScoresFallback {
+  alignment_score?: number | null
+  icp_clarity_score?: number | null
+  anchor_density_score?: number | null
+  positioning_coherence_score?: number | null
+  primary_risk_driver?: string | null
+}
+
 interface StructuralBreakdownWithDeltaProps {
   diagnostic: DiagnosticResult | null
   riskDelta?: number
+  structuralScoresFallback?: StructuralScoresFallback
 }
 
 export default function StructuralBreakdownWithDelta({ 
   diagnostic, 
-  riskDelta 
+  riskDelta,
+  structuralScoresFallback,
 }: StructuralBreakdownWithDeltaProps) {
+  const sf = structuralScoresFallback
   const alignmentMean =
     diagnostic?.alignment_score ??
     diagnostic?.strategic_alignment ??
-    diagnostic?.metrics_breakdown?.alignment_average ?? 0
+    diagnostic?.metrics_breakdown?.alignment_average ??
+    sf?.alignment_score ?? 0
   const anchorDensity =
     diagnostic?.anchor_density_score ??
     diagnostic?.conversion_anchor_density ??
-    diagnostic?.metrics_breakdown?.anchor_density_average ?? 0
+    diagnostic?.metrics_breakdown?.anchor_density_average ??
+    sf?.anchor_density_score ?? 0
   const icpClarity =
     diagnostic?.icp_clarity_score ??
     (diagnostic?.icp_mention_count
       ? Math.min((diagnostic.icp_mention_count / 5) * 100, 100)
       : diagnostic?.metrics_breakdown?.icp_mentions_total
         ? Math.min((diagnostic.metrics_breakdown.icp_mentions_total / 5) * 100, 100)
-        : 0)
+        : sf?.icp_clarity_score ?? 0)
   const positioningCoherence =
     diagnostic?.positioning_coherence_score ??
-    Math.min(alignmentMean + 10, 100)
+    sf?.positioning_coherence_score ??
+    Math.min((alignmentMean as number) + 10, 100)
 
   return (
     <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
@@ -117,7 +131,7 @@ export default function StructuralBreakdownWithDelta({
       <div className="mt-8 pt-6 border-t border-gray-800">
         <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide">Primary Risk Driver</p>
         <p className="text-base font-semibold text-gray-300">
-          {diagnostic?.primary_risk_driver || diagnostic?.primary_fault || "Messaging Architecture Misalignment"}
+          {diagnostic?.primary_risk_driver || diagnostic?.primary_fault || sf?.primary_risk_driver || "Messaging Architecture Misalignment"}
         </p>
       </div>
 

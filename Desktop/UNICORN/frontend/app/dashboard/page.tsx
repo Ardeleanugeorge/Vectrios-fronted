@@ -65,6 +65,14 @@ interface MonitoringStatus {
     health_classification: string
     structural_health_score: number | null
   }
+  structural_scores?: {
+    alignment_score: number | null
+    icp_clarity_score: number | null
+    anchor_density_score: number | null
+    positioning_coherence_score: number | null
+    primary_risk_driver: string | null
+    rii_score: number | null
+  }
   drift_status?: string
   trend_direction?: string
   volatility_classification?: string
@@ -525,16 +533,21 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* REVENUE RISK INDEX - Always visible when diagnostic exists (Core Metric) */}
-          {hasDiagnostic && diagnostic && (
+          {/* REVENUE RISK INDEX - Visible when diagnostic OR monitoring structural scores exist */}
+          {(hasDiagnostic && diagnostic) || (isMonitoringActive && monitoringStatus?.structural_health?.structural_health_score) ? (
             <RevenueRiskIndex
-              riskScore={diagnostic.risk_score || null}
-              riskLevel={diagnostic.risk_level || "MODERATE"}
+              riskScore={
+                diagnostic?.risk_score ??
+                monitoringStatus?.structural_scores?.rii_score ??
+                monitoringStatus?.structural_health?.structural_health_score ??
+                null
+              }
+              riskLevel={diagnostic?.risk_level || "MODERATE"}
               confidence={confidence}
               overrideTriggered={overrideTriggered}
-              scoreSource={diagnostic?.is_partial ? "instant_scan" : "full_diagnostic"}
+              scoreSource={diagnostic?.is_partial ? "instant_scan" : hasDiagnostic ? "full_diagnostic" : "monitoring"}
             />
-          )}
+          ) : null}
 
           {/* While monitoring status is loading from API, show spinner */}
           {monitoringLoading && companyId ? (
