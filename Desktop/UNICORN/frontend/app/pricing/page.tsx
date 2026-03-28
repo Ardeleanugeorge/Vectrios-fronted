@@ -209,7 +209,7 @@ export default function PricingPage() {
     } catch {
       // ignore
     }
-    router.replace(qs ? `/onboarding?${qs}` : "/onboarding")
+    router.replace("/dashboard")
   }
 
   const ensurePlanIds = async (token: string) => {

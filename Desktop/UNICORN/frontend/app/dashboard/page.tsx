@@ -110,6 +110,7 @@ export default function DashboardPage() {
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
+  const [monitoringLoading, setMonitoringLoading] = useState(true)
 
   const readActiveScanToken = (): string | null => {
     try {
@@ -209,6 +210,9 @@ export default function DashboardPage() {
       loadMonitoringStatus(token, companyId, readActiveScanToken())
       loadAlerts(token, companyId)
       loadSubscription(token, companyId)
+    } else {
+      // No company ID yet — don't keep spinner spinning
+      setMonitoringLoading(false)
     }
 
     setLoading(false)
@@ -271,6 +275,7 @@ export default function DashboardPage() {
   }, [companyId])
 
   const loadMonitoringStatus = async (token: string, companyId: string, scanToken?: string | null) => {
+    setMonitoringLoading(true)
     try {
       const statusUrl = scanToken
         ? `${API_URL}/monitoring/status/${companyId}?scan_token=${encodeURIComponent(scanToken)}`
@@ -287,6 +292,8 @@ export default function DashboardPage() {
       }
     } catch (e) {
       console.error("Error loading monitoring status:", e)
+    } finally {
+      setMonitoringLoading(false)
     }
   }
 
@@ -529,26 +536,13 @@ export default function DashboardPage() {
             />
           )}
 
-          {!hasDiagnostic ? (
-            /* STATE 1 — NO DIAGNOSTIC */
-            <div className="p-12 border border-gray-800 rounded-lg bg-[#111827] text-center">
-              <h2 className="text-2xl font-bold mb-4 text-gray-300">Revenue Monitoring Not Yet Active</h2>
-              <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-                Run your first diagnostic to quantify revenue-stage exposure and identify compression risk.
-              </p>
-              <Link
-                href="/onboarding"
-                className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition"
-              >
-                Quantify Revenue Risk
-              </Link>
-            </div>
-          ) : subscriptionLoading ? (
+          {/* While monitoring status is loading from API, show spinner */}
+          {monitoringLoading && companyId ? (
             <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
-              <p className="text-sm text-gray-400 animate-pulse">Loading subscription status...</p>
+              <p className="text-sm text-gray-400 animate-pulse">Loading revenue monitoring status…</p>
             </div>
           ) : isMonitoringActive && monitoringStatus ? (
-            /* STATE 3 — CONTINUOUS MONITORING ACTIVE (full diagnostic) */
+            /* STATE 3 — CONTINUOUS MONITORING ACTIVE */
             <MonitoringLayer 
               monitoringStatus={monitoringStatus}
               diagnostic={diagnostic}
@@ -558,8 +552,26 @@ export default function DashboardPage() {
               companyId={companyId}
               currentPlan={currentPlan}
             />
+          ) : !hasDiagnostic && !monitoringLoading ? (
+            /* STATE 1 — NO DIAGNOSTIC & monitoring confirmed off */
+            <div className="p-12 border border-gray-800 rounded-lg bg-[#111827] text-center">
+              <h2 className="text-2xl font-bold mb-4 text-gray-300">Revenue Monitoring Not Yet Active</h2>
+              <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
+                Run a scan first to quantify your revenue-stage exposure and identify compression risk.
+              </p>
+              <Link
+                href="/"
+                className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition"
+              >
+                Run a Scan
+              </Link>
+            </div>
+          ) : subscriptionLoading ? (
+            <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
+              <p className="text-sm text-gray-400 animate-pulse">Loading subscription status…</p>
+            </div>
           ) : diagnostic?.is_partial ? (
-            /* STATE 2 — PARTIAL DIAGNOSTIC (from scan), only when monitoring is not active */
+            /* STATE 2 — PARTIAL DIAGNOSTIC (from scan), monitoring not active */
             <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
           ) : (
             /* STATE 2 — FREE SNAPSHOT (full diagnostic, no monitoring) */

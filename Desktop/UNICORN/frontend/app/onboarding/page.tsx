@@ -28,6 +28,48 @@ const normalizeUrl = (url: string): string => {
   return `https://${trimmed}`
 }
 
+// Hard-disable onboarding: redirect authenticated users intelligently
+function useBlockOnboarding() {
+  const router = useRouter()
+  useEffect(() => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) { router.replace("/login"); return }
+
+    const userDataRaw = localStorage.getItem("user_data")
+    const userData = userDataRaw ? JSON.parse(userDataRaw) : null
+    const companyId = userData?.company_id || null
+
+    const resumeFromScan = () => {
+      const scanFull = localStorage.getItem("diagnostic_result_full") || sessionStorage.getItem("diagnostic_result_full")
+      const scanLite = localStorage.getItem("diagnostic_result") || sessionStorage.getItem("diagnostic_result")
+      const scanData = scanFull || scanLite
+      if (scanData) {
+        try {
+          const parsed = JSON.parse(scanData)
+          const tok = parsed?.scan_token || parsed?.token
+          const unlocked = parsed?.unlocked_with_email || parsed?.email_unlocked || false
+          if (tok && unlocked) {
+            router.replace(`/scan-results?token=${encodeURIComponent(tok)}`)
+            return true
+          }
+        } catch {}
+      }
+      return false
+    }
+
+    if (companyId) {
+      fetch(`${API_URL}/monitoring/status/${companyId}`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.ok ? r.json() : null)
+        .then(ms => {
+          if (ms?.monitoring_active) { router.replace("/dashboard"); return }
+          if (!resumeFromScan()) router.replace("/dashboard")
+        })
+        .catch(() => { if (!resumeFromScan()) router.replace("/dashboard") })
+    } else {
+      if (!resumeFromScan()) router.replace("/dashboard")
+    }
+  }, [router])
+}
 /** Scan-results financial form uses different bucket keys than onboarding; map so prefill actually selects an option. */
 function mapScanArrRangeToOnboarding(raw: string): string {
   if (!raw) return ""
@@ -108,6 +150,24 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isRouteTransitioning, setIsRouteTransitioning] = useState(false)
   const transitionLockRef = useRef(false)
+  const [shouldSuppressUi, setShouldSuppressUi] = useState(false)
+
+  // Block access to onboarding for authenticated users and smart-redirect them
+  useBlockOnboarding()
+  useEffect(() => {
+    // Minimize onboarding flash if user is already authenticated
+    try {
+      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      if (token) setShouldSuppressUi(true)
+    } catch {}
+  }, [])
+  if (shouldSuppressUi) {
+    return (
+      <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center">
+        <span className="text-gray-400">Redirecting…</span>
+      </div>
+    )
+  }
 
   // Read scan prefill only in the browser (sessionStorage/localStorage do not exist on the server during `next build`)
   const getScanPrefillPatch = (): Partial<{

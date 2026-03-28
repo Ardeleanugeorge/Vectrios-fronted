@@ -179,13 +179,23 @@ export default function UpgradePage() {
       }
     }
     
-    // If still no company_id, check if user needs onboarding
+    // If still no company_id, try resuming scan-results instead of onboarding
     if (!finalCompanyId) {
       const diagnosticData = sessionStorage.getItem("diagnostic_result") || localStorage.getItem("diagnostic_result")
       if (!diagnosticData) {
-        // User hasn't completed onboarding - redirect to onboarding
-        alert("Please complete onboarding first to create your company profile.")
-        router.push("/onboarding")
+        // Try unlocked scan token
+        const full = localStorage.getItem("diagnostic_result_full") || sessionStorage.getItem("diagnostic_result_full")
+        if (full) {
+          try {
+            const parsed = JSON.parse(full)
+            if (parsed?.scan_token && (parsed?.unlocked_with_email || parsed?.email_unlocked)) {
+              router.push(`/scan-results?token=${encodeURIComponent(parsed.scan_token)}`)
+              return
+            }
+          } catch {}
+        }
+        // Fallback to dashboard
+        router.push("/dashboard")
         return
       }
       

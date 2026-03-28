@@ -125,6 +125,26 @@ export default function MonitoringLayer({
   const [calibrationError, setCalibrationError] = useState("")
   const [calibrationSuccess, setCalibrationSuccess] = useState("")
 
+  // Revenue Delta (last scan vs previous)
+  const [revenueDelta, setRevenueDelta] = useState<null | {
+    has_delta: boolean
+    delta_monthly_loss?: number
+    delta_rii?: number
+    direction?: "worse" | "better" | "stable"
+    trend_last_4?: "worsening" | "improving" | "stable" | "insufficient_data"
+  }>(null)
+  useEffect(() => {
+    if (!companyId) return
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    fetch(`${API_URL}/revenue/delta/${companyId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setRevenueDelta(data) })
+      .catch(() => {})
+  }, [companyId])
+
   // Fetch forecast data for FinancialExposureCard
   const [forecast, setForecast] = useState<any>(null)
   useEffect(() => {
@@ -325,6 +345,33 @@ export default function MonitoringLayer({
           riskDelta={riskDelta}
           primaryRiskDriver={primaryRiskDriver}
         />
+      )}
+
+      {/* REVENUE DELTA — +$/-$/stable vs last scan */}
+      {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
+        <div className={`p-4 rounded-lg border ${
+          revenueDelta.direction === "worse"
+            ? "border-red-700/40 bg-red-950/10"
+            : revenueDelta.direction === "better"
+            ? "border-emerald-700/40 bg-emerald-950/10"
+            : "border-gray-700/40 bg-[#0B0F19]"
+        }`}>
+          <p className="text-sm text-gray-300">
+            <span className="font-semibold text-white">
+              {revenueDelta.delta_monthly_loss > 0 ? `+ $${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month worse` :
+               revenueDelta.delta_monthly_loss < 0 ? `↓ $${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month improvement` :
+               "No change vs last scan"}
+            </span>
+            {typeof revenueDelta.delta_rii === "number" && (
+              <span className="text-gray-400"> · RII {revenueDelta.delta_rii > 0 ? `+${revenueDelta.delta_rii}` : revenueDelta.delta_rii}</span>
+            )}
+          </p>
+          {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (
+            <p className="text-xs text-gray-500 mt-1">
+              Trend: {revenueDelta.trend_last_4 === "worsening" ? "worsening" : revenueDelta.trend_last_4}
+            </p>
+          )}
+        </div>
       )}
 
       <div className={`p-5 lg:p-6 rounded-lg border ${

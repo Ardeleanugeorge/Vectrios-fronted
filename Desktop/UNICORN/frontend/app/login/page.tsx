@@ -54,7 +54,44 @@ export default function LoginPage() {
             company_id: data.company_id || null
           }))
         }
-        router.push(data.resume_target || "/dashboard")
+        // Smart resume: prefer active monitoring; else resume unlocked scan; else dashboard
+        try {
+          const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token") || ""
+          const userDataRaw = localStorage.getItem("user_data")
+          const userData = userDataRaw ? JSON.parse(userDataRaw) : null
+          const companyId = userData?.company_id || null
+
+          if (companyId && token) {
+            const ms = await fetch(`${API_URL}/monitoring/status/${companyId}`, {
+              headers: { Authorization: `Bearer ${token}` }
+            }).then(r => r.ok ? r.json() : null).catch(() => null)
+
+            if (ms?.monitoring_active) {
+              router.push("/dashboard")
+              return
+            }
+          }
+
+          // Try resuming last unlocked scan
+          const scanFull = localStorage.getItem("diagnostic_result_full") || sessionStorage.getItem("diagnostic_result_full")
+          const scanLite = localStorage.getItem("diagnostic_result") || sessionStorage.getItem("diagnostic_result")
+          const scanData = scanFull || scanLite
+          if (scanData) {
+            try {
+              const parsed = JSON.parse(scanData)
+              const tok = parsed?.scan_token || parsed?.token
+              const unlocked = parsed?.unlocked_with_email || parsed?.email_unlocked || false
+              if (tok && unlocked) {
+                router.push(`/scan-results?token=${encodeURIComponent(tok)}`)
+                return
+              }
+            } catch {}
+          }
+
+          router.push("/dashboard")
+        } catch {
+          router.push("/dashboard")
+        }
       } else {
         const errorData = await response.json().catch(() => ({ detail: "Login failed" }))
         const message = errorData.detail || "Invalid email or password"
