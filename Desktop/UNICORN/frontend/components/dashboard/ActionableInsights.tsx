@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useCallback } from "react"
 import FeatureGate from "./FeatureGate"
 
 export type FixImpactContribution = {
@@ -178,32 +179,98 @@ interface ActionableInsightsProps {
   currentPlan?: string | null
 }
 
-function FixCard({ fix, index }: { fix: ActionFix; index: number }) {
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }).catch(() => {
+      // fallback for older browsers
+      const el = document.createElement("textarea")
+      el.value = text
+      document.body.appendChild(el)
+      el.select()
+      document.execCommand("copy")
+      document.body.removeChild(el)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }, [text])
+
   return (
-    <div className="p-4 rounded-lg bg-[#0B0F19] border border-gray-800 space-y-2">
-      <p className="text-xs font-semibold uppercase tracking-wide text-cyan-500/90">
-        Fix #{index} — {fix.title}
-      </p>
-      {fix.impact_contribution && (
-        <div className="text-[11px] text-emerald-400/90 bg-emerald-950/30 border border-emerald-800/40 rounded px-2 py-1.5 space-y-0.5">
-          <p>
-            <span className="text-gray-500">Est. impact: </span>
-            {fix.impact_contribution.close_rate}
-          </p>
-          <p>{fix.impact_contribution.arr_recovery}</p>
-        </div>
+    <button
+      onClick={handleCopy}
+      className={`flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-md border transition-all duration-150 ${
+        copied
+          ? "text-emerald-400 border-emerald-600/40 bg-emerald-950/30"
+          : "text-cyan-400 border-cyan-700/30 bg-cyan-950/10 hover:bg-cyan-950/30 hover:border-cyan-500/40"
+      }`}
+    >
+      {copied ? (
+        <>
+          <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0z"/>
+          </svg>
+          Copied!
+        </>
+      ) : (
+        <>
+          <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
+            <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
+          </svg>
+          Copy
+        </>
       )}
-      <div>
-        <p className="text-xs text-gray-500 mb-0.5">Current (from crawl)</p>
-        <p className="text-sm text-gray-300 italic">&ldquo;{fix.current_example}&rdquo;</p>
+    </button>
+  )
+}
+
+function FixCard({ fix, index }: { fix: ActionFix; index: number }) {
+  const hasRealBefore = fix.current_example && fix.current_example !== "—" && !fix.current_example.startsWith("—")
+  const hasRealAfter = fix.suggested_change && fix.suggested_change.length > 0
+
+  return (
+    <div className="rounded-lg bg-[#0B0F19] border border-gray-800 overflow-hidden">
+      {/* Header */}
+      <div className="px-4 pt-4 pb-3 border-b border-gray-800/60">
+        <p className="text-xs font-semibold uppercase tracking-wide text-cyan-500/90">
+          Fix #{index} — {fix.title}
+        </p>
+        {fix.impact_contribution?.monthly_impact && fix.impact_contribution.monthly_impact !== "—" && (
+          <p className="text-[11px] text-emerald-400/80 mt-1">
+            Est. recovery: <span className="font-bold">{fix.impact_contribution.monthly_impact}</span>
+            <span className="text-gray-600 ml-2">({fix.impact_contribution.close_rate})</span>
+          </p>
+        )}
       </div>
-      <div>
-        <p className="text-xs text-gray-500 mb-0.5">Replace / add</p>
-        <p className="text-sm text-white">{fix.suggested_change}</p>
+
+      {/* Before / After */}
+      <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-800/60">
+        {/* BEFORE */}
+        <div className="px-4 py-3 space-y-1.5">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">Before (from crawl)</p>
+          <p className="text-sm text-gray-400 italic leading-relaxed">
+            {hasRealBefore ? `"${fix.current_example}"` : <span className="text-gray-600 not-italic">— run full diagnostic for live copy</span>}
+          </p>
+        </div>
+
+        {/* AFTER */}
+        <div className="px-4 py-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/70">After (suggested)</p>
+            {hasRealAfter && <CopyButton text={fix.suggested_change} />}
+          </div>
+          <p className="text-sm text-white leading-relaxed">{fix.suggested_change}</p>
+        </div>
       </div>
-      <div>
-        <p className="text-xs text-gray-500 mb-0.5">Why this matters</p>
-        <p className="text-xs text-gray-400">{fix.reason}</p>
+
+      {/* Why */}
+      <div className="px-4 py-2.5 border-t border-gray-800/60 bg-gray-900/30">
+        <p className="text-[11px] text-gray-500">
+          <span className="text-gray-600 font-semibold">Why: </span>{fix.reason}
+        </p>
       </div>
     </div>
   )
