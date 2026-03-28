@@ -37,8 +37,16 @@ export default function AccountPage() {
   const [passwordError, setPasswordError] = useState("")
   const [passwordSuccess, setPasswordSuccess] = useState("")
 
+  // Calibration form
+  const [calibrationArr, setCalibrationArr] = useState("")
+  const [calibrationCurrentCloseRate, setCalibrationCurrentCloseRate] = useState("")
+  const [calibrationTargetCloseRate, setCalibrationTargetCloseRate] = useState("")
+  const [calibrationLoading, setCalibrationLoading] = useState(false)
+  const [calibrationError, setCalibrationError] = useState("")
+  const [calibrationSuccess, setCalibrationSuccess] = useState("")
+
   // Active tab
-  const [activeTab, setActiveTab] = useState<'profile' | 'plan' | 'security'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'plan' | 'security' | 'revenue'>('profile')
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -63,6 +71,7 @@ export default function AccountPage() {
           if (nextUser.company_id) {
             setCompanyId(nextUser.company_id)
             loadSubscription(token, nextUser.company_id)
+            loadCalibration(token, nextUser.company_id)
           }
         } else {
           // fallback to local
@@ -75,6 +84,7 @@ export default function AccountPage() {
         if (parsed.company_id) {
           setCompanyId(parsed.company_id)
           loadSubscription(token, parsed.company_id)
+          loadCalibration(token, parsed.company_id)
         }
           }
         }
@@ -101,6 +111,43 @@ export default function AccountPage() {
       })
       if (res.ok) setSubscription(await res.json())
     } catch {}
+  }
+
+  const loadCalibration = async (token: string, cid: string) => {
+    try {
+      const res = await fetch(`${API_URL}/calibration/${cid}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      setCalibrationArr(typeof data.arr === "number" ? String(Math.round(data.arr)) : "")
+      setCalibrationCurrentCloseRate(typeof data.current_close_rate === "number" ? String(data.current_close_rate) : "")
+      setCalibrationTargetCloseRate(typeof data.target_close_rate === "number" ? String(data.target_close_rate) : "")
+    } catch {}
+  }
+
+  const handleCalibrationSave = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setCalibrationError(""); setCalibrationSuccess("")
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token || !companyId) return
+    setCalibrationLoading(true)
+    try {
+      const payload = {
+        arr: calibrationArr.trim() ? Number(calibrationArr) : null,
+        current_close_rate: calibrationCurrentCloseRate.trim() ? Number(calibrationCurrentCloseRate) : null,
+        target_close_rate: calibrationTargetCloseRate.trim() ? Number(calibrationTargetCloseRate) : null,
+      }
+      const res = await fetch(`${API_URL}/calibration/${companyId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) { setCalibrationError(data?.detail || "Could not save calibration."); return }
+      setCalibrationSuccess("Saved. Financial model will update on next monitoring run.")
+    } catch { setCalibrationError("Network error while saving calibration.") }
+    finally { setCalibrationLoading(false) }
   }
 
   const handleSignOut = () => {
@@ -205,6 +252,7 @@ export default function AccountPage() {
   const TABS = [
     { id: 'profile', label: 'Profile', icon: '👤' },
     { id: 'plan', label: 'Plan & Billing', icon: '💳' },
+    { id: 'revenue', label: 'Revenue Model', icon: '📊' },
     { id: 'security', label: 'Security', icon: '🔒' },
   ] as const
 
@@ -452,6 +500,130 @@ export default function AccountPage() {
                   >
                     Manage payment (coming soon)
                   </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── REVENUE MODEL TAB ─────────────────────────────────────────── */}
+          {activeTab === 'revenue' && (
+            <div className="space-y-5">
+              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 backdrop-blur-sm overflow-hidden">
+                <div className="p-6 border-b border-gray-800">
+                  <h2 className="text-lg font-semibold">Financial calibration</h2>
+                  <p className="text-gray-500 text-sm mt-0.5">
+                    Set your real business numbers to improve financial impact estimates. Structural risk is derived from website scan signals — these values calibrate the dollar output.
+                  </p>
+                </div>
+                <form onSubmit={handleCalibrationSave} className="p-6 space-y-6">
+                  <div className="grid md:grid-cols-3 gap-5">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                        Annual Recurring Revenue
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                        <input
+                          type="number"
+                          min={1}
+                          value={calibrationArr}
+                          onChange={e => setCalibrationArr(e.target.value)}
+                          placeholder="1000000"
+                          className="w-full pl-8 pr-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1.5">Your current ARR in USD</p>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                        Current close rate
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          min={0}
+                          max={100}
+                          step="0.1"
+                          value={calibrationCurrentCloseRate}
+                          onChange={e => setCalibrationCurrentCloseRate(e.target.value)}
+                          placeholder="12.5"
+                          className="w-full px-4 pr-10 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">%</span>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1.5">Trial-to-paid or lead-to-close</p>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                        Target close rate
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          min={0}
+                          max={100}
+                          step="0.1"
+                          value={calibrationTargetCloseRate}
+                          onChange={e => setCalibrationTargetCloseRate(e.target.value)}
+                          placeholder="18.0"
+                          className="w-full px-4 pr-10 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">%</span>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1.5">What you're aiming to reach</p>
+                    </div>
+                  </div>
+
+                  {/* Impact preview */}
+                  {calibrationArr && calibrationCurrentCloseRate && calibrationTargetCloseRate && (
+                    <div className="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
+                      <p className="text-xs text-cyan-400 font-medium uppercase tracking-wider mb-1">Model preview</p>
+                      <p className="text-sm text-gray-300">
+                        Closing gap:{" "}
+                        <span className="text-white font-semibold">
+                          +{(Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)).toFixed(1)}pp
+                        </span>
+                        {" "}on ${(Number(calibrationArr) / 1_000_000).toFixed(1)}M ARR →{" "}
+                        <span className="text-cyan-300 font-bold">
+                          ~${Math.round(Number(calibrationArr) * (Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)) / 100 / 1000)}K recoverable
+                        </span>
+                      </p>
+                    </div>
+                  )}
+
+                  {calibrationError && (
+                    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm">{calibrationError}</div>
+                  )}
+                  {calibrationSuccess && (
+                    <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">{calibrationSuccess}</div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={calibrationLoading || !companyId}
+                    className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  >
+                    {calibrationLoading ? "Saving…" : "Save calibration"}
+                  </button>
+                </form>
+              </div>
+
+              {/* Info card */}
+              <div className="rounded-2xl border border-gray-800 bg-gray-900/20 p-5">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">How it works</p>
+                <div className="grid sm:grid-cols-3 gap-4">
+                  {[
+                    { icon: "🔍", title: "Structural scan", desc: "RII and risk drivers come from crawling your site — always accurate." },
+                    { icon: "📐", title: "Financial model", desc: "ARR + close rates calibrate the $ impact numbers shown in the dashboard." },
+                    { icon: "🔄", title: "Auto-updated", desc: "Next monitoring run picks up new calibration values automatically." },
+                  ].map(item => (
+                    <div key={item.title} className="flex gap-3">
+                      <span className="text-xl mt-0.5">{item.icon}</span>
+                      <div>
+                        <p className="text-sm font-medium text-gray-300">{item.title}</p>
+                        <p className="text-xs text-gray-600 mt-0.5">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
