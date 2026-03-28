@@ -10,7 +10,6 @@ import StructuralBreakdownWithDelta from "./StructuralBreakdownWithDelta"
 import ExecutiveInterpretation from "./ExecutiveInterpretation"
 import AlertPanel from "./AlertPanel"
 import RiiTimelineChart from "./RiiTimelineChart"
-import SystemIndicators from "./SystemIndicators"
 import RevenueSignalsPanel from "./RevenueSignalsPanel"
 import RevenueAlertsPanel from "./RevenueAlertsPanel"
 import RevenueIncidentsPanel from "./RevenueIncidentsPanel"
@@ -462,13 +461,6 @@ export default function MonitoringLayer({
           uiState={uiState}
         />
       )}
-
-      {/* 3. SYSTEM MONITORING INDICATORS — Observability layer */}
-      <SystemIndicators
-        lastScan={lastScan}
-        driftSensitivity="Standard"
-        coverage="Revenue-Stage Messaging"
-      />
 
       {/* 4. EXECUTIVE INTERPRETATION — Max 2 lines */}
       <ExecutiveInterpretation
