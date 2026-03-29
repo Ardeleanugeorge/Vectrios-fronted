@@ -40,7 +40,8 @@ export function buildLightweightActionLayer(
   icpClarity: number,
   anchorDensity: number,
   positioningScore: number,
-  rii: number | null | undefined
+  rii: number | null | undefined,
+  monthlyExposure?: number | null
 ): ActionLayerPayload {
   const r = typeof rii === "number" && !Number.isNaN(rii) ? rii : 55
   // Avoid false triggers when scores are missing (0) — use neutral defaults
@@ -56,11 +57,11 @@ export function buildLightweightActionLayer(
 
   const lo_cr = r >= 65 ? 0.5 : r >= 45 ? 0.8 : 0.3
   const hi_cr = r >= 65 ? 1.2 : r >= 45 ? 1.6 : 0.8
-  const arr_mid = 5_000_000
-  const arr_pct_lo = r >= 65 ? 0.003 : r >= 45 ? 0.004 : 0.002
-  const arr_pct_hi = r >= 65 ? 0.009 : r >= 45 ? 0.012 : 0.006
-  const arr_lo = arr_mid * arr_pct_lo
-  const arr_hi = arr_mid * arr_pct_hi
+
+  // Use real monthly exposure from model if available; otherwise estimate from ARR band
+  const realMonthlyLoss = typeof monthlyExposure === "number" && monthlyExposure > 0 ? monthlyExposure : null
+  const arr_lo = realMonthlyLoss ? realMonthlyLoss * 12 * 0.6 : 15_000
+  const arr_hi = realMonthlyLoss ? realMonthlyLoss * 12 * 1.1 : 35_000
   const n = 3
   const fmt = (x: number) =>
     x >= 1_000_000 ? `$${(x / 1_000_000).toFixed(1)}M` : `$${Math.round(x / 1000)}K`
@@ -177,6 +178,7 @@ interface ActionableInsightsProps {
   riskScore?: number | null
   actionLayer?: ActionLayerPayload | null
   currentPlan?: string | null
+  monthlyExposureReal?: number | null
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -289,6 +291,7 @@ export default function ActionableInsights({
   riskScore = null,
   actionLayer,
   currentPlan = null,
+  monthlyExposureReal = null,
 }: ActionableInsightsProps) {
   const tone =
     uiState === "low"
@@ -305,7 +308,8 @@ export default function ActionableInsights({
           icpClarity,
           anchorDensity,
           positioningScore,
-          riskScore
+          riskScore,
+          monthlyExposureReal
         )
 
   if (effectiveLayer?.primary_issue?.title && effectiveLayer.fixes?.length) {

@@ -485,6 +485,7 @@ export default function MonitoringLayer({
           riskScore={rii}
           actionLayer={diagnostic?.action_layer ?? null}
           currentPlan={currentPlan}
+          monthlyExposureReal={monthlyExposure}
         />
       )}
 
