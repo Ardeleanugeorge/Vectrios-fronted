@@ -380,6 +380,7 @@ function ScanResultsContent() {
   const [unlockTransitioning, setUnlockTransitioning] = useState(false)
   const [previousSnapshot, setPreviousSnapshot] = useState<ScanSnapshot | null>(null)
 
+
   const forceScrollToTop = () => {
     if (typeof window === "undefined") return
     window.scrollTo(0, 0)
@@ -391,7 +392,6 @@ function ScanResultsContent() {
     }, 120)
   }
 
-  // Financial numbers must come from backend only.
   const financialImpact = data?.financial_impact || null
   const driverImpacts = Array.isArray(data?.driver_impacts) ? (data?.driver_impacts as any[]) : []
 
@@ -487,25 +487,27 @@ function ScanResultsContent() {
         console.log("[EMAIL-CAPTURE] Saved partial diagnostic:", partialDiagnostic)
       }
       
-      // Mark as unlocked — show full structural financial model immediately (default priors)
-      setUnlockTransitioning(true)
-      setUnlocked(true)
+      // Unlock page 4 immediately
       setShowEmailCapture(false)
-      setShowFinancialImpact(true)
       setCapturing(false)
-
-      window.requestAnimationFrame(() => {
-        forceScrollToTop()
-        window.setTimeout(() => {
-          setUnlockTransitioning(false)
-        }, 120)
-      })
+      doUnlock()
     } catch (err: any) {
       setCaptureError(err.message || "Network error. Please try again.")
       setCapturing(false)
       setUnlockTransitioning(false)
     }
   }
+
+  const doUnlock = () => {
+    setUnlockTransitioning(true)
+    setUnlocked(true)
+    setShowFinancialImpact(true)
+    window.requestAnimationFrame(() => {
+      forceScrollToTop()
+      window.setTimeout(() => setUnlockTransitioning(false), 120)
+    })
+  }
+
 
   const formatCurrency = (val: number) => {
     if (val >= 1000000) {
