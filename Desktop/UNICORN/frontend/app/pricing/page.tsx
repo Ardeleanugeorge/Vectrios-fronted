@@ -9,8 +9,6 @@ import { readScanResultsRefined } from "@/lib/scanResultsRefine"
 import Header from "@/components/Header"
 import SiteFooter from "@/components/SiteFooter"
 
-const SALES_EMAIL = "hello@vectrios.com"
-
 export default function PricingPage() {
   const router = useRouter()
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
@@ -22,6 +20,9 @@ export default function PricingPage() {
   const [email, setEmail] = useState("")
   const [company, setCompany] = useState("")
   const [message, setMessage] = useState("")
+  const [contactLoading, setContactLoading] = useState(false)
+  const [contactSuccess, setContactSuccess] = useState<string | null>(null)
+  const [contactError, setContactError] = useState<string | null>(null)
   const [resumeTriggered, setResumeTriggered] = useState(false)
   const [isRouteTransitioning, setIsRouteTransitioning] = useState(false)
   const [pendingActivationLabel, setPendingActivationLabel] = useState("")
@@ -353,20 +354,37 @@ export default function PricingPage() {
     }
   }
 
-  const handleContactSales = () => {
-    if (!canSendContact) return
-    const subject = encodeURIComponent(`Sales Inquiry - ${company.trim() || "VectriOS Prospect"}`)
-    const body = encodeURIComponent(
-      [
-        `Name: ${name.trim()}`,
-        `Email: ${email.trim()}`,
-        `Company: ${company.trim() || "-"}`,
-        "",
-        "Message:",
-        message.trim(),
-      ].join("\n")
-    )
-    window.location.href = `mailto:${SALES_EMAIL}?subject=${subject}&body=${body}`
+  const handleContactSales = async () => {
+    if (!canSendContact || contactLoading) return
+    setContactLoading(true)
+    setContactError(null)
+    setContactSuccess(null)
+    try {
+      const res = await fetch(`${API_URL}/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          company: company.trim() || null,
+          message: message.trim(),
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok) {
+        setContactSuccess(data.message || "Message sent! We'll get back to you within 24 hours.")
+        setName("")
+        setEmail("")
+        setCompany("")
+        setMessage("")
+      } else {
+        setContactError(data.detail || "Something went wrong. Please try again.")
+      }
+    } catch {
+      setContactError("Network error. Please check your connection and try again.")
+    } finally {
+      setContactLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -609,21 +627,47 @@ export default function PricingPage() {
               />
             </div>
 
-            <button
-              onClick={handleContactSales}
-              disabled={!canSendContact}
-              className={`w-full py-3 rounded-lg font-semibold transition ${
-                canSendContact
-                  ? "bg-cyan-500 hover:bg-cyan-400 text-black"
-                  : "bg-gray-700 text-gray-500 cursor-not-allowed"
-              }`}
-            >
-              Contact Sales
-            </button>
-            {!canSendContact && (
-              <p className="text-xs text-gray-500 text-center -mt-2">
-                Fill in name, business email, and message to enable submit.
-              </p>
+            {/* Success message */}
+            {contactSuccess && (
+              <div className="w-full px-4 py-3 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 text-sm text-center">
+                ✅ {contactSuccess}
+              </div>
+            )}
+
+            {/* Error message */}
+            {contactError && (
+              <div className="w-full px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
+                ❌ {contactError}
+              </div>
+            )}
+
+            {!contactSuccess && (
+              <>
+                <button
+                  onClick={handleContactSales}
+                  disabled={!canSendContact || contactLoading}
+                  className={`w-full py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 ${
+                    canSendContact && !contactLoading
+                      ? "bg-cyan-500 hover:bg-cyan-400 text-black"
+                      : "bg-gray-700 text-gray-500 cursor-not-allowed"
+                  }`}
+                >
+                  {contactLoading ? (
+                    <>
+                      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                      </svg>
+                      Sending…
+                    </>
+                  ) : "Send Message"}
+                </button>
+                {!canSendContact && (
+                  <p className="text-xs text-gray-500 text-center -mt-2">
+                    Fill in name, email, and message to send.
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>

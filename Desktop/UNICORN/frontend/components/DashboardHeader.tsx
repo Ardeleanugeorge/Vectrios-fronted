@@ -23,13 +23,56 @@ const getPlanDisplay = (plan: string | null, billingCycle?: string | null, trial
   return { label: plan.charAt(0).toUpperCase() + plan.slice(1), colorKey: plan }
 }
 
+// ── Subscription cache helpers ────────────────────────────────────────────────
+// Stale-while-revalidate: show cached plan instantly, refresh in background.
+const CACHE_KEY = "subscription_cache"
+
+interface SubCache {
+  plan: string | null
+  billingCycle: string | null
+  trialDaysLeft: number | null
+  ts: number
+}
+
+function readSubCache(): SubCache | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as SubCache
+  } catch { return null }
+}
+
+function writeSubCache(data: Omit<SubCache, "ts">) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ ...data, ts: Date.now() }))
+  } catch {}
+}
+
+// ── Lazy initializer — runs synchronously client-side before first paint ──────
+function initFromCache<T>(key: keyof SubCache, fallback: T): T {
+  if (typeof window === "undefined") return fallback
+  return (readSubCache()?.[key] as T) ?? fallback
+}
+
 export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadge?: boolean }) {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+
+  // Read user_data synchronously — no flash on client
+  const [user, setUser] = useState<any>(() => {
+    if (typeof window === "undefined") return null
+    try {
+      const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+      if (raw) return JSON.parse(raw)
+    } catch {}
+    return null
+  })
+
   const [showMenu, setShowMenu] = useState(false)
-  const [currentPlan, setCurrentPlan] = useState<string | null>(null)
-  const [billingCycle, setBillingCycle] = useState<string | null>(null)
-  const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null)
+
+  // Read subscription from cache synchronously — badge appears on first render
+  const [currentPlan,   setCurrentPlan]   = useState<string | null>(() => initFromCache("plan",          null))
+  const [billingCycle,  setBillingCycle]   = useState<string | null>(() => initFromCache("billingCycle",  null))
+  const [trialDaysLeft, setTrialDaysLeft]  = useState<number | null>(() => initFromCache("trialDaysLeft", null))
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -44,19 +87,13 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       }
     } catch {}
 
-    // Load user data
+    // Refresh user data from storage if updated since lazy-init
     const loadUserData = () => {
       try {
         const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
-        if (raw) {
-          const userData = JSON.parse(raw)
-          setUser(userData)
-        } else {
-          setUser({ company_name: "Account", email: "" })
-        }
-      } catch (e) {
-        setUser({ company_name: "Account", email: "" })
-      }
+        if (raw) setUser(JSON.parse(raw))
+        else if (!user) setUser({ company_name: "Account", email: "" })
+      } catch { if (!user) setUser({ company_name: "Account", email: "" }) }
     }
 
     const loadSubscriptionForCompany = (companyId: string) => {
@@ -65,18 +102,23 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       })
         .then(r => r.ok ? r.json() : null)
         .then(data => {
-          // Trial users should have full access equivalent to Scale.
+          let newPlan: string | null = null
+          let newCycle: string | null = data?.billing_cycle ?? null
+          let newDays:  number | null = null
+
           if (data?.billing_cycle === "trial") {
-            setCurrentPlan("scale")
-            setTrialDaysLeft(typeof data?.trial_days_left === "number" ? data.trial_days_left : null)
+            newPlan = "scale"
+            newDays = typeof data?.trial_days_left === "number" ? data.trial_days_left : null
           } else if (data?.plan) {
-            setCurrentPlan(data.plan.toLowerCase())
-            setTrialDaysLeft(null)
-          } else {
-            setCurrentPlan(null)
-            setTrialDaysLeft(null)
+            newPlan = data.plan.toLowerCase()
           }
-          if (data?.billing_cycle) setBillingCycle(data.billing_cycle)
+
+          setCurrentPlan(newPlan)
+          setBillingCycle(newCycle)
+          setTrialDaysLeft(newDays)
+
+          // Write back to cache so next page navigation is instant
+          writeSubCache({ plan: newPlan, billingCycle: newCycle, trialDaysLeft: newDays })
         })
         .catch(() => {})
     }
@@ -176,6 +218,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     localStorage.removeItem("auth_token")
     localStorage.removeItem("user_data")
     localStorage.removeItem("diagnostic_result")
+    localStorage.removeItem(CACHE_KEY)   // clear plan cache on logout
     sessionStorage.removeItem("diagnostic_result")
     router.push("/login")
   }
