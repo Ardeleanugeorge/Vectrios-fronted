@@ -72,6 +72,7 @@ interface MonitoringStatus {
     positioning_coherence_score: number | null
     primary_risk_driver: string | null
     rii_score: number | null
+    confidence_score: number | null  // Real confidence from last scan/monitoring cycle
   }
   drift_status?: string
   trend_direction?: string
@@ -480,10 +481,15 @@ export default function DashboardPage() {
   // Calculate derived metrics from diagnostic
   // Suportă atât câmpurile noi (din engine actual) cât și cele vechi (legacy)
   const riskLevel = diagnostic?.risk_level || "MODERATE"
+  // Confidence priority:
+  // 1. monitoring structural_scores.confidence_score (most up-to-date — refreshed on every rescan)
+  // 2. diagnostic.confidence (from original scan stored in localStorage)
+  // 3. 0 — genuinely no data, show Low honestly
   const confidence =
-    diagnostic?.confidence ??
-    diagnostic?.revenue_leak_confidence ??
-    diagnostic?.confidence_score ??
+    (monitoringStatus?.structural_scores?.confidence_score ?? null) ??
+    (diagnostic?.confidence && diagnostic.confidence > 0 ? diagnostic.confidence : null) ??
+    (diagnostic?.revenue_leak_confidence && diagnostic.revenue_leak_confidence > 0 ? diagnostic.revenue_leak_confidence : null) ??
+    (diagnostic?.confidence_score && diagnostic.confidence_score > 0 ? diagnostic.confidence_score : null) ??
     0
   const alignmentMean =
     diagnostic?.alignment_score ??
