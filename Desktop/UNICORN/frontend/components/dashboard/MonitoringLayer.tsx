@@ -298,16 +298,15 @@ export default function MonitoringLayer({
         />
       )}
 
-      {/* FULL DIAGNOSTIC NUDGE — shown when no action_layer or low confidence */}
+      {/* FULL DIAGNOSTIC NUDGE — shown only when user has never run a full diagnostic
+           (no action_layer present). Disappears once they do it. */}
       {(() => {
-        const diagConfidence = typeof diagnostic?.confidence === "number" ? diagnostic.confidence : 0
         const noActionLayer = !diagnostic?.action_layer
-        const lowConfidence = diagConfidence < 50
-        return (noActionLayer || lowConfidence) ? (
+        return noActionLayer ? (
         <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-800/40 bg-cyan-950/10">
           <div>
             <p className="text-sm font-semibold text-cyan-300">
-              {noActionLayer ? "Run a full diagnostic to unlock page-level fixes" : "Low confidence — full diagnostic improves accuracy"}
+              Run a full diagnostic to unlock page-level fixes
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
               Monitoring runs automatically every 24h, but a full scan generates Before/After copy and precise ARR attribution.
