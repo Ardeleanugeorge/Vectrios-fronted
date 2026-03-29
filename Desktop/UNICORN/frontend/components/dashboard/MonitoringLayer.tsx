@@ -22,6 +22,7 @@ import FinancialExposureCard from "./FinancialExposureCard"
 import SystemHealthIndicator from "./SystemHealthIndicator"
 import FeatureGate from "./FeatureGate"
 import ActionableInsights, { type ActionLayerPayload } from "./ActionableInsights"
+import Link from "next/link"
 
 interface MonitoringStatus {
   monitoring_active: boolean
@@ -296,6 +297,31 @@ export default function MonitoringLayer({
           primaryRiskDriver={primaryRiskDriver}
         />
       )}
+
+      {/* FULL DIAGNOSTIC NUDGE — shown when no action_layer or low confidence */}
+      {(() => {
+        const diagConfidence = typeof diagnostic?.confidence === "number" ? diagnostic.confidence : 0
+        const noActionLayer = !diagnostic?.action_layer
+        const lowConfidence = diagConfidence < 50
+        return (noActionLayer || lowConfidence) ? (
+        <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-800/40 bg-cyan-950/10">
+          <div>
+            <p className="text-sm font-semibold text-cyan-300">
+              {noActionLayer ? "Run a full diagnostic to unlock page-level fixes" : "Low confidence — full diagnostic improves accuracy"}
+            </p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Monitoring runs automatically every 24h, but a full scan generates Before/After copy and precise ARR attribution.
+            </p>
+          </div>
+          <Link
+            href="/"
+            className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg transition whitespace-nowrap"
+          >
+            Run Full Diagnostic →
+          </Link>
+        </div>
+        ) : null
+      })()}
 
       {/* REVENUE DELTA — +$/-$/stable vs last scan */}
       {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
