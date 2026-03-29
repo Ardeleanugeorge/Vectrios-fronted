@@ -354,12 +354,19 @@ function ScanResultsContent() {
       .catch(() => setScanCount(0))
   }, [])
 
-  /** Restore wide view after email unlock for this scan token. */
+  /** Restore wide view after email unlock for this scan token.
+   *  If the user is already authenticated, skip the email gate entirely. */
   useEffect(() => {
     if (!token || typeof window === "undefined") return
     try {
       const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-      if (auth && isScanUnlockedWithEmail(token)) {
+      if (auth) {
+        // Already logged in — auto-unlock, no email needed
+        setUnlocked(true)
+        setShowFinancialImpact(true)
+        // Mark this token as unlocked for consistency (e.g. header state)
+        markScanUnlockedWithEmail(token)
+      } else if (isScanUnlockedWithEmail(token)) {
         setUnlocked(true)
         setShowFinancialImpact(true)
       } else {
@@ -949,6 +956,26 @@ function ScanResultsContent() {
             </p>
           </div>
         )}
+
+        {/* Back to Dashboard strip — only for authenticated users */}
+        {unlocked && (() => {
+          const isAuth = typeof window !== "undefined" &&
+            !!(sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token"))
+          if (!isAuth) return null
+          return (
+            <div className="flex items-center justify-between gap-4 px-5 py-3 rounded-xl border border-gray-700/50 bg-[#111827] mb-4">
+              <p className="text-sm text-gray-400">
+                New diagnostic complete. Your dashboard has been updated.
+              </p>
+              <Link
+                href="/dashboard"
+                className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg transition whitespace-nowrap"
+              >
+                ← Back to Dashboard
+              </Link>
+            </div>
+          )
+        })()}
 
         {/* După email: single Page 4 experience (uses backend numbers when available, safe fallbacks otherwise). */}
         {unlocked && showFinancialImpact && !isBlocked && (
