@@ -361,11 +361,25 @@ function ScanResultsContent() {
     try {
       const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
       if (auth) {
-        // Already logged in — auto-unlock, no email needed
+        // Authenticated — skip email gate regardless of plan
+        setIsAuthenticated(true)
         setUnlocked(true)
         setShowFinancialImpact(true)
-        // Mark this token as unlocked for consistency (e.g. header state)
         markScanUnlockedWithEmail(token)
+
+        // Check if they have an active plan (trial or paid) via subscription_cache
+        try {
+          const subCache = localStorage.getItem("subscription_cache")
+          if (subCache) {
+            const parsed = JSON.parse(subCache)
+            const plan = (parsed.currentPlan || "").toLowerCase()
+            const hasTrialDays = typeof parsed.trialDaysLeft === "number" && parsed.trialDaysLeft > 0
+            const isPaid = plan && plan !== "free" && plan !== ""
+            setHasActivePlan(isPaid || hasTrialDays)
+          }
+        } catch {
+          // If cache missing/corrupt, assume no active plan (safe default)
+        }
       } else if (isScanUnlockedWithEmail(token)) {
         setUnlocked(true)
         setShowFinancialImpact(true)
@@ -384,6 +398,9 @@ function ScanResultsContent() {
   const [captureError, setCaptureError] = useState("")
   const [unlocked, setUnlocked] = useState(false)
   const [showFinancialImpact, setShowFinancialImpact] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  /** true = has active trial or paid plan → full paywall bypass */
+  const [hasActivePlan, setHasActivePlan] = useState(false)
   const [unlockTransitioning, setUnlockTransitioning] = useState(false)
   const [previousSnapshot, setPreviousSnapshot] = useState<ScanSnapshot | null>(null)
 
@@ -1049,10 +1066,12 @@ function ScanResultsContent() {
                         <p className="text-[11px] text-gray-400">Estimated structural compression</p>
                       </div>
                     </div>
-                    <div className="pointer-events-none absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/40 border border-white/15 text-[10px] text-gray-300">
-                      <span>🔒</span>
-                      <span>Unlock full model</span>
-                    </div>
+                    {!isAuthenticated && (
+                      <div className="pointer-events-none absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/40 border border-white/15 text-[10px] text-gray-300">
+                        <span>🔒</span>
+                        <span>Unlock full model</span>
+                      </div>
+                    )}
                   </div>
                   <p className="text-xs text-gray-500 mb-6">
                     Companies at your level typically recover $80K-$220K/year.
@@ -1130,36 +1149,97 @@ function ScanResultsContent() {
               )
             })()}
 
-            <div className="p-5 sm:p-6 rounded-xl bg-[#111827] border border-gray-800/80">
-              <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
-                Full recovery plan locked
-              </p>
-              <p className="text-sm text-gray-300 mb-3">
-                We&apos;ve mapped exactly which pages are causing the loss, where conversion breaks, what to fix first, and how much you can recover.
-              </p>
-              <ul className="space-y-2 text-sm text-gray-400 mb-4">
-                {[
-                  "Exact pages causing the loss",
-                  "Where conversion breaks (and why)",
-                  "What to fix first to recover revenue",
-                  "Modeled recovery by priority and timeline",
-                ].map((line) => (
-                  <li key={line} className="flex items-start gap-2">
-                    <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
-                    <span>{line}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/pricing?from=scan&focus=recovery"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
-              >
-                See exactly what&apos;s costing you revenue →
-              </Link>
-              <p className="text-xs text-gray-500 mt-3">
-                Takes 30 seconds · Instant access · No spam
-              </p>
-            </div>
+            {isAuthenticated && hasActivePlan ? (
+              /* ── STATE A: Authenticated + active plan → full bypass ── */
+              <div className="p-5 sm:p-6 rounded-xl bg-[#111827] border border-emerald-800/40">
+                <p className="text-xs font-semibold text-emerald-400/90 uppercase tracking-wider mb-2">
+                  Diagnostic complete
+                </p>
+                <p className="text-sm text-gray-300 mb-4">
+                  Your dashboard has been updated with the latest structural assessment. Revenue playbook, trajectory, and benchmarks reflect this scan.
+                </p>
+                <ul className="space-y-2 text-sm text-gray-400 mb-5">
+                  {[
+                    "Revenue playbook updated with page-level fixes",
+                    "RII score and trajectory recalculated",
+                    "Benchmark position refreshed",
+                    "Monitoring continues automatically every 24h",
+                  ].map((line) => (
+                    <li key={line} className="flex items-start gap-2">
+                      <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+                >
+                  ← Back to Dashboard
+                </Link>
+              </div>
+            ) : isAuthenticated && !hasActivePlan ? (
+              /* ── STATE B: Authenticated but no active plan → upgrade CTA ── */
+              <div className="p-5 sm:p-6 rounded-xl bg-[#111827] border border-amber-800/40">
+                <p className="text-xs font-semibold text-amber-400/90 uppercase tracking-wider mb-2">
+                  Activate monitoring to unlock the full model
+                </p>
+                <p className="text-sm text-gray-300 mb-3">
+                  You&apos;re logged in, but your plan hasn&apos;t been activated yet. Upgrade to access the full recovery model, page-level fixes, and automated monitoring.
+                </p>
+                <ul className="space-y-2 text-sm text-gray-400 mb-4">
+                  {[
+                    "Exact pages causing the loss",
+                    "Before/After copy for each fix",
+                    "Modeled recovery by priority",
+                    "24h automated monitoring",
+                  ].map((line) => (
+                    <li key={line} className="flex items-start gap-2">
+                      <span className="text-amber-400 mt-0.5 shrink-0">✓</span>
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/upgrade"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+                >
+                  Upgrade to unlock full model →
+                </Link>
+              </div>
+            ) : (
+              /* ── STATE C: Unauthenticated → standard paywall ── */
+              <div className="p-5 sm:p-6 rounded-xl bg-[#111827] border border-gray-800/80">
+                <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
+                  Full recovery plan locked
+                </p>
+                <p className="text-sm text-gray-300 mb-3">
+                  We&apos;ve mapped exactly which pages are causing the loss, where conversion breaks, what to fix first, and how much you can recover.
+                </p>
+                <ul className="space-y-2 text-sm text-gray-400 mb-4">
+                  {[
+                    "Exact pages causing the loss",
+                    "Where conversion breaks (and why)",
+                    "What to fix first to recover revenue",
+                    "Modeled recovery by priority and timeline",
+                  ].map((line) => (
+                    <li key={line} className="flex items-start gap-2">
+                      <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/pricing?from=scan&focus=recovery"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+                >
+                  See exactly what&apos;s costing you revenue →
+                </Link>
+                <p className="text-xs text-gray-500 mt-3">
+                  Takes 30 seconds · Instant access · No spam
+                </p>
+              </div>
+            )}
           </div>
         )}
 

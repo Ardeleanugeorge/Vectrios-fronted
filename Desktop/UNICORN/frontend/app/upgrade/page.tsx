@@ -301,9 +301,9 @@ export default function UpgradePage() {
                 <Link href="/dashboard" className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl transition">
                   Go to dashboard
                 </Link>
-                <a href="mailto:hello@vectrios.com" className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium rounded-xl transition">
+                <button onClick={() => setShowContactForm(true)} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium rounded-xl transition">
                   Contact us
-                </a>
+                </button>
                   </div>
                 </div>
           ) : (
