@@ -227,6 +227,25 @@ export default function DashboardPage() {
     setLoading(false)
   }, [companyId, router])
 
+  // After returning from a scan (scan-results sets this flag), re-fetch monitoring status
+  // so the new RII and structural scores are visible immediately.
+  useEffect(() => {
+    if (!companyId) return
+    const needsRefresh = sessionStorage.getItem("dashboard_needs_refresh")
+    if (needsRefresh) {
+      sessionStorage.removeItem("dashboard_needs_refresh")
+      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      if (token) {
+        // Small delay to let backend finish writing the new scan result
+        setTimeout(() => {
+          loadMonitoringStatus(token, companyId, null)
+          loadSubscription(token, companyId)
+          loadAlerts(token, companyId)
+        }, 800)
+      }
+    }
+  }, [companyId])
+
     // Check for governance activation from URL params
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)

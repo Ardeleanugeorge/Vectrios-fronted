@@ -367,7 +367,10 @@ function ScanResultsContent() {
         setShowFinancialImpact(true)
         markScanUnlockedWithEmail(token)
 
-        // Check if they have an active plan (trial or paid) via subscription_cache
+        // Check if they have an active plan (trial or paid) via subscription_cache.
+        // Default = true for authenticated users (they went through onboarding/registration).
+        // Only set false if we explicitly know plan is empty/null.
+        let activePlan = true
         try {
           const subCache = localStorage.getItem("subscription_cache")
           if (subCache) {
@@ -375,11 +378,17 @@ function ScanResultsContent() {
             const plan = (parsed.currentPlan || "").toLowerCase()
             const hasTrialDays = typeof parsed.trialDaysLeft === "number" && parsed.trialDaysLeft > 0
             const isPaid = plan && plan !== "free" && plan !== ""
-            setHasActivePlan(isPaid || hasTrialDays)
+            // Only override to false if cache explicitly says no plan and no trial days
+            activePlan = isPaid || hasTrialDays
           }
+          // If cache is missing entirely → keep default true (they have at least a trial)
         } catch {
-          // If cache missing/corrupt, assume no active plan (safe default)
+          // Cache corrupt → keep default true
         }
+        setHasActivePlan(activePlan)
+
+        // Signal dashboard to re-fetch after this new scan
+        sessionStorage.setItem("dashboard_needs_refresh", "1")
       } else if (isScanUnlockedWithEmail(token)) {
         setUnlocked(true)
         setShowFinancialImpact(true)
