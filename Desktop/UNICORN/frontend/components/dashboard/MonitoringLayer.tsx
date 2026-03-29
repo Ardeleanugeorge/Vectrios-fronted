@@ -300,29 +300,27 @@ export default function MonitoringLayer({
         />
       )}
 
-      {/* FULL DIAGNOSTIC NUDGE — shown only when user has never run a full diagnostic
-           (no action_layer present). Disappears once they do it. */}
-      {(() => {
-        const noActionLayer = !diagnostic?.action_layer
-        return noActionLayer ? (
+      {/* FULL DIAGNOSTIC NUDGE — shown only when monitoring has NEVER run
+           (no last_evaluated_at = no monitoring cycle completed yet).
+           Once monitoring runs even once, banner disappears permanently. */}
+      {!monitoringStatus.last_evaluated_at && !monitoringStatus.created_at && (
         <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-800/40 bg-cyan-950/10">
           <div>
             <p className="text-sm font-semibold text-cyan-300">
-              Run a full diagnostic to unlock page-level fixes
+              Run your first diagnostic to activate monitoring
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
-              Monitoring runs automatically every 24h, but a full scan generates Before/After copy and precise ARR attribution.
+              One scan creates your baseline — monitoring then runs automatically every 24h.
             </p>
           </div>
           <Link
             href={companyDomain ? `/?url=${encodeURIComponent(companyDomain)}` : "/"}
             className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg transition whitespace-nowrap"
           >
-            Run Full Diagnostic →
+            Run Diagnostic →
           </Link>
         </div>
-        ) : null
-      })()}
+      )}
 
       {/* REVENUE DELTA — +$/-$/stable vs last scan */}
       {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
