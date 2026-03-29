@@ -66,6 +66,16 @@ export default function UpgradePage() {
   const [activatingPlan, setActivatingPlan] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState('')
 
+  // Contact form state
+  const [contactName, setContactName] = useState('')
+  const [contactEmail, setContactEmail] = useState('')
+  const [contactCompany, setContactCompany] = useState('')
+  const [contactMessage, setContactMessage] = useState('')
+  const [isSendingContact, setIsSendingContact] = useState(false)
+  const [contactSuccess, setContactSuccess] = useState(false)
+  const [contactError, setContactError] = useState<string | null>(null)
+  const [showContactForm, setShowContactForm] = useState(false)
+
   useEffect(() => {
     const token = sessionStorage.getItem('auth_token') || localStorage.getItem('auth_token')
     if (!token) { router.push('/login'); return }
@@ -119,6 +129,33 @@ export default function UpgradePage() {
   const currentRank = currentPlanName ? (PLAN_RANK[currentPlanName] ?? -1) : -1
   const isTrial = subStatus?.is_trial_active === true
   const isScale = currentPlanName === 'scale' && !isTrial
+
+  const handleContactSales = async () => {
+    if (isSendingContact) return
+    setIsSendingContact(true)
+    setContactError(null)
+    setContactSuccess(false)
+    try {
+      const token = sessionStorage.getItem('auth_token') || localStorage.getItem('auth_token')
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (token) headers['Authorization'] = `Bearer ${token}`
+      const res = await fetch(`${API_URL}/contact`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ name: contactName, email: contactEmail, company: contactCompany, message: contactMessage })
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.detail || 'Failed to send message.')
+      }
+      setContactSuccess(true)
+      setContactName(''); setContactEmail(''); setContactCompany(''); setContactMessage('')
+    } catch (e: any) {
+      setContactError(e.message || 'An unexpected error occurred.')
+    } finally {
+      setIsSendingContact(false)
+    }
+  }
 
   const handleActivate = async (planName: string) => {
     const token = sessionStorage.getItem('auth_token') || localStorage.getItem('auth_token')
@@ -429,15 +466,76 @@ export default function UpgradePage() {
           </div>
 
           {/* ── Enterprise CTA ─────────────────────────────────────────────── */}
-          <div className="rounded-2xl border border-gray-700/50 bg-gray-900/40 p-8 text-center">
-            <h3 className="text-xl font-bold mb-2">Need a custom plan?</h3>
-            <p className="text-gray-400 mb-5">Custom integrations, dedicated support, and SLA guarantees for larger teams.</p>
-            <a
-              href="mailto:hello@vectrios.com"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium transition"
-            >
-              Contact sales →
-            </a>
+          <div className="rounded-2xl border border-gray-700/50 bg-gray-900/40 p-8">
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-bold mb-2">Need a custom plan?</h3>
+              <p className="text-gray-400">Custom integrations, dedicated support, and SLA guarantees for larger teams.</p>
+            </div>
+
+            {contactSuccess ? (
+              <div className="text-center py-6">
+                <div className="text-3xl mb-2">✅</div>
+                <p className="text-green-400 font-medium">Message sent! We'll get back to you within 24h.</p>
+              </div>
+            ) : !showContactForm ? (
+              <div className="text-center">
+                <button
+                  onClick={() => setShowContactForm(true)}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium transition"
+                >
+                  Contact sales →
+                </button>
+              </div>
+            ) : (
+              <div className="max-w-lg mx-auto space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Your name"
+                    value={contactName}
+                    onChange={e => setContactName(e.target.value)}
+                    className="px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Work email"
+                    value={contactEmail}
+                    onChange={e => setContactEmail(e.target.value)}
+                    className="px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Company name"
+                  value={contactCompany}
+                  onChange={e => setContactCompany(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-cyan-500"
+                />
+                <textarea
+                  placeholder="Tell us about your needs..."
+                  value={contactMessage}
+                  onChange={e => setContactMessage(e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-cyan-500 resize-none"
+                />
+                {contactError && <p className="text-red-400 text-xs">{contactError}</p>}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowContactForm(false)}
+                    className="flex-1 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-400 text-sm transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleContactSales}
+                    disabled={isSendingContact || !contactName || !contactEmail || !contactMessage}
+                    className="flex-1 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSendingContact ? 'Sending…' : 'Send message →'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
         </div>
