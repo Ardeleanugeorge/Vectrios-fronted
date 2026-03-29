@@ -18,6 +18,7 @@ interface TrajectoryData {
 
 interface Props {
   companyId: string | null
+  currentRii?: number | null
 }
 
 function fmt(val: number): string {
@@ -54,7 +55,7 @@ function buildPath(
     .join(" ")
 }
 
-export default function RevenueTrajectorySimulation({ companyId }: Props) {
+export default function RevenueTrajectorySimulation({ companyId, currentRii }: Props) {
   const [data, setData] = useState<TrajectoryData | null>(null)
   const [loading, setLoading] = useState(true)
   const [hovered, setHovered] = useState<number | null>(null)
@@ -64,9 +65,10 @@ export default function RevenueTrajectorySimulation({ companyId }: Props) {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     const params = new URLSearchParams(window.location.search)
     const scanToken = params.get("token")
-    const simulationUrl = scanToken
-      ? `${API_URL}/revenue-trajectory-simulation/${companyId}?scan_token=${encodeURIComponent(scanToken)}`
-      : `${API_URL}/revenue-trajectory-simulation/${companyId}`
+    const simulationParams = new URLSearchParams()
+    if (scanToken) simulationParams.set("scan_token", scanToken)
+    if (currentRii !== null && currentRii !== undefined) simulationParams.set("rii_override", currentRii.toFixed(0))
+    const simulationUrl = `${API_URL}/revenue-trajectory-simulation/${companyId}?${simulationParams.toString()}`
     fetch(simulationUrl, {
       headers: { "Authorization": `Bearer ${token || ""}` }
     })

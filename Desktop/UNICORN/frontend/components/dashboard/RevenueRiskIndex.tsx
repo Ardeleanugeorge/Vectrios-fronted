@@ -17,24 +17,26 @@ export default function RevenueRiskIndex({
 }: RevenueRiskIndexProps) {
   const displayScore = riskScore !== null ? Math.min(riskScore, 100) : null
   
-  const normalizeLevel = (level: string): "HIGH" | "MODERATE" | "LOW" => {
-    const u = (level || "").toUpperCase()
-    if (u === "HIGH" || u === "HIGH EXPOSURE") return "HIGH"
-    if (u === "MODERATE" || u === "MODERATE EXPOSURE") return "MODERATE"
+  /** Derive risk classification directly from score — score is always up-to-date,
+   *  the riskLevel string from backend may be stale (set at scan time). */
+  const classifyFromScore = (score: number | null): "HIGH" | "MODERATE" | "LOW" => {
+    if (score === null) return "MODERATE"
+    if (score >= 70) return "HIGH"
+    if (score >= 40) return "MODERATE"
     return "LOW"
   }
 
-  const getRiskColor = (level: string) => {
-    const n = normalizeLevel(level)
-    if (n === "HIGH") return "text-red-400"
-    if (n === "MODERATE") return "text-yellow-400"
+  const scoreClass = classifyFromScore(displayScore)
+
+  const getRiskColor = () => {
+    if (scoreClass === "HIGH") return "text-red-400"
+    if (scoreClass === "MODERATE") return "text-yellow-400"
     return "text-green-400"
   }
 
-  const getRiskLabel = (level: string) => {
-    const n = normalizeLevel(level)
-    if (n === "HIGH") return "High Exposure"
-    if (n === "MODERATE") return "Moderate Exposure"
+  const getRiskLabel = () => {
+    if (scoreClass === "HIGH") return "High Exposure"
+    if (scoreClass === "MODERATE") return "Moderate Exposure"
     return "Low Exposure"
   }
 
@@ -48,13 +50,13 @@ export default function RevenueRiskIndex({
         {displayScore !== null ? (
           <>
             <div className="mb-4">
-              <span className={`text-5xl font-bold ${getRiskColor(riskLevel)}`}>
-                {displayScore.toFixed(0)}
-              </span>
-            </div>
-            <p className={`text-2xl font-bold mb-2 ${getRiskColor(riskLevel)}`}>
-              {getRiskLabel(riskLevel)}
-            </p>
+            <span className={`text-5xl font-bold ${getRiskColor()}`}>
+              {displayScore.toFixed(0)}
+            </span>
+          </div>
+          <p className={`text-2xl font-bold mb-2 ${getRiskColor()}`}>
+            {getRiskLabel()}
+          </p>
           </>
         ) : (
           <p className="text-2xl font-bold text-gray-500 mb-4">Initializing</p>

@@ -485,7 +485,14 @@ export default function MonitoringLayer({
           riskScore={rii}
           actionLayer={diagnostic?.action_layer ?? null}
           currentPlan={currentPlan}
-          monthlyExposureReal={monthlyExposure}
+          monthlyExposureReal={
+            // Prefer monitoring status monthly, fall back to forecast monthly
+            monthlyExposure ||
+            forecast?.monthly_revenue_delta ||
+            forecast?.monthly_revenue_impact ||
+            forecast?.monthly_exposure ||
+            null
+          }
         />
       )}
 
@@ -576,7 +583,7 @@ export default function MonitoringLayer({
 
       {/* 12. REVENUE TRAJECTORY SIMULATION — 12-month ARR (Scale+) */}
       <FeatureGate feature="12-Month ARR Trajectory" planRequired="scale" currentPlan={currentPlan}>
-        <RevenueTrajectorySimulation companyId={companyId} />
+        <RevenueTrajectorySimulation companyId={companyId} currentRii={rii} />
       </FeatureGate>
 
       {/* 13. REVENUE RISK TRAJECTORY — 30/60/90 day projection (Scale+) */}
