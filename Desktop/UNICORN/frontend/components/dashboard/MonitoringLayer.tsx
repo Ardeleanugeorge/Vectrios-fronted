@@ -469,8 +469,9 @@ export default function MonitoringLayer({
         )
       })()}
 
-      {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action */}
-      {diagnostic && (
+      {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action
+           Renders when structural scores exist (from diagnostic OR monitoring) */}
+      {(alignmentScore > 0 || icpClarity > 0 || anchorDensity > 0 || positioningScore > 0 || rii !== null) && (
         <ActionableInsights
           primaryRiskDriver={displayRiskDriver}
           closeRateDelta={safeCloseRateDelta}
