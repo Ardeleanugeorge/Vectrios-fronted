@@ -279,13 +279,13 @@ export default function DashboardPage() {
       if (token) {
         const activeScanToken = params.get("token")
         // Immediate reload - subscription first to set currentPlan
-        loadSubscription(token, companyId)  // ← Critical: reload subscription FIRST to get trial plan
+        loadSubscription(token, companyId, true)  // ← Critical: force reload subscription FIRST
         loadMonitoringStatus(token, companyId, activeScanToken)
         loadAlerts(token, companyId)
         
         // Also reload after delay to ensure backend processed
         setTimeout(() => {
-          loadSubscription(token, companyId)  // Reload subscription again to ensure it's set
+          loadSubscription(token, companyId, true)  // Force reload again to ensure it's set
           loadMonitoringStatus(token, companyId, activeScanToken)
           loadAlerts(token, companyId)
           // Trigger custom event to update DashboardHeader
@@ -296,7 +296,7 @@ export default function DashboardPage() {
         
         // One more reload after 2 seconds to be absolutely sure
         setTimeout(() => {
-          loadSubscription(token, companyId)
+          loadSubscription(token, companyId, true)
         }, 2000)
       }
     }
@@ -325,7 +325,14 @@ export default function DashboardPage() {
     }
   }
 
-  const loadSubscription = async (token: string, companyId: string) => {
+  const loadSubscription = async (token: string, companyId: string, force = false) => {
+    // Debounce: skip if called within 10 seconds of the last fetch (avoid the ~30 calls in logs)
+    const cacheKey = `sub_fetched_at_${companyId}`
+    const lastFetch = parseInt(sessionStorage.getItem(cacheKey) || "0", 10)
+    const now = Date.now()
+    if (!force && now - lastFetch < 10_000) return
+    sessionStorage.setItem(cacheKey, String(now))
+
     setSubscriptionLoading(true)
     try {
       const response = await fetch(`${API_URL}/subscription/${companyId}`, {
