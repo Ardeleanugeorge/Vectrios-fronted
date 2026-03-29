@@ -120,6 +120,18 @@ export default function DashboardPage() {
   const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const [monitoringLoading, setMonitoringLoading] = useState(true)
+  // Company domain — used for "Run Full Diagnostic" link pre-fill
+  const [companyDomain, setCompanyDomain] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null
+    try {
+      const raw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        return parsed?.domain || parsed?.url || null
+      }
+    } catch {}
+    return null
+  })
 
   const readActiveScanToken = (): string | null => {
     try {
@@ -578,6 +590,7 @@ export default function DashboardPage() {
               trialDays={trialDaysLeft}
               companyId={companyId}
               currentPlan={currentPlan}
+              companyDomain={companyDomain}
             />
           ) : !hasDiagnostic && !monitoringLoading ? (
             /* STATE 1 — NO DIAGNOSTIC & monitoring confirmed off */

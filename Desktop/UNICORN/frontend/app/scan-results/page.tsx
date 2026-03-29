@@ -375,7 +375,8 @@ function ScanResultsContent() {
           const subCache = localStorage.getItem("subscription_cache")
           if (subCache) {
             const parsed = JSON.parse(subCache)
-            const plan = (parsed.currentPlan || "").toLowerCase()
+            // DashboardHeader stores key as "plan" (not "currentPlan")
+            const plan = (parsed.plan || parsed.currentPlan || "").toLowerCase()
             const hasTrialDays = typeof parsed.trialDaysLeft === "number" && parsed.trialDaysLeft > 0
             const isPaid = plan && plan !== "free" && plan !== ""
             // Only override to false if cache explicitly says no plan and no trial days

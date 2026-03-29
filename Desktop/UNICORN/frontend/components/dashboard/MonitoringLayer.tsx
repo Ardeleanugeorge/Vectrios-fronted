@@ -113,6 +113,7 @@ interface MonitoringLayerProps {
   trialDays?: number | null
   companyId: string | null
   currentPlan?: string | null
+  companyDomain?: string | null
 }
 
 type UiState = "low" | "medium" | "high"
@@ -124,7 +125,8 @@ export default function MonitoringLayer({
   onMarkAlertRead,
   trialDays,
   companyId,
-  currentPlan = null
+  currentPlan = null,
+  companyDomain = null,
 }: MonitoringLayerProps) {
   // Revenue Delta (last scan vs previous)
   const [revenueDelta, setRevenueDelta] = useState<null | {
@@ -313,7 +315,7 @@ export default function MonitoringLayer({
             </p>
           </div>
           <Link
-            href="/"
+            href={companyDomain ? `/?url=${encodeURIComponent(companyDomain)}` : "/"}
             className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg transition whitespace-nowrap"
           >
             Run Full Diagnostic →

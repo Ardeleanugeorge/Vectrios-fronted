@@ -52,6 +52,14 @@ export default function Home() {
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     setIsLoggedIn(!!token)
+
+    // Pre-fill URL from query param (e.g. "Run Full Diagnostic →" from dashboard)
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const urlParam = params.get("url")
+      if (urlParam) setScanUrl(urlParam)
+    } catch {}
+
     // Fetch real scan count
     fetch(`${API_URL}/scan-stats`)
       .then(r => {
