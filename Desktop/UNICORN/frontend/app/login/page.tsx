@@ -2,17 +2,29 @@
 
 import { API_URL } from '@/lib/config'
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [form, setForm] = useState({
     email: "",
     password: ""
   })
+
+  // Pre-fill email from URL param (e.g. redirected from email-capture)
+  useEffect(() => {
+    const emailParam = searchParams.get("email")
+    if (emailParam) setForm(prev => ({ ...prev, email: decodeURIComponent(emailParam) }))
+  }, [searchParams])
+
+  const infoReason = searchParams.get("reason")
+  const infoMessage = infoReason === "existing_account"
+    ? "You already have an account — log in with your password to access your dashboard."
+    : null
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [showCreateAccountCta, setShowCreateAccountCta] = useState(false)
@@ -145,6 +157,12 @@ export default function LoginPage() {
             Access your Vectri<span className="text-cyan-400">OS</span> dashboard.
           </p>
         </div>
+
+        {infoMessage && (
+          <div className="mb-6 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-300 text-sm">
+            {infoMessage}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

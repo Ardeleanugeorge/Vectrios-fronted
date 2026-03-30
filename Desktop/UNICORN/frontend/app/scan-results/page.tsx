@@ -458,7 +458,19 @@ function ScanResultsContent() {
       }
       
       const result = await res.json()
-      
+
+      // ── Existing user with password → redirect to login ──────────────────────
+      if (result.requires_login) {
+        const loginUrl = `/login?email=${encodeURIComponent(result.email || email.trim())}&reason=existing_account`
+        setCapturing(false)
+        // Show a brief confirmation before redirect
+        setCaptureError("✓ Account found — redirecting to login…")
+        window.setTimeout(() => {
+          window.location.href = loginUrl
+        }, 1200)
+        return
+      }
+
       // Save auth token and user data
       sessionStorage.setItem("auth_token", result.token)
       localStorage.setItem("auth_token", result.token)

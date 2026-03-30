@@ -85,43 +85,7 @@ export default function AccountPage() {
     window.location.href = "/dashboard"
   }
 
-  // ── Add company form ────────────────────────────────────────────────────────
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [addDomain, setAddDomain]   = useState("")
-  const [addLoading, setAddLoading] = useState(false)
-  const [addError, setAddError]     = useState("")
-
-  const MAX_COMPANIES = 2
-
-  const handleAddCompany = async () => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token || !addDomain.trim()) return
-    setAddLoading(true)
-    setAddError("")
-    try {
-      const res = await fetch(`${API_URL}/account/companies`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ domain: addDomain.trim() }),
-      })
-      const body = await res.json().catch(() => ({}))
-      if (!res.ok) {
-        setAddError(body.detail || "Failed to add company")
-        return
-      }
-      // Switch to new company and go to pricing to activate monitoring
-      const existing = JSON.parse(localStorage.getItem("user_data") || "{}")
-      const updated = { ...existing, company_id: body.company_id, company_name: body.company_name }
-      localStorage.setItem("user_data", JSON.stringify(updated))
-      sessionStorage.setItem("user_data", JSON.stringify(updated))
-      localStorage.removeItem("subscription_cache")
-      window.location.href = `/pricing?focus=recovery`
-    } catch {
-      setAddError("Network error. Please try again.")
-    } finally {
-      setAddLoading(false)
-    }
-  }
+  // (Each account has exactly one company — kept simple by design)
 
   // ── System / Auto-Calibration (owner-only) ─────────────────────────────────
   const OWNER_EMAIL = "ageorge9625@yahoo.com"
@@ -1023,24 +987,13 @@ export default function AccountPage() {
                           <span className={`text-xs font-semibold px-3 py-1.5 rounded-lg border ${planColor}`}>
                             {planLabel}
                           </span>
-
-                          {/* Switch button */}
-                          {!isActive && co.has_access && (
-                            <button
-                              onClick={() => switchToCompany(co)}
-                              className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs transition"
-                            >
-                              Switch →
-                            </button>
-                          )}
-                          {!isActive && !co.has_access && (
-                            <button
-                              onClick={() => switchToCompany(co)}
-                              className="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-400 font-medium text-xs transition"
-                            >
-                              View
-                            </button>
-                          )}
+                          {/* Go to dashboard button */}
+                          <button
+                            onClick={() => { window.location.href = "/dashboard" }}
+                            className="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-cyan-400 font-medium text-xs transition"
+                          >
+                            Dashboard →
+                          </button>
                         </div>
                       </div>
                     )
@@ -1048,60 +1001,9 @@ export default function AccountPage() {
                 </div>
               )}
 
-              <div className="p-5 border-t border-gray-800 space-y-4">
-                {/* Add Company CTA / Form */}
-                {companies.length < MAX_COMPANIES ? (
-                  !showAddForm ? (
-                    <button
-                      onClick={() => { setShowAddForm(true); setAddError("") }}
-                      className="flex items-center gap-2 text-sm font-semibold text-cyan-400 hover:text-cyan-300 transition"
-                    >
-                      <span className="w-6 h-6 rounded-full border border-cyan-500/50 flex items-center justify-center text-lg leading-none">+</span>
-                      Add second company
-                    </button>
-                  ) : (
-                    <div className="space-y-3">
-                      <p className="text-sm font-semibold text-white">Add second company</p>
-                      <div className="flex gap-2 flex-wrap">
-                        <input
-                          type="text"
-                          value={addDomain}
-                          onChange={e => setAddDomain(e.target.value)}
-                          onKeyDown={e => e.key === "Enter" && handleAddCompany()}
-                          placeholder="yourdomain.com"
-                          className="flex-1 min-w-0 bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition"
-                        />
-                        <button
-                          onClick={handleAddCompany}
-                          disabled={addLoading || !addDomain.trim()}
-                          className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black font-bold text-sm transition"
-                        >
-                          {addLoading ? "Adding…" : "Add"}
-                        </button>
-                        <button
-                          onClick={() => { setShowAddForm(false); setAddDomain(""); setAddError("") }}
-                          className="px-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-400 text-sm transition"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                      {addError && (
-                        <p className="text-sm text-red-400">{addError}</p>
-                      )}
-                      <p className="text-xs text-gray-600">
-                        You can have up to {MAX_COMPANIES} companies. After adding, you&apos;ll be taken to activate monitoring for the new one.
-                      </p>
-                    </div>
-                  )
-                ) : (
-                  <div className="flex items-center gap-3 text-sm text-gray-500">
-                    <span className="w-6 h-6 rounded-full border border-gray-700 flex items-center justify-center opacity-50">+</span>
-                    <span>Maximum {MAX_COMPANIES} companies per account reached.</span>
-                  </div>
-                )}
-
+              <div className="p-5 border-t border-gray-800">
                 <p className="text-xs text-gray-600">
-                  Clicking <span className="text-cyan-400 font-medium">Switch</span> updates your active dashboard to that company. All data is preserved separately.
+                  To track a different company, create a new account with a different email address.
                 </p>
               </div>
             </div>
