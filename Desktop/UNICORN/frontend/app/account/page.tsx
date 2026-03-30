@@ -48,43 +48,6 @@ export default function AccountPage() {
   // Active tab
   const [activeTab, setActiveTab] = useState<'profile' | 'plan' | 'security' | 'revenue' | 'system'>('profile')
 
-  // ── Companies switcher ─────────────────────────────────────────────────────
-  interface CompanyEntry {
-    company_id: string; company_name: string; domain: string
-    plan: string | null; billing_cycle: string | null
-    trial_days_left: number | null; has_access: boolean
-    last_scan_at: string | null; rii: number | null
-  }
-  const [companies, setCompanies] = useState<CompanyEntry[]>([])
-  const [companiesLoading, setCompaniesLoading] = useState(false)
-
-  const loadCompanies = async () => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) return
-    setCompaniesLoading(true)
-    try {
-      const res = await fetch(`${API_URL}/account/companies`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setCompanies(data.companies || [])
-      }
-    } catch {}
-    finally { setCompaniesLoading(false) }
-  }
-
-  const switchToCompany = (co: CompanyEntry) => {
-    // Update local storage so dashboard + header pick up new company
-    const existing = JSON.parse(localStorage.getItem("user_data") || "{}")
-    const updated = { ...existing, company_id: co.company_id, company_name: co.company_name }
-    localStorage.setItem("user_data", JSON.stringify(updated))
-    sessionStorage.setItem("user_data", JSON.stringify(updated))
-    // Clear subscription cache so header reloads it for new company
-    localStorage.removeItem("subscription_cache")
-    window.location.href = "/dashboard"
-  }
-
   // (Each account has exactly one company — kept simple by design)
 
   // ── System / Auto-Calibration (owner-only) ─────────────────────────────────
