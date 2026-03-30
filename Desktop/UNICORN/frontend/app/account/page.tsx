@@ -623,11 +623,7 @@ export default function AccountPage() {
                               key={feat.key}
                               className={`flex items-start gap-3 px-4 py-3 rounded-xl border ${
                                 groupEnabled
-                                  ? group.tier === 2
-                                    ? "border-violet-500/20 bg-violet-500/5"
-                                    : group.tier === 1
-                                      ? "border-cyan-500/20 bg-cyan-500/5"
-                                      : "border-gray-700/40 bg-gray-800/20"
+                                  ? "border-cyan-500/20 bg-cyan-500/5"
                                   : "border-gray-800/40 bg-gray-900/10"
                               }`}
                             >
@@ -638,10 +634,7 @@ export default function AccountPage() {
                                     {feat.label}
                                   </span>
                                   {groupEnabled && (
-                                    <span className={`text-[10px] font-bold ${
-                                      group.tier === 2 ? "text-violet-400" :
-                                      group.tier === 1 ? "text-cyan-400" : "text-gray-400"
-                                    }`}>✓</span>
+                                    <span className="text-[10px] font-bold text-cyan-400">✓</span>
                                   )}
                                 </div>
                                 <p className={`text-xs mt-0.5 leading-relaxed ${groupEnabled ? "text-gray-500" : "text-gray-700"}`}>
