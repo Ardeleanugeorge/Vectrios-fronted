@@ -16,6 +16,15 @@ export type ActionFix = {
   suggested_change: string
   reason: string
   impact_contribution?: FixImpactContribution
+  behavioral_source?: boolean  // true when Fix #1 is driven by real GA4+GSC data
+}
+
+export type BehavioralInsight = {
+  page: string
+  exit_pct: number
+  query?: string | null
+  ctr_pct?: number | null
+  impressions?: number | null
 }
 
 export type TopAction = {
@@ -32,6 +41,7 @@ export type ActionLayerPayload = {
   expected_impact: { close_rate_improvement: string; arr_recovery: string }
   priority: { level: string; reason: string; display_line?: string }
   top_action?: TopAction | null
+  behavioral_insight?: BehavioralInsight | null  // GA4+GSC top leak signal
 }
 
 /** When backend has no action_layer (older diagnostics): same UI shape, score-driven copy */
@@ -376,11 +386,51 @@ export default function ActionableInsights({
               </span>
             )}
           </div>
+
+          {/* ⚡ Behavioral insight banner — GA4 + GSC (only when real data available) */}
+          {effectiveLayer.behavioral_insight && effectiveLayer.behavioral_insight.exit_pct >= 25 && (
+            <div className="mb-3 px-4 py-3 rounded-lg bg-cyan-950/30 border border-cyan-700/40 flex flex-col gap-1">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-0.5">
+                ⚡ Behavioral signal detected — GA4 + GSC
+              </p>
+              <p className="text-sm text-cyan-100 leading-snug">
+                Page{" "}
+                <span className="font-mono text-cyan-300 text-xs bg-cyan-950/60 px-1.5 py-0.5 rounded">
+                  {effectiveLayer.behavioral_insight.page}
+                </span>{" "}
+                loses{" "}
+                <span className="font-semibold text-red-300">
+                  {effectiveLayer.behavioral_insight.exit_pct}%
+                </span>{" "}
+                of visitors
+                {effectiveLayer.behavioral_insight.query && effectiveLayer.behavioral_insight.ctr_pct !== null && (
+                  <>
+                    {". Query "}
+                    <span className="italic text-gray-200">
+                      &ldquo;{effectiveLayer.behavioral_insight.query}&rdquo;
+                    </span>
+                    {" has CTR "}
+                    <span className="font-semibold text-red-300">
+                      {effectiveLayer.behavioral_insight.ctr_pct}%
+                    </span>
+                    {" → headline doesn't match search intent"}
+                  </>
+                )}
+                .
+              </p>
+            </div>
+          )}
+
           <div className="relative">
             <div className="absolute -left-0.5 top-0 bottom-0 w-0.5 rounded-full bg-gradient-to-b from-red-500 to-orange-500" />
             <div className="pl-4">
               <p className="text-[10px] font-bold uppercase tracking-widest text-red-400 mb-1.5">
                 🔴 Start here
+                {first.behavioral_source && (
+                  <span className="ml-2 text-cyan-400 normal-case font-normal tracking-normal">
+                    · confirmed by GA4
+                  </span>
+                )}
               </p>
               <FixCard fix={first} index={1} />
             </div>
