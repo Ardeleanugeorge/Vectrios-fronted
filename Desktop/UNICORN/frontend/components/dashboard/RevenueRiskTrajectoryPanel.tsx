@@ -145,7 +145,7 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
 
       {/* Confidence */}
       <div className="pt-4 border-t border-gray-800 text-center">
-        <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Confidence</div>
+        <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Projection Confidence</div>
         <div className="text-sm font-semibold text-gray-400">
           {Math.round(trajectory.confidence_score * 100)}%
         </div>

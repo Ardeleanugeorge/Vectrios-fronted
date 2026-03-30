@@ -64,10 +64,10 @@ export default function RevenueSystemStatus({
         </div>
       )}
       
-      {/* Model confidence note */}
-      {(modelConfidence || impactConfidence) && (
+      {/* Signal coverage note — hidden when data is insufficient */}
+      {(modelConfidence || (impactConfidence && impactConfidence !== "insufficient_data")) && (
         <div className="mt-6 pt-4 border-t border-gray-800 text-xs text-gray-500">
-          <span>Risk Signal Confidence: </span>
+          <span>Signal Coverage: </span>
           <span className="text-gray-400 font-medium capitalize">{modelConfidence || impactConfidence}</span>
         </div>
       )}

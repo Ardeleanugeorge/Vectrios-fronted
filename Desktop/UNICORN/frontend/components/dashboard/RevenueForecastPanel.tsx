@@ -174,7 +174,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
       {/* ── CONFIDENCE ──────────────────────────────────────────────── */}
       <div className="pt-4 border-t border-gray-800 flex items-center justify-between">
         <div>
-          <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Model Confidence</div>
+          <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Forecast Confidence</div>
           <div className={`text-lg font-semibold ${getConfidenceColor(forecast.confidence_score)}`}>
             {getConfidenceLabel(forecast.confidence_score)} ({(forecast.confidence_score * 100).toFixed(0)}%)
           </div>

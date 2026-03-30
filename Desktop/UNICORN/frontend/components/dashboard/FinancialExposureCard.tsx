@@ -135,7 +135,7 @@ export default function FinancialExposureCard({
           <span className={`text-lg mb-1 ${isLowRisk ? "text-emerald-300/60" : isMediumRisk ? "text-amber-300/60" : "text-red-400/50"}`}>/ year</span>
           {confidence !== undefined && (
             <span className="mb-1 ml-2 text-xs px-2 py-0.5 rounded-full bg-gray-800 text-gray-400">
-              {Math.round(confidence * 100)}% confidence
+              {Math.round(confidence * 100)}% model confidence
             </span>
           )}
         </div>
