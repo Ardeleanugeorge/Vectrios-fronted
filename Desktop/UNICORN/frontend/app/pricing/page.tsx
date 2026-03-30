@@ -502,24 +502,21 @@ export default function PricingPage() {
               onClick={() => setBillingCycle("annual")}
               className={`px-6 py-2 rounded-md transition ${billingCycle === "annual" ? "bg-cyan-500 text-black font-medium" : "text-gray-400 hover:text-white"}`}
             >
-              Annual
+              Annual <span className="text-[10px] ml-1 opacity-70">Save 20%</span>
             </button>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-14">
+        <div className="max-w-lg mx-auto mb-14">
           {plans.map((plan) => {
-            const isGrowth = plan.name.toLowerCase() === "growth"
             const isActivePlan = activePlanFromQuery === plan.name.toLowerCase()
             return (
               <div
                 key={plan.name}
-                className={`relative p-7 bg-[#111827] rounded-lg border transition flex flex-col ${
+                className={`relative p-8 bg-[#111827] rounded-2xl border flex flex-col transition ${
                   isActivePlan
                     ? "border-emerald-500/80 shadow-[0_0_24px_-4px_rgba(16,185,129,0.35)]"
-                    : isGrowth
-                    ? "border-cyan-500/80 shadow-[0_0_24px_-4px_rgba(34,211,238,0.35)] md:scale-[1.02] z-[1]"
-                    : "border-gray-800 hover:border-cyan-500/40"
+                    : "border-cyan-500/80 shadow-[0_0_32px_-4px_rgba(34,211,238,0.3)]"
                 }`}
               >
                 {isActivePlan && (
@@ -527,24 +524,24 @@ export default function PricingPage() {
                     Active
                   </span>
                 )}
-                {isGrowth && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide text-center max-w-[95%] leading-tight">
-                    Most companies recover value here
-                  </span>
-                )}
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide text-center leading-tight">
+                  Everything included
+                </span>
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-cyan-400/80 mb-1">
                   {plan.name}
                 </p>
                 <h3 className="text-xl font-bold mb-4 leading-snug">{plan.headline}</h3>
                 <div className="mb-6">
-                  <span className="text-4xl font-bold">
+                  <span className="text-5xl font-bold">
                     ${billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly}
                   </span>
                   <span className="text-gray-400">/month</span>
-                  {billingCycle === "annual" && (
+                  {billingCycle === "annual" ? (
                     <p className="text-xs text-gray-500 mt-1">
-                      Billed annually (${plan.priceAnnual * 12}/year)
+                      Billed annually (${plan.priceAnnual * 12}/year) — save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year
                     </p>
+                  ) : (
+                    <p className="text-xs text-gray-500 mt-1">Switch to annual and save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year</p>
                   )}
                 </div>
                 <ul className="space-y-2 mb-7 text-sm text-gray-300 flex-1">
@@ -558,14 +555,12 @@ export default function PricingPage() {
                 <button
                   onClick={() => handleSelectPlan(plan.name)}
                   disabled={isProcessing || isActivePlan}
-                  className={`w-full py-3 font-semibold rounded-lg transition ${
-                    isGrowth && !isProcessing
-                      ? "bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20"
-                      : isProcessing
-                        ? "bg-gray-700 text-gray-500 cursor-not-allowed"
-                        : isActivePlan
-                          ? "bg-emerald-600 text-white cursor-default"
-                          : "bg-cyan-500 hover:bg-cyan-400 text-black"
+                  className={`w-full py-3 font-semibold rounded-lg transition text-base ${
+                    isProcessing
+                      ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+                      : isActivePlan
+                        ? "bg-emerald-600 text-white cursor-default"
+                        : "bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20"
                   }`}
                 >
                   {isActivePlan ? "Activated" : plan.ctaLabel}

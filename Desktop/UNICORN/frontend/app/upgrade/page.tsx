@@ -7,28 +7,15 @@ import Link from 'next/link'
 import DashboardHeader from '@/components/DashboardHeader'
 import SiteFooter from '@/components/SiteFooter'
 
-// Plan hierarchy — index = rank (higher = better)
-const PLAN_RANK: Record<string, number> = { starter: 0, growth: 1, scale: 2 }
+// Plan hierarchy — only Scale
+const PLAN_RANK: Record<string, number> = { scale: 0 }
 
 const PLAN_FEATURES: Record<string, string[]> = {
-  starter: [
-    '📊 RII Score — structural risk 0–100',
-    '🔍 Revenue leak detection',
-    '📝 Messaging breakdown (page-by-page)',
-    '🎯 Action Engine — top fix + $/month + 🔴 Start here',
-  ],
-  growth: [
-    'Everything in Starter, plus:',
-    '✂️ Auto-Fix Engine — Before/After copy + 📋 Copy button',
-    '📋 Full fix playbook — 3 fixes with page targets',
-    '💰 ARR at risk calculation',
-    '📉 Close rate impact modeling',
-    '📡 Revenue signals after each scan',
-    '🚨 Revenue alerts (drift notifications)',
-    '📈 Forecast engine — 30-day prediction',
-  ],
   scale: [
-    'Everything in Growth, plus:',
+    '📊 RII Score — structural risk 0–100',
+    '🔍 Revenue leak detection (page-by-page)',
+    '📋 Full fix playbook — step-by-step with $/month recovery',
+    '💰 ARR at risk + close rate impact modeling',
     '🔄 24h continuous monitoring',
     '📊 Revenue Delta Engine — +$X/month vs last scan + WHY drivers',
     '🔴 Delta + Action combo — "Fix this first" on leak increase',
@@ -43,9 +30,7 @@ const PLAN_FEATURES: Record<string, string[]> = {
 }
 
 const PLAN_PRICE: Record<string, { monthly: number; annual: number }> = {
-  starter: { monthly: 49, annual: 39 },
-  growth: { monthly: 149, annual: 119 },
-  scale: { monthly: 299, annual: 239 },
+  scale: { monthly: 99, annual: 79 },
 }
 
 interface SubStatus {
@@ -200,15 +185,12 @@ export default function UpgradePage() {
     finally { setIsActivating(false); setActivatingPlan(null) }
   }
 
-  // Which plans are available for this user (only upgrades, never downgrades)
-  const availablePlans = (['starter', 'growth', 'scale'] as const).filter(p => {
-    const rank = PLAN_RANK[p]
-    // If on Scale (paid) → can't upgrade or downgrade
+  // Only Scale plan available
+  const availablePlans = (['scale'] as const).filter(p => {
+    // If on Scale (paid) → nothing to upgrade to
     if (isScale) return false
-    // If on trial (Scale trial) → only allow paid Scale upgrade
-    if (isTrial) return p === 'scale'
-    // Otherwise → only allow plans strictly above current
-    return rank > currentRank
+    // Trial or no plan → allow Scale
+    return true
   })
 
   if (loadingStatus) {
@@ -324,37 +306,28 @@ export default function UpgradePage() {
                 </span>
               </div>
 
-              {/* ── Plan cards ────────────────────────────────────────────────── */}
-              <div className="grid md:grid-cols-3 gap-4 mb-16">
-                {(['starter', 'growth', 'scale'] as const).map(planName => {
-                  const rank = PLAN_RANK[planName]
+              {/* ── Plan card ─────────────────────────────────────────────────── */}
+              <div className="max-w-md mx-auto mb-16">
+                {(['scale'] as const).map(planName => {
                   const isCurrent = planName === currentPlanName
                   const isAvailable = availablePlans.includes(planName)
-                  const isDowngrade = rank < currentRank
                   const price = PLAN_PRICE[planName]
                   const displayPrice = billing === 'annual' ? price.annual : price.monthly
-                  const isHighlighted = planName === 'scale'
 
                   return (
                     <div
                       key={planName}
-                      className={`relative rounded-2xl border p-6 flex flex-col transition-all ${
+                      className={`relative rounded-2xl border p-8 flex flex-col transition-all ${
                         isCurrent
                           ? 'border-cyan-500/40 bg-cyan-500/5'
-                          : isHighlighted && isAvailable
-                          ? 'border-cyan-500/30 bg-gradient-to-b from-cyan-500/8 to-transparent'
-                          : isDowngrade
-                          ? 'border-gray-800/50 bg-gray-900/30 opacity-40'
-                          : 'border-gray-800 bg-gray-900/40'
+                          : 'border-cyan-500/50 bg-gradient-to-b from-cyan-500/8 to-transparent shadow-[0_0_32px_-4px_rgba(34,211,238,0.25)]'
                       }`}
                     >
-                      {planName === 'scale' && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500 text-black uppercase tracking-wider">
-                            Most powerful
-                          </span>
-                  </div>
-                      )}
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500 text-black uppercase tracking-wider">
+                          Everything included
+                        </span>
+                      </div>
 
                       <div className="mb-5">
                         <div className="flex items-center justify-between mb-1">
@@ -364,26 +337,23 @@ export default function UpgradePage() {
                               {isTrial ? 'Trial' : 'Current'}
                             </span>
                           )}
-                          {isDowngrade && (
-                            <span className="px-2 py-0.5 rounded-full text-xs bg-gray-700/50 text-gray-500">
-                              Not available
-                            </span>
-                          )}
-                  </div>
+                        </div>
                         <div className="flex items-end gap-1">
-                          <span className="text-3xl font-bold">${displayPrice}</span>
+                          <span className="text-4xl font-bold">${displayPrice}</span>
                           <span className="text-gray-500 text-sm mb-1">/mo</span>
-                </div>
-                        {billing === 'annual' && (
-                          <p className="text-xs text-gray-500">Billed annually (${price.annual * 12}/yr)</p>
+                        </div>
+                        {billing === 'annual' ? (
+                          <p className="text-xs text-gray-500">Billed annually (${price.annual * 12}/yr) — save ${(price.monthly - price.annual) * 12}/yr</p>
+                        ) : (
+                          <p className="text-xs text-gray-500">Switch to annual and save ${(price.monthly - price.annual) * 12}/yr</p>
                         )}
-              </div>
+                      </div>
 
                       <ul className="space-y-2 mb-6 flex-1">
                         {PLAN_FEATURES[planName].map((f, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm">
-                            <span className={`mt-0.5 text-xs ${isCurrent || isAvailable ? 'text-cyan-400' : 'text-gray-600'}`}>✓</span>
-                            <span className={isCurrent || isAvailable ? 'text-gray-300' : 'text-gray-600'}>{f}</span>
+                            <span className="mt-0.5 text-xs text-cyan-400">✓</span>
+                            <span className="text-gray-300">{f}</span>
                           </li>
                         ))}
                       </ul>
@@ -392,76 +362,64 @@ export default function UpgradePage() {
                         <div className="w-full py-3 rounded-xl text-center text-sm font-medium bg-gray-800/50 text-gray-500 border border-gray-700/50">
                           Current plan
                         </div>
-                      ) : isDowngrade ? (
-                        <div className="w-full py-3 rounded-xl text-center text-sm font-medium bg-gray-800/30 text-gray-600 border border-gray-700/30">
-                          Downgrade unavailable
-                  </div>
                       ) : isAvailable ? (
                         <button
                           onClick={() => handleActivate(planName)}
                           disabled={isActivating}
-                          className={`w-full py-3 rounded-xl text-sm font-bold transition ${
-                            planName === 'scale'
-                              ? 'bg-cyan-500 hover:bg-cyan-400 text-black'
-                              : 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700'
-                          } disabled:opacity-60 disabled:cursor-not-allowed`}
+                          className="w-full py-3 rounded-xl text-sm font-bold transition bg-cyan-500 hover:bg-cyan-400 text-black disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                           {isActivating && activatingPlan === planName
                             ? 'Activating…'
                             : isTrial
-                            ? `Upgrade to ${planName.charAt(0).toUpperCase() + planName.slice(1)}`
-                            : `Start ${planName.charAt(0).toUpperCase() + planName.slice(1)} trial`}
+                            ? 'Upgrade to Scale'
+                            : 'Start Scale'}
                         </button>
                       ) : null}
-                </div>
+                    </div>
                   )
                 })}
               </div>
             </>
           )}
 
-          {/* ── Feature comparison ─────────────────────────────────────────── */}
+          {/* ── Feature list ───────────────────────────────────────────────── */}
           <div className="mb-16">
-            <h2 className="text-xl font-semibold text-center text-gray-300 mb-8">Full comparison</h2>
-            <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
+            <h2 className="text-xl font-semibold text-center text-gray-300 mb-8">Everything in Scale</h2>
+            <div className="max-w-lg mx-auto rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
               <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-800">
+                <thead>
+                  <tr className="border-b border-gray-800">
                     <th className="text-left p-4 text-gray-400 font-medium">Feature</th>
-                    {(['starter', 'growth', 'scale'] as const).map(p => (
-                      <th key={p} className={`p-4 text-center font-semibold capitalize ${p === 'scale' ? 'text-cyan-400' : 'text-gray-300'}`}>
-                        {p}
-                      </th>
-                    ))}
-                    </tr>
-                  </thead>
-                  <tbody>
+                    <th className="p-4 text-center font-semibold text-cyan-400">Scale</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {[
-                    ['Revenue leak detection', true, true, true],
-                    ['RII score', true, true, true],
-                    ['Close rate modeling', false, true, true],
-                    ['ARR at risk calculation', false, true, true],
-                    ['Page-by-page breakdown', false, true, true],
-                    ['Continuous monitoring (24h)', false, false, true],
-                    ['Delta engine (+$X vs last scan)', false, false, true],
-                    ['GSC + GA4 behavioral modifiers', false, false, true],
-                    ['Benchmark vs 500+ companies', false, false, true],
-                    ['Structural drift alerts', false, false, true],
-                    ['Executive-grade reporting', false, false, true],
-                  ].map(([label, s, g, sc], i) => (
+                    'Revenue leak detection',
+                    'RII score (0–100)',
+                    'Close rate modeling',
+                    'ARR at risk calculation',
+                    'Page-by-page breakdown',
+                    'Full fix playbook (3 fixes)',
+                    'Continuous monitoring (24h)',
+                    'Delta engine (+$X vs last scan)',
+                    'GSC + GA4 behavioral modifiers',
+                    'Benchmark vs 500+ companies',
+                    'Structural drift alerts',
+                    'Risk trajectory (30/60/90-day)',
+                    'Revenue incidents',
+                    'Executive-grade reporting',
+                    'Team monitoring — unlimited seats',
+                  ].map((label, i) => (
                     <tr key={i} className="border-b border-gray-800/50 hover:bg-gray-800/20 transition">
-                      <td className="p-4 text-gray-400">{label as string}</td>
-                      {[s, g, sc].map((v, j) => (
-                        <td key={j} className="p-4 text-center">
-                          {v
-                            ? <span className="text-cyan-400 font-bold">✓</span>
-                            : <span className="text-gray-700">—</span>}
-                        </td>
-                      ))}
+                      <td className="p-4 text-gray-400">{label}</td>
+                      <td className="p-4 text-center">
+                        <span className="text-cyan-400 font-bold">✓</span>
+                      </td>
                     </tr>
                   ))}
-                  </tbody>
-                </table>
+                </tbody>
+              </table>
             </div>
           </div>
 

@@ -1,6 +1,6 @@
 /**
  * Plans Configuration
- * Starter, Growth, Scale plans
+ * Single plan: Scale at $99/month
  * Enterprise is handled via "Contact Sales" only
  */
 
@@ -27,61 +27,25 @@ export interface Plan {
 
 export const PLANS: Plan[] = [
   {
-    name: "Starter",
-    headline: "Find what's costing you revenue",
-    ctaLabel: "Find my revenue leak",
-    priceMonthly: 49,
-    priceAnnual: 39, // per month when billed annually
-    maxUsers: 1,
-    features: [
-      "Identify your biggest revenue leak",
-      "See where your messaging breaks",
-      "Get 1 high-impact fix",
-    ],
-    featureFlags: {
-      signals: true,
-      alerts: false,
-      incidents: false,
-      forecast: false,
-      trajectory: false,
-      team_monitoring: false
-    }
-  },
-  {
-    name: "Growth",
-    headline: "Recover lost revenue",
-    ctaLabel: "Recover my lost revenue",
-    priceMonthly: 149,
-    priceAnnual: 119, // per month when billed annually
-    maxUsers: 5,
-    features: [
-      "Everything in Starter",
-      "Full fix plan (step-by-step)",
-      "ARR at risk calculation",
-      "Close rate impact",
-      "Page-by-page breakdown",
-    ],
-    featureFlags: {
-      signals: true,
-      alerts: true,
-      incidents: true,
-      forecast: true,
-      trajectory: false,
-      team_monitoring: false
-    }
-  },
-  {
     name: "Scale",
-    headline: "Maximize revenue performance",
-    ctaLabel: "Maximize my revenue",
-    priceMonthly: 299,
-    priceAnnual: 239, // per month when billed annually
+    headline: "Full revenue intelligence — one flat price",
+    ctaLabel: "Start Scale",
+    priceMonthly: 99,
+    priceAnnual: 79, // per month when billed annually
     maxUsers: 20,
     features: [
-      "Everything in Growth",
-      "Benchmark vs similar companies",
-      "Ongoing monitoring",
-      "Weekly alerts on revenue risk",
+      "RII Score — structural risk 0–100",
+      "Revenue leak detection (page-by-page)",
+      "Full fix playbook — step-by-step with $/month recovery",
+      "ARR at risk + close rate impact modeling",
+      "24h continuous monitoring",
+      "Revenue Delta Engine (+$X/month vs last scan)",
+      "Risk trajectory — 30/60/90-day view",
+      "Revenue incidents (severity-ranked)",
+      "Benchmark vs 500+ SaaS companies",
+      "GSC + GA4 behavioral modifiers",
+      "Executive risk summaries (weekly)",
+      "Team monitoring — unlimited seats",
     ],
     featureFlags: {
       signals: true,

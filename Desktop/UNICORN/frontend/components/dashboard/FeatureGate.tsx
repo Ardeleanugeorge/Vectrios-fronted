@@ -15,44 +15,20 @@ export default function FeatureGate({
   children,
   currentPlan
 }: FeatureGateProps) {
-  // Ierarhia planurilor: trial = scale (acces complet 14 zile)
-  // scale > growth > starter
+  // Only one plan: Scale. Trial = full access. Any active plan = access.
   const plan = currentPlan?.toLowerCase() ?? ""
-  const planRank: Record<string, number> = {
-    trial: 4,   // trial = acces complet (echivalent scale)
-    scale: 3,
-    growth: 2,
-    starter: 1,
-  }
-  const requiredRank: Record<string, number> = {
-    scale: 3,
-    growth: 2,
-    starter: 1,
-  }
-  const planRankValue = planRank[plan] ?? 0
-  const requiredRankValue = requiredRank[planRequired.toLowerCase()] ?? 99
-  const hasAccess = currentPlan && (planRankValue >= requiredRankValue)
-  
+  const hasAccess = plan === "scale" || plan === "trial" || plan === "growth" || plan === "starter"
+
   // Debug logging
   if (process.env.NODE_ENV === "development") {
-    console.log(`[FeatureGate] ${feature}: currentPlan="${currentPlan}", planRequired="${planRequired}", planRank=${planRankValue}, requiredRank=${requiredRankValue}, hasAccess=${hasAccess}`)
+    console.log(`[FeatureGate] ${feature}: currentPlan="${currentPlan}", hasAccess=${hasAccess}`)
   }
 
   if (hasAccess) {
     return <>{children}</>
   }
 
-  const pr = planRequired.toLowerCase()
-  const upgradeLabel =
-    pr === "growth"
-      ? "See how to recover $185K/year"
-      : pr === "scale"
-        ? "Maximize my revenue"
-        : pr === "starter"
-          ? "Find my revenue leak"
-          : `Upgrade to ${planRequired.charAt(0).toUpperCase() + planRequired.slice(1)}`
-
-  // Locked — static placeholder (nu randăm children real ca să evităm fetch inutil + height glitch)
+  // Locked — static placeholder
   return (
     <div className="relative rounded-lg overflow-hidden min-h-[220px] bg-[#111827] border border-gray-800">
 
@@ -68,7 +44,7 @@ export default function FeatureGate({
         <div className="h-3 bg-gray-800 rounded w-1/2" />
       </div>
 
-      {/* Lock overlay — acoperă tot */}
+      {/* Lock overlay */}
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0B0F19]/75 backdrop-blur-[2px]">
         <div className="text-center px-6">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center">
@@ -79,14 +55,13 @@ export default function FeatureGate({
           </div>
           <h3 className="text-lg font-bold mb-1 text-white">{feature}</h3>
           <p className="text-sm text-gray-400 mb-5">
-            Available in{" "}
-            <span className="font-semibold text-cyan-400 capitalize">{planRequired}</span> plan
+            Included in <span className="font-semibold text-cyan-400">Scale</span> — $99/month
           </p>
           <Link
             href="/pricing"
             className="inline-block px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-sm text-center max-w-[280px]"
           >
-            {upgradeLabel}
+            Start Scale — $99/month
           </Link>
         </div>
       </div>

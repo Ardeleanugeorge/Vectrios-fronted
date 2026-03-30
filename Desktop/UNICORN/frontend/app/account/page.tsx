@@ -46,7 +46,78 @@ export default function AccountPage() {
   const [calibrationSuccess, setCalibrationSuccess] = useState("")
 
   // Active tab
-  const [activeTab, setActiveTab] = useState<'profile' | 'plan' | 'security' | 'revenue'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'plan' | 'security' | 'revenue' | 'system'>('profile')
+
+  // ── System / Auto-Calibration (owner-only) ─────────────────────────────────
+  const OWNER_EMAIL = "ageorge9625@yahoo.com"
+  const [calibStatus, setCalibStatus] = useState<{
+    state: string; message: string; calibrated_at?: string; n_scans?: number;
+    mae?: number; violations?: number; label_distribution?: Record<string,number>;
+    global_weights?: Record<string,number>; total_scans_in_db?: number; summary?: string
+  } | null>(null)
+  const [calibRunning, setCalibRunning] = useState(false)
+  const [calibMsg, setCalibMsg] = useState("")
+
+  const loadCalibStatus = async () => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    try {
+      const res = await fetch(`${API_URL}/admin/calibration/status`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.ok) setCalibStatus(await res.json())
+    } catch {}
+  }
+
+  const handleRunCalibration = async () => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    setCalibRunning(true)
+    setCalibMsg("Starting calibration…")
+    try {
+      const res = await fetch(`${API_URL}/admin/calibrate`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        setCalibMsg("Error: " + (d?.detail || "Unknown error"))
+        setCalibRunning(false)
+        return
+      }
+      setCalibMsg("Running… this takes 30–90 seconds. Checking status…")
+      // Poll every 3s for up to 2 minutes
+      let attempts = 0
+      const poll = setInterval(async () => {
+        attempts++
+        await loadCalibStatus()
+        const token2 = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+        if (!token2) { clearInterval(poll); setCalibRunning(false); return }
+        try {
+          const r = await fetch(`${API_URL}/admin/calibration/status`, {
+            headers: { Authorization: `Bearer ${token2}` }
+          })
+          if (r.ok) {
+            const s = await r.json()
+            setCalibStatus(s)
+            if (s.state === "done") {
+              setCalibMsg(`✅ Done! MAE=${s.mae?.toFixed(1)} pts on ${s.n_scans} scans. Weights reloaded.`)
+              clearInterval(poll); setCalibRunning(false)
+            } else if (s.state === "error") {
+              setCalibMsg("❌ Error: " + s.message)
+              clearInterval(poll); setCalibRunning(false)
+            } else {
+              setCalibMsg(s.message || "Running…")
+            }
+          }
+        } catch {}
+        if (attempts >= 40) { clearInterval(poll); setCalibRunning(false) }
+      }, 3000)
+    } catch (err) {
+      setCalibMsg("Network error. Try again.")
+      setCalibRunning(false)
+    }
+  }
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -103,6 +174,11 @@ export default function AccountPage() {
       }
     })()
   }, [router])
+
+  // Load calibration status whenever the system tab opens (owner only)
+  useEffect(() => {
+    if (activeTab === 'system') loadCalibStatus()
+  }, [activeTab])
 
   const loadSubscription = async (token: string, cid: string) => {
     try {
@@ -236,48 +312,36 @@ export default function AccountPage() {
   // ── Plan feature map (static, always shown) ──────────────────────────
   const ALL_FEATURES: Array<{
     icon: string; key: string; label: string; desc: string
-    minPlan: "starter" | "growth" | "scale"
+    minPlan: "scale"
   }> = [
-    // ── Starter base ──────────────────────────────────────────────────
-    { icon: "📊", key: "rii",          label: "RII Score",                 desc: "Revenue Impact Index — structural risk on a 0–100 scale",            minPlan: "starter" },
-    { icon: "🔍", key: "leak",         label: "Revenue Leak Detection",    desc: "Identify primary messaging gaps costing pipeline",                   minPlan: "starter" },
-    { icon: "📝", key: "breakdown",    label: "Messaging Breakdown",       desc: "Page-by-page structural analysis from live crawl",                   minPlan: "starter" },
-    { icon: "🎯", key: "action",       label: "Action Engine",             desc: "Top fix with priority, $/month impact estimate and 🔴 Start here",   minPlan: "starter" },
-    // ── Growth ────────────────────────────────────────────────────────
-    { icon: "✂️", key: "autofix",      label: "Auto-Fix Engine",           desc: "Before/After copy per fix — copy-ready text with 📋 Copy button",   minPlan: "growth"  },
-    { icon: "📋", key: "playbook",     label: "Full Fix Playbook",         desc: "3-fix step-by-step plan, each with page target + $/month recovery",  minPlan: "growth"  },
-    { icon: "💰", key: "arr_risk",     label: "ARR at Risk Calculation",   desc: "Dollar-level exposure tied to your actual ARR + calibration",        minPlan: "growth"  },
-    { icon: "📉", key: "close_rate",   label: "Close Rate Impact Model",   desc: "How messaging gaps compress your current close rate",                minPlan: "growth"  },
-    { icon: "📡", key: "signals",      label: "Revenue Signals",           desc: "Granular structural change signals after each scan",                 minPlan: "growth"  },
-    { icon: "🚨", key: "alerts",       label: "Revenue Alerts",            desc: "Real-time drift alerts when structural risk changes",                minPlan: "growth"  },
-    { icon: "📈", key: "forecast",     label: "Forecast Engine",           desc: "30-day revenue compression prediction",                              minPlan: "growth"  },
-    // ── Scale ─────────────────────────────────────────────────────────
-    { icon: "🔄", key: "monitoring",   label: "24h Continuous Monitoring", desc: "Daily automatic re-scan — always-fresh RII and signals",             minPlan: "scale"  },
-    { icon: "📊", key: "delta",        label: "Revenue Delta Engine",      desc: "+$X/month worse vs last scan — with WHY drivers (ICP, alignment…)",  minPlan: "scale"  },
-    { icon: "🔴", key: "delta_action", label: "Delta + Action Combo",      desc: "'Fix this first' shown instantly when revenue leak increases",       minPlan: "scale"  },
-    { icon: "🎯", key: "trajectory",   label: "Risk Trajectory",           desc: "30/60/90-day forward-looking risk projections",                      minPlan: "scale"  },
-    { icon: "⚡", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale"  },
-    { icon: "🏆", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Compare vs 500+ SaaS companies in your revenue tier",               minPlan: "scale"  },
-    { icon: "📊", key: "arr_sim",      label: "12-Month ARR Simulation",   desc: "Model revenue trajectory with vs without fixes applied",             minPlan: "scale"  },
-    { icon: "🔗", key: "apis",         label: "GSC + GA4 Modifiers",       desc: "Real search + behavior data applied to revenue model",               minPlan: "scale"  },
-    { icon: "📧", key: "executive",    label: "Executive Risk Summaries",  desc: "Weekly board-ready summaries of structural drift",                   minPlan: "scale"  },
-    { icon: "👥", key: "team",         label: "Team Monitoring",           desc: "Unlimited seats with shared dashboard access",                       minPlan: "scale"  },
+    { icon: "📊", key: "rii",          label: "RII Score",                 desc: "Revenue Impact Index — structural risk on a 0–100 scale",            minPlan: "scale" },
+    { icon: "🔍", key: "leak",         label: "Revenue Leak Detection",    desc: "Identify primary messaging gaps costing pipeline",                   minPlan: "scale" },
+    { icon: "📝", key: "breakdown",    label: "Messaging Breakdown",       desc: "Page-by-page structural analysis from live crawl",                   minPlan: "scale" },
+    { icon: "🎯", key: "action",       label: "Action Engine",             desc: "Top fix with priority, $/month impact estimate and 🔴 Start here",   minPlan: "scale" },
+    { icon: "✂️", key: "autofix",      label: "Auto-Fix Engine",           desc: "Before/After copy per fix — copy-ready text with 📋 Copy button",   minPlan: "scale" },
+    { icon: "📋", key: "playbook",     label: "Full Fix Playbook",         desc: "3-fix step-by-step plan, each with page target + $/month recovery",  minPlan: "scale" },
+    { icon: "💰", key: "arr_risk",     label: "ARR at Risk Calculation",   desc: "Dollar-level exposure tied to your actual ARR + calibration",        minPlan: "scale" },
+    { icon: "📉", key: "close_rate",   label: "Close Rate Impact Model",   desc: "How messaging gaps compress your current close rate",                minPlan: "scale" },
+    { icon: "📡", key: "signals",      label: "Revenue Signals",           desc: "Granular structural change signals after each scan",                 minPlan: "scale" },
+    { icon: "🚨", key: "alerts",       label: "Revenue Alerts",            desc: "Real-time drift alerts when structural risk changes",                minPlan: "scale" },
+    { icon: "📈", key: "forecast",     label: "Forecast Engine",           desc: "30-day revenue compression prediction",                              minPlan: "scale" },
+    { icon: "🔄", key: "monitoring",   label: "24h Continuous Monitoring", desc: "Daily automatic re-scan — always-fresh RII and signals",             minPlan: "scale" },
+    { icon: "📊", key: "delta",        label: "Revenue Delta Engine",      desc: "+$X/month worse vs last scan — with WHY drivers (ICP, alignment…)",  minPlan: "scale" },
+    { icon: "🔴", key: "delta_action", label: "Delta + Action Combo",      desc: "'Fix this first' shown instantly when revenue leak increases",       minPlan: "scale" },
+    { icon: "🎯", key: "trajectory",   label: "Risk Trajectory",           desc: "30/60/90-day forward-looking risk projections",                      minPlan: "scale" },
+    { icon: "⚡", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale" },
+    { icon: "🏆", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Compare vs 500+ SaaS companies in your revenue tier",               minPlan: "scale" },
+    { icon: "📊", key: "arr_sim",      label: "12-Month ARR Simulation",   desc: "Model revenue trajectory with vs without fixes applied",             minPlan: "scale" },
+    { icon: "🔗", key: "apis",         label: "GSC + GA4 Modifiers",       desc: "Real search + behavior data applied to revenue model",               minPlan: "scale" },
+    { icon: "📧", key: "executive",    label: "Executive Risk Summaries",  desc: "Weekly board-ready summaries of structural drift",                   minPlan: "scale" },
+    { icon: "👥", key: "team",         label: "Team Monitoring",           desc: "Unlimited seats with shared dashboard access",                       minPlan: "scale" },
   ]
 
-  const planTier = (p: string | null | undefined): 0 | 1 | 2 => {
-    const name = (p || "").toLowerCase()
-    if (name === "scale") return 2
-    if (name === "growth") return 1
-    return 0
-  }
-  const userTier = isTrial ? 2 : planTier(planName) // trial = scale-level access
-  const featureTier = (f: typeof ALL_FEATURES[0]) =>
-    f.minPlan === "scale" ? 2 : f.minPlan === "growth" ? 1 : 0
+  const userTier = (isTrial || (planName === "scale")) ? 0 : -1 // scale or trial = full access
+  const featureTier = (_f: typeof ALL_FEATURES[0]) => 0
 
   const featGroups = [
-    { label: "Starter", tier: 0, color: "text-gray-400", dot: "bg-gray-600" },
-    { label: "Growth",  tier: 1, color: "text-cyan-400",  dot: "bg-cyan-500" },
-    { label: "Scale",   tier: 2, color: "text-violet-400", dot: "bg-violet-500" },
+    { label: "Scale", tier: 0, color: "text-cyan-400", dot: "bg-cyan-500" },
   ] as const
 
   // Smart dashboard redirect
@@ -296,11 +360,14 @@ export default function AccountPage() {
     return "/dashboard"
   }
 
+  const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
+
   const TABS = [
     { id: 'profile', label: 'Profile', icon: '👤' },
     { id: 'plan', label: 'Plan & Billing', icon: '💳' },
     { id: 'revenue', label: 'Revenue Model', icon: '📊' },
     { id: 'security', label: 'Security', icon: '🔒' },
+    ...(isOwner ? [{ id: 'system' as const, label: 'System', icon: '⚙️' }] : []),
   ] as const
 
   if (loading) {
@@ -365,7 +432,7 @@ export default function AccountPage() {
             <div className="mb-6 p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 flex items-center justify-between gap-4 flex-wrap">
                 <div>
                 <p className="text-amber-300 font-semibold">{subscription.trial_days_left}d left on your trial</p>
-                <p className="text-amber-400/70 text-sm">Upgrade to Scale to keep all monitoring features.</p>
+                <p className="text-amber-400/70 text-sm">Subscribe to Scale ($99/mo) to keep all features.</p>
               </div>
               <Link href="/upgrade" className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-sm transition">
                 Upgrade →
@@ -517,9 +584,9 @@ export default function AccountPage() {
                       {planLabel ? `What's active on your ${planLabel} plan` : "Start a plan to unlock features"}
                     </p>
                   </div>
-                  {userTier < 2 && (
-                    <Link href="/upgrade" className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition">
-                      Unlock all →
+                  {userTier < 0 && (
+                    <Link href="/pricing" className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition">
+                      Start Scale →
                     </Link>
                   )}
                 </div>
@@ -589,33 +656,23 @@ export default function AccountPage() {
                   })}
                 </div>
 
-                {/* Upgrade CTA if not on Scale */}
-                {userTier < 2 && (
+                {/* Subscribe CTA if no active plan */}
+                {userTier < 0 && (
                   <div className="px-6 pb-5 pt-2">
-                    <div className={`p-4 rounded-xl border flex items-center justify-between gap-4 flex-wrap ${
-                      userTier === 0
-                        ? "border-cyan-500/20 bg-cyan-500/5"
-                        : "border-violet-500/20 bg-violet-500/5"
-                    }`}>
+                    <div className="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 flex items-center justify-between gap-4 flex-wrap">
                       <div>
-                        <p className={`text-sm font-semibold ${userTier === 0 ? "text-cyan-300" : "text-violet-300"}`}>
-                          {userTier === 0 ? "Upgrade to Growth" : "Upgrade to Scale"}
+                        <p className="text-sm font-semibold text-cyan-300">
+                          Activate Scale — $99/month
                         </p>
                         <p className="text-xs text-gray-500 mt-0.5">
-                          {userTier === 0
-                            ? "Unlock full playbook, ARR at risk, alerts, signals, and forecast engine."
-                            : "Unlock 24h monitoring, incidents, trajectory, benchmark, and team access."}
+                          Unlock 24h monitoring, full playbook, ARR at risk, incidents, benchmark, and team access.
                         </p>
                       </div>
                       <Link
-                        href="/upgrade"
-                        className={`shrink-0 px-4 py-2 rounded-xl font-bold text-xs transition ${
-                          userTier === 0
-                            ? "bg-cyan-500 hover:bg-cyan-400 text-black"
-                            : "bg-violet-500 hover:bg-violet-400 text-white"
-                        }`}
+                        href="/pricing"
+                        className="shrink-0 px-4 py-2 rounded-xl font-bold text-xs transition bg-cyan-500 hover:bg-cyan-400 text-black"
                       >
-                        Upgrade now →
+                        Start Scale →
                       </Link>
                     </div>
                   </div>
@@ -826,6 +883,151 @@ export default function AccountPage() {
                   Sign out of all sessions
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* ── SYSTEM TAB (owner-only) ────────────────────────────────────── */}
+          {activeTab === 'system' && isOwner && (
+            <div className="space-y-6">
+
+              {/* Header */}
+              <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-6">
+                <div className="flex items-center gap-3 mb-1">
+                  <span className="text-2xl">⚙️</span>
+                  <h2 className="text-lg font-bold text-cyan-300">RII Auto-Calibration</h2>
+                  <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest">Owner only</span>
+                </div>
+                <p className="text-gray-400 text-sm mt-1">
+                  Re-calibrates the RII scoring model using all scan results in the database.
+                  No terminal, no Excel — one click.
+                </p>
+              </div>
+
+              {/* Current DB stats */}
+              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
+                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Current Status</h3>
+                {calibStatus ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+                    <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
+                      <div className="text-2xl font-bold text-white">{calibStatus.total_scans_in_db ?? calibStatus.n_scans ?? "—"}</div>
+                      <div className="text-xs text-gray-500 mt-1">Scans in DB</div>
+                    </div>
+                    <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
+                      <div className="text-2xl font-bold text-white">{calibStatus.n_scans ?? "—"}</div>
+                      <div className="text-xs text-gray-500 mt-1">Last run scans</div>
+                    </div>
+                    <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
+                      <div className={`text-2xl font-bold ${calibStatus.mae && calibStatus.mae < 6 ? "text-emerald-400" : "text-amber-400"}`}>
+                        {calibStatus.mae ? `${calibStatus.mae.toFixed(1)} pts` : "—"}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">MAE (lower = better)</div>
+                    </div>
+                    <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
+                      <div className={`text-2xl font-bold ${calibStatus.state === "done" ? "text-emerald-400" : calibStatus.state === "running" ? "text-cyan-400" : calibStatus.state === "error" ? "text-red-400" : "text-gray-500"}`}>
+                        {calibStatus.state === "done" ? "✅" : calibStatus.state === "running" ? "⏳" : calibStatus.state === "error" ? "❌" : "—"}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">Status</div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm mb-5">No calibration has been run yet. Click below to run the first one.</p>
+                )}
+
+                {/* Label distribution */}
+                {calibStatus?.label_distribution && (
+                  <div className="flex gap-3 mb-5 flex-wrap">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span className="text-xs text-emerald-300 font-medium">Good: {calibStatus.label_distribution.good ?? 0}</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                      <span className="w-2 h-2 rounded-full bg-amber-400" />
+                      <span className="text-xs text-amber-300 font-medium">Mid: {calibStatus.label_distribution.mid ?? 0}</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20">
+                      <span className="w-2 h-2 rounded-full bg-red-400" />
+                      <span className="text-xs text-red-300 font-medium">Bad: {calibStatus.label_distribution.bad ?? 0}</span>
+                    </div>
+                    {(calibStatus.label_distribution.anchors ?? 0) > 0 && (
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+                        <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                        <span className="text-xs text-cyan-300 font-medium">⚓ Anchors: {calibStatus.label_distribution.anchors} (locked)</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Optimal global weights */}
+                {calibStatus?.global_weights && (
+                  <div className="p-4 rounded-xl bg-gray-900 border border-gray-800 mb-5">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Calibrated Weights (active)</p>
+                    <div className="flex flex-wrap gap-3">
+                      {Object.entries(calibStatus.global_weights).map(([k, v]) => (
+                        <div key={k} className="text-xs font-mono bg-gray-800 rounded-lg px-3 py-1.5 text-cyan-300">
+                          {k}: <span className="text-white font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Last calibrated */}
+                {calibStatus?.calibrated_at && (
+                  <p className="text-xs text-gray-600 mb-5">
+                    Last calibrated: {new Date(calibStatus.calibrated_at).toLocaleString()}
+                  </p>
+                )}
+
+                {/* Run button */}
+                <div className="flex items-center gap-4 flex-wrap">
+                  <button
+                    onClick={handleRunCalibration}
+                    disabled={calibRunning}
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  >
+                    {calibRunning ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                        Calibrating…
+                      </>
+                    ) : (
+                      <>⚡ Run Auto-Calibration</>
+                    )}
+                  </button>
+                  <button
+                    onClick={loadCalibStatus}
+                    disabled={calibRunning}
+                    className="px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium transition disabled:opacity-50"
+                  >
+                    ↻ Refresh status
+                  </button>
+                </div>
+
+                {/* Progress message */}
+                {calibMsg && (
+                  <div className={`mt-4 p-3 rounded-xl text-sm border ${
+                    calibMsg.startsWith("✅") ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
+                    : calibMsg.startsWith("❌") ? "bg-red-500/10 border-red-500/20 text-red-300"
+                    : "bg-cyan-500/10 border-cyan-500/20 text-cyan-300"
+                  }`}>
+                    {calibMsg}
+                  </div>
+                )}
+              </div>
+
+              {/* How it works */}
+              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
+                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">What happens when you click Run</h3>
+                <ol className="space-y-2 text-sm text-gray-400">
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">1.</span> Loads all successful scans from the database</li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">2.</span> Auto-labels each scan as good / mid / bad based on current RII</li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">4.</span> Runs per-segment (Developer, Marketing, Product, Support)</li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">5.</span> Saves to <code className="text-cyan-400">calibration_results.json</code></li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">6.</span> New weights active immediately for all future scans — no restart needed</li>
+                </ol>
+              </div>
+
             </div>
           )}
 
