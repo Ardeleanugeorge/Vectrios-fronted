@@ -10,17 +10,17 @@ import Link from "next/link"
 const PLAN_COLORS: Record<string, string> = {
   starter: "text-gray-400 bg-gray-800 border-gray-700",
   growth:  "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
-  scale:   "text-purple-400 bg-purple-500/10 border-purple-500/30",
-  trial:   "text-yellow-400 bg-yellow-500/10 border-yellow-500/30",
+  scale:   "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
+  trial:   "text-amber-400 bg-amber-500/10 border-amber-500/30",
 }
 
 const getPlanDisplay = (plan: string | null, billingCycle?: string | null, trialDaysLeft?: number | null) => {
   if (!plan) return null
   if (billingCycle === "trial") {
-    const trialSuffix = typeof trialDaysLeft === "number" ? ` (${trialDaysLeft}d left)` : ""
+    const trialSuffix = typeof trialDaysLeft === "number" ? ` · ${trialDaysLeft}d left` : ""
     return { label: `Scale Trial${trialSuffix}`, colorKey: "trial" }
   }
-  return { label: plan.charAt(0).toUpperCase() + plan.slice(1), colorKey: plan }
+  return { label: `Scale`, colorKey: "scale" }
 }
 
 // ── Subscription cache helpers ────────────────────────────────────────────────

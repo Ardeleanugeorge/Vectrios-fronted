@@ -46,7 +46,44 @@ export default function AccountPage() {
   const [calibrationSuccess, setCalibrationSuccess] = useState("")
 
   // Active tab
-  const [activeTab, setActiveTab] = useState<'profile' | 'plan' | 'security' | 'revenue' | 'system'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'plan' | 'security' | 'revenue' | 'system' | 'companies'>('profile')
+
+  // ── Companies switcher ─────────────────────────────────────────────────────
+  interface CompanyEntry {
+    company_id: string; company_name: string; domain: string
+    plan: string | null; billing_cycle: string | null
+    trial_days_left: number | null; has_access: boolean
+    last_scan_at: string | null; rii: number | null
+  }
+  const [companies, setCompanies] = useState<CompanyEntry[]>([])
+  const [companiesLoading, setCompaniesLoading] = useState(false)
+
+  const loadCompanies = async () => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    setCompaniesLoading(true)
+    try {
+      const res = await fetch(`${API_URL}/account/companies`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCompanies(data.companies || [])
+      }
+    } catch {}
+    finally { setCompaniesLoading(false) }
+  }
+
+  const switchToCompany = (co: CompanyEntry) => {
+    // Update local storage so dashboard + header pick up new company
+    const existing = JSON.parse(localStorage.getItem("user_data") || "{}")
+    const updated = { ...existing, company_id: co.company_id, company_name: co.company_name }
+    localStorage.setItem("user_data", JSON.stringify(updated))
+    sessionStorage.setItem("user_data", JSON.stringify(updated))
+    // Clear subscription cache so header reloads it for new company
+    localStorage.removeItem("subscription_cache")
+    window.location.href = "/dashboard"
+  }
 
   // ── System / Auto-Calibration (owner-only) ─────────────────────────────────
   const OWNER_EMAIL = "ageorge9625@yahoo.com"
@@ -178,6 +215,7 @@ export default function AccountPage() {
   // Load calibration status whenever the system tab opens (owner only)
   useEffect(() => {
     if (activeTab === 'system') loadCalibStatus()
+    if (activeTab === 'companies') loadCompanies()
   }, [activeTab])
 
   const loadSubscription = async (token: string, cid: string) => {
@@ -363,10 +401,11 @@ export default function AccountPage() {
   const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
 
   const TABS = [
-    { id: 'profile', label: 'Profile', icon: '👤' },
-    { id: 'plan', label: 'Plan & Billing', icon: '💳' },
-    { id: 'revenue', label: 'Revenue Model', icon: '📊' },
-    { id: 'security', label: 'Security', icon: '🔒' },
+    { id: 'profile',   label: 'Profile',        icon: '👤' },
+    { id: 'companies', label: 'My Companies',    icon: '🏢' },
+    { id: 'plan',      label: 'Plan & Billing',  icon: '💳' },
+    { id: 'revenue',   label: 'Revenue Model',   icon: '📊' },
+    { id: 'security',  label: 'Security',        icon: '🔒' },
     ...(isOwner ? [{ id: 'system' as const, label: 'System', icon: '⚙️' }] : []),
   ] as const
 
@@ -875,6 +914,106 @@ export default function AccountPage() {
                 >
                   Sign out of all sessions
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── COMPANIES TAB ─────────────────────────────────────────────── */}
+          {activeTab === 'companies' && (
+            <div className="rounded-2xl border border-gray-800 bg-gray-900/40 backdrop-blur-sm overflow-hidden">
+              <div className="p-6 border-b border-gray-800">
+                <h2 className="text-lg font-semibold">My Companies</h2>
+                <p className="text-gray-500 text-sm mt-0.5">Switch between companies or see each subscription status.</p>
+              </div>
+
+              {companiesLoading ? (
+                <div className="p-8 flex justify-center">
+                  <div className="w-6 h-6 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : companies.length === 0 ? (
+                <div className="p-8 text-center text-gray-500 text-sm">No companies found.</div>
+              ) : (
+                <div className="divide-y divide-gray-800">
+                  {companies.map((co) => {
+                    const isActive = co.company_id === (user?.company_id || companyId)
+                    const isTrial  = co.billing_cycle === "trial"
+                    const planLabel = !co.plan
+                      ? "No plan"
+                      : isTrial
+                        ? `Scale Trial${typeof co.trial_days_left === "number" ? ` · ${co.trial_days_left}d left` : ""}`
+                        : co.plan.charAt(0).toUpperCase() + co.plan.slice(1)
+                    const planColor = !co.has_access
+                      ? "text-gray-500 bg-gray-800/60 border-gray-700"
+                      : isTrial
+                        ? "text-amber-400 bg-amber-500/10 border-amber-500/30"
+                        : "text-cyan-400 bg-cyan-500/10 border-cyan-500/30"
+
+                    return (
+                      <div key={co.company_id} className={`p-5 flex items-center justify-between gap-4 flex-wrap ${isActive ? "bg-cyan-500/5" : ""}`}>
+                        <div className="flex items-center gap-4 min-w-0">
+                          {/* Active indicator */}
+                          <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${isActive ? "bg-cyan-400" : "bg-gray-700"}`} />
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-semibold text-white text-sm truncate">{co.company_name}</span>
+                              {isActive && (
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 uppercase tracking-wider">
+                                  Current
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 mt-1 flex-wrap">
+                              {co.domain && (
+                                <span className="text-xs text-gray-500 truncate">{co.domain.replace(/^https?:\/\//, "")}</span>
+                              )}
+                              {co.rii !== null && (
+                                <span className={`text-xs font-mono font-bold ${co.rii < 45 ? "text-emerald-400" : co.rii < 65 ? "text-amber-400" : "text-red-400"}`}>
+                                  RII {co.rii.toFixed(0)}
+                                </span>
+                              )}
+                              {co.last_scan_at && (
+                                <span className="text-xs text-gray-600">
+                                  Last scan: {new Date(co.last_scan_at).toLocaleDateString()}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 shrink-0">
+                          {/* Plan badge */}
+                          <span className={`text-xs font-semibold px-3 py-1.5 rounded-lg border ${planColor}`}>
+                            {planLabel}
+                          </span>
+
+                          {/* Switch button */}
+                          {!isActive && co.has_access && (
+                            <button
+                              onClick={() => switchToCompany(co)}
+                              className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs transition"
+                            >
+                              Switch →
+                            </button>
+                          )}
+                          {!isActive && !co.has_access && (
+                            <button
+                              onClick={() => switchToCompany(co)}
+                              className="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-400 font-medium text-xs transition"
+                            >
+                              View
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              <div className="p-5 border-t border-gray-800">
+                <p className="text-xs text-gray-600">
+                  Clicking <span className="text-cyan-400 font-medium">Switch</span> updates your active dashboard to that company. All data is preserved separately.
+                </p>
               </div>
             </div>
           )}
