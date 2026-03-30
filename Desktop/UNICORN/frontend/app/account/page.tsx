@@ -46,7 +46,7 @@ export default function AccountPage() {
   const [calibrationSuccess, setCalibrationSuccess] = useState("")
 
   // Active tab
-  const [activeTab, setActiveTab] = useState<'profile' | 'plan' | 'security' | 'revenue' | 'system' | 'companies'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'plan' | 'security' | 'revenue' | 'system'>('profile')
 
   // ── Companies switcher ─────────────────────────────────────────────────────
   interface CompanyEntry {
@@ -210,7 +210,6 @@ export default function AccountPage() {
   // Load calibration status whenever the system tab opens (owner only)
   useEffect(() => {
     if (activeTab === 'system') loadCalibStatus()
-    if (activeTab === 'companies') loadCompanies()
   }, [activeTab])
 
   const loadSubscription = async (token: string, cid: string) => {
@@ -396,11 +395,10 @@ export default function AccountPage() {
   const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
 
   const TABS = [
-    { id: 'profile',   label: 'Profile',        icon: '👤' },
-    { id: 'companies', label: 'My Companies',    icon: '🏢' },
-    { id: 'plan',      label: 'Plan & Billing',  icon: '💳' },
-    { id: 'revenue',   label: 'Revenue Model',   icon: '📊' },
-    { id: 'security',  label: 'Security',        icon: '🔒' },
+    { id: 'profile',  label: 'Profile',       icon: '👤' },
+    { id: 'plan',     label: 'Plan & Billing', icon: '💳' },
+    { id: 'revenue',  label: 'Revenue Model',  icon: '📊' },
+    { id: 'security', label: 'Security',       icon: '🔒' },
     ...(isOwner ? [{ id: 'system' as const, label: 'System', icon: '⚙️' }] : []),
   ] as const
 
