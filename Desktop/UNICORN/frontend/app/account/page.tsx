@@ -162,55 +162,48 @@ export default function AccountPage() {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) { router.push("/login"); return }
 
+    // ── Step 1: show page INSTANTLY from localStorage (zero latency) ──────────
+    const ud = localStorage.getItem("user_data")
+    if (ud) {
+      try {
+        const cached = JSON.parse(ud)
+        setUser(cached)
+        setProfileEmail(cached?.email || "")
+        setProfileCompanyName(cached?.company_name || "")
+        if (cached?.company_id) {
+          setCompanyId(cached.company_id)
+          // Kick off subscription + calibration in parallel, no await
+          loadSubscription(token, cached.company_id)
+          loadCalibration(token, cached.company_id)
+        }
+      } catch {}
+    }
+    setLoading(false) // page is visible immediately
+
+    // ── Step 2: refresh from API in background (silent update) ────────────────
     ;(async () => {
       try {
         const profileRes = await fetch(`${API_URL}/account/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         })
-        if (profileRes.ok) {
-          const profile = await profileRes.json()
-          const nextUser = {
-            email: profile?.email || "",
-            company_name: profile?.company_name || "",
-            company_id: profile?.company_id || null,
-          }
-          setUser(nextUser)
-          setProfileEmail(nextUser.email)
-          setProfileCompanyName(nextUser.company_name)
-          localStorage.setItem("user_data", JSON.stringify(nextUser))
-          if (nextUser.company_id) {
-            setCompanyId(nextUser.company_id)
-            loadSubscription(token, nextUser.company_id)
-            loadCalibration(token, nextUser.company_id)
-          }
-        } else {
-          // fallback to local
-          const ud = localStorage.getItem("user_data")
-          if (ud) {
-            const parsed = JSON.parse(ud)
-            setUser(parsed)
-            setProfileEmail(parsed?.email || "")
-            setProfileCompanyName(parsed?.company_name || "")
-        if (parsed.company_id) {
-          setCompanyId(parsed.company_id)
-          loadSubscription(token, parsed.company_id)
-          loadCalibration(token, parsed.company_id)
+        if (!profileRes.ok) return
+        const profile = await profileRes.json()
+        const nextUser = {
+          email: profile?.email || "",
+          company_name: profile?.company_name || "",
+          company_id: profile?.company_id || null,
         }
-          }
+        setUser(nextUser)
+        setProfileEmail(prev => prev || nextUser.email)
+        setProfileCompanyName(prev => prev || nextUser.company_name)
+        localStorage.setItem("user_data", JSON.stringify(nextUser))
+        if (nextUser.company_id && nextUser.company_id !== (ud ? JSON.parse(ud)?.company_id : null)) {
+          // company_id changed → reload subscription + calibration for new id
+          setCompanyId(nextUser.company_id)
+          loadSubscription(token, nextUser.company_id)
+          loadCalibration(token, nextUser.company_id)
         }
-      } catch {
-        const ud = localStorage.getItem("user_data")
-        if (ud) {
-          try {
-            const parsed = JSON.parse(ud)
-            setUser(parsed)
-            setProfileEmail(parsed?.email || "")
-            setProfileCompanyName(parsed?.company_name || "")
-          } catch {}
-        }
-      } finally {
-        setLoading(false)
-      }
+      } catch {}
     })()
   }, [router])
 
