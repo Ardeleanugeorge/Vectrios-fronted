@@ -95,7 +95,7 @@ interface MonitoringStatus {
   }>
   last_evaluated_at?: string
   created_at?: string
-  action_layer?: Record<string, unknown> | null  // Fresh playbook with real ARR
+  action_layer?: ActionLayerPayload | null  // Fresh playbook with real ARR
 }
 
 interface Alert {
@@ -595,7 +595,7 @@ export default function DashboardPage() {
                 // Prefer monitoringStatus.action_layer (always uses real company ARR)
                 // over the stale action_layer stored in localStorage diagnostic
                 monitoringStatus.action_layer && diagnostic
-                  ? { ...diagnostic, action_layer: monitoringStatus.action_layer }
+                  ? { ...diagnostic, action_layer: monitoringStatus.action_layer as ActionLayerPayload }
                   : diagnostic
               }
               alerts={alerts}
