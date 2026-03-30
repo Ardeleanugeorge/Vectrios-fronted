@@ -67,7 +67,14 @@ export default function AccountPage() {
       const res = await fetch(`${API_URL}/admin/calibration/status`, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      if (res.ok) setCalibStatus(await res.json())
+      if (res.ok) {
+        const s = await res.json()
+        setCalibStatus(s)
+        // Clear stale error messages when status comes back clean
+        if (s.state === "idle" || s.state === "done") {
+          setCalibMsg("")
+        }
+      }
     } catch {}
   }
 
@@ -897,12 +904,14 @@ export default function AccountPage() {
                 {calibStatus ? (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-white">{calibStatus.total_scans_in_db ?? calibStatus.n_scans ?? "—"}</div>
-                      <div className="text-xs text-gray-500 mt-1">Scans in DB</div>
+                      <div className="text-2xl font-bold text-white">{calibStatus.total_scans_in_db ?? "—"}</div>
+                      <div className="text-xs text-gray-500 mt-1">Total scans in DB</div>
+                      <div className="text-[10px] text-gray-600 mt-0.5">incl. monitoring cycles</div>
                     </div>
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-white">{calibStatus.n_scans ?? "—"}</div>
-                      <div className="text-xs text-gray-500 mt-1">Last run scans</div>
+                      <div className="text-2xl font-bold text-white">{calibStatus.n_scans || "—"}</div>
+                      <div className="text-xs text-gray-500 mt-1">Last calibration scans</div>
+                      <div className="text-[10px] text-gray-600 mt-0.5">unique companies used</div>
                     </div>
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
                       <div className={`text-2xl font-bold ${calibStatus.mae && calibStatus.mae < 6 ? "text-emerald-400" : "text-amber-400"}`}>
@@ -911,10 +920,12 @@ export default function AccountPage() {
                       <div className="text-xs text-gray-500 mt-1">MAE (lower = better)</div>
                     </div>
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className={`text-2xl font-bold ${calibStatus.state === "done" ? "text-emerald-400" : calibStatus.state === "running" ? "text-cyan-400" : calibStatus.state === "error" ? "text-red-400" : "text-gray-500"}`}>
-                        {calibStatus.state === "done" ? "✅" : calibStatus.state === "running" ? "⏳" : calibStatus.state === "error" ? "❌" : "—"}
+                      <div className={`text-2xl font-bold ${calibStatus.state === "done" ? "text-emerald-400" : calibStatus.state === "running" ? "text-cyan-400" : calibStatus.state === "error" ? "text-red-400" : "text-amber-400"}`}>
+                        {calibStatus.state === "done" ? "✅" : calibStatus.state === "running" ? "⏳" : calibStatus.state === "error" ? "❌" : "⚡"}
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">Status</div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {calibStatus.state === "done" ? "Done" : calibStatus.state === "running" ? "Running…" : calibStatus.state === "error" ? "Error" : "Ready"}
+                      </div>
                     </div>
                   </div>
                 ) : (
