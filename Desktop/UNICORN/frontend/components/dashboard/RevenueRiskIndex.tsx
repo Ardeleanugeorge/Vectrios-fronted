@@ -71,7 +71,7 @@ export default function RevenueRiskIndex({
         )}
         <div className="flex items-center justify-center gap-6 text-sm flex-wrap">
           <div>
-            <span className="text-gray-400">Scan Quality: </span>
+            <span className="text-gray-400">Data Coverage: </span>
             <span className="font-semibold text-gray-300">
               {confidence >= 80 ? "High" : confidence >= 60 ? "Moderate" : "Low"} ({confidence.toFixed(0)}%)
             </span>
