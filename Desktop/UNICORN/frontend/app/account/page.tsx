@@ -55,7 +55,8 @@ export default function AccountPage() {
   const [calibStatus, setCalibStatus] = useState<{
     state: string; message: string; calibrated_at?: string; n_scans?: number;
     mae?: number; violations?: number; label_distribution?: Record<string,number>;
-    global_weights?: Record<string,number>; total_scans_in_db?: number; summary?: string
+    global_weights?: Record<string,number>; total_scans_in_db?: number; summary?: string;
+    candidate?: { present: boolean; calibrated_at?: string; n_scans?: number; mae?: number; weights?: Record<string,number> }
   } | null>(null)
   const [calibRunning, setCalibRunning] = useState(false)
   const [calibMsg, setCalibMsg] = useState("")
@@ -71,7 +72,7 @@ export default function AccountPage() {
         const s = await res.json()
         setCalibStatus(s)
         // Clear stale error messages when status comes back clean
-        if (s.state === "idle" || s.state === "done") {
+        if (s.state === "idle" || s.state === "done" || s.state === "done_candidate") {
           setCalibMsg("")
         }
       }
@@ -109,8 +110,12 @@ export default function AccountPage() {
           if (r.ok) {
             const s = await r.json()
             setCalibStatus(s)
-            if (s.state === "done") {
-              setCalibMsg(`✅ Done! MAE=${s.mae?.toFixed(1)} pts on ${s.n_scans} scans. Weights reloaded.`)
+            if (s.state === "done" || s.state === "done_candidate") {
+              if (s.state === "done_candidate") {
+                setCalibMsg(`✅ Candidate ready — MAE=${s.candidate?.mae?.toFixed?.(1) ?? s.mae?.toFixed?.(1)} pts on ${s.candidate?.n_scans ?? s.n_scans} scans. Review and Accept to activate.`)
+              } else {
+                setCalibMsg(`✅ Done! MAE=${s.mae?.toFixed(1)} pts on ${s.n_scans} scans. Weights reloaded.`)
+              }
               clearInterval(poll); setCalibRunning(false)
             } else if (s.state === "error") {
               setCalibMsg("❌ Error: " + s.message)
@@ -126,6 +131,54 @@ export default function AccountPage() {
       setCalibMsg("Network error. Try again.")
       setCalibRunning(false)
     }
+  }
+
+  const handleAcceptCandidate = async () => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    setCalibMsg("Promoting candidate…")
+    try {
+      const res = await fetch(`${API_URL}/admin/calibration/accept`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const d = await res.json().catch(() => ({}))
+      if (!res.ok) { setCalibMsg("❌ " + (d?.detail || "Accept failed")); return }
+      setCalibMsg("✅ Candidate accepted — weights activated.")
+      await loadCalibStatus()
+    } catch { setCalibMsg("❌ Network error on accept") }
+  }
+
+  const handleRejectCandidate = async () => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    setCalibMsg("Discarding candidate…")
+    try {
+      const res = await fetch(`${API_URL}/admin/calibration/reject`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const d = await res.json().catch(() => ({}))
+      if (!res.ok) { setCalibMsg("❌ " + (d?.detail || "Reject failed")); return }
+      setCalibMsg("✅ Candidate discarded. Active weights unchanged.")
+      await loadCalibStatus()
+    } catch { setCalibMsg("❌ Network error on reject") }
+  }
+
+  const handleRollback = async () => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    setCalibMsg("Rolling back to previous weights…")
+    try {
+      const res = await fetch(`${API_URL}/admin/calibration/rollback`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const d = await res.json().catch(() => ({}))
+      if (!res.ok) { setCalibMsg("❌ " + (d?.detail || "Rollback failed")); return }
+      setCalibMsg("✅ Rolled back to previous active weights.")
+      await loadCalibStatus()
+    } catch { setCalibMsg("❌ Network error on rollback") }
   }
 
   useEffect(() => {
@@ -970,6 +1023,38 @@ export default function AccountPage() {
                   </div>
                 )}
 
+                {/* Candidate block */}
+                {calibStatus?.candidate?.present && (
+                  <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-5">
+                    <p className="text-xs text-amber-300 uppercase tracking-wider mb-2">Candidate Calibration (pending review)</p>
+                    <div className="text-sm text-gray-300 mb-3">
+                      <span className="mr-4">MAE: <span className="font-semibold">{calibStatus.candidate?.mae?.toFixed?.(1) ?? "—"} pts</span></span>
+                      <span className="mr-4">Scans: <span className="font-semibold">{calibStatus.candidate?.n_scans ?? "—"}</span></span>
+                      <span>Calibrated at: <span className="font-semibold">{calibStatus.candidate?.calibrated_at ? new Date(calibStatus.candidate.calibrated_at).toLocaleString() : "—"}</span></span>
+                    </div>
+                    {calibStatus.candidate?.weights && (
+                      <div className="flex flex-wrap gap-3 mb-3">
+                        {Object.entries(calibStatus.candidate.weights).map(([k, v]) => (
+                          <div key={k} className="text-xs font-mono bg-gray-800 rounded-lg px-3 py-1.5 text-amber-300">
+                            {k}: <span className="text-white font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3">
+                      <button onClick={handleAcceptCandidate} className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition">
+                        Accept → Activate
+                      </button>
+                      <button onClick={handleRejectCandidate} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium text-sm transition">
+                        Reject
+                      </button>
+                      <button onClick={handleRollback} className="px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 hover:border-gray-600 text-gray-300 font-medium text-sm transition">
+                        Rollback to Previous
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Last calibrated */}
                 {calibStatus?.calibrated_at && (
                   <p className="text-xs text-gray-600 mb-5">
@@ -1022,8 +1107,8 @@ export default function AccountPage() {
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">2.</span> Auto-labels each scan as good / mid / bad based on current RII</li>
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">4.</span> Runs per-segment (Developer, Marketing, Product, Support)</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">5.</span> Saves to <code className="text-cyan-400">calibration_results.json</code></li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">6.</span> New weights active immediately for all future scans — no restart needed</li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">5.</span> Saves candidate to <code className="text-cyan-400">calibration_results_candidate.json</code></li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">6.</span> Click <strong>Accept → Activate</strong> to promote candidate to active weights</li>
                 </ol>
               </div>
 
