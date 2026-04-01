@@ -411,6 +411,8 @@ function ScanResultsContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   /** true = has active trial or paid plan → full paywall bypass */
   const [hasActivePlan, setHasActivePlan] = useState(false)
+  /** true = billing_cycle === 'trial' */
+  const [isTrialPlan, setIsTrialPlan] = useState(false)
   const [unlockTransitioning, setUnlockTransitioning] = useState(false)
   const [previousSnapshot, setPreviousSnapshot] = useState<ScanSnapshot | null>(null)
 
@@ -497,6 +499,35 @@ function ScanResultsContent() {
       localStorage.setItem("user_data", JSON.stringify(userData))
       sessionStorage.setItem("user_data", JSON.stringify(userData))
       console.log("[EMAIL-CAPTURE] Saved user_data:", userData)
+      // Fetch subscription to determine plan/trial state (authoritative)
+      try {
+        const subRes = await fetch(`${API_URL}/subscription/${encodeURIComponent(String(result.company_id))}`, {
+          headers: { Authorization: `Bearer ${result.token}` },
+        })
+        if (subRes.ok) {
+          const sub = await subRes.json()
+          const plan = (sub?.plan || "").toLowerCase()
+          const billing = (sub?.billing_cycle || "").toLowerCase()
+          const active = !!plan || billing === "trial"
+          setHasActivePlan(active)
+          setIsTrialPlan(billing === "trial" || plan === "trial")
+          // cache for header/dashboard
+          try {
+            const cache = {
+              plan: plan || null,
+              billing_cycle: billing || null,
+              trialDaysLeft: typeof sub?.trial_days_left === "number" ? sub.trial_days_left : null,
+            }
+            localStorage.setItem("subscription_cache", JSON.stringify(cache))
+          } catch {}
+        } else {
+          setHasActivePlan(false)
+          setIsTrialPlan(false)
+        }
+      } catch {
+        setHasActivePlan(false)
+        setIsTrialPlan(false)
+      }
       
       // Convert scan result to partial diagnostic for dashboard
       // This gives user initial data without full onboarding
@@ -1224,10 +1255,10 @@ function ScanResultsContent() {
                   ))}
                 </ul>
                 <Link
-                  href="/upgrade"
+                href="/pricing?from=scan&focus=recovery"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
-                  Upgrade to unlock full model →
+                  Activate monitoring →
                 </Link>
               </div>
             ) : (
@@ -1253,7 +1284,7 @@ function ScanResultsContent() {
                   ))}
                 </ul>
                 <Link
-                  href="/pricing?from=scan&focus=recovery"
+                href="/pricing?from=scan&focus=recovery"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
                   See exactly what&apos;s costing you revenue →
@@ -1263,6 +1294,20 @@ function ScanResultsContent() {
                 </p>
               </div>
             )}
+          </div>
+        )}
+        {/* When trial active: show an extra Upgrade CTA below Back to Dashboard */}
+        {unlocked && isAuthenticated && hasActivePlan && isTrialPlan && (
+          <div className="p-5 sm:p-6 rounded-xl bg-[#0f1626] border border-gray-700/60 mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <p className="text-sm text-gray-300">You&apos;re on Scale Trial. Upgrade anytime to keep full access.</p>
+              <Link
+                href="/upgrade"
+                className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition shadow-cyan-500/15"
+              >
+                Upgrade to Scale →
+              </Link>
+            </div>
           </div>
         )}
 
