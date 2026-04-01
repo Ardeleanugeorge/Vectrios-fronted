@@ -996,11 +996,12 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* Back to Dashboard strip — only for authenticated users */}
+        {/* Back to Dashboard strip — only for authenticated users WITH active plan */}
         {unlocked && (() => {
           const isAuth = typeof window !== "undefined" &&
             !!(sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token"))
-          if (!isAuth) return null
+          // respect active plan gate: show strip only when plan/trial is active
+          if (!isAuth || !hasActivePlan) return null
           return (
             <div className="flex items-center justify-between gap-4 px-5 py-3 rounded-xl border border-gray-700/50 bg-[#111827] mb-4">
               <p className="text-sm text-gray-400">
