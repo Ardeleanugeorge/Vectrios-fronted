@@ -206,9 +206,14 @@ export default function SaaSRevenueIndex() {
                       alt=""
                       className="w-4 h-4 rounded opacity-60"
                       onError={e => {
-                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0]
-                        ;(e.currentTarget as HTMLImageElement).src = `https://${host}/favicon.ico`
-                        e.currentTarget.onerror = () => { e.currentTarget.style.display = "none" }
+                        const img = e.currentTarget as HTMLImageElement;
+                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0];
+                        // Try direct site favicon once, then hide
+                        img.onerror = null; // prevent recursive handler reuse
+                        img.src = `https://${host}/favicon.ico`;
+                        img.addEventListener("error", () => {
+                          img.style.display = "none";
+                        }, { once: true });
                       }}
                     />
                     <Link href={`/company/${c.domain}`}
@@ -238,9 +243,13 @@ export default function SaaSRevenueIndex() {
                       alt=""
                       className="w-4 h-4 rounded opacity-60"
                       onError={e => {
-                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0]
-                        ;(e.currentTarget as HTMLImageElement).src = `https://${host}/favicon.ico`
-                        e.currentTarget.onerror = () => { e.currentTarget.style.display = "none" }
+                        const img = e.currentTarget as HTMLImageElement;
+                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0];
+                        img.onerror = null;
+                        img.src = `https://${host}/favicon.ico`;
+                        img.addEventListener("error", () => {
+                          img.style.display = "none";
+                        }, { once: true });
                       }}
                     />
                     <Link href={`/company/${c.domain}`}
@@ -341,9 +350,13 @@ export default function SaaSRevenueIndex() {
                       alt=""
                       className="w-4 h-4 rounded opacity-70"
                       onError={e => {
-                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0]
-                        ;(e.currentTarget as HTMLImageElement).src = `https://${host}/favicon.ico`
-                        e.currentTarget.onerror = () => { e.currentTarget.style.display = "none" }
+                        const img = e.currentTarget as HTMLImageElement;
+                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0];
+                        img.onerror = null;
+                        img.src = `https://${host}/favicon.ico`;
+                        img.addEventListener("error", () => {
+                          img.style.display = "none";
+                        }, { once: true });
                       }}
                     />
                     <Link
