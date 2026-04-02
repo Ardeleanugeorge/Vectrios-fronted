@@ -103,6 +103,7 @@ export default function AccountPage() {
   const [adminSupportLoading, setAdminSupportLoading] = useState(false)
   const [adminFlags, setAdminFlags] = useState<Record<string, boolean>>({})
   const [adminAuditPreview, setAdminAuditPreview] = useState<Array<{ action_type: string; created_at?: string | null }>>([])
+  const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
 
   // (Each account has exactly one company — kept simple by design)
 
@@ -698,8 +699,6 @@ export default function AccountPage() {
     } catch {}
     return "/dashboard"
   }
-
-  const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
 
   const TABS = isOwner
     ? [{ id: 'system' as const, label: 'Manager Console', icon: '⚙️' }]
