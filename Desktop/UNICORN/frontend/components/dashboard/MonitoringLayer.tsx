@@ -214,6 +214,14 @@ export default function MonitoringLayer({
     trend === "improving" ? "Trend: Improving - recent changes are reducing risk."
     : trend === "escalating" ? "Trend: Declining - risk is increasing over time."
     : "Trend: Stable - no significant changes detected."
+  // If delta is exactly zero, force a stable message to avoid contradiction with "No change"
+  const zeroDelta =
+    revenueDelta &&
+    typeof revenueDelta.delta_monthly_loss === "number" &&
+    revenueDelta.delta_monthly_loss === 0
+  const effectiveTrendText = zeroDelta
+    ? "Trend: Stable - no significant changes detected."
+    : trendText
   const headline = monitoringStatus.ui_state_payload?.headline ?? (
     uiState === "low" ? "Revenue system is healthy"
     : uiState === "medium" ? "Revenue performance is constrained"
@@ -420,7 +428,7 @@ export default function MonitoringLayer({
             +{improvementsDetected} improvement{improvementsDetected > 1 ? "s" : ""} detected since last scan.
           </p>
         )}
-        <p className="text-xs text-gray-500 mt-2">{trendText}</p>
+        <p className="text-xs text-gray-500 mt-2">{effectiveTrendText}</p>
       </div>
 
       {/* MONITORING STATUS STRIP */}
