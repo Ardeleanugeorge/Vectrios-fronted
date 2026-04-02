@@ -19,6 +19,7 @@ import RevenueRiskTrajectoryPanel from "./RevenueRiskTrajectoryPanel"
 import RevenueTrajectorySimulation from "./RevenueTrajectorySimulation"
 import BenchmarkPanel from "./BenchmarkPanel"
 import FinancialExposureCard from "./FinancialExposureCard"
+import { computeRevenueTruth, type AlertLite } from "./RevenueTruth"
 import SystemHealthIndicator from "./SystemHealthIndicator"
 import FeatureGate from "./FeatureGate"
 import ActionableInsights, { type ActionLayerPayload } from "./ActionableInsights"
@@ -287,6 +288,23 @@ export default function MonitoringLayer({
     ? diagnostic.recommendations[0] 
     : null
 
+  // Build Revenue Truth Layer (frontend interim until backend supplies it)
+  const alertsLite: AlertLite[] = (monitoringStatus.recent_drift_events || []).map(e => ({
+    severity: (e.severity?.toLowerCase?.() as any) || "info",
+    delta: e.delta
+  }))
+  const arrUsed = forecast?.arr_used ?? null
+  const monthlyLossTruth = monthlyExposure || forecast?.estimated_monthly_exposure || null
+  const truth = computeRevenueTruth({
+    rii: rii ?? null,
+    arr: arrUsed,
+    monthlyLoss: monthlyLossTruth,
+    closeRateDelta: closeRateDelta ?? null,
+    alerts: alertsLite,
+    trend: monitoringStatus.trend_direction || null,
+    volatility: monitoringStatus.volatility_classification || null,
+  })
+
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -309,6 +327,13 @@ export default function MonitoringLayer({
           primaryRiskDriver={primaryRiskDriver}
         />
       )}
+
+      {/* REVENUE TRUTH BANNER — unified semantic layer */}
+      <div className="p-5 rounded-lg border border-cyan-700/30 bg-cyan-950/10">
+        <p className="text-sm font-semibold text-cyan-300">{truth.headline}</p>
+        <p className="text-xs text-gray-300 mt-1">{truth.subtext}{truth.lossPctText ? ` — ${truth.lossPctText}` : ""}</p>
+        <p className="text-xs text-gray-500 mt-1">{truth.explanation}</p>
+      </div>
 
       {/* FULL DIAGNOSTIC NUDGE — shown only when monitoring has NEVER run
            (no last_evaluated_at = no monitoring cycle completed yet).
