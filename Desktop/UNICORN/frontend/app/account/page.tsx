@@ -16,6 +16,24 @@ interface Subscription {
   features?: Record<string, boolean>
 }
 
+interface SupportTicketSummary {
+  ticket_id: string
+  subject: string
+  priority: string
+  category: string
+  status: string
+  created_at?: string | null
+  updated_at?: string | null
+}
+
+interface SupportTicketDetail extends SupportTicketSummary {
+  messages: Array<{
+    author: "user" | "support"
+    message: string
+    created_at?: string | null
+  }>
+}
+
 export default function AccountPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -55,6 +73,11 @@ export default function AccountPage() {
   const [supportLoading, setSupportLoading] = useState(false)
   const [supportError, setSupportError] = useState("")
   const [supportSuccess, setSupportSuccess] = useState("")
+  const [supportTickets, setSupportTickets] = useState<SupportTicketSummary[]>([])
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null)
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicketDetail | null>(null)
+  const [supportThreadLoading, setSupportThreadLoading] = useState(false)
+  const [supportFollowupMessage, setSupportFollowupMessage] = useState("")
 
   // (Each account has exactly one company — kept simple by design)
 
@@ -243,6 +266,13 @@ export default function AccountPage() {
     if (activeTab === 'system') loadCalibStatus()
   }, [activeTab])
 
+  useEffect(() => {
+    if (activeTab !== 'support') return
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    loadSupportTickets(token)
+  }, [activeTab])
+
   const loadSubscription = async (token: string, cid: string) => {
     try {
       const res = await fetch(`${API_URL}/subscription/${cid}`, {
@@ -397,10 +427,85 @@ export default function AccountPage() {
       setSupportSubject("")
       setSupportMessage("")
       setSupportPriority("normal")
+      await loadSupportTickets(token)
+      if (data?.ticket_id) {
+        setSelectedTicketId(data.ticket_id)
+        await loadSupportTicket(token, data.ticket_id)
+      }
     } catch {
       setSupportError("Network error while creating ticket.")
     } finally {
       setSupportLoading(false)
+    }
+  }
+
+  const loadSupportTickets = async (token: string) => {
+    try {
+      const res = await fetch(`${API_URL}/support/tickets`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      const tickets = (data?.tickets || []) as SupportTicketSummary[]
+      setSupportTickets(tickets)
+      if (!selectedTicketId && tickets.length > 0) {
+        setSelectedTicketId(tickets[0].ticket_id)
+        await loadSupportTicket(token, tickets[0].ticket_id)
+      }
+    } catch {
+      // silent load failure; form still works
+    }
+  }
+
+  const loadSupportTicket = async (token: string, ticketId: string) => {
+    setSupportThreadLoading(true)
+    try {
+      const res = await fetch(`${API_URL}/support/tickets/${encodeURIComponent(ticketId)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      setSelectedTicket(data as SupportTicketDetail)
+    } catch {
+      // silent load failure
+    } finally {
+      setSupportThreadLoading(false)
+    }
+  }
+
+  const handleSupportFollowup = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSupportError("")
+    setSupportSuccess("")
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token || !selectedTicketId) return
+    if (!supportFollowupMessage.trim()) {
+      setSupportError("Please write a message before sending.")
+      return
+    }
+    setSupportThreadLoading(true)
+    try {
+      const res = await fetch(`${API_URL}/support/tickets/${encodeURIComponent(selectedTicketId)}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message: supportFollowupMessage.trim() }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setSupportError(data?.detail || "Could not send follow-up.")
+        return
+      }
+      setSupportFollowupMessage("")
+      setSupportSuccess(`Reply sent on ticket ${selectedTicketId}.`)
+      await loadSupportTickets(token)
+      await loadSupportTicket(token, selectedTicketId)
+    } catch {
+      setSupportError("Network error while sending follow-up.")
+    } finally {
+      setSupportThreadLoading(false)
     }
   }
 
@@ -1056,6 +1161,95 @@ export default function AccountPage() {
                   {supportLoading ? "Creating ticket..." : "Open support ticket"}
                 </button>
               </form>
+
+              <div className="px-6 pb-6">
+                <div className="grid md:grid-cols-3 gap-5">
+                  <div className="rounded-xl border border-gray-800 bg-gray-950/40 p-4 md:col-span-1">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">My tickets</p>
+                    <div className="space-y-2 max-h-80 overflow-auto pr-1">
+                      {supportTickets.length === 0 && (
+                        <p className="text-sm text-gray-500">No tickets yet.</p>
+                      )}
+                      {supportTickets.map(t => (
+                        <button
+                          key={t.ticket_id}
+                          onClick={() => {
+                            const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+                            setSelectedTicketId(t.ticket_id)
+                            if (token) loadSupportTicket(token, t.ticket_id)
+                          }}
+                          className={`w-full text-left p-3 rounded-lg border transition ${
+                            selectedTicketId === t.ticket_id
+                              ? "border-cyan-500/40 bg-cyan-500/10"
+                              : "border-gray-800 bg-gray-900/30 hover:border-gray-700"
+                          }`}
+                        >
+                          <p className="text-sm font-medium text-gray-200 truncate">{t.subject}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            {t.ticket_id} • {t.priority}
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-gray-800 bg-gray-950/40 p-4 md:col-span-2">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Ticket thread</p>
+                    {supportThreadLoading && (
+                      <p className="text-sm text-gray-500">Loading thread...</p>
+                    )}
+                    {!supportThreadLoading && !selectedTicket && (
+                      <p className="text-sm text-gray-500">Select a ticket to view conversation.</p>
+                    )}
+                    {!supportThreadLoading && selectedTicket && (
+                      <div className="space-y-3">
+                        <div className="pb-2 border-b border-gray-800">
+                          <p className="text-sm font-semibold text-gray-200">{selectedTicket.subject}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            {selectedTicket.ticket_id} • {selectedTicket.priority} • {selectedTicket.status}
+                          </p>
+                        </div>
+                        <div className="space-y-2 max-h-64 overflow-auto pr-1">
+                          {(selectedTicket.messages || []).map((m, i) => (
+                            <div
+                              key={`${m.created_at || i}-${i}`}
+                              className={`p-3 rounded-lg border ${
+                                m.author === "support"
+                                  ? "bg-cyan-500/10 border-cyan-500/20"
+                                  : "bg-gray-900/40 border-gray-800"
+                              }`}
+                            >
+                              <p className="text-xs text-gray-500 mb-1">{m.author === "support" ? "Support" : "You"}</p>
+                              <p className="text-sm text-gray-200 whitespace-pre-wrap">{m.message}</p>
+                            </div>
+                          ))}
+                          {(selectedTicket.messages || []).length === 0 && (
+                            <p className="text-sm text-gray-500">No messages yet.</p>
+                          )}
+                        </div>
+                        <form onSubmit={handleSupportFollowup} className="pt-2 space-y-2">
+                          <textarea
+                            value={supportFollowupMessage}
+                            onChange={e => setSupportFollowupMessage(e.target.value)}
+                            rows={3}
+                            maxLength={5000}
+                            placeholder="Add a follow-up message"
+                            disabled={supportThreadLoading}
+                            className="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                          />
+                          <button
+                            type="submit"
+                            disabled={supportThreadLoading || !selectedTicketId}
+                            className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-xs transition"
+                          >
+                            Send follow-up
+                          </button>
+                        </form>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
