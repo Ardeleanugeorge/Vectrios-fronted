@@ -42,12 +42,22 @@ export default function ExecutiveInterpretation({
     <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
       <h2 className="text-sm font-semibold mb-4 uppercase tracking-wide text-gray-400">Executive Takeaway</h2>
       
-      {hasExposure && closeRateDelta ? (
+      {hasExposure ? (
         <div className="space-y-1">
           <p className="text-sm text-gray-300">
             {uiState === "low"
-              ? <>Residual optimization potential detected. Estimated additional close-rate upside: <span className="font-semibold text-emerald-300">{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
-              : <>Revenue-stage inefficiency increasing due to pricing-stage misalignment. Estimated close-rate compression: <span className="font-semibold text-amber-400">{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>}
+              ? <>
+                  Residual optimization potential detected.
+                  {typeof closeRateDelta === "number" && (
+                    <> Estimated additional close-rate upside: <span className="font-semibold text-emerald-300">{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
+                  )}
+                </>
+              : <>
+                  Revenue-stage inefficiency is impacting performance.
+                  {typeof closeRateDelta === "number" && (
+                    <> Estimated close-rate compression: <span className="font-semibold text-amber-400">{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
+                  )}
+                </>}
           </p>
           {annualizedImpact && (
             <p className="text-sm text-gray-300">
