@@ -24,6 +24,7 @@ import SystemHealthIndicator from "./SystemHealthIndicator"
 import FeatureGate from "./FeatureGate"
 import ActionableInsights, { type ActionLayerPayload } from "./ActionableInsights"
 import Link from "next/link"
+import { API_URL } from "@/lib/config"
 
 interface MonitoringStatus {
   monitoring_active: boolean
@@ -293,6 +294,41 @@ export default function MonitoringLayer({
   const safeRecommendation = diagnostic?.recommendations && diagnostic.recommendations.length > 0 
     ? diagnostic.recommendations[0] 
     : null
+  const [playbookActionLayer, setPlaybookActionLayer] = useState<ActionLayerPayload | null>(null)
+
+  useEffect(() => {
+    if (!companyId) return
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    fetch(`${API_URL}/playbook/${companyId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then(async (r) => {
+      if (!r.ok) return
+      const data = await r.json()
+      const fix = data?.fixes?.[0]
+      if (!fix) return
+      const monthlyLow = typeof fix.estimated_monthly_impact_low === "number" ? fix.estimated_monthly_impact_low : null
+      const monthlyHigh = typeof fix.estimated_monthly_impact_high === "number" ? fix.estimated_monthly_impact_high : null
+      const monthlyImpact = monthlyLow && monthlyHigh ? `+$${Math.round(monthlyLow).toLocaleString()} – $${Math.round(monthlyHigh).toLocaleString()}/month` : "—"
+      const al: ActionLayerPayload = {
+        issue_type: "general",
+        primary_issue: { title: fix.title, description: fix.why },
+        affected_areas: [],
+        fixes: [{
+          title: fix.title,
+          current_example: fix.before || "—",
+          suggested_change: fix.after,
+          reason: fix.why,
+          impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh || undefined, close_rate: "" }
+        }],
+        expected_impact: { close_rate_improvement: "", arr_recovery: "" },
+        priority: { level: fix.impact_level, reason: fix.badges?.join(" · ") || "", display_line: undefined },
+        top_action: null,
+        behavioral_insight: null,
+      }
+      setPlaybookActionLayer(al)
+    }).catch(() => {})
+  }, [companyId])
 
   // Build Revenue Truth Layer (frontend interim until backend supplies it)
   const alertsLite: AlertLite[] = (monitoringStatus.recent_drift_events || []).map(e => ({
@@ -550,7 +586,7 @@ export default function MonitoringLayer({
           anchorDensity={anchorDensity}
           positioningScore={positioningScore}
           riskScore={rii}
-          actionLayer={diagnostic?.action_layer ?? null}
+          actionLayer={playbookActionLayer ?? diagnostic?.action_layer ?? null}
           currentPlan={currentPlan}
           monthlyExposureReal={
             // Prefer monitoring status monthly, fall back to forecast monthly
