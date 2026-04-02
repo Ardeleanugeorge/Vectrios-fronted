@@ -743,7 +743,7 @@ export default function AccountPage() {
                 Account Settings
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-                {user?.company_name || "Your Account"}
+                {isOwner ? "VectriOS" : (user?.company_name || "Your Account")}
               </h1>
               <p className="text-gray-500 text-sm mt-1">{user?.email}</p>
             </div>

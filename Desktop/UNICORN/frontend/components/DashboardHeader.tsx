@@ -55,6 +55,7 @@ function initFromCache<T>(key: keyof SubCache, fallback: T): T {
 }
 
 export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadge?: boolean }) {
+  const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const router = useRouter()
 
   // Read user_data synchronously — no flash on client
@@ -226,6 +227,8 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const planDisplay = getPlanDisplay(currentPlan, billingCycle, trialDaysLeft)
   const planLabel = planDisplay?.label ?? null
   const planColorClass = planDisplay ? (PLAN_COLORS[planDisplay.colorKey] || PLAN_COLORS.starter) : ""
+  const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
+  const displayCompanyName = isOwner ? "VectriOS" : (user?.company_name || "Account")
 
   const readPreferredScanToken = (): string | null => {
     try {
@@ -325,7 +328,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
             >
               <div className="text-right">
                 <p className="text-sm font-medium text-white">
-                  {user?.company_name || "Account"}
+                  {displayCompanyName}
                 </p>
                 {user?.email && (
                   <p className="text-xs text-gray-400">{user.email}</p>
@@ -333,7 +336,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
               </div>
               <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
                 <span className="text-cyan-400 font-semibold">
-                  {user?.company_name?.[0]?.toUpperCase() || "A"}
+                  {displayCompanyName?.[0]?.toUpperCase() || "A"}
                 </span>
               </div>
               <svg
@@ -349,7 +352,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
               <div className="absolute right-0 top-full mt-2 w-56 bg-[#111827] border border-gray-800 rounded-lg shadow-xl z-[100]">
                 <div className="py-2">
                   <div className="px-4 py-3 border-b border-gray-800">
-                    <p className="text-sm font-medium text-white">{user?.company_name || "Account"}</p>
+                    <p className="text-sm font-medium text-white">{displayCompanyName}</p>
                     {user?.email && (
                       <p className="text-xs text-gray-400 mt-0.5">{user.email}</p>
                     )}
@@ -375,13 +378,15 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                     Account Settings
                   </Link>
 
-                  <Link
-                    href="/upgrade"
-                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition"
-                    onClick={() => setShowMenu(false)}
-                  >
-                    Upgrade Plan
-                  </Link>
+                  {!isOwner && (
+                    <Link
+                      href="/upgrade"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition"
+                      onClick={() => setShowMenu(false)}
+                    >
+                      Upgrade Plan
+                    </Link>
+                  )}
 
                   <div className="border-t border-gray-800 mt-2 pt-2">
                     <button
