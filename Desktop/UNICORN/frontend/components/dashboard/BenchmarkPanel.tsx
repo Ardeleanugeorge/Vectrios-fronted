@@ -45,6 +45,18 @@ function rankLabel(rank: number, higherIsBetter: boolean): { text: string; color
   return { text: "Bottom 25%", color: "text-red-400" }
 }
 
+function ordinal(n: number): string {
+  const v = Math.abs(Math.trunc(n))
+  const mod100 = v % 100
+  if (mod100 >= 11 && mod100 <= 13) return `${v}th`
+  switch (v % 10) {
+    case 1: return `${v}st`
+    case 2: return `${v}nd`
+    case 3: return `${v}rd`
+    default: return `${v}th`
+  }
+}
+
 function MetricRow({ label, data, higherIsBetter }: {
   label: string
   data: MetricBenchmark
@@ -71,7 +83,7 @@ function MetricRow({ label, data, higherIsBetter }: {
         <div className="flex items-center gap-2">
           <span className={`text-xs font-semibold ${rankColor}`}>{rankText}</span>
           <span className="text-[10px] text-gray-600 tabular-nums">
-            {data.percentile_rank}th pct
+            {ordinal(data.percentile_rank)} pct
           </span>
         </div>
       </div>
@@ -166,8 +178,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
                 riiRank >= 50 ? "text-cyan-400" :
                 riiRank >= 25 ? "text-amber-400" : "text-red-400"
               }`}>
-                {riiRank}
-                <span className="text-sm text-gray-500 font-normal">th pct</span>
+                {ordinal(riiRank)} <span className="text-sm text-gray-500 font-normal">pct</span>
               </p>
               <p className="text-[10px] text-gray-600 mt-0.5">
                 {riiRank >= 50 ? "better risk profile than majority" : "higher risk than majority"}

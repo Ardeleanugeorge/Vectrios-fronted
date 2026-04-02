@@ -21,6 +21,7 @@ export default function RevenueRiskIndex({
   coveragePct = null,
   assessmentDate = null,
 }: RevenueRiskIndexProps) {
+  const effectiveConfidence = typeof coveragePct === "number" ? coveragePct : confidence
   const displayScore = riskScore !== null ? Math.min(riskScore, 100) : null
   
   /** Derive risk classification directly from score — score is always up-to-date,
@@ -77,7 +78,7 @@ export default function RevenueRiskIndex({
         <p className="text-xs text-gray-500 italic mb-6">
           Risk classification derived from revenue-stage alignment analysis.
         </p>
-        {confidence < 50 && (
+        {effectiveConfidence < 50 && (
           <p className="text-xs text-amber-300 mb-4">
             Limited content detected - results may be less accurate.
           </p>
