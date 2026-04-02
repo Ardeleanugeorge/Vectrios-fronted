@@ -30,6 +30,12 @@ interface MonitoringStatus {
   created_at?: string
   last_evaluated_at?: string
   data_coverage_pct?: number | null
+  revenue_truth?: {
+    headline: string
+    subtext: string
+    explanation: string
+    loss_pct_text?: string
+  }
   ui_state_payload?: {
     ui_state: "low" | "medium" | "high"
     financial_mode: "opportunity" | "recoverable" | "risk"
@@ -295,15 +301,15 @@ export default function MonitoringLayer({
   }))
   const arrUsed = forecast?.arr_used ?? null
   const monthlyLossTruth = monthlyExposure || forecast?.estimated_monthly_exposure || null
-  const truth = computeRevenueTruth({
-    rii: rii ?? null,
-    arr: arrUsed,
-    monthlyLoss: monthlyLossTruth,
-    closeRateDelta: closeRateDelta ?? null,
-    alerts: alertsLite,
-    trend: monitoringStatus.trend_direction || null,
-    volatility: monitoringStatus.volatility_classification || null,
-  })
+  const truth = monitoringStatus.revenue_truth ?? computeRevenueTruth({
+      rii: rii ?? null,
+      arr: arrUsed,
+      monthlyLoss: monthlyLossTruth,
+      closeRateDelta: closeRateDelta ?? null,
+      alerts: alertsLite,
+      trend: monitoringStatus.trend_direction || null,
+      volatility: monitoringStatus.volatility_classification || null,
+    })
 
 
   return (
