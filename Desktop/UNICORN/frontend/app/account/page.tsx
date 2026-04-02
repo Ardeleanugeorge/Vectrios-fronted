@@ -572,9 +572,18 @@ export default function AccountPage() {
       const data = await res.json()
       const tickets = (data?.tickets || []) as AdminSupportTicketSummary[]
       setAdminTickets(tickets)
-      if (!adminSelectedTicketId && tickets.length > 0) {
-        setAdminSelectedTicketId(tickets[0].ticket_id)
-        await loadAdminSupportTicket(token, tickets[0].ticket_id)
+      if (tickets.length === 0) {
+        setAdminSelectedTicketId(null)
+        setAdminSelectedTicket(null)
+        setAdminAuditPreview([])
+        return
+      }
+
+      const selectedStillExists = !!adminSelectedTicketId && tickets.some(t => t.ticket_id === adminSelectedTicketId)
+      const nextSelectedTicketId = selectedStillExists ? adminSelectedTicketId : tickets[0].ticket_id
+      if (nextSelectedTicketId) {
+        if (nextSelectedTicketId !== adminSelectedTicketId) setAdminSelectedTicketId(nextSelectedTicketId)
+        await loadAdminSupportTicket(token, nextSelectedTicketId)
       }
     } catch {
       // silent
@@ -755,7 +764,7 @@ export default function AccountPage() {
           </div>
 
           {/* ── Trial expiry banner ────────────────────────────────────────── */}
-          {trialExpired && (
+          {!isOwner && trialExpired && (
             <div className="mb-6 p-4 rounded-2xl border border-red-500/30 bg-red-500/10 flex items-center justify-between gap-4 flex-wrap">
               <div>
                 <p className="text-red-300 font-semibold">Your trial has expired</p>
@@ -768,7 +777,7 @@ export default function AccountPage() {
           )}
 
           {/* ── Trial warning (3 days left) ────────────────────────────────── */}
-          {isTrial && !trialExpired && typeof subscription?.trial_days_left === "number" && subscription.trial_days_left <= 3 && (
+          {!isOwner && isTrial && !trialExpired && typeof subscription?.trial_days_left === "number" && subscription.trial_days_left <= 3 && (
             <div className="mb-6 p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 flex items-center justify-between gap-4 flex-wrap">
                 <div>
                 <p className="text-amber-300 font-semibold">{subscription.trial_days_left}d left on your trial</p>
@@ -1548,6 +1557,19 @@ export default function AccountPage() {
                 )}
               </div>
 
+              {/* How it works */}
+              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
+                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">What happens when you click Run</h3>
+                <ol className="space-y-2 text-sm text-gray-400">
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">1.</span> Loads all successful scans from the database</li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">2.</span> Auto-labels each scan as good / mid / bad based on current RII</li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">4.</span> Runs per-segment (Developer, Marketing, Product, Support)</li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">5.</span> Saves candidate to <code className="text-cyan-400">calibration_results_candidate.json</code></li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">6.</span> Click <strong>Accept → Activate</strong> to promote candidate to active weights</li>
+                </ol>
+              </div>
+
               {/* Admin Support Console */}
               <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
                 <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Admin Support Inbox</h3>
@@ -1574,7 +1596,10 @@ export default function AccountPage() {
                         >
                           <p className="text-sm text-gray-200 truncate">{t.subject}</p>
                           <p className="text-xs text-gray-500 mt-0.5 truncate">{t.company_name || t.owner_email || "unknown"}</p>
-                          <p className="text-[11px] text-gray-600 mt-1">{t.ticket_id} • {t.priority} • {t.status}</p>
+                          <p className="text-[11px] text-gray-600 mt-1">
+                            {t.ticket_id} • {t.priority} • {t.status}
+                            {adminSelectedTicketId === t.ticket_id ? " • selected" : ""}
+                          </p>
                         </button>
                       ))}
                     </div>
@@ -1655,19 +1680,6 @@ export default function AccountPage() {
                     </div>
                   ))}
                 </div>
-              </div>
-
-              {/* How it works */}
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">What happens when you click Run</h3>
-                <ol className="space-y-2 text-sm text-gray-400">
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">1.</span> Loads all successful scans from the database</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">2.</span> Auto-labels each scan as good / mid / bad based on current RII</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">4.</span> Runs per-segment (Developer, Marketing, Product, Support)</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">5.</span> Saves candidate to <code className="text-cyan-400">calibration_results_candidate.json</code></li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">6.</span> Click <strong>Accept → Activate</strong> to promote candidate to active weights</li>
-                </ol>
               </div>
 
             </div>
