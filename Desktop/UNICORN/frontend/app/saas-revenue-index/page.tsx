@@ -202,9 +202,14 @@ export default function SaaSRevenueIndex() {
                   <div key={c.domain} className="flex items-center gap-3 px-5 py-3 border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
                     <span className="text-xs text-gray-600 font-mono w-4">{i + 1}</span>
                     <img
-                      src={`https://www.google.com/s2/favicons?domain=${c.domain}&sz=16`}
-                      alt="" className="w-4 h-4 rounded opacity-60"
-                      onError={e => (e.currentTarget.style.display = "none")}
+                      src={`https://icons.duckduckgo.com/ip3/${c.domain.replace(/^https?:\/\//, '').split('/')[0]}.ico`}
+                      alt=""
+                      className="w-4 h-4 rounded opacity-60"
+                      onError={e => {
+                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0]
+                        ;(e.currentTarget as HTMLImageElement).src = `https://${host}/favicon.ico`
+                        e.currentTarget.onerror = () => { e.currentTarget.style.display = "none" }
+                      }}
                     />
                     <Link href={`/company/${c.domain}`}
                        className="text-sm text-white hover:text-emerald-300 transition-colors flex-1 truncate">
@@ -229,9 +234,14 @@ export default function SaaSRevenueIndex() {
                   <div key={c.domain} className="flex items-center gap-3 px-5 py-3 border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
                     <span className="text-xs text-gray-600 font-mono w-4">{i + 1}</span>
                     <img
-                      src={`https://www.google.com/s2/favicons?domain=${c.domain}&sz=16`}
-                      alt="" className="w-4 h-4 rounded opacity-60"
-                      onError={e => (e.currentTarget.style.display = "none")}
+                      src={`https://icons.duckduckgo.com/ip3/${c.domain.replace(/^https?:\/\//, '').split('/')[0]}.ico`}
+                      alt=""
+                      className="w-4 h-4 rounded opacity-60"
+                      onError={e => {
+                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0]
+                        ;(e.currentTarget as HTMLImageElement).src = `https://${host}/favicon.ico`
+                        e.currentTarget.onerror = () => { e.currentTarget.style.display = "none" }
+                      }}
                     />
                     <Link href={`/company/${c.domain}`}
                        className="text-sm text-white hover:text-red-300 transition-colors flex-1 truncate">
@@ -327,10 +337,14 @@ export default function SaaSRevenueIndex() {
                 <div>
                   <div className="flex items-center gap-2">
                     <img
-                      src={`https://www.google.com/s2/favicons?domain=${c.domain}&sz=16`}
+                      src={`https://icons.duckduckgo.com/ip3/${c.domain.replace(/^https?:\/\//, '').split('/')[0]}.ico`}
                       alt=""
                       className="w-4 h-4 rounded opacity-70"
-                      onError={e => (e.currentTarget.style.display = "none")}
+                      onError={e => {
+                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0]
+                        ;(e.currentTarget as HTMLImageElement).src = `https://${host}/favicon.ico`
+                        e.currentTarget.onerror = () => { e.currentTarget.style.display = "none" }
+                      }}
                     />
                     <Link
                       href={`/company/${c.domain}`}
