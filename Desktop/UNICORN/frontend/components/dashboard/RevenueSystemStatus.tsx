@@ -18,14 +18,14 @@ export default function RevenueSystemStatus({
   uiState = "medium",
 }: RevenueSystemStatusProps) {
   const confident = impactConfidence && impactConfidence !== "insufficient_data"
-  const hasExposure = confident && (
+  const hasExposure = (
     (monthlyExposure !== null && monthlyExposure > 0) ||
     (annualExposure !== null && annualExposure !== undefined && annualExposure > 0)
   )
   const displayMonthlyImpact =
-    (confident && monthlyExposure && monthlyExposure > 0)
+    (monthlyExposure && monthlyExposure > 0)
       ? monthlyExposure
-      : (confident && annualExposure && annualExposure > 0)
+      : (annualExposure && annualExposure > 0)
         ? annualExposure / 12
         : null
 
@@ -63,9 +63,7 @@ export default function RevenueSystemStatus({
         <div>
           <p className="text-lg font-semibold text-gray-300 mb-2">Revenue Monitoring Active</p>
           <p className="text-sm text-gray-400">
-            {confident
-              ? "No material compression detected at this time."
-              : "Structural signals are being monitored. Financial exposure is not yet measurable with current evidence."}
+            Structural signals are being monitored. Financial exposure is not yet measurable with current evidence.
           </p>
         </div>
       )}
