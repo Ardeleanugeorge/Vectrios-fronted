@@ -8,6 +8,7 @@ interface StructuralRiskOverviewProps {
   driftStatus?: string
   volatility?: string
   riskDelta?: number
+  suppressTrend?: boolean
 }
 
 export default function StructuralRiskOverview({
@@ -17,7 +18,8 @@ export default function StructuralRiskOverview({
   trendDirection = "unstable",
   driftStatus = "stable",
   volatility = "stable",
-  riskDelta
+  riskDelta,
+  suppressTrend = false
 }: StructuralRiskOverviewProps) {
   const getTrendColor = (trend: string) => {
     switch (trend) {
@@ -101,20 +103,22 @@ export default function StructuralRiskOverview({
           )}
         </div>
 
-        <div>
-          <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Trend Signal</p>
-          <p className={`text-2xl font-semibold ${getTrendColor(trendDirection)}`}>
-            {getTrendLabel(trendDirection)}
-            {riskDelta !== undefined && riskDelta !== null && riskDelta !== 0 && (
-              <span className="text-lg ml-2">
-                ({riskDelta > 0 ? "+" : ""}{riskDelta.toFixed(1)})
-              </span>
+        {!suppressTrend && (
+          <div>
+            <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Trend Signal</p>
+            <p className={`text-2xl font-semibold ${getTrendColor(trendDirection)}`}>
+              {getTrendLabel(trendDirection)}
+              {riskDelta !== undefined && riskDelta !== null && riskDelta !== 0 && (
+                <span className="text-lg ml-2">
+                  ({riskDelta > 0 ? "+" : ""}{riskDelta.toFixed(1)})
+                </span>
+              )}
+            </p>
+            {getTrendSubtext(trendDirection) && (
+              <p className="text-xs text-gray-500 mt-1">{getTrendSubtext(trendDirection)}</p>
             )}
-          </p>
-          {getTrendSubtext(trendDirection) && (
-            <p className="text-xs text-gray-500 mt-1">{getTrendSubtext(trendDirection)}</p>
-          )}
-        </div>
+          </div>
+        )}
 
         <div>
           <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Drift Detection</p>

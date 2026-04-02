@@ -598,6 +598,7 @@ export default function MonitoringLayer({
         driftStatus={monitoringStatus.drift_status || "stable"}
         volatility={monitoringStatus.volatility_classification || "stable"}
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
+        suppressTrend={zeroDelta === true}
       />
 
       {/* 6. REVENUE-STAGE ALIGNMENT MAP — Diagnostic breakdown (with backend structural_scores fallback) */}
