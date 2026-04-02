@@ -28,6 +28,7 @@ interface MonitoringStatus {
   monitoring_active: boolean
   created_at?: string
   last_evaluated_at?: string
+  data_coverage_pct?: number
   ui_state_payload?: {
     ui_state: "low" | "medium" | "high"
     financial_mode: "opportunity" | "recoverable" | "risk"
@@ -48,6 +49,7 @@ interface MonitoringStatus {
     positioning_coherence_score: number | null
     primary_risk_driver: string | null
     rii_score: number | null
+    confidence_score?: number | null
   }
   drift_status?: string
   trend_direction?: string
