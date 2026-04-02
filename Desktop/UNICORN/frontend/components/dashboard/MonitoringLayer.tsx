@@ -310,6 +310,7 @@ export default function MonitoringLayer({
       trend: monitoringStatus.trend_direction || null,
       volatility: monitoringStatus.volatility_classification || null,
     })
+  const truthLossPct = (truth as any).loss_pct_text ?? (truth as any).lossPctText ?? undefined
 
 
   return (
@@ -337,7 +338,7 @@ export default function MonitoringLayer({
       {/* REVENUE TRUTH BANNER — unified semantic layer */}
       <div className="p-5 rounded-lg border border-cyan-700/30 bg-cyan-950/10">
         <p className="text-sm font-semibold text-cyan-300">{truth.headline}</p>
-        <p className="text-xs text-gray-300 mt-1">{truth.subtext}{truth.lossPctText ? ` — ${truth.lossPctText}` : ""}</p>
+        <p className="text-xs text-gray-300 mt-1">{truth.subtext}{truthLossPct ? ` — ${truthLossPct}` : ""}</p>
         <p className="text-xs text-gray-500 mt-1">{truth.explanation}</p>
       </div>
 
