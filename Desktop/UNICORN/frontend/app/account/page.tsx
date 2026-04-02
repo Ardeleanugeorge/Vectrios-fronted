@@ -50,6 +50,50 @@ interface AdminSupportTicketDetail extends SupportTicketDetail {
   company_name?: string | null
 }
 
+interface AdminSystemHealth {
+  db_connected: boolean
+  build_sha?: string | null
+  crawler_flags?: Record<string, boolean>
+  counts?: { companies_total: number; monitoring_active: number }
+  latest_monitoring_at?: string | null
+  minutes_since_last_monitoring?: number | null
+}
+
+interface AdminPipelineMetrics {
+  window_24h?: {
+    total: number
+    success_rate_pct: number
+    avg_pages_scanned: number
+    top_reasons: Array<{ reason: string; count: number }>
+  }
+  window_7d?: {
+    total: number
+    success_rate_pct: number
+    avg_pages_scanned: number
+    top_reasons: Array<{ reason: string; count: number }>
+  }
+  monitoring_7d?: {
+    total_cycles: number
+    no_evidence_cycles: number
+    no_evidence_rate_pct: number
+  }
+}
+
+interface AdminRiiConsistency {
+  checked_companies: number
+  mismatch_count: number
+  mismatch_rate_pct: number
+  items: Array<{
+    company_id: string
+    company_name: string
+    scan_rii: number
+    monitoring_rii: number
+    delta: number
+    confidence: number
+    is_mismatch: boolean
+  }>
+}
+
 export default function AccountPage() {
   const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const router = useRouter()
@@ -103,6 +147,9 @@ export default function AccountPage() {
   const [adminSupportLoading, setAdminSupportLoading] = useState(false)
   const [adminFlags, setAdminFlags] = useState<Record<string, boolean>>({})
   const [adminAuditPreview, setAdminAuditPreview] = useState<Array<{ action_type: string; created_at?: string | null }>>([])
+  const [adminSystemHealth, setAdminSystemHealth] = useState<AdminSystemHealth | null>(null)
+  const [adminPipelineMetrics, setAdminPipelineMetrics] = useState<AdminPipelineMetrics | null>(null)
+  const [adminRiiConsistency, setAdminRiiConsistency] = useState<AdminRiiConsistency | null>(null)
   const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
 
   // (Each account has exactly one company — kept simple by design)
@@ -295,6 +342,9 @@ export default function AccountPage() {
         if (token) {
           loadAdminSupportTickets(token)
           loadAdminFeatureFlags(token)
+          loadAdminSystemHealth(token)
+          loadAdminPipelineMetrics(token)
+          loadAdminRiiConsistency(token)
         }
       }
     }
@@ -645,6 +695,42 @@ export default function AccountPage() {
       // silent
     } finally {
       setAdminSupportLoading(false)
+    }
+  }
+
+  const loadAdminSystemHealth = async (token: string) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/ops/system-health`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return
+      setAdminSystemHealth(await res.json())
+    } catch {
+      // silent
+    }
+  }
+
+  const loadAdminPipelineMetrics = async (token: string) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/ops/pipeline-metrics`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return
+      setAdminPipelineMetrics(await res.json())
+    } catch {
+      // silent
+    }
+  }
+
+  const loadAdminRiiConsistency = async (token: string) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/ops/rii-consistency?limit=20`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return
+      setAdminRiiConsistency(await res.json())
+    } catch {
+      // silent
     }
   }
 
@@ -1407,6 +1493,70 @@ export default function AccountPage() {
                   Re-calibrates the RII scoring model using all scan results in the database.
                   No terminal, no Excel — one click.
                 </p>
+              </div>
+
+              {/* Platform Ops snapshot */}
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">System Health</h3>
+                  <div className="space-y-2 text-sm">
+                    <p className="text-gray-300">DB: <span className={adminSystemHealth?.db_connected ? "text-emerald-300" : "text-red-300"}>{adminSystemHealth?.db_connected ? "Connected" : "Down"}</span></p>
+                    <p className="text-gray-300">Companies: <span className="text-white font-semibold">{adminSystemHealth?.counts?.companies_total ?? "—"}</span></p>
+                    <p className="text-gray-300">Monitoring active: <span className="text-white font-semibold">{adminSystemHealth?.counts?.monitoring_active ?? "—"}</span></p>
+                    <p className="text-gray-500 text-xs">Last monitoring: {adminSystemHealth?.minutes_since_last_monitoring != null ? `${adminSystemHealth.minutes_since_last_monitoring} min ago` : "—"}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pipeline Metrics</h3>
+                  <div className="space-y-2 text-sm">
+                    <p className="text-gray-300">Scans 24h: <span className="text-white font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "—"}</span></p>
+                    <p className="text-gray-300">Success 24h: <span className="text-white font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "—"}%</span></p>
+                    <p className="text-gray-300">Scans 7d: <span className="text-white font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "—"}</span></p>
+                    <p className="text-gray-300">No-evidence 7d: <span className="text-white font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "—"}%</span></p>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">RII Consistency Guard</h3>
+                  <div className="space-y-2 text-sm">
+                    <p className="text-gray-300">Checked: <span className="text-white font-semibold">{adminRiiConsistency?.checked_companies ?? "—"}</span></p>
+                    <p className="text-gray-300">Mismatches: <span className={`${(adminRiiConsistency?.mismatch_count || 0) > 0 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{adminRiiConsistency?.mismatch_count ?? "—"}</span></p>
+                    <p className="text-gray-300">Mismatch rate: <span className="text-white font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "—"}%</span></p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Top Scan Failure Reasons (7d)</h3>
+                  <div className="space-y-2">
+                    {(adminPipelineMetrics?.window_7d?.top_reasons || []).slice(0, 5).map((r) => (
+                      <div key={`${r.reason}-${r.count}`} className="text-sm text-gray-300 flex items-center justify-between">
+                        <span>{r.reason}</span>
+                        <span className="text-white font-semibold">{r.count}</span>
+                      </div>
+                    ))}
+                    {(!adminPipelineMetrics?.window_7d?.top_reasons || adminPipelineMetrics.window_7d.top_reasons.length === 0) && (
+                      <p className="text-sm text-gray-500">No recent scan reason data.</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Top RII Mismatches</h3>
+                  <div className="space-y-2">
+                    {(adminRiiConsistency?.items || []).slice(0, 5).map((it) => (
+                      <div key={it.company_id} className="text-sm text-gray-300 flex items-center justify-between gap-3">
+                        <span className="truncate">{it.company_name}</span>
+                        <span className={`${Math.abs(it.delta) > 0.2 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{it.delta > 0 ? "+" : ""}{it.delta}</span>
+                      </div>
+                    ))}
+                    {(!adminRiiConsistency?.items || adminRiiConsistency.items.length === 0) && (
+                      <p className="text-sm text-gray-500">No no-evidence consistency rows yet.</p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Current DB stats */}
