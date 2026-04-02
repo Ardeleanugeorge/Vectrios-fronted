@@ -600,6 +600,7 @@ export default function DashboardPage() {
                         : (monitoringStatus?.structural_scores?.confidence_score ?? null)) as number | null
                     : (diagnostic?.confidence ?? diagnostic?.confidence_score ?? null) as number | null
                 }
+                assessmentDate={monitoringStatus?.last_evaluated_at ?? null}
               />
             )
           })()}

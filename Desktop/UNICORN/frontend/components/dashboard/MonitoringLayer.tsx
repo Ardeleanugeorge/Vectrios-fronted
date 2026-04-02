@@ -334,7 +334,7 @@ export default function MonitoringLayer({
           {/* Header row */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
             <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Revenue Change (last scan)</p>
-            {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (
+            {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (typeof revenueDelta.delta_monthly_loss === "number" && revenueDelta.delta_monthly_loss !== 0) && (
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                 revenueDelta.trend_last_4 === "worsening" ? "text-red-400 bg-red-400/10" :
                 revenueDelta.trend_last_4 === "improving" ? "text-emerald-400 bg-emerald-400/10" :

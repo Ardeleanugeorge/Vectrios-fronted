@@ -8,6 +8,7 @@ interface RevenueRiskIndexProps {
   scoreSource?: "instant_scan" | "full_diagnostic"
   source?: "monitoring" | "diagnostic" | "fallback"
   coveragePct?: number | null
+  assessmentDate?: string | null
 }
 
 export default function RevenueRiskIndex({
@@ -18,6 +19,7 @@ export default function RevenueRiskIndex({
   scoreSource = "full_diagnostic",
   source,
   coveragePct = null,
+  assessmentDate = null,
 }: RevenueRiskIndexProps) {
   const displayScore = riskScore !== null ? Math.min(riskScore, 100) : null
   
@@ -99,7 +101,9 @@ export default function RevenueRiskIndex({
           <div>
             <span className="text-gray-400">Assessment Date: </span>
             <span className="font-semibold text-gray-300">
-              {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              {assessmentDate
+                ? new Date(assessmentDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+                : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
             </span>
           </div>
         </div>

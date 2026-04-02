@@ -17,11 +17,15 @@ export default function RevenueSystemStatus({
   modelConfidence,
   uiState = "medium",
 }: RevenueSystemStatusProps) {
-  const hasExposure = (monthlyExposure !== null && monthlyExposure > 0) || (annualExposure !== null && annualExposure !== undefined && annualExposure > 0)
+  const confident = impactConfidence && impactConfidence !== "insufficient_data"
+  const hasExposure = confident && (
+    (monthlyExposure !== null && monthlyExposure > 0) ||
+    (annualExposure !== null && annualExposure !== undefined && annualExposure > 0)
+  )
   const displayMonthlyImpact =
-    monthlyExposure && monthlyExposure > 0
+    (confident && monthlyExposure && monthlyExposure > 0)
       ? monthlyExposure
-      : annualExposure && annualExposure > 0
+      : (confident && annualExposure && annualExposure > 0)
         ? annualExposure / 12
         : null
 
@@ -59,13 +63,15 @@ export default function RevenueSystemStatus({
         <div>
           <p className="text-lg font-semibold text-gray-300 mb-2">Revenue Monitoring Active</p>
           <p className="text-sm text-gray-400">
-            Structural signals are being monitored. Financial exposure is not yet measurable with current evidence.
+            {confident
+              ? "No material compression detected at this time."
+              : "Structural signals are being monitored. Financial exposure is not yet measurable with current evidence."}
           </p>
         </div>
       )}
       
       {/* Signal coverage note — hidden when data is insufficient */}
-      {(modelConfidence || (impactConfidence && impactConfidence !== "insufficient_data")) && (
+      {(modelConfidence || confident) && (
         <div className="mt-6 pt-4 border-t border-gray-800 text-xs text-gray-500">
           <span>Signal Coverage: </span>
           <span className="text-gray-400 font-medium capitalize">{modelConfidence || impactConfidence}</span>
