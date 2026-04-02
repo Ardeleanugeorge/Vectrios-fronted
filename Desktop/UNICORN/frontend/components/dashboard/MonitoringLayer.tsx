@@ -28,7 +28,7 @@ interface MonitoringStatus {
   monitoring_active: boolean
   created_at?: string
   last_evaluated_at?: string
-  data_coverage_pct?: number
+  data_coverage_pct?: number | null
   ui_state_payload?: {
     ui_state: "low" | "medium" | "high"
     financial_mode: "opportunity" | "recoverable" | "risk"
