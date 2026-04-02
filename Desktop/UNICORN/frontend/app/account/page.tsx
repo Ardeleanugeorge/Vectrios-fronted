@@ -839,6 +839,25 @@ export default function AccountPage() {
         { id: 'security' as const, label: 'Security',       icon: '🔒' },
       ]
 
+  // ── Manager health thresholds (quick visual ops state) ────────────────────
+  const coveragePct = Number(adminCoverage?.coverage_pct ?? 0)
+  const noEvidencePct = Number(adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? 0)
+  const mismatchRatePct = Number(adminRiiConsistency?.mismatch_rate_pct ?? 0)
+
+  const coverageStatus: "good" | "warn" | "bad" =
+    coveragePct >= 95 ? "good" : coveragePct >= 85 ? "warn" : "bad"
+  const noEvidenceStatus: "good" | "warn" | "bad" =
+    noEvidencePct <= 10 ? "good" : noEvidencePct <= 20 ? "warn" : "bad"
+  const mismatchStatus: "good" | "warn" | "bad" =
+    mismatchRatePct <= 1 ? "good" : mismatchRatePct <= 5 ? "warn" : "bad"
+
+  const statusPillClass = (s: "good" | "warn" | "bad") =>
+    s === "good"
+      ? "text-emerald-300 border-emerald-500/30 bg-emerald-500/10"
+      : s === "warn"
+        ? "text-amber-300 border-amber-500/30 bg-amber-500/10"
+        : "text-red-300 border-red-500/30 bg-red-500/10"
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#050810] text-white flex items-center justify-center">
@@ -1548,6 +1567,9 @@ export default function AccountPage() {
                     <p className="text-gray-300">Success 24h: <span className="text-white font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "—"}%</span></p>
                     <p className="text-gray-300">Scans 7d: <span className="text-white font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "—"}</span></p>
                     <p className="text-gray-300">No-evidence 7d: <span className="text-white font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "—"}%</span></p>
+                    <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(noEvidenceStatus)}`}>
+                      No-evidence status: {noEvidenceStatus === "good" ? "healthy" : noEvidenceStatus === "warn" ? "watch" : "critical"}
+                    </span>
                   </div>
                 </div>
 
@@ -1557,6 +1579,9 @@ export default function AccountPage() {
                     <p className="text-gray-300">Checked: <span className="text-white font-semibold">{adminRiiConsistency?.checked_companies ?? "—"}</span></p>
                     <p className="text-gray-300">Mismatches: <span className={`${(adminRiiConsistency?.mismatch_count || 0) > 0 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{adminRiiConsistency?.mismatch_count ?? "—"}</span></p>
                     <p className="text-gray-300">Mismatch rate: <span className="text-white font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "—"}%</span></p>
+                    <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(mismatchStatus)}`}>
+                      Consistency status: {mismatchStatus === "good" ? "healthy" : mismatchStatus === "warn" ? "watch" : "critical"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -1606,7 +1631,9 @@ export default function AccountPage() {
                   </div>
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Coverage</p>
-                    <p className="text-lg font-semibold text-cyan-300">{adminCoverage?.coverage_pct ?? "—"}%</p>
+                    <p className={`text-lg font-semibold ${coverageStatus === "good" ? "text-emerald-300" : coverageStatus === "warn" ? "text-amber-300" : "text-red-300"}`}>
+                      {adminCoverage?.coverage_pct ?? "—"}%
+                    </p>
                   </div>
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Cycles</p>
@@ -1630,6 +1657,11 @@ export default function AccountPage() {
                 </div>
 
                 <div>
+                  <div className="mb-2">
+                    <span className={`inline-flex text-[11px] px-2 py-1 rounded-full border ${statusPillClass(coverageStatus)}`}>
+                      Coverage status: {coverageStatus === "good" ? "healthy" : coverageStatus === "warn" ? "watch" : "critical"}
+                    </span>
+                  </div>
                   <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Missing companies (not scanned in 24h)</p>
                   <div className="space-y-2 max-h-56 overflow-auto pr-1">
                     {(adminCoverage?.missing_companies || []).slice(0, 30).map((m) => (
