@@ -8,6 +8,7 @@ import Link from "next/link"
 import Header from "@/components/Header"
 
 export default function LoginPage() {
+  const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const router = useRouter()
   const searchParams = useSearchParams()
   const [form, setForm] = useState({
@@ -66,6 +67,12 @@ export default function LoginPage() {
             company_id: data.company_id || null
           }))
         }
+        const resolvedEmail = String(data.email || form.email || "").trim().toLowerCase()
+        if (resolvedEmail === OWNER_EMAIL.toLowerCase()) {
+          router.push("/account?tab=system")
+          return
+        }
+
         // Smart resume: prefer active monitoring; else resume unlocked scan; else dashboard
         try {
           const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token") || ""

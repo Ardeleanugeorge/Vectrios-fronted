@@ -2,7 +2,7 @@
 
 import { API_URL } from '@/lib/config'
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
 import SiteFooter from "@/components/SiteFooter"
@@ -34,8 +34,26 @@ interface SupportTicketDetail extends SupportTicketSummary {
   }>
 }
 
+interface AdminSupportTicketSummary {
+  ticket_id: string
+  company_id: string
+  company_name?: string | null
+  owner_email?: string | null
+  subject: string
+  priority: string
+  status: string
+  updated_at?: string | null
+}
+
+interface AdminSupportTicketDetail extends SupportTicketDetail {
+  company_id: string
+  company_name?: string | null
+}
+
 export default function AccountPage() {
+  const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(true)
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [companyId, setCompanyId] = useState<string | null>(null)
@@ -78,11 +96,17 @@ export default function AccountPage() {
   const [selectedTicket, setSelectedTicket] = useState<SupportTicketDetail | null>(null)
   const [supportThreadLoading, setSupportThreadLoading] = useState(false)
   const [supportFollowupMessage, setSupportFollowupMessage] = useState("")
+  const [adminTickets, setAdminTickets] = useState<AdminSupportTicketSummary[]>([])
+  const [adminSelectedTicketId, setAdminSelectedTicketId] = useState<string | null>(null)
+  const [adminSelectedTicket, setAdminSelectedTicket] = useState<AdminSupportTicketDetail | null>(null)
+  const [adminReplyMessage, setAdminReplyMessage] = useState("")
+  const [adminSupportLoading, setAdminSupportLoading] = useState(false)
+  const [adminFlags, setAdminFlags] = useState<Record<string, boolean>>({})
+  const [adminAuditPreview, setAdminAuditPreview] = useState<Array<{ action_type: string; created_at?: string | null }>>([])
 
   // (Each account has exactly one company — kept simple by design)
 
   // ── System / Auto-Calibration (owner-only) ─────────────────────────────────
-  const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const [calibStatus, setCalibStatus] = useState<{
     state: string; message: string; calibrated_at?: string; n_scans?: number;
     mae?: number; violations?: number; label_distribution?: Record<string,number>;
@@ -263,7 +287,16 @@ export default function AccountPage() {
 
   // Load calibration status whenever the system tab opens (owner only)
   useEffect(() => {
-    if (activeTab === 'system') loadCalibStatus()
+    if (activeTab === 'system') {
+      loadCalibStatus()
+      if (isOwner) {
+        const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+        if (token) {
+          loadAdminSupportTickets(token)
+          loadAdminFeatureFlags(token)
+        }
+      }
+    }
   }, [activeTab])
 
   useEffect(() => {
@@ -272,6 +305,13 @@ export default function AccountPage() {
     if (!token) return
     loadSupportTickets(token)
   }, [activeTab])
+
+  useEffect(() => {
+    const desiredTab = (searchParams.get("tab") || "").toLowerCase()
+    if (desiredTab === "system" && isOwner) {
+      setActiveTab("system")
+    }
+  }, [searchParams, isOwner])
 
   const loadSubscription = async (token: string, cid: string) => {
     try {
@@ -509,6 +549,95 @@ export default function AccountPage() {
     }
   }
 
+  const loadAdminFeatureFlags = async (token: string) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/feature-flags`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      setAdminFlags(data?.flags || {})
+    } catch {
+      // silent
+    }
+  }
+
+  const loadAdminSupportTickets = async (token: string) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/support/tickets?limit=100`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      const tickets = (data?.tickets || []) as AdminSupportTicketSummary[]
+      setAdminTickets(tickets)
+      if (!adminSelectedTicketId && tickets.length > 0) {
+        setAdminSelectedTicketId(tickets[0].ticket_id)
+        await loadAdminSupportTicket(token, tickets[0].ticket_id)
+      }
+    } catch {
+      // silent
+    }
+  }
+
+  const loadAdminSupportTicket = async (token: string, ticketId: string) => {
+    setAdminSupportLoading(true)
+    try {
+      const res = await fetch(`${API_URL}/admin/support/tickets/${encodeURIComponent(ticketId)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      setAdminSelectedTicket(data as AdminSupportTicketDetail)
+      if (data?.company_id) await loadAdminAuditPreview(data.company_id)
+    } catch {
+      // silent
+    } finally {
+      setAdminSupportLoading(false)
+    }
+  }
+
+  const loadAdminAuditPreview = async (companyId: string) => {
+    try {
+      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      const res = await fetch(`${API_URL}/audit-logs/${companyId}?limit=20`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      const logs = (data?.logs || []) as Array<{ action_type: string; created_at?: string | null }>
+      setAdminAuditPreview(logs.slice(0, 10))
+    } catch {
+      // silent
+    }
+  }
+
+  const handleAdminReply = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!adminSelectedTicketId || !adminReplyMessage.trim()) return
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    setAdminSupportLoading(true)
+    try {
+      const res = await fetch(`${API_URL}/admin/support/tickets/${encodeURIComponent(adminSelectedTicketId)}/reply`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message: adminReplyMessage.trim() }),
+      })
+      if (!res.ok) return
+      setAdminReplyMessage("")
+      await loadAdminSupportTickets(token)
+      await loadAdminSupportTicket(token, adminSelectedTicketId)
+    } catch {
+      // silent
+    } finally {
+      setAdminSupportLoading(false)
+    }
+  }
+
   // Plan label logic
   const isTrial = subscription?.is_trial_active === true || subscription?.billing_cycle === "trial"
   const planName = subscription?.plan?.toLowerCase() || null
@@ -555,6 +684,7 @@ export default function AccountPage() {
 
   // Smart dashboard redirect
   const getDashboardUrl = () => {
+    if (isOwner) return "/account?tab=system"
     try {
       const scanFull = localStorage.getItem("diagnostic_result_full") || sessionStorage.getItem("diagnostic_result_full")
       const scanLite = localStorage.getItem("diagnostic_result") || sessionStorage.getItem("diagnostic_result")
@@ -571,14 +701,15 @@ export default function AccountPage() {
 
   const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
 
-  const TABS = [
-    { id: 'profile',  label: 'Profile',       icon: '👤' },
-    { id: 'plan',     label: 'Plan & Billing', icon: '💳' },
-    { id: 'revenue',  label: 'Revenue Model',  icon: '📊' },
-    { id: 'support',  label: 'Support',        icon: '🎫' },
-    { id: 'security', label: 'Security',       icon: '🔒' },
-    ...(isOwner ? [{ id: 'system' as const, label: 'System', icon: '⚙️' }] : []),
-  ] as const
+  const TABS = isOwner
+    ? [{ id: 'system' as const, label: 'Manager Console', icon: '⚙️' }]
+    : [
+        { id: 'profile' as const,  label: 'Profile',        icon: '👤' },
+        { id: 'plan' as const,     label: 'Plan & Billing', icon: '💳' },
+        { id: 'revenue' as const,  label: 'Revenue Model',  icon: '📊' },
+        { id: 'support' as const,  label: 'Support',        icon: '🎫' },
+        { id: 'security' as const, label: 'Security',       icon: '🔒' },
+      ]
 
   if (loading) {
     return (
@@ -613,7 +744,7 @@ export default function AccountPage() {
                 href={getDashboardUrl()}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm transition"
               >
-                ← Dashboard
+                {isOwner ? "⚙️ Manager Console" : "← Dashboard"}
               </Link>
               <button
                 onClick={handleSignOut}
@@ -1416,6 +1547,115 @@ export default function AccountPage() {
                     {calibMsg}
                   </div>
                 )}
+              </div>
+
+              {/* Admin Support Console */}
+              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
+                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Admin Support Inbox</h3>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3 md:col-span-1">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Tickets (all companies)</p>
+                    <div className="space-y-2 max-h-80 overflow-auto pr-1">
+                      {adminTickets.length === 0 && (
+                        <p className="text-xs text-gray-500">No tickets found.</p>
+                      )}
+                      {adminTickets.map(t => (
+                        <button
+                          key={t.ticket_id}
+                          onClick={() => {
+                            const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+                            setAdminSelectedTicketId(t.ticket_id)
+                            if (token) loadAdminSupportTicket(token, t.ticket_id)
+                          }}
+                          className={`w-full text-left p-3 rounded-lg border transition ${
+                            adminSelectedTicketId === t.ticket_id
+                              ? "border-cyan-500/40 bg-cyan-500/10"
+                              : "border-gray-800 bg-gray-950/40 hover:border-gray-700"
+                          }`}
+                        >
+                          <p className="text-sm text-gray-200 truncate">{t.subject}</p>
+                          <p className="text-xs text-gray-500 mt-0.5 truncate">{t.company_name || t.owner_email || "unknown"}</p>
+                          <p className="text-[11px] text-gray-600 mt-1">{t.ticket_id} • {t.priority} • {t.status}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3 md:col-span-2">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Selected ticket</p>
+                    {adminSupportLoading && <p className="text-sm text-gray-500">Loading...</p>}
+                    {!adminSupportLoading && !adminSelectedTicket && (
+                      <p className="text-sm text-gray-500">Select a ticket to read and reply.</p>
+                    )}
+                    {!adminSupportLoading && adminSelectedTicket && (
+                      <div className="space-y-3">
+                        <div className="pb-2 border-b border-gray-800">
+                          <p className="text-sm font-semibold text-gray-200">{adminSelectedTicket.subject}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            {adminSelectedTicket.ticket_id} • {adminSelectedTicket.company_name || "Unknown company"} • {adminSelectedTicket.status}
+                          </p>
+                        </div>
+                        <div className="space-y-2 max-h-52 overflow-auto pr-1">
+                          {(adminSelectedTicket.messages || []).map((m, i) => (
+                            <div key={`${m.created_at || i}-${i}`} className={`p-3 rounded-lg border ${m.author === "support" ? "bg-cyan-500/10 border-cyan-500/20" : "bg-gray-950/40 border-gray-800"}`}>
+                              <p className="text-xs text-gray-500 mb-1">{m.author === "support" ? "Support" : "Client"}</p>
+                              <p className="text-sm text-gray-200 whitespace-pre-wrap">{m.message}</p>
+                            </div>
+                          ))}
+                        </div>
+                        <form onSubmit={handleAdminReply} className="space-y-2">
+                          <textarea
+                            value={adminReplyMessage}
+                            onChange={e => setAdminReplyMessage(e.target.value)}
+                            rows={3}
+                            maxLength={5000}
+                            placeholder="Write support reply..."
+                            disabled={adminSupportLoading}
+                            className="w-full px-3 py-2 rounded-lg bg-gray-950 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                          />
+                          <button
+                            type="submit"
+                            disabled={adminSupportLoading || !adminSelectedTicketId}
+                            className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-xs transition"
+                          >
+                            Send admin reply
+                          </button>
+                        </form>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Runtime feature flags */}
+              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
+                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Runtime Feature Flags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {Object.keys(adminFlags).length === 0 && (
+                    <p className="text-sm text-gray-500">No flags loaded.</p>
+                  )}
+                  {Object.entries(adminFlags).map(([k, v]) => (
+                    <div key={k} className={`text-xs rounded-lg px-3 py-1.5 border ${v ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300" : "bg-gray-800 border-gray-700 text-gray-400"}`}>
+                      {k}: <span className="font-bold">{v ? "ON" : "OFF"}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Audit preview */}
+              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
+                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Audit Log Preview (selected ticket company)</h3>
+                <div className="space-y-2">
+                  {adminAuditPreview.length === 0 && (
+                    <p className="text-sm text-gray-500">Select a ticket to load recent logs.</p>
+                  )}
+                  {adminAuditPreview.map((log, i) => (
+                    <div key={`${log.created_at || i}-${i}`} className="p-2 rounded-lg border border-gray-800 bg-gray-950/40 text-xs text-gray-300 flex items-center justify-between">
+                      <span>{log.action_type}</span>
+                      <span className="text-gray-500">{log.created_at ? new Date(log.created_at).toLocaleString() : "—"}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* How it works */}

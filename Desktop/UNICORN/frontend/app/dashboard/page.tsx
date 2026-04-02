@@ -109,6 +109,7 @@ interface Alert {
 }
 
 export default function DashboardPage() {
+  const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
@@ -169,6 +170,10 @@ export default function DashboardPage() {
     if (userData) {
       try {
         const parsed = JSON.parse(userData)
+        if ((parsed?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()) {
+          router.replace("/account?tab=system")
+          return
+        }
         setUser(parsed)
         if (parsed.company_id) {
           setCompanyId(parsed.company_id)
