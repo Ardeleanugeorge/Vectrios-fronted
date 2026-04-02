@@ -94,6 +94,26 @@ interface AdminRiiConsistency {
   }>
 }
 
+interface AdminMonitoringCoverage {
+  window_hours: number
+  active_companies: number
+  companies_scanned_in_window: number
+  coverage_pct: number
+  cycles_breakdown: {
+    total_cycles: number
+    success_cycles: number
+    no_evidence_cycles: number
+    failed_like_cycles: number
+  }
+  missing_companies: Array<{
+    company_id: string
+    company_name?: string | null
+    last_monitoring_at?: string | null
+    minutes_since_last?: number | null
+    sla_band: "ok" | "warning" | "critical"
+  }>
+}
+
 export default function AccountPage() {
   const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const router = useRouter()
@@ -150,6 +170,7 @@ export default function AccountPage() {
   const [adminSystemHealth, setAdminSystemHealth] = useState<AdminSystemHealth | null>(null)
   const [adminPipelineMetrics, setAdminPipelineMetrics] = useState<AdminPipelineMetrics | null>(null)
   const [adminRiiConsistency, setAdminRiiConsistency] = useState<AdminRiiConsistency | null>(null)
+  const [adminCoverage, setAdminCoverage] = useState<AdminMonitoringCoverage | null>(null)
   const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
 
   // (Each account has exactly one company — kept simple by design)
@@ -345,6 +366,7 @@ export default function AccountPage() {
           loadAdminSystemHealth(token)
           loadAdminPipelineMetrics(token)
           loadAdminRiiConsistency(token)
+          loadAdminCoverage(token)
         }
       }
     }
@@ -729,6 +751,18 @@ export default function AccountPage() {
       })
       if (!res.ok) return
       setAdminRiiConsistency(await res.json())
+    } catch {
+      // silent
+    }
+  }
+
+  const loadAdminCoverage = async (token: string) => {
+    try {
+      const res = await fetch(`${API_URL}/admin/ops/monitoring-coverage?window_hours=24&limit=100`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) return
+      setAdminCoverage(await res.json())
     } catch {
       // silent
     }
@@ -1554,6 +1588,71 @@ export default function AccountPage() {
                     ))}
                     {(!adminRiiConsistency?.items || adminRiiConsistency.items.length === 0) && (
                       <p className="text-sm text-gray-500">No no-evidence consistency rows yet.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
+                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Monitoring Coverage (24h)</h3>
+                <div className="grid md:grid-cols-4 gap-3 mb-4">
+                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
+                    <p className="text-xs text-gray-500">Active companies</p>
+                    <p className="text-lg font-semibold text-white">{adminCoverage?.active_companies ?? "—"}</p>
+                  </div>
+                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
+                    <p className="text-xs text-gray-500">Scanned in 24h</p>
+                    <p className="text-lg font-semibold text-white">{adminCoverage?.companies_scanned_in_window ?? "—"}</p>
+                  </div>
+                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
+                    <p className="text-xs text-gray-500">Coverage</p>
+                    <p className="text-lg font-semibold text-cyan-300">{adminCoverage?.coverage_pct ?? "—"}%</p>
+                  </div>
+                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
+                    <p className="text-xs text-gray-500">Cycles</p>
+                    <p className="text-lg font-semibold text-white">{adminCoverage?.cycles_breakdown?.total_cycles ?? "—"}</p>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-3 mb-4">
+                  <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3">
+                    <p className="text-xs text-emerald-300">Success cycles</p>
+                    <p className="text-base font-semibold text-white">{adminCoverage?.cycles_breakdown?.success_cycles ?? "—"}</p>
+                  </div>
+                  <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
+                    <p className="text-xs text-amber-300">No-evidence cycles</p>
+                    <p className="text-base font-semibold text-white">{adminCoverage?.cycles_breakdown?.no_evidence_cycles ?? "—"}</p>
+                  </div>
+                  <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
+                    <p className="text-xs text-red-300">Failed-like cycles</p>
+                    <p className="text-base font-semibold text-white">{adminCoverage?.cycles_breakdown?.failed_like_cycles ?? "—"}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Missing companies (not scanned in 24h)</p>
+                  <div className="space-y-2 max-h-56 overflow-auto pr-1">
+                    {(adminCoverage?.missing_companies || []).slice(0, 30).map((m) => (
+                      <div key={m.company_id} className="p-2 rounded-lg border border-gray-800 bg-gray-950/40 flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm text-gray-200 truncate">{m.company_name || m.company_id}</p>
+                          <p className="text-xs text-gray-500">
+                            Last: {m.last_monitoring_at ? new Date(m.last_monitoring_at).toLocaleString() : "never"}
+                          </p>
+                        </div>
+                        <span className={`text-xs px-2 py-1 rounded-full border ${
+                          m.sla_band === "ok"
+                            ? "text-emerald-300 border-emerald-500/30 bg-emerald-500/10"
+                            : m.sla_band === "warning"
+                              ? "text-amber-300 border-amber-500/30 bg-amber-500/10"
+                              : "text-red-300 border-red-500/30 bg-red-500/10"
+                        }`}>
+                          {m.sla_band}
+                        </span>
+                      </div>
+                    ))}
+                    {(!adminCoverage?.missing_companies || adminCoverage.missing_companies.length === 0) && (
+                      <p className="text-sm text-gray-500">No missing companies in the last 24h window.</p>
                     )}
                   </div>
                 </div>
