@@ -229,9 +229,12 @@ export default function MonitoringLayer({
     revenueDelta &&
     typeof revenueDelta.delta_monthly_loss === "number" &&
     revenueDelta.delta_monthly_loss === 0
-  const effectiveTrendText = zeroDelta
-    ? "Trend: Stable - no significant changes detected."
-    : trendText
+  const hasRecentCritical = (monitoringStatus.recent_drift_events || []).some(e => (e.severity || "").toLowerCase() === "critical")
+  const isVolatile = (monitoringStatus.volatility_classification || "").toLowerCase() !== "stable"
+  const effectiveTrendText =
+    zeroDelta && (hasRecentCritical || isVolatile)
+      ? "Trend: Stabilizing after recent volatility."
+      : (zeroDelta ? "Trend: Stable - no significant changes detected." : trendText)
   const headline = monitoringStatus.ui_state_payload?.headline ?? (
     uiState === "low" ? "Revenue system is healthy"
     : uiState === "medium" ? "Revenue performance is constrained"
@@ -305,24 +308,28 @@ export default function MonitoringLayer({
     }).then(async (r) => {
       if (!r.ok) return
       const data = await r.json()
-      const fix = data?.fixes?.[0]
-      if (!fix) return
-      const monthlyLow = typeof fix.estimated_monthly_impact_low === "number" ? fix.estimated_monthly_impact_low : null
-      const monthlyHigh = typeof fix.estimated_monthly_impact_high === "number" ? fix.estimated_monthly_impact_high : null
-      const monthlyImpact = monthlyLow && monthlyHigh ? `+$${Math.round(monthlyLow).toLocaleString()} – $${Math.round(monthlyHigh).toLocaleString()}/month` : "—"
-      const al: ActionLayerPayload = {
-        issue_type: "general",
-        primary_issue: { title: fix.title, description: fix.why },
-        affected_areas: [],
-        fixes: [{
+      const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 3) : []
+      if (!fixesArr.length) return
+      const mapFix = (fix: any) => {
+        const monthlyLow = typeof fix.estimated_monthly_impact_low === "number" ? fix.estimated_monthly_impact_low : null
+        const monthlyHigh = typeof fix.estimated_monthly_impact_high === "number" ? fix.estimated_monthly_impact_high : null
+        const monthlyImpact = monthlyLow && monthlyHigh ? `+$${Math.round(monthlyLow).toLocaleString()} – $${Math.round(monthlyHigh).toLocaleString()}/month` : "—"
+        return {
           title: fix.title,
           current_example: fix.before || "—",
           suggested_change: fix.after,
           reason: fix.why,
           impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh || undefined, close_rate: "", arr_recovery: "" }
-        }],
+        }
+      }
+      const primary = fixesArr[0]
+      const al: ActionLayerPayload = {
+        issue_type: "general",
+        primary_issue: { title: primary.title, description: primary.why },
+        affected_areas: [],
+        fixes: fixesArr.map(mapFix),
         expected_impact: { close_rate_improvement: "", arr_recovery: "" },
-        priority: { level: fix.impact_level, reason: fix.badges?.join(" · ") || "", display_line: undefined },
+        priority: { level: primary.impact_level, reason: primary.badges?.join(" · ") || "", display_line: undefined },
         top_action: null,
         behavioral_insight: null,
       }
@@ -355,7 +362,7 @@ export default function MonitoringLayer({
       {/* ALERTS FIRST — Critical alerts at top */}
       {hasCriticalAlerts && (
         <div className="p-4 bg-red-500/10 border-l-4 border-red-500 rounded">
-          <p className="text-sm font-semibold text-red-400 mb-1">Critical Structural Drift Detected</p>
+          <p className="text-sm font-semibold text-red-400 mb-1">Recent critical structural events detected</p>
           <p className="text-xs text-gray-400">
             {criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? 's' : ''} require immediate attention.
           </p>
