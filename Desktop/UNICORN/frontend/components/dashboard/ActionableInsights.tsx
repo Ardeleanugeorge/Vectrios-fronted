@@ -189,6 +189,7 @@ interface ActionableInsightsProps {
   actionLayer?: ActionLayerPayload | null
   currentPlan?: string | null
   monthlyExposureReal?: number | null
+  useMonitoringSnapshot?: boolean
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -308,6 +309,7 @@ export default function ActionableInsights({
   actionLayer,
   currentPlan = null,
   monthlyExposureReal = null,
+  useMonitoringSnapshot = false,
 }: ActionableInsightsProps) {
   const tone =
     uiState === "low"
@@ -438,7 +440,7 @@ export default function ActionableInsights({
                   </span>
                 )}
               </p>
-              <FixCard fix={first} index={1} />
+              <FixCard fix={first} index={1} useMonitoringSnapshot={useMonitoringSnapshot} />
             </div>
           </div>
         </div>
@@ -448,7 +450,7 @@ export default function ActionableInsights({
           {rest.length > 0 && (
             <div className="space-y-3 mb-6">
               {rest.map((fix, i) => (
-                <FixCard key={fix.title + i} fix={fix} index={i + 2} />
+                <FixCard key={fix.title + i} fix={fix} index={i + 2} useMonitoringSnapshot={useMonitoringSnapshot} />
               ))}
             </div>
           )}
