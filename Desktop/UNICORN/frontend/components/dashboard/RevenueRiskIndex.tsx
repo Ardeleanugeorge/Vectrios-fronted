@@ -6,6 +6,8 @@ interface RevenueRiskIndexProps {
   confidence: number
   overrideTriggered: boolean
   scoreSource?: "instant_scan" | "full_diagnostic"
+  source?: "monitoring" | "diagnostic" | "fallback"
+  coveragePct?: number | null
 }
 
 export default function RevenueRiskIndex({
@@ -14,6 +16,8 @@ export default function RevenueRiskIndex({
   confidence,
   overrideTriggered,
   scoreSource = "full_diagnostic",
+  source,
+  coveragePct = null,
 }: RevenueRiskIndexProps) {
   const displayScore = riskScore !== null ? Math.min(riskScore, 100) : null
   
@@ -45,7 +49,14 @@ export default function RevenueRiskIndex({
       <div className="text-center">
         <p className="text-sm text-gray-400 mb-4 uppercase tracking-wide">Revenue Risk Index</p>
         <p className="text-xs text-gray-500 mb-3">
-          Source: {scoreSource === "instant_scan" ? "Instant Scan RII" : "Full Diagnostic RII"}
+          {(() => {
+            // Prefer normalized "source" from monitoring status when available
+            if (source === "monitoring") return <>Source: Monitoring RII</>
+            if (source === "diagnostic") return <>Source: Full Diagnostic RII</>
+            if (source === "fallback") return <>Source: Fallback RII</>
+            // Legacy: use scoreSource hint
+            return <>Source: {scoreSource === "instant_scan" ? "Instant Scan RII" : "Full Diagnostic RII"}</>
+          })()}
         </p>
         {displayScore !== null ? (
           <>
@@ -73,7 +84,12 @@ export default function RevenueRiskIndex({
           <div>
             <span className="text-gray-400">Data Coverage: </span>
             <span className="font-semibold text-gray-300">
-              {confidence >= 80 ? "High" : confidence >= 60 ? "Moderate" : "Low"} ({confidence.toFixed(0)}%)
+              {(() => {
+                const cov = typeof coveragePct === "number" ? coveragePct : confidence
+                return <>
+                  {cov >= 80 ? "High" : cov >= 60 ? "Moderate" : "Low"} ({Math.round(cov)}%)
+                </>
+              })()}
             </span>
           </div>
           <div>

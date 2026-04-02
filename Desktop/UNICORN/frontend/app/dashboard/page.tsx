@@ -583,6 +583,18 @@ export default function DashboardPage() {
                 confidence={confidence}
                 overrideTriggered={overrideTriggered}
                 scoreSource={diagnostic?.is_partial ? "instant_scan" : hasDiagnostic ? "full_diagnostic" : undefined}
+                source={
+                  isMonitoringActive
+                    ? (monitoringStatus?.source as any) || "monitoring"
+                    : (hasDiagnostic ? "diagnostic" : undefined)
+                }
+                coveragePct={
+                  isMonitoringActive
+                    ? (typeof monitoringStatus?.data_coverage_pct === "number"
+                        ? monitoringStatus.data_coverage_pct
+                        : (monitoringStatus?.structural_scores?.confidence_score ?? null)) as number | null
+                    : (diagnostic?.confidence ?? diagnostic?.confidence_score ?? null) as number | null
+                }
               />
             )
           })()}
