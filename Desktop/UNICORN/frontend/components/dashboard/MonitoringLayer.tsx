@@ -526,6 +526,13 @@ export default function MonitoringLayer({
             forecast?.monthly_exposure ||
             null
           }
+          useMonitoringSnapshot={
+            monitoringStatus.monitoring_active &&
+            (
+              (typeof monitoringStatus.data_coverage_pct === "number" && monitoringStatus.data_coverage_pct >= 50) ||
+              (typeof (monitoringStatus.structural_scores as any)?.confidence_score === "number" && (monitoringStatus.structural_scores as any).confidence_score >= 50)
+            )
+          }
         />
       )}
 

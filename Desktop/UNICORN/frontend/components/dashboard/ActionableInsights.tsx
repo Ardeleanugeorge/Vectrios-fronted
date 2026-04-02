@@ -239,7 +239,7 @@ function CopyButton({ text }: { text: string }) {
   )
 }
 
-function FixCard({ fix, index }: { fix: ActionFix; index: number }) {
+function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix; index: number; useMonitoringSnapshot?: boolean }) {
   const hasRealBefore = fix.current_example && fix.current_example !== "—" && !fix.current_example.startsWith("—")
   const hasRealAfter = fix.suggested_change && fix.suggested_change.length > 0
 
@@ -262,9 +262,15 @@ function FixCard({ fix, index }: { fix: ActionFix; index: number }) {
       <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-800/60">
         {/* BEFORE */}
         <div className="px-4 py-3 space-y-1.5">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">Before (from crawl)</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
+            {useMonitoringSnapshot ? "Before (from latest monitoring snapshot)" : "Before (from crawl)"}
+          </p>
           <p className="text-sm text-gray-400 italic leading-relaxed">
-            {hasRealBefore ? `"${fix.current_example}"` : <span className="text-gray-600 not-italic">— run full diagnostic for live copy</span>}
+            {hasRealBefore
+              ? `"${fix.current_example}"`
+              : useMonitoringSnapshot
+                ? <span className="text-gray-600 not-italic">—</span>
+                : <span className="text-gray-600 not-italic">— run full diagnostic for live copy</span>}
           </p>
         </div>
 
