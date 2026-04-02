@@ -52,6 +52,11 @@ interface DiagnosticResult {
 
 interface MonitoringStatus {
   monitoring_active: boolean
+  // New normalized fields from backend status API
+  source?: "monitoring" | "diagnostic" | "fallback"
+  data_coverage_pct?: number | null
+  confidence_score?: number | null
+  evidence_pages?: { crawled: number; expected: number }
   ui_state_payload?: {
     ui_state: "low" | "medium" | "high"
     financial_mode: "opportunity" | "recoverable" | "risk"
