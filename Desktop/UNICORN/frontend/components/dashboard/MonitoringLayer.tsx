@@ -532,16 +532,13 @@ export default function MonitoringLayer({
       {/* 2. SYSTEM STATUS — Heartbeat of the system */}
       <RevenueSystemStatus
         monthlyExposure={
-          monthlyExposure ||
-          forecast?.monthly_revenue_delta ||
-          forecast?.monthly_revenue_impact ||
-          forecast?.monthly_exposure ||
-          null
+          monthlyExposure ??
+          forecast?.estimated_monthly_exposure ??
+          (forecast?.annual_revenue_delta ? forecast.annual_revenue_delta / 12 : null)
         }
         annualExposure={
           annualDelta ??
-          forecast?.annual_revenue_impact ??
-          forecast?.annual_exposure ??
+          forecast?.annual_revenue_delta ??
           forecast?.recovery_potential_annual ??
           null
         }
