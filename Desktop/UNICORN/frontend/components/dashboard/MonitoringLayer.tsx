@@ -24,7 +24,7 @@ import SystemHealthIndicator from "./SystemHealthIndicator"
 import FeatureGate from "./FeatureGate"
 import ActionableInsights, { type ActionLayerPayload } from "./ActionableInsights"
 import Link from "next/link"
-import { API_URL } from "@/lib/config"
+// API_URL already imported above
 
 interface MonitoringStatus {
   monitoring_active: boolean
