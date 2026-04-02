@@ -46,7 +46,15 @@ export default function AccountPage() {
   const [calibrationSuccess, setCalibrationSuccess] = useState("")
 
   // Active tab
-  const [activeTab, setActiveTab] = useState<'profile' | 'plan' | 'security' | 'revenue' | 'system'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'plan' | 'security' | 'revenue' | 'support' | 'system'>('profile')
+
+  // Support ticket form
+  const [supportSubject, setSupportSubject] = useState("")
+  const [supportPriority, setSupportPriority] = useState("normal")
+  const [supportMessage, setSupportMessage] = useState("")
+  const [supportLoading, setSupportLoading] = useState(false)
+  const [supportError, setSupportError] = useState("")
+  const [supportSuccess, setSupportSuccess] = useState("")
 
   // (Each account has exactly one company — kept simple by design)
 
@@ -355,6 +363,47 @@ export default function AccountPage() {
     finally { setPasswordLoading(false) }
   }
 
+  const handleSupportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSupportError("")
+    setSupportSuccess("")
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) { router.push("/login"); return }
+    if (!supportSubject.trim() || !supportMessage.trim()) {
+      setSupportError("Please add both a subject and message.")
+      return
+    }
+    setSupportLoading(true)
+    try {
+      const res = await fetch(`${API_URL}/support/tickets`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          subject: supportSubject.trim(),
+          priority: supportPriority,
+          message: supportMessage.trim(),
+          category: "account_settings",
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setSupportError(data?.detail || "Could not create ticket.")
+        return
+      }
+      setSupportSuccess(`Ticket created: ${data?.ticket_id || "N/A"}. Support will reply within 24h.`)
+      setSupportSubject("")
+      setSupportMessage("")
+      setSupportPriority("normal")
+    } catch {
+      setSupportError("Network error while creating ticket.")
+    } finally {
+      setSupportLoading(false)
+    }
+  }
+
   // Plan label logic
   const isTrial = subscription?.is_trial_active === true || subscription?.billing_cycle === "trial"
   const planName = subscription?.plan?.toLowerCase() || null
@@ -421,6 +470,7 @@ export default function AccountPage() {
     { id: 'profile',  label: 'Profile',       icon: '👤' },
     { id: 'plan',     label: 'Plan & Billing', icon: '💳' },
     { id: 'revenue',  label: 'Revenue Model',  icon: '📊' },
+    { id: 'support',  label: 'Support',        icon: '🎫' },
     { id: 'security', label: 'Security',       icon: '🔒' },
     ...(isOwner ? [{ id: 'system' as const, label: 'System', icon: '⚙️' }] : []),
   ] as const
@@ -931,6 +981,81 @@ export default function AccountPage() {
                   Sign out of all sessions
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* ── SUPPORT TAB ───────────────────────────────────────────────── */}
+          {activeTab === 'support' && (
+            <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
+              <div className="p-6 border-b border-gray-800">
+                <h2 className="text-lg font-semibold">Contact support</h2>
+                <p className="text-gray-500 text-sm mt-0.5">
+                  Open a ticket with technical context attached automatically.
+                </p>
+              </div>
+              <form onSubmit={handleSupportSubmit} className="p-6 space-y-5">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Subject</label>
+                    <input
+                      type="text"
+                      value={supportSubject}
+                      onChange={e => setSupportSubject(e.target.value)}
+                      maxLength={160}
+                      required
+                      disabled={supportLoading}
+                      className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      placeholder="Briefly describe the issue"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Priority</label>
+                    <select
+                      value={supportPriority}
+                      onChange={e => setSupportPriority(e.target.value)}
+                      disabled={supportLoading}
+                      className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    >
+                      <option value="low">Low</option>
+                      <option value="normal">Normal</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Message</label>
+                  <textarea
+                    value={supportMessage}
+                    onChange={e => setSupportMessage(e.target.value)}
+                    rows={7}
+                    maxLength={5000}
+                    required
+                    disabled={supportLoading}
+                    className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    placeholder="What happened, what you expected, and any steps to reproduce."
+                  />
+                  <p className="text-xs text-gray-600 mt-1.5">
+                    Context like company ID, scan token and latest RII is attached automatically.
+                  </p>
+                </div>
+
+                {supportError && (
+                  <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm">{supportError}</div>
+                )}
+                {supportSuccess && (
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">{supportSuccess}</div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={supportLoading}
+                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                >
+                  {supportLoading ? "Creating ticket..." : "Open support ticket"}
+                </button>
+              </form>
             </div>
           )}
 
