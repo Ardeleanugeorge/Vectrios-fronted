@@ -254,7 +254,9 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
         {fix.impact_contribution?.monthly_impact && fix.impact_contribution.monthly_impact !== "—" && (
           <p className="text-[11px] text-emerald-400/80 mt-1">
             Est. recovery: <span className="font-bold">{fix.impact_contribution.monthly_impact}</span>
-            <span className="text-gray-600 ml-2">({fix.impact_contribution.close_rate})</span>
+            {!!(fix.impact_contribution.close_rate && fix.impact_contribution.close_rate.trim()) && (
+              <span className="text-gray-600 ml-2">({fix.impact_contribution.close_rate})</span>
+            )}
           </p>
         )}
       </div>
