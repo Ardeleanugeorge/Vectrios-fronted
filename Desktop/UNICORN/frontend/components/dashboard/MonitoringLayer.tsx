@@ -26,6 +26,23 @@ import ActionableInsights, { type ActionLayerPayload } from "./ActionableInsight
 import Link from "next/link"
 // API_URL already imported above
 
+type PlaybookFix = {
+  title: string
+  before?: string | null
+  after: string
+  why: string
+  impact_level: "High" | "Medium" | "Low"
+  page_url?: string | null
+  badges?: string[] | null
+  estimated_monthly_impact_low?: number | null
+  estimated_monthly_impact_high?: number | null
+}
+
+type PlaybookResponse = {
+  company_id: string
+  fixes: PlaybookFix[]
+}
+
 interface MonitoringStatus {
   monitoring_active: boolean
   created_at?: string
@@ -169,6 +186,19 @@ export default function MonitoringLayer({
     })
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data) setForecast(data) })
+      .catch(() => {})
+  }, [companyId])
+
+  // Fetch AI playbook (top 3 fixes)
+  const [playbook, setPlaybook] = useState<PlaybookResponse | null>(null)
+  useEffect(() => {
+    if (!companyId) return
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    fetch(`${API_URL}/playbook/${companyId}`, {
+      headers: { "Authorization": `Bearer ${token || ""}` }
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then((data: PlaybookResponse | null) => { if (data && Array.isArray(data.fixes)) setPlaybook(data) })
       .catch(() => {})
   }, [companyId])
 
@@ -611,6 +641,96 @@ export default function MonitoringLayer({
             )
           }
         />
+      )}
+
+      {/* 0.6. AI PLAYBOOK — Concrete page-level fixes from monitoring data */}
+      {playbook?.fixes && playbook.fixes.length > 0 && (
+        <div className={`mb-6 p-6 bg-[#111827] rounded-lg border ${
+          uiState === "low" ? "border-emerald-800/40"
+          : uiState === "medium" ? "border-amber-800/40"
+          : "border-red-800/40"
+        }`}>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-4">
+            AI Playbook — last 24h
+          </h3>
+
+          <div className="space-y-3">
+            {playbook.fixes.slice(0, 3).map((fix, i) => {
+              const hasImpactBand = typeof fix.estimated_monthly_impact_low === "number" || typeof fix.estimated_monthly_impact_high === "number"
+              return (
+                <div key={fix.title + i} className="p-4 rounded-lg bg-[#0B0F19] border border-gray-800 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-cyan-500/90">
+                      Fix #{i + 1} — {fix.title}
+                    </p>
+                    {/* Badges */}
+                    {fix.badges && fix.badges.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {fix.badges.map((b, k) => {
+                          const name = (b || "").toUpperCase()
+                          const tone =
+                            name.includes("HIGH EXIT") ? "bg-red-500/15 text-red-300 border-red-600/40" :
+                            name.includes("INTENT MISMATCH") ? "bg-amber-500/15 text-amber-300 border-amber-600/40" :
+                            "bg-emerald-500/15 text-emerald-300 border-emerald-600/40"
+                          return (
+                            <span key={name + k} className={`text-[10px] px-2 py-1 rounded border ${tone}`}>
+                              {name}
+                            </span>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Before / After */}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-0.5">Before (from crawl)</p>
+                      <p className="text-sm text-gray-300 italic">
+                        {fix.before ? `“${fix.before}”` : "—"}
+                      </p>
+                      {fix.page_url && (
+                        <a href={fix.page_url} target="_blank" rel="noreferrer" className="inline-block mt-1 text-[11px] text-cyan-300 hover:text-cyan-200">
+                          View page →
+                        </a>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-0.5">Replace / add</p>
+                      <p className="text-sm text-white">{fix.after}</p>
+                    </div>
+                  </div>
+
+                  {/* Why + Impact */}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="p-3 rounded-lg bg-[#0e1320] border border-gray-800/60">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">
+                        Why this matters
+                      </p>
+                      <p className="text-xs text-gray-300">{fix.why}</p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-emerald-950/20 border border-emerald-800/30">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1">
+                        Expected impact
+                      </p>
+                      <p className="text-xs text-emerald-200/90">
+                        Priority: <span className="font-semibold">{fix.impact_level}</span>
+                      </p>
+                      {hasImpactBand && (
+                        <p className="text-xs text-emerald-200/90 mt-1">
+                          {typeof fix.estimated_monthly_impact_low === "number" ? `$${Math.round(fix.estimated_monthly_impact_low).toLocaleString()}` : "—"}
+                          {" – "}
+                          {typeof fix.estimated_monthly_impact_high === "number" ? `$${Math.round(fix.estimated_monthly_impact_high).toLocaleString()}` : "—"}
+                          {" / month (est.)"}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
       )}
 
       {/* 1. FINANCIAL EXPOSURE — ARR at risk, recovery potential, compression gauge */}
