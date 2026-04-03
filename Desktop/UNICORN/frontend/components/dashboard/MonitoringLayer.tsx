@@ -448,15 +448,15 @@ export default function MonitoringLayer({
         }`}>
           {/* Header row */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
-            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Schimbare venit (ultimul scan)</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Revenue Change (last scan)</p>
             {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (typeof revenueDelta.delta_monthly_loss === "number" && revenueDelta.delta_monthly_loss !== 0) && (
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                 revenueDelta.trend_last_4 === "worsening" ? "text-red-400 bg-red-400/10" :
                 revenueDelta.trend_last_4 === "improving" ? "text-emerald-400 bg-emerald-400/10" :
                 "text-gray-400 bg-gray-800"
               }`}>
-                {revenueDelta.trend_last_4 === "worsening" ? "🔺 Se înrăutățește" :
-                 revenueDelta.trend_last_4 === "improving" ? "🔻 Se îmbunătățește" : "→ Stabil"}
+                {revenueDelta.trend_last_4 === "worsening" ? "🔺 Worsening" :
+                 revenueDelta.trend_last_4 === "improving" ? "🔻 Improving" : "→ Stable"}
               </span>
             )}
           </div>
@@ -468,14 +468,14 @@ export default function MonitoringLayer({
               revenueDelta.direction === "better" ? "text-emerald-400" : "text-gray-300"
             }`}>
               {revenueDelta.delta_monthly_loss > 0
-                ? `+$${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/lună mai rău`
+                ? `+$${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month worse`
                 : revenueDelta.delta_monthly_loss < 0
-                ? `↓ $${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/lună mai bine`
-                : "Fără schimbare față de ultimul scan"}
+                ? `↓ $${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month better`
+                : "No change vs last scan"}
             </p>
             {typeof revenueDelta.delta_rii === "number" && revenueDelta.delta_rii !== 0 && (
               <p className="text-xs text-gray-500 mt-1">
-                RII {revenueDelta.delta_rii > 0 ? `+${revenueDelta.delta_rii}` : revenueDelta.delta_rii} pct vs ultimul scan
+                RII {revenueDelta.delta_rii > 0 ? `+${revenueDelta.delta_rii}` : revenueDelta.delta_rii} pts since last scan
               </p>
             )}
           </div>
@@ -483,7 +483,7 @@ export default function MonitoringLayer({
           {/* Drivers */}
           {revenueDelta.drivers && revenueDelta.drivers.length > 0 && (
             <div className="px-5 pb-4 border-t border-white/5 pt-3">
-              <p className="text-xs text-gray-500 mb-2">Cauzat de:</p>
+              <p className="text-xs text-gray-500 mb-2">Driven by:</p>
               <ul className="space-y-1">
                 {revenueDelta.drivers.map((d, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs text-gray-300">
@@ -502,7 +502,7 @@ export default function MonitoringLayer({
           {revenueDelta.direction === "worse" && diagnostic?.action_layer?.fixes?.[0] && (
             <div className="mx-4 mb-4 px-4 py-3 rounded-lg bg-orange-950/20 border border-orange-500/20">
               <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400 mb-1.5">
-                🔴 Rezolvă întâi asta
+                🔴 Fix this first
               </p>
               <p className="text-sm font-semibold text-white">
                 {diagnostic.action_layer.fixes[0].title}
@@ -510,7 +510,7 @@ export default function MonitoringLayer({
               {diagnostic.action_layer.fixes[0].impact_contribution?.monthly_impact &&
                diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact !== "—" && (
                 <p className="text-xs text-emerald-400 mt-1">
-                  → recuperare estimată: <span className="font-bold">{diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact}</span>
+                  → expected recovery: <span className="font-bold">{diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact}</span>
                 </p>
               )}
             </div>
@@ -583,19 +583,19 @@ export default function MonitoringLayer({
 
             {/* Last scan */}
             <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
-              <span className="text-gray-600 text-xs">Ultimul scan</span>
+              <span className="text-gray-600 text-xs">Last scan</span>
               <span className="text-white font-semibold text-xs">{lastScanLabel}</span>
             </div>
 
             {/* Next scan */}
             <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
-              <span className="text-gray-600 text-xs">Următorul</span>
+              <span className="text-gray-600 text-xs">Next</span>
               <span className="text-cyan-400 font-semibold text-xs">{nextScanLabel}</span>
             </div>
 
             {/* Cadence */}
             <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
-              <span className="text-gray-600 text-xs">Frecvență</span>
+              <span className="text-gray-600 text-xs">Cadence</span>
               <span className="text-gray-300 font-medium text-xs">24h auto</span>
             </div>
 
@@ -651,7 +651,7 @@ export default function MonitoringLayer({
           : "border-red-800/40"
         }`}>
           <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-4">
-            Playbook AI — ultimele 24h
+            AI Playbook — last 24h
           </h3>
 
           <div className="space-y-3">
@@ -661,7 +661,7 @@ export default function MonitoringLayer({
                 <div key={fix.title + i} className="p-4 rounded-lg bg-[#0B0F19] border border-gray-800 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-xs font-semibold uppercase tracking-wide text-cyan-500/90">
-                      Remediere #{i + 1} — {fix.title}
+                      Fix #{i + 1} — {fix.title}
                     </p>
                     {/* Badges */}
                     {fix.badges && fix.badges.length > 0 && (
@@ -685,18 +685,18 @@ export default function MonitoringLayer({
                   {/* Before / After */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <p className="text-xs text-gray-500 mb-0.5">Înainte (din crawl)</p>
+                      <p className="text-xs text-gray-500 mb-0.5">Before (from crawl)</p>
                       <p className="text-sm text-gray-300 italic">
                         {fix.before ? `“${fix.before}”` : "—"}
                       </p>
                       {fix.page_url && (
                         <a href={fix.page_url} target="_blank" rel="noreferrer" className="inline-block mt-1 text-[11px] text-cyan-300 hover:text-cyan-200">
-                          Vezi pagina →
+                          View page →
                         </a>
                       )}
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 mb-0.5">Înlocuiește / adaugă</p>
+                      <p className="text-xs text-gray-500 mb-0.5">Replace / add</p>
                       <p className="text-sm text-white">{fix.after}</p>
                     </div>
                   </div>
@@ -705,23 +705,23 @@ export default function MonitoringLayer({
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="p-3 rounded-lg bg-[#0e1320] border border-gray-800/60">
                       <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">
-                        De ce contează
+                        Why this matters
                       </p>
                       <p className="text-xs text-gray-300">{fix.why}</p>
                     </div>
                     <div className="p-3 rounded-lg bg-emerald-950/20 border border-emerald-800/30">
                       <p className="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1">
-                        Impact așteptat
+                        Expected impact
                       </p>
                       <p className="text-xs text-emerald-200/90">
-                        Prioritate: <span className="font-semibold">{fix.impact_level}</span>
+                        Priority: <span className="font-semibold">{fix.impact_level}</span>
                       </p>
                       {hasImpactBand && (
                         <p className="text-xs text-emerald-200/90 mt-1">
                           {typeof fix.estimated_monthly_impact_low === "number" ? `$${Math.round(fix.estimated_monthly_impact_low).toLocaleString()}` : "—"}
                           {" – "}
                           {typeof fix.estimated_monthly_impact_high === "number" ? `$${Math.round(fix.estimated_monthly_impact_high).toLocaleString()}` : "—"}
-                          {" / lună (est.)"}
+                          {" / month (est.)"}
                         </p>
                       )}
                     </div>
