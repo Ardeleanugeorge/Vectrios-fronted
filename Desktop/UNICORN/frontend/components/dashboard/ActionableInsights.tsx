@@ -241,7 +241,8 @@ function CopyButton({ text }: { text: string }) {
 }
 
 function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix; index: number; useMonitoringSnapshot?: boolean }) {
-  const hasRealBefore = fix.current_example && fix.current_example !== "—" && !fix.current_example.startsWith("—")
+  const beforeVal = (fix.current_example || "").trim()
+  const hasRealBefore = beforeVal.length > 0 && beforeVal !== "—" && beforeVal !== "-" && !beforeVal.startsWith("—")
   const hasRealAfter = fix.suggested_change && fix.suggested_change.length > 0
 
   return (
