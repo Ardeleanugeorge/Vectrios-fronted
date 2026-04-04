@@ -42,9 +42,9 @@ export default function RevenueRiskIndex({
   }
 
   const getRiskLabel = () => {
-    if (scoreClass === "HIGH") return "High Exposure"
-    if (scoreClass === "MODERATE") return "Moderate Exposure"
-    return "Low Exposure"
+    if (scoreClass === "HIGH") return "High Revenue Risk"
+    if (scoreClass === "MODERATE") return "Moderate Revenue Risk"
+    return "Low Revenue Risk"
   }
 
   return (
@@ -68,8 +68,14 @@ export default function RevenueRiskIndex({
               {displayScore.toFixed(0)}
             </span>
           </div>
-          <p className={`text-2xl font-bold mb-2 ${getRiskColor()}`}>
-            {getRiskLabel()}
+          <p className={`text-2xl font-bold mb-1 ${getRiskColor()}`} title="RII measures revenue risk. Lower score = better performance.">
+            {getRiskLabel()} ✅
+          </p>
+          <p className="text-sm text-gray-300">
+            Your messaging is structurally strong and not a primary risk.
+          </p>
+          <p className="text-xs text-gray-500 mt-2">
+            Even with low risk, at your scale small inefficiencies translate into significant revenue impact. <span className="text-gray-400">This is where optimization creates outsized returns.</span>
           </p>
           </>
         ) : (
@@ -78,6 +84,14 @@ export default function RevenueRiskIndex({
         <p className="text-xs text-gray-500 italic mb-6">
           Risk classification derived from revenue-stage alignment analysis.
         </p>
+        {/* Visual legend */}
+        <div className="text-[11px] text-gray-500 mb-4">
+          <span className="mr-2">0–30: <span className="text-emerald-400">Excellent</span></span>
+          <span className="mr-2">30–50: <span className="text-emerald-300">Strong</span></span>
+          <span className="mr-2">50–70: <span className="text-amber-400">Inefficient</span></span>
+          <span>70+: <span className="text-red-400">Critical</span></span>
+          <span className="ml-2 text-gray-600">— Lower is better</span>
+        </div>
         {effectiveConfidence < 50 && (
           <p className="text-xs text-amber-300 mb-4">
             Limited content detected - results may be less accurate.

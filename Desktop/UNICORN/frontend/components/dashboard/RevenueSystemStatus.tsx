@@ -59,11 +59,11 @@ export default function RevenueSystemStatus({
             {uiState === "low" ? "Optimization Opportunity Identified" : "Active Revenue Compression Detected"}
           </p>
           <p className="text-sm text-gray-400">
-            Estimated Monthly Impact: {compact ? <span title={compact.full}>{compact.short}</span> : "Not available"}
+            Recoverable Monthly Impact: {compact ? <span title={compact.full}>{compact.short}</span> : "Not available"}
           </p>
           <p className="text-sm text-gray-500 mt-2">
             {uiState === "low"
-              ? "Most leakage is mitigated. Remaining impact is incremental upside with full alignment."
+              ? "Structurally healthy — low revenue risk."
               : `Revenue-stage inefficiency is ${deltaDirection === "better" ? "declining" : "increasing"} due to structural ${deltaDirection === "better" ? "improvements" : "misalignment"}.`}
           </p>
         </div>

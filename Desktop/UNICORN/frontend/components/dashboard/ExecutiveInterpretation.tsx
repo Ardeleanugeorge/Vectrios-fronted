@@ -51,13 +51,13 @@ export default function ExecutiveInterpretation({
               ? <>
                   Residual optimization potential detected.
                   {typeof closeRateDelta === "number" && (
-                    <> Estimated additional close-rate upside: <span className="font-semibold text-emerald-300">{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
+                    <> Estimated additional close-rate uplift: <span className="font-semibold text-emerald-300">+{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
                   )}
                 </>
               : <>
-                  Revenue-stage inefficiency is {deltaDirection === "better" ? "declining" : "increasing"} due to structural {deltaDirection === "better" ? "improvements" : "misalignment"}.
+                  Revenue efficiency is {deltaDirection === "better" ? "improving" : "declining"} due to structural {deltaDirection === "better" ? "alignment gains" : "misalignment"}.
                   {typeof closeRateDelta === "number" && (
-                    <> Estimated close-rate {deltaDirection === "better" ? "recovery" : "compression"}: <span className="font-semibold text-amber-400">{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
+                    <> Estimated close-rate {deltaDirection === "better" ? "uplift" : "compression"}: <span className="font-semibold text-amber-400">{deltaDirection === "better" ? "+" : ""}{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
                   )}
                 </>}
           </p>

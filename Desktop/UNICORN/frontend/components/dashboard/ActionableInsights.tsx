@@ -405,6 +405,7 @@ export default function ActionableInsights({
             {isHigh ? "🔥 HIGH PRIORITY" : "⚡ PRIORITY"} — {pri.level}
           </p>
           <p className="text-xs text-gray-400 mt-1">{pri.display_line || pri.reason}</p>
+          <p className="text-[11px] text-gray-500 mt-1">Low risk ≠ zero upside at scale — highest ROI comes from targeted fixes.</p>
         </div>
 
         {/* 1. Primary leak */}
