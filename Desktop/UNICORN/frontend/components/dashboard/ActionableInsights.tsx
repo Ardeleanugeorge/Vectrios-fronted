@@ -269,8 +269,8 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
         {monthlyChip && monthlyChip !== "—" && (
           <p className="text-[11px] text-emerald-400/80 mt-1" title={compact.full}>
             Est. recovery: <span className="font-bold">{compact.short}</span>
-            {!!(fix.impact_contribution.close_rate && fix.impact_contribution.close_rate.trim()) && (
-              <span className="text-gray-600 ml-2">({fix.impact_contribution.close_rate})</span>
+            {!!(fix.impact_contribution?.close_rate && fix.impact_contribution?.close_rate.trim()) && (
+              <span className="text-gray-600 ml-2">({fix.impact_contribution?.close_rate})</span>
             )}
           </p>
         )}
