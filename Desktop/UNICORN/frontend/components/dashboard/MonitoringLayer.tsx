@@ -356,7 +356,11 @@ export default function MonitoringLayer({
       const al: ActionLayerPayload = {
         issue_type: "general",
         primary_issue: { title: primary.title, description: primary.why },
-        affected_areas: [],
+        affected_areas: [
+          "Homepage hero → top section (hero + headline)",
+          "Pricing page → headline + plan cards",
+          "Product page → hero + value props",
+        ],
         fixes: fixesArr.map(mapFix),
         expected_impact: { close_rate_improvement: "", arr_recovery: "" },
         priority: { level: primary.impact_level, reason: primary.badges?.join(" · ") || "", display_line: undefined },
