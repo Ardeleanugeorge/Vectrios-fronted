@@ -21,6 +21,7 @@ interface RevenueAlertsPanelProps {
 export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: RevenueAlertsPanelProps) {
   const [alerts, setAlerts] = useState<RevenueAlert[]>([])
   const [loading, setLoading] = useState(true)
+  const [riiScore, setRiiScore] = useState<number | null>(null)
 
   useEffect(() => {
     if (!companyId) {
@@ -40,7 +41,19 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
         if (response.ok) {
           const data = await response.json()
           console.log(`Loaded ${data.length} revenue alerts for company ${companyId}`)
-          setAlerts(data)
+          // Dedupe simple duplicates by (type+message) keeping the most recent
+          const map = new Map<string, RevenueAlert>()
+          for (const a of data as RevenueAlert[]) {
+            const key = `${(a.type || "").toLowerCase()}|${(a.message || "").slice(0,80)}`
+            const prev = map.get(key)
+            if (!prev) map.set(key, a)
+            else {
+              const prevTs = prev.timestamp ? new Date(prev.timestamp).getTime() : 0
+              const curTs = a.timestamp ? new Date(a.timestamp).getTime() : 0
+              if (curTs > prevTs) map.set(key, a)
+            }
+          }
+          setAlerts(Array.from(map.values()))
         } else {
           console.error(`Failed to load alerts: ${response.status} ${response.statusText}`)
           const errorText = await response.text()
@@ -54,6 +67,19 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
     }
 
     loadAlerts()
+  }, [companyId])
+
+  // Fetch current RII to color historical criticals amber when RII is Low
+  useEffect(() => {
+    if (!companyId) return
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    fetch(`${API_URL}/monitoring/status/${companyId}`, { headers: { Authorization: `Bearer ${token || ""}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        const rii = data?.structural_scores?.rii_score
+        if (typeof rii === "number") setRiiScore(rii)
+      })
+      .catch(() => {})
   }, [companyId])
 
   const handleMarkRead = async (alertId: string) => {
@@ -78,7 +104,10 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
     }
   }
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityColor = (severity: string, isHistorical: boolean) => {
+    if (isHistorical && (riiScore !== null && riiScore < 40)) {
+      return "bg-amber-500/20 text-amber-300 border-amber-500/30"
+    }
     switch (severity) {
       case "critical":
       case "high":
@@ -148,13 +177,17 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
       </div>
       
       <div className="space-y-0">
-        {alerts.map((alert, index) => (
+        {alerts.map((alert, index) => {
+          const ts = alert.timestamp ? new Date(alert.timestamp).getTime() : 0
+          const daysOld = ts ? Math.floor((Date.now() - ts) / (24*3600*1000)) : 0
+          const isHistorical = daysOld > 7
+          return (
           <div 
             key={alert.id || index}
             className="flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0 group hover:bg-gray-800/30 transition"
           >
-            <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getSeverityColor(alert.severity)}`}>
-              {getSeverityLabel(alert.severity)}
+            <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getSeverityColor(alert.severity, isHistorical)}`}>
+              {isHistorical ? "HISTORICAL" : getSeverityLabel(alert.severity)}
             </span>
             <div className="flex-1 min-w-0">
               <p className="text-sm text-gray-300 leading-relaxed">
@@ -176,7 +209,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
               </button>
             )}
           </div>
-        ))}
+        )})}
       </div>
     </div>
   )
