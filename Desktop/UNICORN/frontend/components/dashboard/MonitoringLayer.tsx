@@ -205,9 +205,6 @@ export default function MonitoringLayer({
   // Check for critical alerts to show banner
   const criticalAlerts = alerts.filter(a => !a.is_read && a.severity_level === "critical")
   const hasCriticalAlerts = criticalAlerts.length > 0
-  const hasInconsistency =
-    (revenueDelta?.direction === "better" && (!revenueDelta?.drivers?.positives?.length && (revenueDelta?.drivers?.risks?.length || 0) > 0)) ||
-    (uiState === "low" && hasCriticalAlerts)
 
   // Extract revenue impact data
   const revenueImpact = monitoringStatus.revenue_impact
@@ -280,6 +277,12 @@ export default function MonitoringLayer({
   )
   const improvementsDetected =
     typeof riskDelta === "number" && riskDelta < 0 ? Math.max(1, Math.round(Math.abs(riskDelta))) : (uiState === "low" ? 2 : 0)
+
+  // Consistency guard should be computed after uiState is known
+  const hasInconsistency =
+    (revenueDelta?.direction === "better" &&
+      (!revenueDelta?.drivers?.positives?.length && (revenueDelta?.drivers?.risks?.length || 0) > 0)) ||
+    (uiState === "low" && hasCriticalAlerts)
 
   // Extract and simplify primary risk driver from recommendations or diagnostic
   const simplifyRiskDriver = (text: string): string => {
