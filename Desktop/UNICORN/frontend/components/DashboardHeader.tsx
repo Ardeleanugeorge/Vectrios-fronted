@@ -379,13 +379,13 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                   </Link>
 
                   {!isOwner && (
-                    <Link
-                      href="/upgrade"
-                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition"
-                      onClick={() => setShowMenu(false)}
-                    >
-                      Upgrade Plan
-                    </Link>
+                  <Link
+                    href="/upgrade"
+                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition"
+                    onClick={() => setShowMenu(false)}
+                  >
+                    Upgrade Plan
+                  </Link>
                   )}
 
                   <div className="border-t border-gray-800 mt-2 pt-2">

@@ -334,22 +334,22 @@ export default function AccountPage() {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!profileRes.ok) return
-        const profile = await profileRes.json()
-        const nextUser = {
-          email: profile?.email || "",
-          company_name: profile?.company_name || "",
-          company_id: profile?.company_id || null,
-        }
-        setUser(nextUser)
+          const profile = await profileRes.json()
+          const nextUser = {
+            email: profile?.email || "",
+            company_name: profile?.company_name || "",
+            company_id: profile?.company_id || null,
+          }
+          setUser(nextUser)
         setProfileEmail(prev => prev || nextUser.email)
         setProfileCompanyName(prev => prev || nextUser.company_name)
-        localStorage.setItem("user_data", JSON.stringify(nextUser))
+          localStorage.setItem("user_data", JSON.stringify(nextUser))
         if (nextUser.company_id && nextUser.company_id !== (ud ? JSON.parse(ud)?.company_id : null)) {
           // company_id changed → reload subscription + calibration for new id
-          setCompanyId(nextUser.company_id)
-          loadSubscription(token, nextUser.company_id)
-          loadCalibration(token, nextUser.company_id)
-        }
+            setCompanyId(nextUser.company_id)
+            loadSubscription(token, nextUser.company_id)
+            loadCalibration(token, nextUser.company_id)
+          }
       } catch {}
     })()
   }, [router])
@@ -368,8 +368,8 @@ export default function AccountPage() {
           loadAdminRiiConsistency(token)
           loadAdminCoverage(token)
         }
-      }
-    }
+          }
+        }
   }, [activeTab])
 
   useEffect(() => {
@@ -383,7 +383,7 @@ export default function AccountPage() {
     const desiredTab = (searchParams.get("tab") || "").toLowerCase()
     if (desiredTab === "system" && isOwner) {
       setActiveTab("system")
-    }
+      }
   }, [searchParams, isOwner])
 
   const loadSubscription = async (token: string, cid: string) => {
@@ -1111,7 +1111,7 @@ export default function AccountPage() {
                               key={feat.key}
                               className={`flex items-start gap-3 px-4 py-3 rounded-xl border ${
                                 groupEnabled
-                                  ? "border-cyan-500/20 bg-cyan-500/5"
+                                      ? "border-cyan-500/20 bg-cyan-500/5"
                                   : "border-gray-800/40 bg-gray-900/10"
                               }`}
                             >
