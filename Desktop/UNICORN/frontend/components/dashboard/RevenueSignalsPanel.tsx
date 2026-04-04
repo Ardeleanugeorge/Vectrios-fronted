@@ -135,7 +135,7 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
   }
 
   return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+    <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Recent Structural Signals</h2>
 
       <div className="space-y-0 mb-6">
@@ -172,7 +172,7 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
       </div>
 
       {history.length > 0 && (
-        <div>
+        <div className="mt-4 pt-3 border-t border-gray-800">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">History</h3>
           <div className="space-y-0">
             {history.map((signal, index) => (

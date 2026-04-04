@@ -153,8 +153,8 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
 
   if (loading) {
     return (
-      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Active Alerts</h2>
+      <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
+        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Active Alerts</h2>
         <p className="text-sm text-gray-500">Loading alerts...</p>
       </div>
     )
@@ -162,16 +162,16 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
 
   if (alerts.length === 0) {
     return (
-      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Active Alerts</h2>
+      <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
+        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Active Alerts</h2>
         <p className="text-sm text-gray-500">No active alerts. All systems operational.</p>
       </div>
     )
   }
 
   return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold uppercase tracking-wide">Active Alerts</h2>
         <span className="text-xs text-gray-500">{alerts.length} unread</span>
       </div>
@@ -184,9 +184,9 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
           return (
           <div 
             key={alert.id || index}
-            className="flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0 group hover:bg-gray-800/30 transition"
+            className="flex items-start md:items-center gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0 group hover:bg-gray-800/30 transition"
           >
-            <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getSeverityColor(alert.severity, isHistorical)}`}>
+            <span className={`h-5 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded border flex-shrink-0 ${getSeverityColor(alert.severity, isHistorical)}`}>
               {isHistorical ? "HISTORICAL" : getSeverityLabel(alert.severity)}
             </span>
             <div className="flex-1 min-w-0">
@@ -202,7 +202,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
             {!alert.is_read && (
               <button
                 onClick={() => handleMarkRead(alert.id)}
-                className="text-xs text-gray-500 hover:text-gray-300 opacity-0 group-hover:opacity-100 transition"
+                className="self-center text-xs text-gray-500 hover:text-gray-300 opacity-0 group-hover:opacity-100 transition"
                 title="Mark as read"
               >
                 ×

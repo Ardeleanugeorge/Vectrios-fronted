@@ -277,7 +277,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
           </p>
         )}
         {/* Provenance */}
-        <div className="flex items-center gap-1 mt-1">
+        <div className="flex items-center gap-1 mt-1 whitespace-nowrap">
           <SourceChip label="Model" title="Estimated recovery modeled from structural scores" />
           <SourceChip label="Monitoring" tone="cyan" title="Derived from latest monitoring snapshot" />
           {fix.behavioral_source && <SourceChip label="GA4" tone="emerald" title="Behavioral signal present (e.g., high exit)" />}
@@ -287,7 +287,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
             href={fix.page_url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] text-cyan-300 hover:text-cyan-200 mt-1"
+            className="block text-[11px] text-cyan-300 hover:text-cyan-200 mt-1.5"
           >
             Open page →
           </a>

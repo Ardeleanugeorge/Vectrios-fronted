@@ -404,7 +404,7 @@ export default function MonitoringLayer({
 
 
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6">
       
       {/* ALERTS FIRST — Critical alerts at top */}
       {hasCriticalAlerts && (
