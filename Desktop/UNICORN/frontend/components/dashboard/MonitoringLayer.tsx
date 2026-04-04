@@ -444,7 +444,7 @@ export default function MonitoringLayer({
       )}
 
       {/* REVENUE DELTA — +$/-$/stable vs last scan */}
-      {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
+  {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
         <div className={`rounded-xl border overflow-hidden ${
           revenueDelta.direction === "worse"
             ? "border-red-700/40 bg-red-950/10"
@@ -487,20 +487,34 @@ export default function MonitoringLayer({
           </div>
 
           {/* Drivers */}
-          {revenueDelta.drivers && revenueDelta.drivers.length > 0 && (
+          {(revenueDelta.drivers?.positives?.length > 0 || revenueDelta.drivers?.risks?.length > 0) && (
             <div className="px-5 pb-4 border-t border-white/5 pt-3">
-              <p className="text-xs text-gray-500 mb-2">Driven by:</p>
-              <ul className="space-y-1">
-                {revenueDelta.drivers.map((d, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-gray-300">
-                    <span className={`mt-0.5 shrink-0 ${
-                      revenueDelta.direction === "worse" ? "text-red-400" :
-                      revenueDelta.direction === "better" ? "text-emerald-400" : "text-gray-500"
-                    }`}>•</span>
-                    {d}
-                  </li>
-                ))}
-              </ul>
+              {revenueDelta.direction === "better" && revenueDelta.drivers?.positives?.length > 0 && (
+                <>
+                  <p className="text-xs text-gray-500 mb-2">Driven by:</p>
+                  <ul className="space-y-1">
+                    {revenueDelta.drivers.positives.map((d:any, i:number) => (
+                      <li key={`pos-${i}`} className="flex items-start gap-2 text-xs text-gray-300">
+                        <span className="mt-0.5 shrink-0 text-emerald-400">•</span>
+                        {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {revenueDelta.drivers?.risks?.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-xs text-gray-500 mb-2">Risks to monitor:</p>
+                  <ul className="space-y-1">
+                    {revenueDelta.drivers.risks.map((d:any, i:number) => (
+                      <li key={`risk-${i}`} className="flex items-start gap-2 text-xs text-gray-300">
+                        <span className="mt-0.5 shrink-0 text-red-400">•</span>
+                        {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
 
