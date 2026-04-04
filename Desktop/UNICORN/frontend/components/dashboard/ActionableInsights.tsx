@@ -458,22 +458,45 @@ export default function ActionableInsights({
             </div>
           )}
 
-          <div className="grid md:grid-cols-2 gap-4 mb-4">
-            <div className="p-4 rounded-lg bg-emerald-950/20 border border-emerald-800/30">
-              <p className="text-xs font-semibold uppercase text-emerald-400 mb-2">
-                Expected impact (total — est.)
-              </p>
-              <p className="text-sm text-emerald-200/90">{effectiveLayer.expected_impact.close_rate_improvement}</p>
-              <p className="text-sm text-emerald-200/90 mt-1">{effectiveLayer.expected_impact.arr_recovery}</p>
-              <p className="text-[10px] text-gray-600 mt-2">
-                Per-fix shares are shown on each card. Totals are directional, not a guarantee.
-              </p>
+          {/* Conditionally render totals and the reason only if we have content */}
+          {(
+            (effectiveLayer.expected_impact?.close_rate_improvement && effectiveLayer.expected_impact.close_rate_improvement.trim()) ||
+            (effectiveLayer.expected_impact?.arr_recovery && effectiveLayer.expected_impact.arr_recovery.trim()) ||
+            (pri?.reason && String(pri.reason).trim())
+          ) && (
+            <div className="grid md:grid-cols-2 gap-4 mb-4">
+              {(
+                (effectiveLayer.expected_impact?.close_rate_improvement && effectiveLayer.expected_impact.close_rate_improvement.trim()) ||
+                (effectiveLayer.expected_impact?.arr_recovery && effectiveLayer.expected_impact.arr_recovery.trim())
+              ) && (
+                <div className="p-4 rounded-lg bg-emerald-950/20 border border-emerald-800/30">
+                  <p className="text-xs font-semibold uppercase text-emerald-400 mb-2">
+                    Expected impact (total — est.)
+                  </p>
+                  {effectiveLayer.expected_impact?.close_rate_improvement && effectiveLayer.expected_impact.close_rate_improvement.trim() && (
+                    <p className="text-sm text-emerald-200/90">
+                      {effectiveLayer.expected_impact.close_rate_improvement}
+                    </p>
+                  )}
+                  {effectiveLayer.expected_impact?.arr_recovery && effectiveLayer.expected_impact.arr_recovery.trim() && (
+                    <p className="text-sm text-emerald-200/90 mt-1">
+                      {effectiveLayer.expected_impact.arr_recovery}
+                    </p>
+                  )}
+                  <p className="text-[10px] text-gray-600 mt-2">
+                    Per-fix shares are shown on each card. Totals are directional, not a guarantee.
+                  </p>
+                </div>
+              )}
+
+              {(pri?.reason && String(pri.reason).trim()) && (
+                <div className="p-4 rounded-lg bg-[#0B0F19] border border-gray-800">
+                  <p className="text-xs font-semibold uppercase text-gray-500 mb-2">Why this priority</p>
+                  <p className="text-xs text-gray-400">{pri.reason}</p>
+                </div>
+              )}
             </div>
-            <div className="p-4 rounded-lg bg-[#0B0F19] border border-gray-800">
-              <p className="text-xs font-semibold uppercase text-gray-500 mb-2">Why this priority</p>
-              <p className="text-xs text-gray-400">{pri.reason}</p>
-            </div>
-          </div>
+          )}
         </FeatureGate>
       </div>
     )
