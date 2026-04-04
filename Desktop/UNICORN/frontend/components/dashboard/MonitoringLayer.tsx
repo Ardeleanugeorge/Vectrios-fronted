@@ -284,6 +284,10 @@ export default function MonitoringLayer({
       (!revenueDelta?.drivers?.positives?.length && (revenueDelta?.drivers?.risks?.length || 0) > 0)) ||
     (uiState === "low" && hasCriticalAlerts)
 
+  // Safe counts for drivers
+  const posCount = revenueDelta?.drivers?.positives?.length ?? 0
+  const riskCount = revenueDelta?.drivers?.risks?.length ?? 0
+
   // Extract and simplify primary risk driver from recommendations or diagnostic
   const simplifyRiskDriver = (text: string): string => {
     if (!text) return "Messaging Architecture Misalignment"
@@ -501,13 +505,13 @@ export default function MonitoringLayer({
           </div>
 
           {/* Drivers */}
-          {(revenueDelta.drivers?.positives?.length > 0 || revenueDelta.drivers?.risks?.length > 0) && (
+          {(posCount > 0 || riskCount > 0) && (
             <div className="px-5 pb-4 border-t border-white/5 pt-3">
-              {revenueDelta.direction === "better" && revenueDelta.drivers?.positives?.length > 0 && (
+              {revenueDelta.direction === "better" && posCount > 0 && (
                 <>
                   <p className="text-xs text-gray-500 mb-2">Driven by:</p>
                   <ul className="space-y-1">
-                    {revenueDelta.drivers.positives.map((d:any, i:number) => (
+                    {(revenueDelta.drivers?.positives || []).map((d:any, i:number) => (
                       <li key={`pos-${i}`} className="flex items-start gap-2 text-xs text-gray-300">
                         <span className="mt-0.5 shrink-0 text-emerald-400">•</span>
                         {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
@@ -516,11 +520,11 @@ export default function MonitoringLayer({
                   </ul>
                 </>
               )}
-              {revenueDelta.drivers?.risks?.length > 0 && (
+              {riskCount > 0 && (
                 <div className="mt-3">
                   <p className="text-xs text-gray-500 mb-2">Risks to monitor:</p>
                   <ul className="space-y-1">
-                    {revenueDelta.drivers.risks.map((d:any, i:number) => (
+                    {(revenueDelta.drivers?.risks || []).map((d:any, i:number) => (
                       <li key={`risk-${i}`} className="flex items-start gap-2 text-xs text-gray-300">
                         <span className="mt-0.5 shrink-0 text-red-400">•</span>
                         {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
