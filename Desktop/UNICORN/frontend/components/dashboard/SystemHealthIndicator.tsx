@@ -27,27 +27,27 @@ export default function SystemHealthIndicator({
   const getStatus = (score: number): { label: string; color: string; bgColor: string } => {
     if (score >= 70) {
       return {
-        label: "Stable Architecture",
+        label: "System stability: Strong",
         color: "text-green-400",
         bgColor: "bg-green-500"
       }
     }
     if (score >= 40) {
       return {
-        label: "Moderate Risk",
+        label: "System stability: Moderate",
         color: "text-amber-400",
         bgColor: "bg-amber-500"
       }
     }
     if (score >= 20) {
       return {
-        label: "High Risk",
+        label: "System stability: Needs attention",
         color: "text-orange-400",
         bgColor: "bg-orange-500"
       }
     }
     return {
-      label: "Critical Risk",
+      label: "Critical instability",
       color: "text-red-400",
       bgColor: "bg-red-500"
     }
@@ -121,7 +121,9 @@ export default function SystemHealthIndicator({
         
         return (
           <div className="pt-2 border-t border-gray-800">
-            <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Primary Risk Driver</div>
+            <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
+              {rii !== null && rii < 40 ? "Primary Optimization Area" : "Primary Risk Driver"}
+            </div>
             <div className="text-sm text-gray-400 flex items-center gap-2">
               <span className={severity.color}>{severity.icon}</span>
               <span>{primaryRiskDriver}</span>

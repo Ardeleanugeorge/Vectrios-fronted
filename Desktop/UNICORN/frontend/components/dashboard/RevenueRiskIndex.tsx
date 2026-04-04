@@ -9,6 +9,7 @@ interface RevenueRiskIndexProps {
   source?: "monitoring" | "diagnostic" | "fallback"
   coveragePct?: number | null
   assessmentDate?: string | null
+  contextNote?: string | null
 }
 
 export default function RevenueRiskIndex({
@@ -20,6 +21,7 @@ export default function RevenueRiskIndex({
   source,
   coveragePct = null,
   assessmentDate = null,
+  contextNote = null,
 }: RevenueRiskIndexProps) {
   const effectiveConfidence = typeof coveragePct === "number" ? coveragePct : confidence
   const displayScore = riskScore !== null ? Math.min(riskScore, 100) : null
@@ -84,6 +86,9 @@ export default function RevenueRiskIndex({
         <p className="text-xs text-gray-500 italic mb-6">
           Risk classification derived from revenue-stage alignment analysis.
         </p>
+        {contextNote && (
+          <p className="text-xs text-amber-300 mb-4">{contextNote}</p>
+        )}
         {/* Visual legend */}
         <div className="text-[11px] text-gray-500 mb-4">
           <span className="mr-2">0–30: <span className="text-emerald-400">Excellent</span></span>

@@ -581,6 +581,13 @@ export default function DashboardPage() {
               (hasDiagnostic && diagnostic) ||
               (isMonitoringActive && riiScore !== null && riiScore !== undefined)
             if (!shouldShowRII) return null
+            const hasRecentEvents = ((monitoringStatus?.recent_drift_events || []).length > 0) || (alerts?.length || 0) > 0
+            const contextNote =
+              hasRecentEvents
+                ? (riiScore !== null && riiScore < 40
+                    ? "Low current risk — recent structural events require monitoring"
+                    : "System currently stable, but recent structural volatility detected")
+                : null
             return (
               <RevenueRiskIndex
                 riskScore={riiScore}
@@ -601,6 +608,7 @@ export default function DashboardPage() {
                     : (diagnostic?.confidence ?? diagnostic?.confidence_score ?? null) as number | null
                 }
                 assessmentDate={monitoringStatus?.last_evaluated_at ?? null}
+                contextNote={contextNote}
               />
             )
           })()}

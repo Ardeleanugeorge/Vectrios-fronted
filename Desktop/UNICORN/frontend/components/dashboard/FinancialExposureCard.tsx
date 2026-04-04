@@ -79,8 +79,8 @@ export default function FinancialExposureCard({
   const isLowRisk = uiState ? uiState === "low" : (typeof riskScore === "number" && riskScore < 40) || normalizedRisk.includes("LOW")
   const isMediumRisk = uiState ? uiState === "medium" : (!isLowRisk && ((typeof riskScore === "number" && riskScore < 70) || normalizedRisk.includes("MODERATE")))
 
-  const sectionTitle = isLowRisk ? "Residual Optimization Potential" : "Estimated Revenue Exposure"
-  const mainLabel = isLowRisk ? "Additional Revenue Available" : "Estimated ARR at Risk"
+  const sectionTitle = isLowRisk ? "Residual Optimization Potential" : "Estimated Revenue Impact"
+  const mainLabel = isLowRisk ? "Additional Revenue Available" : "Estimated ARR Impact"
   const stageLabel = isLowRisk ? "Primary Optimization Gap" : "Where it breaks"
 
   // ── Fallback: forecast not yet available ──
@@ -138,6 +138,11 @@ export default function FinancialExposureCard({
               {Math.round(confidence * 100)}% model confidence
             </span>
           )}
+          {isLowRisk && (
+            <span className="mb-1 ml-2 text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-300 bg-emerald-500/10">
+              Driven by scale, not high risk
+            </span>
+          )}
         </div>
 
         {/* Gauge + side stats */}
@@ -153,7 +158,7 @@ export default function FinancialExposureCard({
               )}
               {monthly != null && monthly > 0 && (
                 <p>
-                  {isLowRisk ? "Monthly optimization upside: " : "Monthly exposure: "}
+                  {isLowRisk ? "Monthly optimization upside: " : "Monthly revenue impact: "}
                   <span className={`font-semibold ${isLowRisk ? "text-emerald-300" : "text-amber-400"}`}>{fmt(monthly)}</span>
                 </p>
               )}
