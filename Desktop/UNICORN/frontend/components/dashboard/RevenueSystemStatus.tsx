@@ -7,6 +7,7 @@ interface RevenueSystemStatusProps {
   impactConfidence?: string
   modelConfidence?: string
   uiState?: "low" | "medium" | "high"
+  deltaDirection?: "worse" | "better" | "stable" | undefined
 }
 
 export default function RevenueSystemStatus({
@@ -16,6 +17,7 @@ export default function RevenueSystemStatus({
   impactConfidence = "moderate",
   modelConfidence,
   uiState = "medium",
+  deltaDirection,
 }: RevenueSystemStatusProps) {
   const confident = impactConfidence && impactConfidence !== "insufficient_data"
   const hasExposure = (
@@ -28,6 +30,14 @@ export default function RevenueSystemStatus({
       : (annualExposure && annualExposure > 0)
         ? annualExposure / 12
         : null
+
+  const moneyCompact = (n: number | null) => {
+    if (n === null) return null
+    if (n >= 1_000_000) return { short: `$${(n / 1_000_000).toFixed(2)}M`, full: `$${Math.round(n).toLocaleString()}` }
+    if (n >= 1_000) return { short: `$${Math.round(n/1000)}K`, full: `$${Math.round(n).toLocaleString()}` }
+    return { short: `$${Math.round(n)}`, full: `$${Math.round(n).toLocaleString()}` }
+  }
+  const compact = moneyCompact(displayMonthlyImpact)
 
   return (
     <div className="p-8 bg-[#111827] rounded-lg border-2 border-gray-800 mb-6">
@@ -49,14 +59,12 @@ export default function RevenueSystemStatus({
             {uiState === "low" ? "Optimization Opportunity Identified" : "Active Revenue Compression Detected"}
           </p>
           <p className="text-sm text-gray-400">
-            Estimated Monthly Impact: {displayMonthlyImpact !== null
-              ? `$${displayMonthlyImpact.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
-              : "Not available"}
+            Estimated Monthly Impact: {compact ? <span title={compact.full}>{compact.short}</span> : "Not available"}
           </p>
           <p className="text-sm text-gray-500 mt-2">
             {uiState === "low"
               ? "Most leakage is mitigated. Remaining impact is incremental upside with full alignment."
-              : "Revenue-stage inefficiency is increasing due to structural misalignment."}
+              : `Revenue-stage inefficiency is ${deltaDirection === "better" ? "declining" : "increasing"} due to structural ${deltaDirection === "better" ? "improvements" : "misalignment"}.`}
           </p>
         </div>
       ) : (

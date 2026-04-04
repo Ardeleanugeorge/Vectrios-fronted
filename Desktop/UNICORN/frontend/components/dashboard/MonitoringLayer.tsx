@@ -162,7 +162,7 @@ export default function MonitoringLayer({
     delta_rii?: number
     direction?: "worse" | "better" | "stable"
     trend_last_4?: "worsening" | "improving" | "stable" | "insufficient_data"
-    drivers?: string[]
+    drivers?: { positives?: Array<{label:string, delta?: number, source?: string}>, risks?: Array<{label:string, delta?: number, source?: string}> }
   }>(null)
   useEffect(() => {
     if (!companyId) return
@@ -397,8 +397,8 @@ export default function MonitoringLayer({
       
       {/* ALERTS FIRST — Critical alerts at top */}
       {hasCriticalAlerts && (
-        <div className="p-4 bg-red-500/10 border-l-4 border-red-500 rounded">
-          <p className="text-sm font-semibold text-red-400 mb-1">Recent critical structural events detected</p>
+        <div className={`p-4 rounded border-l-4 ${ (rii !== null && rii < 40) ? "bg-amber-500/10 border-amber-500" : "bg-red-500/10 border-red-500" }`}>
+          <p className={`text-sm font-semibold mb-1 ${ (rii !== null && rii < 40) ? "text-amber-400" : "text-red-400" }`}>Recent critical structural events detected</p>
           <p className="text-xs text-gray-400">
             {criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? 's' : ''} require immediate attention.
           </p>
@@ -693,6 +693,7 @@ export default function MonitoringLayer({
           (diagnostic.revenue_leak_confidence >= 80 ? "high" : 
            diagnostic.revenue_leak_confidence >= 60 ? "moderate" : "low") : 
           undefined}
+        deltaDirection={revenueDelta?.direction}
       />
 
       {/* 2. FINANCIAL IMPACT — Unignorable numbers (only if exposure exists) */}
@@ -714,6 +715,7 @@ export default function MonitoringLayer({
         icpClarity={icpClarity}
         anchorDensity={anchorDensity}
         uiState={uiState}
+        deltaDirection={revenueDelta?.direction}
       />
 
       {/* 5. REVENUE ALIGNMENT STATUS — System state explanation */}

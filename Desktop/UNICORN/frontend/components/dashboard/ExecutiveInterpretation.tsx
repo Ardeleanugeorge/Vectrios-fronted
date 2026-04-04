@@ -5,6 +5,7 @@ interface ExecutiveInterpretationProps {
   annualExposure?: number | null
   closeRateDelta: number | null
   impactDirection: string
+  deltaDirection?: "worse" | "better" | "stable" | undefined
   alignmentScore: number
   icpClarity: number
   anchorDensity: number
@@ -16,6 +17,7 @@ export default function ExecutiveInterpretation({
   annualExposure,
   closeRateDelta,
   impactDirection,
+  deltaDirection,
   alignmentScore,
   icpClarity,
   anchorDensity,
@@ -53,9 +55,9 @@ export default function ExecutiveInterpretation({
                   )}
                 </>
               : <>
-                  Revenue-stage inefficiency is impacting performance.
+                  Revenue-stage inefficiency is {deltaDirection === "better" ? "declining" : "increasing"} due to structural {deltaDirection === "better" ? "improvements" : "misalignment"}.
                   {typeof closeRateDelta === "number" && (
-                    <> Estimated close-rate compression: <span className="font-semibold text-amber-400">{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
+                    <> Estimated close-rate {deltaDirection === "better" ? "recovery" : "compression"}: <span className="font-semibold text-amber-400">{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
                   )}
                 </>}
           </p>
