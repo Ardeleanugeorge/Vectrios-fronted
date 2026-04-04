@@ -349,7 +349,9 @@ export default function MonitoringLayer({
           current_example: fix.before || "—",
           suggested_change: fix.after,
           reason: fix.why,
-          impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh || undefined, close_rate: "", arr_recovery: "" }
+          impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh || undefined, close_rate: "", arr_recovery: "" },
+          page_url: fix.page_url || null,
+          behavioral_source: Array.isArray(fix.badges) && fix.badges.some((b:string)=>["HIGH EXIT","INTENT MISMATCH"].includes((b||"").toUpperCase()))
         }
       }
       const primary = fixesArr[0]

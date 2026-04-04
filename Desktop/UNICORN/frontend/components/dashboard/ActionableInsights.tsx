@@ -17,6 +17,7 @@ export type ActionFix = {
   reason: string
   impact_contribution?: FixImpactContribution
   behavioral_source?: boolean  // true when Fix #1 is driven by real GA4+GSC data
+  page_url?: string | null
 }
 
 export type BehavioralInsight = {
@@ -240,10 +241,23 @@ function CopyButton({ text }: { text: string }) {
   )
 }
 
+function formatCompactMoneyLabel(m: string | undefined): { short: string; full: string } {
+  if (!m) return { short: "", full: "" }
+  // Extract first money like $123,456,789 from string
+  const match = m.match(/\$([\d,\.]+)/)
+  if (!match) return { short: m, full: m }
+  const num = Number(match[1].replace(/,/g, ""))
+  if (!Number.isFinite(num)) return { short: m, full: m }
+  const short = num >= 1_000_000 ? `$${(num / 1_000_000).toFixed(2)}M` : num >= 1_000 ? `$${Math.round(num / 1000)}K` : `$${num}`
+  return { short, full: `$${num.toLocaleString()}` }
+}
+
 function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix; index: number; useMonitoringSnapshot?: boolean }) {
   const beforeVal = (fix.current_example || "").trim()
   const hasRealBefore = beforeVal.length > 0 && beforeVal !== "—" && beforeVal !== "-" && !beforeVal.startsWith("—")
   const hasRealAfter = fix.suggested_change && fix.suggested_change.length > 0
+  const monthlyChip = fix.impact_contribution?.monthly_impact || ""
+  const compact = formatCompactMoneyLabel(monthlyChip)
 
   return (
     <div className="rounded-lg bg-[#0B0F19] border border-gray-800 overflow-hidden">
@@ -252,13 +266,23 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
         <p className="text-xs font-semibold uppercase tracking-wide text-cyan-500/90">
           Fix #{index} — {fix.title}
         </p>
-        {fix.impact_contribution?.monthly_impact && fix.impact_contribution.monthly_impact !== "—" && (
-          <p className="text-[11px] text-emerald-400/80 mt-1">
-            Est. recovery: <span className="font-bold">{fix.impact_contribution.monthly_impact}</span>
+        {monthlyChip && monthlyChip !== "—" && (
+          <p className="text-[11px] text-emerald-400/80 mt-1" title={compact.full}>
+            Est. recovery: <span className="font-bold">{compact.short}</span>
             {!!(fix.impact_contribution.close_rate && fix.impact_contribution.close_rate.trim()) && (
               <span className="text-gray-600 ml-2">({fix.impact_contribution.close_rate})</span>
             )}
           </p>
+        )}
+        {fix.page_url && (
+          <a
+            href={fix.page_url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-[11px] text-cyan-300 hover:text-cyan-200 mt-1"
+          >
+            Open page →
+          </a>
         )}
       </div>
 
