@@ -124,15 +124,25 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
     )
   }
 
+  // Split into recent (<=7 zile) și history (>7 zile)
+  const nowMs = Date.now()
+  const recent: RevenueSignal[] = []
+  const history: RevenueSignal[] = []
+  for (const s of signals) {
+    const ts = s.timestamp ? new Date(s.timestamp).getTime() : 0
+    const days = ts ? Math.floor((nowMs - ts) / (24*3600*1000)) : 0
+    if (days <= 7) recent.push(s); else history.push(s)
+  }
+
   return (
     <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Recent Structural Signals</h2>
-      
-      <div className="space-y-0">
-        {signals.map((signal, index) => (
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Recent Structural Signals</h2>
+
+      <div className="space-y-0 mb-6">
+        {recent.map((signal, index) => (
           <div 
-            key={signal.id || index}
-            className={`flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0`}
+            key={signal.id || `r-${index}`}
+            className="flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0"
           >
             <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getSeverityColor(signal.severity)}`}>
               {getSeverityLabel(signal.severity)}
@@ -156,7 +166,45 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
             </div>
           </div>
         ))}
+        {recent.length === 0 && (
+          <p className="text-sm text-gray-500">No recent signals in the last 7 days.</p>
+        )}
       </div>
+
+      {history.length > 0 && (
+        <div>
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">History</h3>
+          <div className="space-y-0">
+            {history.map((signal, index) => (
+              <div 
+                key={signal.id || `h-${index}`}
+                className="flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0"
+              >
+                <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getSeverityColor(signal.severity)}`}>
+                  {getSeverityLabel(signal.severity)}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-gray-300 leading-relaxed">
+                    {signal.description}
+                  </p>
+                  <div className="flex items-center gap-3 mt-1">
+                    {signal.timestamp && (
+                      <p className="text-xs text-gray-600">
+                        {new Date(signal.timestamp).toLocaleDateString()}
+                      </p>
+                    )}
+                    {signal.value !== null && (
+                      <p className="text-xs text-gray-600">
+                        Value: {signal.value.toFixed(1)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

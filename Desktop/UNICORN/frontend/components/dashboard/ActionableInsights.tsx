@@ -317,6 +317,21 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
             {hasRealAfter && <CopyButton text={fix.suggested_change} />}
           </div>
           <p className="text-sm text-white leading-relaxed">{fix.suggested_change}</p>
+          {/* Evidence bullets from badges / behavioral signals */}
+          {Array.isArray(fix.badges) && fix.badges.length > 0 && (
+            <ul className="mt-2 ml-4 list-disc space-y-0.5">
+              {fix.badges.slice(0, 2).map((b, i) => {
+                const t = (b || "").toUpperCase()
+                const label =
+                  t === "HIGH EXIT" ? "Exit rate spike on key pages (GA4)" :
+                  t === "INTENT MISMATCH" ? "Low CTR vs position on priority queries (GSC)" :
+                  b
+                return (
+                  <li key={i} className="text-[11px] text-gray-400">{label}</li>
+                )
+              })}
+            </ul>
+          )}
         </div>
       </div>
 
