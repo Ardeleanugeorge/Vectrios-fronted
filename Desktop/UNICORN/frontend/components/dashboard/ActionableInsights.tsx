@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import SourceChip from "./SourceChip"
 import FeatureGate from "./FeatureGate"
 
 export type FixImpactContribution = {
@@ -18,6 +19,7 @@ export type ActionFix = {
   impact_contribution?: FixImpactContribution
   behavioral_source?: boolean  // true when Fix #1 is driven by real GA4+GSC data
   page_url?: string | null
+  badges?: string[] | null
 }
 
 export type BehavioralInsight = {
@@ -274,6 +276,12 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
             )}
           </p>
         )}
+        {/* Provenance */}
+        <div className="flex items-center gap-1 mt-1">
+          <SourceChip label="Model" title="Estimated recovery modeled from structural scores" />
+          <SourceChip label="Monitoring" tone="cyan" title="Derived from latest monitoring snapshot" />
+          {fix.behavioral_source && <SourceChip label="GA4" tone="emerald" title="Behavioral signal present (e.g., high exit)" />}
+        </div>
         {fix.page_url && (
           <a
             href={fix.page_url}

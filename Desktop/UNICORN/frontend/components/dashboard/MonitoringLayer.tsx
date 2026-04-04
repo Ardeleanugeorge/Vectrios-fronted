@@ -205,6 +205,9 @@ export default function MonitoringLayer({
   // Check for critical alerts to show banner
   const criticalAlerts = alerts.filter(a => !a.is_read && a.severity_level === "critical")
   const hasCriticalAlerts = criticalAlerts.length > 0
+  const hasInconsistency =
+    (revenueDelta?.direction === "better" && (!revenueDelta?.drivers?.positives?.length && (revenueDelta?.drivers?.risks?.length || 0) > 0)) ||
+    (uiState === "low" && hasCriticalAlerts)
 
   // Extract revenue impact data
   const revenueImpact = monitoringStatus.revenue_impact
@@ -351,7 +354,8 @@ export default function MonitoringLayer({
           reason: fix.why,
           impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh || undefined, close_rate: "", arr_recovery: "" },
           page_url: fix.page_url || null,
-          behavioral_source: Array.isArray(fix.badges) && fix.badges.some((b:string)=>["HIGH EXIT","INTENT MISMATCH"].includes((b||"").toUpperCase()))
+          behavioral_source: Array.isArray(fix.badges) && fix.badges.some((b:string)=>["HIGH EXIT","INTENT MISMATCH"].includes((b||"").toUpperCase())),
+          badges: Array.isArray(fix.badges) ? fix.badges : []
         }
       }
       const primary = fixesArr[0]
@@ -402,6 +406,13 @@ export default function MonitoringLayer({
           <p className="text-xs text-gray-400">
             {criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? 's' : ''} require immediate attention.
           </p>
+        </div>
+      )}
+
+      {hasInconsistency && (
+        <div className="p-3 rounded border border-amber-600/30 bg-amber-900/10">
+          <p className="text-xs text-amber-300 font-semibold">In review</p>
+          <p className="text-xs text-amber-200/90">We detected mixed signals; numbers are correct, display emphasizes positives while monitoring risks separately.</p>
         </div>
       )}
 
@@ -617,6 +628,30 @@ export default function MonitoringLayer({
             <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
               <span className="text-gray-600 text-xs">Cadence</span>
               <span className="text-gray-300 font-medium text-xs">24h auto</span>
+            </div>
+
+            {/* SLA band */}
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+              {(() => {
+                const band = (() => {
+                  if (!lastEval) return "unknown"
+                  const minutesSince = Math.floor((nowMs - lastEval.getTime()) / 60_000)
+                  if (minutesSince <= 26 * 60) return "on-track"
+                  if (minutesSince <= 36 * 60) return "warning"
+                  return "breach"
+                })()
+                const cls = band === "on-track"
+                  ? "text-emerald-300 bg-emerald-400/10 border-emerald-400/20"
+                  : band === "warning"
+                  ? "text-amber-300 bg-amber-400/10 border-amber-400/20"
+                  : "text-red-300 bg-red-400/10 border-red-400/20"
+                const label = band === "on-track" ? "SLA On Track" : band === "warning" ? "SLA Warning" : band === "breach" ? "SLA Breach" : "SLA"
+                return (
+                  <span className={`px-2.5 py-0.5 rounded-full border text-xs font-semibold ${cls}`}>
+                    {label}
+                  </span>
+                )
+              })()}
             </div>
 
             {/* Plan */}
