@@ -623,11 +623,26 @@ export default function DashboardPage() {
             <MonitoringLayer 
               monitoringStatus={monitoringStatus}
               diagnostic={
-                // Prefer monitoringStatus.action_layer (always uses real company ARR)
-                // over the stale action_layer stored in localStorage diagnostic
-                monitoringStatus.action_layer && diagnostic
-                  ? { ...diagnostic, action_layer: monitoringStatus.action_layer as ActionLayerPayload }
-                  : diagnostic
+                (() => {
+                  // Prefer monitoringStatus.action_layer (always uses real company ARR)
+                  // but merge its fixes with existing diagnostic.action_layer to preserve all fixes
+                  const diagAction = diagnostic?.action_layer;
+                  const monitorAction = monitoringStatus.action_layer;
+                  if (!monitorAction) return diagnostic;
+                  if (!diagAction) return { ...diagnostic, action_layer: monitorAction };
+                  // Merge fixes, deduplicate by title (case-insensitive), preferring monitor's version
+                  const existingFixes = diagAction.fixes || [];
+                  const newFixes = monitorAction.fixes || [];
+                  const fixMap = new Map<string, any>();
+                  existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix));
+                  newFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix));
+                  const mergedFixes = Array.from(fixMap.values());
+                  const mergedActionLayer: ActionLayerPayload = {
+                    ...monitorAction,
+                    fixes: mergedFixes,
+                  };
+                  return { ...diagnostic, action_layer: mergedActionLayer };
+                })()
               }
               alerts={alerts}
               onMarkAlertRead={markAlertRead}
