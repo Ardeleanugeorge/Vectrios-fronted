@@ -367,7 +367,9 @@ export default function MonitoringLayer({
       }
       // Existing fixes from diagnostic action layer
       const existingFixes = diagnostic?.action_layer?.fixes || []
+      console.log('existingFixes', existingFixes)
       const newFixes = fixesArr.map(mapFix)
+      console.log('newFixes', newFixes)
       
       // Merge fixes, deduplicate by title (case-insensitive), preferring new fixes
       const fixMap = new Map<string, any>()
