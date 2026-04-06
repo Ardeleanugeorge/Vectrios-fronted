@@ -365,6 +365,16 @@ export default function MonitoringLayer({
           badges: Array.isArray(fix.badges) ? fix.badges : []
         }
       }
+      // Existing fixes from diagnostic action layer
+      const existingFixes = diagnostic?.action_layer?.fixes || []
+      const newFixes = fixesArr.map(mapFix)
+      
+      // Merge fixes, deduplicate by title (case-insensitive), preferring new fixes
+      const fixMap = new Map<string, any>()
+      existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
+      newFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
+      const mergedFixes = Array.from(fixMap.values())
+      
       const primary = fixesArr[0]
       const al: ActionLayerPayload = {
         issue_type: "general",
@@ -374,7 +384,7 @@ export default function MonitoringLayer({
           "Pricing page → headline + plan cards",
           "Product page → hero + value props",
         ],
-        fixes: fixesArr.map(mapFix),
+        fixes: mergedFixes,
         expected_impact: { close_rate_improvement: "", arr_recovery: "" },
         priority: { level: primary.impact_level, reason: primary.badges?.join(" · ") || "", display_line: undefined },
         top_action: null,
@@ -382,7 +392,7 @@ export default function MonitoringLayer({
       }
       setPlaybookActionLayer(al)
     }).catch(() => {})
-  }, [companyId])
+  }, [companyId, diagnostic?.action_layer])
 
   // Build Revenue Truth Layer (frontend interim until backend supplies it)
   const alertsLite: AlertLite[] = (monitoringStatus.recent_drift_events || []).map(e => ({
