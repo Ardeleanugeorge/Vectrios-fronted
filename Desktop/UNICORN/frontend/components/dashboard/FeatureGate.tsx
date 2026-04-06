@@ -45,7 +45,7 @@ export default function FeatureGate({
       </div>
 
       {/* Lock overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0B0F19]/75 backdrop-blur-[2px]">
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0B0F19]/75 backdrop-blur-[2px] z-10">
         <div className="text-center px-6">
           <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center">
             <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

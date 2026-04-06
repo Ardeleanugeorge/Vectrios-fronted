@@ -50,7 +50,7 @@ function LockedCard({ title, description, ctaLabel }: {
         <div className="h-3 bg-gray-800 rounded w-1/2" />
       </div>
       {/* Overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0B0F19]/80 backdrop-blur-[2px]">
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0B0F19]/80 backdrop-blur-[2px] z-10">
         <div className="text-center px-6">
           <div className="w-9 h-9 mx-auto mb-3 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center">
             <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
