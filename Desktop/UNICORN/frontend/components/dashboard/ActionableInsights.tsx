@@ -388,7 +388,7 @@ export default function ActionableInsights({
     const isHigh = (pri.level || "").toLowerCase() === "high"
 
     return (
-      <div className={`mb-6 p-6 bg-[#111827] rounded-lg border ${tone}`}>
+      <div className={`relative z-20 mb-6 p-6 bg-[#111827] rounded-lg border ${tone}`}>
         <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-4">
           Revenue playbook
         </h3>
