@@ -47,14 +47,14 @@ function hasCritical(alerts: AlertLite[]): boolean {
 function buildHeadline(risk: "low" | "moderate" | "high", impact: "very_high" | "high" | "moderate"): string {
   if (risk === "low" && impact === "very_high") return "Low structural risk — high revenue exposure"
   if (risk === "low") return "Low structural risk detected"
-  if (risk === "moderate") return "Revenue inefficiencies detected"
-  return "High revenue risk detected"
+  if (risk === "moderate") return "Revenue inefficiency detected"
+  return "Revenue inefficiency detected — elevated risk"
 }
 
 function buildSubtext(scale: "smb" | "mid-market" | "enterprise", monthlyLoss: number | null, arr: number | null): string {
-  if (scale === "enterprise") return "At your scale, even small inefficiencies translate into significant revenue impact"
-  if (scale === "mid-market") return "Moderate inefficiencies are affecting revenue performance"
-  return "Structural issues are limiting growth efficiency"
+  if (scale === "enterprise") return "At your scale, small structural gaps still move large revenue numbers — see model below for estimates."
+  if (scale === "mid-market") return "Revenue inefficiency is material at your current scale."
+  return "Structural gaps are limiting conversion efficiency."
 }
 
 function buildExplanation(critical: boolean, trend: string | null): string {

@@ -61,14 +61,14 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
   const getConfidenceColor = (s: number) => s >= 0.7 ? "text-green-400" : s >= 0.5 ? "text-amber-400" : "text-gray-400"
 
   if (loading) return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+    <div id="revenue-optimization-model" className="p-8 bg-[#111827] rounded-lg border border-gray-800 scroll-mt-24">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Optimization Model</h2>
       <p className="text-sm text-gray-500">Calculating revenue impact...</p>
     </div>
   )
 
   if (!forecast) return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+    <div id="revenue-optimization-model" className="p-8 bg-[#111827] rounded-lg border border-gray-800 scroll-mt-24">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Optimization Model</h2>
       <p className="text-sm text-gray-500">Insufficient data for revenue calculation.</p>
     </div>
@@ -78,7 +78,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
   const hasRecovery = forecast.recovery_potential_annual !== undefined && forecast.recovery_potential_annual > 0
 
   return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800 space-y-6">
+    <div id="revenue-optimization-model" className="p-8 bg-[#111827] rounded-lg border border-gray-800 space-y-6 scroll-mt-24">
       <div>
         <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Optimization Model</h2>
         <p className="text-xs text-gray-500 mt-1 uppercase tracking-wide">Messaging impact on ARR</p>
@@ -96,13 +96,13 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
           </div>
           {forecast.primary_stage && (
             <div className={`mt-2 text-sm ${uiState === "low" ? "text-emerald-300/70" : "text-red-300/70"}`}>
-              {uiState === "low" ? "Primary optimization gap: " : "Compression detected at "}
+              {uiState === "low" ? "Primary optimization gap: " : "Revenue inefficiency — primary stage: "}
               <span className={`font-medium ${uiState === "low" ? "text-emerald-300" : "text-red-300"}`}>{forecast.primary_stage}</span>
             </div>
           )}
           {forecast.close_rate_compression !== undefined && (
             <div className="mt-1 text-xs text-gray-500">
-              {uiState === "low" ? "Performance improvement available: " : "Close-rate compression: "}
+              {uiState === "low" ? "Performance improvement available: " : "Modeled close-rate impact: "}
               <span className={uiState === "low" ? "text-emerald-300" : "text-red-400"}>
                 {uiState === "low" ? "+" : "−"}{Math.abs(forecast.close_rate_compression).toFixed(1)}%
               </span>

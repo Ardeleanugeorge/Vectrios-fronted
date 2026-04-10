@@ -88,7 +88,7 @@ export default function StructuralRiskOverview({
       
       <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Revenue Alignment Status</p>
+          <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Status snapshot</p>
           {riskScore !== null ? (
             <div>
               <p className={`text-4xl font-bold ${getIntegrityColor(integrityStatus)}`}>
@@ -139,8 +139,12 @@ export default function StructuralRiskOverview({
         </div>
       </div>
 
-      <p className="text-xs text-gray-500 mt-6 italic">
-        Risk classification derived from revenue-stage alignment analysis — not surface performance metrics.
+      <p className="text-xs text-gray-500 mt-6">
+        Breakdown by alignment, ICP, anchors, and positioning is in the{" "}
+        <a href="#revenue-alignment-map" className="text-cyan-600 hover:text-cyan-400 hover:underline">
+          Revenue-Stage Alignment Map
+        </a>{" "}
+        below — not duplicated here.
       </p>
     </div>
   )

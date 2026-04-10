@@ -23,6 +23,8 @@ interface FinancialExposureCardProps {
   riskScore?: number | null
   riskLevel?: string | null
   uiState?: "low" | "medium" | "high"
+  /** compact = one-line estimate + link to full Revenue Optimization Model (no duplicate breakdown) */
+  variant?: "compact" | "full"
 }
 
 function fmt(val: number): string {
@@ -61,7 +63,7 @@ function CompressionGauge({ raw, isLowRisk }: { raw: number; isLowRisk: boolean 
           {isLowRisk ? "+" : "-"}{value.toFixed(1)}%
         </span>
         <p className="text-xs text-gray-500 mt-0.5">
-          {isLowRisk ? "Performance improvement available" : "Close-rate compression"}
+          {isLowRisk ? "Performance improvement available" : "Revenue inefficiency (modeled close-rate impact)"}
         </p>
       </div>
     </div>
@@ -74,6 +76,7 @@ export default function FinancialExposureCard({
   riskScore,
   riskLevel,
   uiState,
+  variant = "compact",
 }: FinancialExposureCardProps) {
   const normalizedRisk = (riskLevel || "").toUpperCase()
   const isLowRisk = uiState ? uiState === "low" : (typeof riskScore === "number" && riskScore < 40) || normalizedRisk.includes("LOW")
@@ -116,6 +119,40 @@ export default function FinancialExposureCard({
         <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">{sectionTitle}</p>
         <p className="text-sm text-gray-400">Financial impact not yet observable.</p>
         <p className="text-sm text-gray-500">Structural risk signals detected.</p>
+      </div>
+    )
+  }
+
+  // ── Compact: single headline + anchor to full model (no duplicate $ / recovery / gauge) ──
+  if (variant === "compact") {
+    return (
+      <div
+        id="financial-impact-summary"
+        className="relative z-0 p-6 bg-[#111827] rounded-lg border border-gray-800"
+      >
+        <p className={`text-xs uppercase tracking-wide mb-2 font-medium ${isLowRisk ? "text-emerald-300/80" : isMediumRisk ? "text-amber-300/80" : "text-red-400/80"}`}>
+          {isLowRisk ? "Estimated optimization impact" : "Estimated impact"}
+        </p>
+        <p className="text-lg text-gray-200">
+          <span className={`font-bold text-2xl ${isLowRisk ? "text-emerald-300" : isMediumRisk ? "text-amber-300" : "text-red-400"}`}>
+            {isLowRisk ? "+" : ""}{fmt(annualDelta)}
+          </span>
+          <span className="text-gray-500 font-normal"> / year</span>
+          {confidence !== undefined && (
+            <span className="text-xs text-gray-500 ml-2">
+              · {Math.round(confidence * 100)}% model confidence
+            </span>
+          )}
+        </p>
+        <p className="text-xs text-gray-500 mt-3">
+          <a
+            href="#revenue-optimization-model"
+            className="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline"
+          >
+            See full breakdown in Revenue Optimization Model below
+          </a>
+          <span className="text-gray-600"> — directional, not audited revenue.</span>
+        </p>
       </div>
     )
   }
@@ -217,7 +254,7 @@ export default function FinancialExposureCard({
           {isLowRisk
             ? "Low structural risk. Remaining impact reflects optimization opportunity, not critical revenue leakage."
             : isMediumRisk
-              ? "Recoverable revenue inefficiency detected. Alignment improvements can recover meaningful upside."
+              ? "Revenue inefficiency detected. Alignment improvements can recover meaningful upside."
               : "Structural degradation indicates active revenue leakage risk if left uncorrected."}
         </p>
       </div>

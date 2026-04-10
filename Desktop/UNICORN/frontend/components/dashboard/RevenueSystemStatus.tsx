@@ -56,7 +56,7 @@ export default function RevenueSystemStatus({
       {hasExposure ? (
         <div>
           <p className={`text-lg font-semibold mb-2 ${uiState === "low" ? "text-emerald-300" : "text-amber-400"}`}>
-            {uiState === "low" ? "Optimization Opportunity Identified" : "Active Revenue Compression Detected"}
+            {uiState === "low" ? "Optimization opportunity identified" : "Revenue inefficiency detected"}
           </p>
           <p className="text-sm text-gray-400">
             Recoverable Monthly Impact: {compact ? <span title={compact.full}>{compact.short}</span> : "Not available"}
@@ -64,7 +64,7 @@ export default function RevenueSystemStatus({
           <p className="text-sm text-gray-500 mt-2">
             {uiState === "low"
               ? "Structurally healthy — low revenue risk."
-              : `Revenue-stage inefficiency is ${deltaDirection === "better" ? "declining" : "increasing"} due to structural ${deltaDirection === "better" ? "improvements" : "misalignment"}.`}
+              : `Revenue inefficiency is ${deltaDirection === "better" ? "improving" : "worsening"} versus last scan (structural ${deltaDirection === "better" ? "gains" : "gaps"}).`}
           </p>
         </div>
       ) : (

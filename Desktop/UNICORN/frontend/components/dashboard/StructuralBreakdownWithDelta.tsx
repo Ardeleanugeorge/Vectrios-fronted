@@ -68,7 +68,7 @@ export default function StructuralBreakdownWithDelta({
     Math.min((alignmentMean as number) + 10, 100)
 
   return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+    <div id="revenue-alignment-map" className="p-8 bg-[#111827] rounded-lg border border-gray-800 scroll-mt-24">
       <h2 className="text-xl font-bold mb-2 uppercase tracking-wide">Revenue-Stage Alignment Map</h2>
       <p className="text-xs text-gray-500 mb-6 italic">
         Alignment scoring reflects revenue-stage priority weighting.

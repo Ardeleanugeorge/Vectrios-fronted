@@ -122,12 +122,17 @@ export default function SystemHealthIndicator({
         return (
           <div className="pt-2 border-t border-gray-800">
             <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
-              {rii !== null && rii < 40 ? "Primary Optimization Area" : "Primary Risk Driver"}
+              Leading signal
             </div>
             <div className="text-sm text-gray-400 flex items-center gap-2">
               <span className={severity.color}>{severity.icon}</span>
               <span>{primaryRiskDriver}</span>
             </div>
+            <p className="text-[10px] text-gray-600 mt-1">
+              <a href="#revenue-alignment-map" className="text-cyan-600 hover:text-cyan-400 hover:underline">
+                Open Alignment Map
+              </a>
+            </p>
           </div>
         )
       })()}

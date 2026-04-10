@@ -13,9 +13,11 @@ interface ActivityEvent {
 
 interface ActivityFeedProps {
   companyId: string | null
+  /** When true, wrap in a collapsed details panel (advanced activity log) */
+  defaultCollapsed?: boolean
 }
 
-export default function ActivityFeed({ companyId }: ActivityFeedProps) {
+export default function ActivityFeed({ companyId, defaultCollapsed = false }: ActivityFeedProps) {
   const [events, setEvents] = useState<ActivityEvent[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -103,50 +105,74 @@ export default function ActivityFeed({ companyId }: ActivityFeedProps) {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Revenue System Activity</h2>
-        <p className="text-sm text-gray-500">Loading activity...</p>
-      </div>
-    )
-  }
+  const inner = (
+    <>
+      {loading ? (
+        <p className="text-sm text-gray-500 px-8 pb-8">Loading activity...</p>
+      ) : events.length === 0 ? (
+        <p className="text-sm text-gray-500 px-8 pb-8">No activity recorded yet.</p>
+      ) : (
+        <div className="space-y-0 px-8 pb-8">
+          {events.map((event, index) => (
+            <div
+              key={event.id || index}
+              className="flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0"
+            >
+              <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getTypeColor(event.type)}`}>
+                {event.type.toUpperCase()}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-300 leading-relaxed">{event.message}</p>
+                {event.timestamp && (
+                  <p className="text-xs text-gray-500 mt-1">{formatTimeAgo(event.timestamp)}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )
 
-  if (events.length === 0) {
+  if (defaultCollapsed) {
     return (
-      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Revenue System Activity</h2>
-        <p className="text-sm text-gray-500">No activity recorded yet.</p>
-      </div>
+      <details className="rounded-lg border border-gray-800 bg-[#111827] group">
+        <summary className="cursor-pointer list-none p-4 text-sm font-semibold uppercase tracking-wide text-gray-400 hover:text-gray-300 flex items-center justify-between">
+          <span>Advanced · Activity log</span>
+          <span className="text-[10px] text-gray-600 font-normal normal-case">optional</span>
+        </summary>
+        {inner}
+      </details>
     )
   }
 
   return (
     <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
       <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Revenue System Activity</h2>
-      
-      <div className="space-y-0">
-        {events.map((event, index) => (
-          <div 
-            key={event.id || index}
-            className="flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0"
-          >
-            <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getTypeColor(event.type)}`}>
-              {event.type.toUpperCase()}
-            </span>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-300 leading-relaxed">
-                {event.message}
-              </p>
-              {event.timestamp && (
-                <p className="text-xs text-gray-500 mt-1">
-                  {formatTimeAgo(event.timestamp)}
-                </p>
-              )}
+      {loading ? (
+        <p className="text-sm text-gray-500">Loading activity...</p>
+      ) : events.length === 0 ? (
+        <p className="text-sm text-gray-500">No activity recorded yet.</p>
+      ) : (
+        <div className="space-y-0">
+          {events.map((event, index) => (
+            <div
+              key={event.id || index}
+              className="flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0"
+            >
+              <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getTypeColor(event.type)}`}>
+                {event.type.toUpperCase()}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-300 leading-relaxed">{event.message}</p>
+                {event.timestamp && (
+                  <p className="text-xs text-gray-500 mt-1">{formatTimeAgo(event.timestamp)}</p>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

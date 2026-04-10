@@ -270,14 +270,16 @@ export default function MonitoringLayer({
       ? "Trend: Stabilizing after recent volatility."
       : (zeroDelta ? "Trend: Stable - no significant changes detected." : trendText)
   const headline = monitoringStatus.ui_state_payload?.headline ?? (
-    uiState === "low" ? "Revenue system is healthy"
-    : uiState === "medium" ? "Revenue performance is constrained"
-    : "Revenue is at risk"
+    uiState === "low"
+      ? "Revenue system is healthy"
+      : "Revenue inefficiency detected"
   )
   const subtext = monitoringStatus.ui_state_payload?.subtext ?? (
-    uiState === "low" ? "Minor optimization opportunities remain."
-    : uiState === "medium" ? "Structural gaps are impacting conversion efficiency."
-    : "Structural misalignment is compressing performance."
+    uiState === "low"
+      ? "Minor optimization opportunities remain."
+      : uiState === "medium"
+        ? "Structural gaps are limiting conversion efficiency — see Alignment Map for ICP, anchors, and positioning."
+        : "Elevated structural risk — prioritize playbook and monitoring signals."
   )
   const improvementsDetected =
     typeof riskDelta === "number" && riskDelta < 0 ? Math.max(1, Math.round(Math.abs(riskDelta))) : (uiState === "low" ? 2 : 0)
@@ -581,7 +583,7 @@ export default function MonitoringLayer({
         <p className="text-sm text-gray-300 mt-1">{subtext}</p>
         {uiState === "low" && (
           <p className="text-xs text-emerald-300/80 mt-2">
-            Your system is structurally healthy, but small inefficiencies still create measurable upside.
+            Structurally healthy — remaining upside is mostly ICP and positioning clarity at scale.
           </p>
         )}
         {improvementsDetected > 0 && (
@@ -756,8 +758,10 @@ export default function MonitoringLayer({
         deltaDirection={revenueDelta?.direction}
       />
 
-      {/* 2. FINANCIAL IMPACT — Unignorable numbers (only if exposure exists) */}
-      {monthlyExposure && monthlyExposure > 0 && (
+      {/* Rolling exposure — skip when full forecast exists to avoid repeating the same $ story as Financial + Model */}
+      {monthlyExposure &&
+        monthlyExposure > 0 &&
+        !(forecast && typeof forecast.annual_revenue_delta === "number" && forecast.annual_revenue_delta > 0) && (
         <CumulativeExposureCard
           rolling30DayExposure={rolling30DayExposure}
           monthlyExposure={monthlyExposure}
@@ -812,9 +816,9 @@ export default function MonitoringLayer({
         <RevenueIncidentsPanel companyId={companyId} />
       </FeatureGate>
 
-      {/* 10. REVENUE SYSTEM ACTIVITY — Growth+ */}
+      {/* 10. ACTIVITY — collapsed by default (advanced); Signals + Alerts stay visible above */}
       <FeatureGate feature="Activity Feed" planRequired="growth" currentPlan={currentPlan}>
-        <ActivityFeed companyId={companyId} />
+        <ActivityFeed companyId={companyId} defaultCollapsed />
       </FeatureGate>
 
       {/* 11. REVENUE COMPRESSION FORECAST — 30-day prediction (Growth+) */}

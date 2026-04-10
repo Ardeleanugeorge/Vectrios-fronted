@@ -15,9 +15,9 @@ interface ExecutiveInterpretationProps {
 export default function ExecutiveInterpretation({
   monthlyExposure,
   annualExposure,
-  closeRateDelta,
-  impactDirection,
-  deltaDirection,
+  closeRateDelta: _closeRateDelta,
+  impactDirection: _impactDirection,
+  deltaDirection: _deltaDirection,
   alignmentScore,
   icpClarity,
   anchorDensity,
@@ -40,37 +40,19 @@ export default function ExecutiveInterpretation({
   
   const primaryFault = faults.length > 0 ? faults[0] : "Strategic misalignment"
 
+  /** One idea, no numbers — dollars live in Financial summary + Optimization Model */
+  const takeawayLine =
+    uiState === "low"
+      ? "Low structural risk, with meaningful upside at scale driven by ICP and positioning clarity."
+      : "Revenue inefficiency detected — tighten messaging alignment using the playbook and Revenue-Stage Alignment Map."
+
   return (
     <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
-      <h2 className="text-sm font-semibold mb-4 uppercase tracking-wide text-gray-400">Executive Takeaway</h2>
-      
-      {hasExposure ? (
-        <div className="space-y-1">
-          <p className="text-sm text-gray-300">
-            {uiState === "low"
-              ? <>
-                  Residual optimization potential detected.
-                  {typeof closeRateDelta === "number" && (
-                    <> Estimated additional close-rate uplift: <span className="font-semibold text-emerald-300">+{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
-                  )}
-                </>
-              : <>
-                  Revenue efficiency is {deltaDirection === "better" ? "improving" : "declining"} due to structural {deltaDirection === "better" ? "alignment gains" : "misalignment"}.
-                  {typeof closeRateDelta === "number" && (
-                    <> Estimated close-rate {deltaDirection === "better" ? "uplift" : "compression"}: <span className="font-semibold text-amber-400">{deltaDirection === "better" ? "+" : ""}{Math.abs(closeRateDelta).toFixed(1)}%</span>.</>
-                  )}
-                </>}
-          </p>
-          {annualizedImpact && (
-            <p className="text-sm text-gray-300">
-              {uiState === "low" ? "Projected annualized optimization potential: " : "Projected annualized impact: "}
-              <span className={`font-semibold ${uiState === "low" ? "text-emerald-300" : "text-amber-400"}`}>~${annualizedImpact.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>.
-            </p>
-          )}
-        </div>
-      ) : (
-        <p className="text-sm text-gray-300">
-          Structural misalignment detected across revenue-stage messaging. No measurable revenue compression observed yet. Monitoring active.
+      <h2 className="text-sm font-semibold mb-3 uppercase tracking-wide text-gray-400">Executive Takeaway</h2>
+      <p className="text-sm text-gray-300 leading-relaxed">{takeawayLine}</p>
+      {hasExposure && uiState !== "low" && (
+        <p className="text-xs text-gray-500 mt-2">
+          Primary structural theme: <span className="text-gray-400">{primaryFault}</span> — detailed scores are in the Alignment Map below.
         </p>
       )}
     </div>
