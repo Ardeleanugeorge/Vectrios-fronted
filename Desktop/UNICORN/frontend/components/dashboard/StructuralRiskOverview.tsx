@@ -8,6 +8,8 @@ interface StructuralRiskOverviewProps {
   driftStatus?: string
   riskDelta?: number
   suppressTrend?: boolean
+  /** True when volatility banner / critical alerts are active — reconciles trend copy with “structural volatility” */
+  volatileSignalActive?: boolean
 }
 
 export default function StructuralRiskOverview({
@@ -17,7 +19,8 @@ export default function StructuralRiskOverview({
   trendDirection = "unstable",
   driftStatus = "stable",
   riskDelta,
-  suppressTrend = false
+  suppressTrend = false,
+  volatileSignalActive = false,
 }: StructuralRiskOverviewProps) {
   const getTrendColor = (trend: string) => {
     switch (trend) {
@@ -29,17 +32,21 @@ export default function StructuralRiskOverview({
   }
 
   const getTrendLabel = (trend: string) => {
-    switch (trend) {
+    const t = (trend || "stable").toLowerCase()
+    if (t === "unstable") return "Initial baseline forming"
+    if (volatileSignalActive && t === "stable") return "Stabilizing after recent volatility"
+    switch (t) {
       case "escalating": return "Deteriorating"
       case "improving": return "Improving"
-      case "unstable": return "Not enough data yet"
+      case "stable": return "Stable"
       default: return "Stabilizing"
     }
   }
 
   const getTrendSubtext = (trend: string) => {
-    if (trend === "unstable") {
-      return "Monitoring started - insights will improve over time"
+    const t = (trend || "").toLowerCase()
+    if (t === "unstable") {
+      return "Cadence sharpens as monitoring cycles accumulate"
     }
     return null
   }

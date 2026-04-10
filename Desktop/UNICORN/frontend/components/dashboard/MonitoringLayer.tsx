@@ -253,38 +253,12 @@ export default function MonitoringLayer({
   const uiState: UiState =
     monitoringStatus.ui_state_payload?.ui_state ??
     (rii !== null && rii < 40 ? "low" : rii !== null && rii < 70 ? "medium" : "high")
-  const trend = (monitoringStatus.trend_direction || "stable").toLowerCase()
-  const trendText =
-    trend === "improving" ? "Trend: Improving - recent changes are reducing risk."
-    : trend === "escalating" ? "Trend: Declining - risk is increasing over time."
-    : "Trend: Stable - no significant changes detected."
-  // If delta is exactly zero, force a stable message to avoid contradiction with "No change"
   const zeroDelta =
     revenueDelta &&
     typeof revenueDelta.delta_monthly_loss === "number" &&
     revenueDelta.delta_monthly_loss === 0
   const hasRecentCritical = (monitoringStatus.recent_drift_events || []).some(e => (e.severity || "").toLowerCase() === "critical")
   const isVolatile = (monitoringStatus.volatility_classification || "").toLowerCase() !== "stable"
-  const effectiveTrendText =
-    zeroDelta && (hasRecentCritical || isVolatile)
-      ? "Trend: Stabilizing after recent volatility."
-      : (zeroDelta ? "Trend: Stable - no significant changes detected." : trendText)
-  const headline = monitoringStatus.ui_state_payload?.headline ?? (
-    uiState === "low"
-      ? "Revenue system is healthy"
-      : uiState === "medium"
-        ? "Revenue performance can be further optimized"
-        : "Elevated revenue-stage risk"
-  )
-  const subtext = monitoringStatus.ui_state_payload?.subtext ?? (
-    uiState === "low"
-      ? "Minor optimization opportunities remain."
-      : uiState === "medium"
-        ? "Structural gaps are limiting conversion efficiency — see Alignment Map for ICP, anchors, and positioning."
-        : "Elevated structural risk — prioritize playbook and monitoring signals."
-  )
-  const improvementsDetected =
-    typeof riskDelta === "number" && riskDelta < 0 ? Math.max(1, Math.round(Math.abs(riskDelta))) : (uiState === "low" ? 2 : 0)
 
   // Consistency guard should be computed after uiState is known
   const hasInconsistency =
@@ -565,26 +539,6 @@ export default function MonitoringLayer({
         </div>
       )}
 
-      <div className={`p-5 lg:p-6 rounded-lg border ${
-        uiState === "low" ? "border-emerald-700/40 bg-emerald-950/10"
-        : uiState === "medium" ? "border-amber-700/40 bg-amber-950/10"
-        : "border-red-700/40 bg-red-950/10"
-      }`}>
-        <p className="text-lg font-semibold text-white">{headline}</p>
-        <p className="text-sm text-gray-300 mt-1">{subtext}</p>
-        {uiState === "low" && (
-          <p className="text-xs text-emerald-300/80 mt-2">
-            Structurally healthy — remaining upside is mostly ICP and positioning clarity at scale.
-          </p>
-        )}
-        {improvementsDetected > 0 && (
-          <p className="text-xs text-cyan-300/80 mt-2">
-            +{improvementsDetected} improvement{improvementsDetected > 1 ? "s" : ""} detected since last scan.
-          </p>
-        )}
-        <p className="text-xs text-gray-500 mt-2">{effectiveTrendText}</p>
-      </div>
-
       {/* MONITORING STATUS STRIP */}
       {!!currentPlan && (() => {
         const lastEval = monitoringStatus.last_evaluated_at
@@ -782,6 +736,7 @@ export default function MonitoringLayer({
         driftStatus={monitoringStatus.drift_status || "stable"}
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
         suppressTrend={zeroDelta === true}
+        volatileSignalActive={hasCriticalAlerts || isVolatile}
       />
 
       {/* 6. REVENUE-STAGE ALIGNMENT MAP — Diagnostic breakdown (with backend structural_scores fallback) */}

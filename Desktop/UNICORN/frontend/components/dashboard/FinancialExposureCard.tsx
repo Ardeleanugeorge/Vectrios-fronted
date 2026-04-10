@@ -135,7 +135,7 @@ export default function FinancialExposureCard({
         className="relative z-0 p-6 bg-[#111827] rounded-lg border border-gray-800"
       >
         <p className={`text-xs uppercase tracking-wide mb-2 font-medium ${isLowRisk ? "text-emerald-300/80" : isMediumRisk ? "text-amber-300/80" : "text-red-400/80"}`}>
-          {isLowRisk ? "Estimated optimization impact" : "Estimated impact"}
+          {isLowRisk ? "Estimated optimization impact (preview)" : "Estimated impact (preview)"}
         </p>
         <p className="text-lg text-gray-200">
           <span className={`font-bold text-2xl ${isLowRisk ? "text-emerald-300" : isMediumRisk ? "text-amber-300" : "text-red-400"}`}>

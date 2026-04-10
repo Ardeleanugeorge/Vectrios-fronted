@@ -65,7 +65,12 @@ export default function RevenueRiskIndex({
   return (
     <div className="p-10 bg-[#111827] rounded-lg border-2 border-gray-800 mb-8">
       <div className="text-center">
-        <p className="text-sm text-gray-400 mb-4 uppercase tracking-wide">Revenue Risk Index</p>
+        <p
+          className="text-sm text-gray-400 mb-4 uppercase tracking-wide cursor-help inline-block border-b border-dotted border-gray-600"
+          title="Risk classification derived from revenue-stage alignment analysis."
+        >
+          Revenue Risk Index
+        </p>
         <p className="text-xs text-gray-500 mb-3">
           {(() => {
             // Prefer normalized "source" from monitoring status when available
@@ -96,11 +101,8 @@ export default function RevenueRiskIndex({
         ) : (
           <p className="text-2xl font-bold text-gray-500 mb-4">Initializing</p>
         )}
-        <p className="text-xs text-gray-500 italic mb-6">
-          Risk classification derived from revenue-stage alignment analysis.
-        </p>
         {/* Visual legend */}
-        <div className="text-[11px] text-gray-500 mb-4">
+        <div className="text-[11px] text-gray-500 mb-4 mt-6">
           <span className="mr-2">0–30: <span className="text-emerald-400">Excellent</span></span>
           <span className="mr-2">30–50: <span className="text-emerald-300">Strong</span></span>
           <span className="mr-2">50–70: <span className="text-amber-400">Inefficient</span></span>
