@@ -320,6 +320,19 @@ function ScanResultsContent() {
   const [scanCount, setScanCount] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [showEmailCapture, setShowEmailCapture] = useState(false)
+  const [email, setEmail] = useState("")
+  const [capturing, setCapturing] = useState(false)
+  const [captureError, setCaptureError] = useState("")
+  const [unlocked, setUnlocked] = useState(false)
+  const [showFinancialImpact, setShowFinancialImpact] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  /** true = has active trial or paid plan → full paywall bypass */
+  const [hasActivePlan, setHasActivePlan] = useState(false)
+  /** true = billing_cycle === 'trial' */
+  const [isTrialPlan, setIsTrialPlan] = useState(false)
+  const [unlockTransitioning, setUnlockTransitioning] = useState(false)
+  const [previousSnapshot, setPreviousSnapshot] = useState<ScanSnapshot | null>(null)
 
   useEffect(() => {
     if (!token) { setError("No scan token found."); setLoading(false); return }
@@ -355,67 +368,126 @@ function ScanResultsContent() {
   }, [])
 
   /** Restore wide view after email unlock for this scan token.
-   *  If the user is already authenticated, skip the email gate entirely. */
+   *  If the user is already authenticated, skip the email gate entirely.
+   *  hasActivePlan must reflect real subscription — default false, then cache + API. */
   useEffect(() => {
     if (!token || typeof window === "undefined") return
-    try {
-      const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-      if (auth) {
-        // Authenticated — skip email gate regardless of plan
-        setIsAuthenticated(true)
-        setUnlocked(true)
-        setShowFinancialImpact(true)
-        markScanUnlockedWithEmail(token)
+    let cancelled = false
 
-        // Check if they have an active plan (trial or paid) via subscription_cache.
-        // Default = true for authenticated users (they went through onboarding/registration).
-        // Only set false if we explicitly know plan is empty/null.
-        let activePlan = true
-        try {
-          const subCache = localStorage.getItem("subscription_cache")
-          if (subCache) {
-            const parsed = JSON.parse(subCache)
-            // DashboardHeader stores key as "plan" (not "currentPlan")
-            const plan = (parsed.plan || parsed.currentPlan || "").toLowerCase()
-            const hasTrialDays = typeof parsed.trialDaysLeft === "number" && parsed.trialDaysLeft > 0
-            const isPaid = plan && plan !== "free" && plan !== ""
-            // Only override to false if cache explicitly says no plan and no trial days
-            activePlan = isPaid || hasTrialDays
-          }
-          // If cache is missing entirely → keep default true (they have at least a trial)
-        } catch {
-          // Cache corrupt → keep default true
-        }
-        setHasActivePlan(activePlan)
-
-        // Signal dashboard to re-fetch after this new scan
-        sessionStorage.setItem("dashboard_needs_refresh", "1")
-      } else if (isScanUnlockedWithEmail(token)) {
+    const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!auth) {
+      setIsAuthenticated(false)
+      setHasActivePlan(false)
+      if (isScanUnlockedWithEmail(token)) {
         setUnlocked(true)
         setShowFinancialImpact(true)
       } else {
         setUnlocked(false)
         setShowFinancialImpact(false)
       }
-    } catch {
-      /* ignore */
+      return
+    }
+
+    setIsAuthenticated(true)
+    setUnlocked(true)
+    setShowFinancialImpact(true)
+    markScanUnlockedWithEmail(token)
+    sessionStorage.setItem("dashboard_needs_refresh", "1")
+
+    ;(async () => {
+      let activePlan = false
+      try {
+        const subCache = localStorage.getItem("subscription_cache")
+        if (subCache) {
+          const parsed = JSON.parse(subCache)
+          const plan = (parsed.plan || parsed.currentPlan || "").toLowerCase()
+          const billing = (parsed.billing_cycle || "").toLowerCase()
+          const hasTrialDays = typeof parsed.trialDaysLeft === "number" && parsed.trialDaysLeft > 0
+          const isPaid = !!(plan && plan !== "free" && plan !== "none")
+          activePlan = isPaid || billing === "trial" || hasTrialDays
+        }
+      } catch {
+        /* keep false */
+      }
+
+      try {
+        const ud = localStorage.getItem("user_data")
+        const companyId = ud ? JSON.parse(ud).company_id : null
+        if (companyId) {
+          const subRes = await fetch(
+            `${API_URL}/subscription/${encodeURIComponent(String(companyId))}`,
+            { headers: { Authorization: `Bearer ${auth}` } }
+          )
+          if (subRes.ok && !cancelled) {
+            const sub = await subRes.json()
+            const plan = (sub?.plan || "").toLowerCase()
+            const billing = (sub?.billing_cycle || "").toLowerCase()
+            activePlan = (!!plan && plan !== "free" && plan !== "none") || billing === "trial"
+            try {
+              localStorage.setItem(
+                "subscription_cache",
+                JSON.stringify({
+                  plan: plan || null,
+                  billing_cycle: billing || null,
+                  trialDaysLeft: typeof sub?.trial_days_left === "number" ? sub.trial_days_left : null,
+                })
+              )
+            } catch {
+              /* ignore */
+            }
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+
+      if (!cancelled) setHasActivePlan(activePlan)
+    })()
+
+    return () => {
+      cancelled = true
     }
   }, [token])
 
-  const [showEmailCapture, setShowEmailCapture] = useState(false)
-  const [email, setEmail] = useState("")
-  const [capturing, setCapturing] = useState(false)
-  const [captureError, setCaptureError] = useState("")
-  const [unlocked, setUnlocked] = useState(false)
-  const [showFinancialImpact, setShowFinancialImpact] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  /** true = has active trial or paid plan → full paywall bypass */
-  const [hasActivePlan, setHasActivePlan] = useState(false)
-  /** true = billing_cycle === 'trial' */
-  const [isTrialPlan, setIsTrialPlan] = useState(false)
-  const [unlockTransitioning, setUnlockTransitioning] = useState(false)
-  const [previousSnapshot, setPreviousSnapshot] = useState<ScanSnapshot | null>(null)
-
+  /** Sync this scan into dashboard-readable storage when logged in (OTP return path never ran email-capture). */
+  useEffect(() => {
+    if (!data || !token || typeof window === "undefined") return
+    const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!auth) return
+    try {
+      const fullRaw = localStorage.getItem("diagnostic_result_full") || sessionStorage.getItem("diagnostic_result_full")
+      if (fullRaw) {
+        const p = JSON.parse(fullRaw) as { is_partial?: boolean }
+        if (p && !p.is_partial) return
+      }
+    } catch {
+      /* continue */
+    }
+    const partialDiagnostic = {
+      risk_level: data.risk_level || "MODERATE",
+      risk_score: data.rii ?? null,
+      alignment_score: data.alignment ?? null,
+      anchor_density_score: data.anchor_density ?? null,
+      icp_clarity_score: data.icp_clarity ?? null,
+      positioning_coherence_score: data.positioning ?? null,
+      confidence: data.confidence ?? null,
+      inferred_icp: data.inferred_icp || "",
+      primary_signal: data.primary_signal || "",
+      pages_scanned: data.pages_scanned || 0,
+      is_partial: true,
+      source: "instant_scan",
+      scan_token: token,
+    }
+    try {
+      const raw = JSON.stringify(partialDiagnostic)
+      localStorage.setItem("diagnostic_result", raw)
+      sessionStorage.setItem("diagnostic_result", raw)
+      localStorage.setItem("diagnostic_result_partial", raw)
+      sessionStorage.setItem("diagnostic_result_partial", raw)
+    } catch {
+      /* ignore */
+    }
+  }, [data, token])
 
   const forceScrollToTop = () => {
     if (typeof window === "undefined") return
@@ -508,7 +580,7 @@ function ScanResultsContent() {
           const sub = await subRes.json()
           const plan = (sub?.plan || "").toLowerCase()
           const billing = (sub?.billing_cycle || "").toLowerCase()
-          const active = !!plan || billing === "trial"
+          const active = (!!plan && plan !== "free" && plan !== "none") || billing === "trial"
           setHasActivePlan(active)
           setIsTrialPlan(billing === "trial" || plan === "trial")
           // cache for header/dashboard
@@ -1039,7 +1111,7 @@ function ScanResultsContent() {
                 New diagnostic complete. Your dashboard has been updated.
               </p>
               <Link
-                href="/dashboard"
+                href={token ? `/dashboard?token=${encodeURIComponent(token)}` : "/dashboard"}
                 className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg transition whitespace-nowrap"
               >
                 ← Back to Dashboard
@@ -1217,7 +1289,7 @@ function ScanResultsContent() {
                     "Revenue playbook updated with page-level fixes",
                     "RII score and trajectory recalculated",
                     "Benchmark position refreshed",
-                    "Monitoring continues automatically every 24h",
+                    "Continuous monitoring runs after you activate it from the dashboard",
                   ].map((line) => (
                     <li key={line} className="flex items-start gap-2">
                       <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
@@ -1226,7 +1298,7 @@ function ScanResultsContent() {
                   ))}
                 </ul>
                 <Link
-                  href="/dashboard"
+                  href={token ? `/dashboard?token=${encodeURIComponent(token)}` : "/dashboard"}
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
                   ← Back to Dashboard

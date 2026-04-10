@@ -80,6 +80,32 @@ export default function LoginPage() {
         return
       }
 
+      const authTok = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token") || ""
+      const companyIdForSub = data.company_id || null
+      if (authTok && companyIdForSub) {
+        try {
+          const subRes = await fetch(
+            `${API_URL}/subscription/${encodeURIComponent(String(companyIdForSub))}`,
+            { headers: { Authorization: `Bearer ${authTok}` } }
+          )
+          if (subRes.ok) {
+            const sub = await subRes.json()
+            const plan = (sub?.plan || "").toLowerCase()
+            const billing = (sub?.billing_cycle || "").toLowerCase()
+            localStorage.setItem(
+              "subscription_cache",
+              JSON.stringify({
+                plan: plan || null,
+                billing_cycle: billing || null,
+                trialDaysLeft: typeof sub?.trial_days_left === "number" ? sub.trial_days_left : null,
+              })
+            )
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+
       const resume = safeInternalResumePath(data.resume_target)
       if (resume) {
         router.push(resume)

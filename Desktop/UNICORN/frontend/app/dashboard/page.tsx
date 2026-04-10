@@ -206,13 +206,19 @@ export default function DashboardPage() {
     const partialDiagnostic =
       parseStoredDiagnostic(sessionStorage.getItem("diagnostic_result")) ||
       parseStoredDiagnostic(localStorage.getItem("diagnostic_result"))
+    const emailCapturePartial =
+      parseStoredDiagnostic(sessionStorage.getItem("diagnostic_result_partial")) ||
+      parseStoredDiagnostic(localStorage.getItem("diagnostic_result_partial"))
 
     const tokenMatchedDiagnostic =
       activeScanToken
-        ? [partialDiagnostic, fullDiagnostic].find((d) => d?.scan_token === activeScanToken) || null
+        ? [partialDiagnostic, emailCapturePartial, fullDiagnostic].find(
+            (d) => d?.scan_token === activeScanToken
+          ) || null
         : null
 
-    const selectedDiagnostic = tokenMatchedDiagnostic || fullDiagnostic || partialDiagnostic
+    const selectedDiagnostic =
+      tokenMatchedDiagnostic || fullDiagnostic || partialDiagnostic || emailCapturePartial
     if (selectedDiagnostic) {
       try {
         const parsed = selectedDiagnostic
