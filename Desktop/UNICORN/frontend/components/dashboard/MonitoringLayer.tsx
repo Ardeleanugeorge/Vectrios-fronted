@@ -23,6 +23,7 @@ import { computeRevenueTruth, type AlertLite } from "./RevenueTruth"
 import SystemHealthIndicator from "./SystemHealthIndicator"
 import FeatureGate from "./FeatureGate"
 import ActionableInsights, { type ActionLayerPayload } from "./ActionableInsights"
+import { dedupeBuyerHeroPlaybookFixes, playbookKindFromApi } from "./playbookDedupe"
 import Link from "next/link"
 // API_URL already imported above
 
@@ -272,7 +273,9 @@ export default function MonitoringLayer({
   const headline = monitoringStatus.ui_state_payload?.headline ?? (
     uiState === "low"
       ? "Revenue system is healthy"
-      : "Revenue inefficiency detected"
+      : uiState === "medium"
+        ? "Revenue performance can be further optimized"
+        : "Revenue inefficiency detected"
   )
   const subtext = monitoringStatus.ui_state_payload?.subtext ?? (
     uiState === "low"
@@ -354,13 +357,15 @@ export default function MonitoringLayer({
     }).then(async (r) => {
       if (!r.ok) return
       const data = await r.json()
-      const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 3) : []
+      const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 8) : []
       if (!fixesArr.length) return
       const mapFix = (fix: any) => {
         const monthlyLow = typeof fix.estimated_monthly_impact_low === "number" ? fix.estimated_monthly_impact_low : null
         const monthlyHigh = typeof fix.estimated_monthly_impact_high === "number" ? fix.estimated_monthly_impact_high : null
         const monthlyImpact = monthlyLow && monthlyHigh ? `+$${Math.round(monthlyLow).toLocaleString()} – $${Math.round(monthlyHigh).toLocaleString()}/month` : "—"
+        const apiKind = playbookKindFromApi(fix.playbook_kind ?? fix.playbookKind ?? fix.type ?? fix.fix_type)
         return {
+          ...(typeof fix.id === "string" && fix.id ? { id: fix.id } : {}),
           title: fix.title,
           current_example: fix.before || "—",
           suggested_change: fix.after,
@@ -368,7 +373,8 @@ export default function MonitoringLayer({
           impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh || undefined, close_rate: "", arr_recovery: "" },
           page_url: fix.page_url || null,
           behavioral_source: Array.isArray(fix.badges) && fix.badges.some((b:string)=>["HIGH EXIT","INTENT MISMATCH"].includes((b||"").toUpperCase())),
-          badges: Array.isArray(fix.badges) ? fix.badges : []
+          badges: Array.isArray(fix.badges) ? fix.badges : [],
+          ...(apiKind ? { playbookKind: apiKind } : {}),
         }
       }
       // Existing fixes from diagnostic action layer
@@ -382,6 +388,7 @@ export default function MonitoringLayer({
       existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
       newFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
       const mergedFixes = Array.from(fixMap.values())
+      const refinedFixes = dedupeBuyerHeroPlaybookFixes(mergedFixes)
       
       const primary = fixesArr[0]
       const al: ActionLayerPayload = {
@@ -392,7 +399,7 @@ export default function MonitoringLayer({
           "Pricing page → headline + plan cards",
           "Product page → hero + value props",
         ],
-        fixes: mergedFixes,
+        fixes: refinedFixes,
         expected_impact: { close_rate_improvement: "", arr_recovery: "" },
         priority: { level: primary.impact_level, reason: primary.badges?.join(" · ") || "", display_line: undefined },
         top_action: null,
@@ -425,14 +432,25 @@ export default function MonitoringLayer({
     <div className="space-y-6">
       
       {/* ALERTS FIRST — Critical alerts at top */}
-      {hasCriticalAlerts && (
-        <div className={`p-4 rounded border-l-4 ${ (rii !== null && rii < 40) ? "bg-amber-500/10 border-amber-500" : "bg-red-500/10 border-red-500" }`}>
-          <p className={`text-sm font-semibold mb-1 ${ (rii !== null && rii < 40) ? "text-amber-400" : "text-red-400" }`}>Recent critical structural events detected</p>
+      {hasCriticalAlerts && (() => {
+        const moderateBand = rii !== null && rii >= 40 && rii < 70
+        const lowRii = rii !== null && rii < 40
+        const amberBanner = lowRii || moderateBand
+        return (
+        <div className={`p-4 rounded border-l-4 ${amberBanner ? "bg-amber-500/10 border-amber-500" : "bg-red-500/10 border-red-500"}`}>
+          <p className={`text-sm font-semibold mb-1 ${amberBanner ? "text-amber-400" : "text-red-400"}`}>
+            {moderateBand
+              ? "Recent structural volatility detected"
+              : "Recent critical structural events detected"}
+          </p>
           <p className="text-xs text-gray-400">
-            {criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? 's' : ''} require immediate attention.
+            {moderateBand
+              ? `${criticalAlerts.length} open alert${criticalAlerts.length > 1 ? "s" : ""} — monitoring recommended; review below.`
+              : `${criticalAlerts.length} critical alert${criticalAlerts.length > 1 ? "s" : ""} require immediate attention.`}
           </p>
         </div>
-      )}
+        )
+      })()}
 
       {hasInconsistency && (
         <div className="p-3 rounded border border-amber-600/30 bg-amber-900/10">

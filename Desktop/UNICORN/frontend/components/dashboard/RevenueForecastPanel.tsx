@@ -113,6 +113,12 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
               )}
             </div>
           )}
+          {uiState !== "low" && (
+            <p className="text-[11px] text-gray-500 mt-3 pt-3 border-t border-gray-800/80">
+              <span className="text-gray-400">Driven by scale — not high structural risk.</span>{" "}
+              Figures are modeled exposure, not booked loss.
+            </p>
+          )}
         </div>
       )}
 

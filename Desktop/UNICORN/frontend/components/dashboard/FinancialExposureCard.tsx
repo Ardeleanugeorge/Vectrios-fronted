@@ -153,6 +153,12 @@ export default function FinancialExposureCard({
           </a>
           <span className="text-gray-600"> — directional, not audited revenue.</span>
         </p>
+        {!isLowRisk && (
+          <p className="text-[11px] text-gray-500 mt-3 leading-relaxed border-t border-gray-800/80 pt-3">
+            <span className="text-gray-400">Driven by scale — not high structural risk.</span>{" "}
+            Represents modeled exposure, not immediate cash loss.
+          </p>
+        )}
       </div>
     )
   }
@@ -181,6 +187,12 @@ export default function FinancialExposureCard({
             </span>
           )}
         </div>
+        {!isLowRisk && (
+          <p className="text-[11px] text-gray-500 mt-3 max-w-xl">
+            <span className="text-gray-400">Driven by scale — not high structural risk.</span>{" "}
+            Represents modeled exposure, not immediate loss.
+          </p>
+        )}
 
         {/* Gauge + side stats */}
         {compression !== undefined && Math.abs(compression) > 0 && (

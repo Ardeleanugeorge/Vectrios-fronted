@@ -49,6 +49,21 @@ export default function RevenueRiskIndex({
     return "Low Revenue Risk"
   }
 
+  /** Avoid “strong messaging” + “moderate risk” contradiction — copy tracks score band */
+  const heroBodyPrimary =
+    scoreClass === "LOW"
+      ? "Your messaging is structurally strong; primary revenue-stage risk is low."
+      : scoreClass === "MODERATE"
+        ? "Moderate inefficiencies detected — not a primary structural risk."
+        : "Elevated structural risk on revenue-stage messaging — prioritize the playbook and monitoring signals."
+
+  const heroBodySecondary =
+    scoreClass === "LOW"
+      ? "At your scale, small gaps still move the needle — optimization here has outsized returns."
+      : scoreClass === "MODERATE"
+        ? "Inefficiencies are addressable without a full rebuild — see Alignment Map and playbook for levers."
+        : "Large dollar exposure can reflect scale as much as urgency — use model inputs below for context."
+
   return (
     <div className="p-10 bg-[#111827] rounded-lg border-2 border-gray-800 mb-8">
       <div className="text-center">
@@ -74,10 +89,10 @@ export default function RevenueRiskIndex({
             {getRiskLabel()} ✅
           </p>
           <p className="text-sm text-gray-300">
-            Your messaging is structurally strong and not a primary risk.
+            {heroBodyPrimary}
           </p>
           <p className="text-xs text-gray-500 mt-2">
-            Even with low risk, at your scale small inefficiencies translate into significant revenue impact. <span className="text-gray-400">This is where optimization creates outsized returns.</span>
+            {heroBodySecondary}
           </p>
           </>
         ) : (

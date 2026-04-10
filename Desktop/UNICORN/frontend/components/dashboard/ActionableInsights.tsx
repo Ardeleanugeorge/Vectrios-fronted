@@ -3,6 +3,16 @@
 import { useState, useCallback } from "react"
 import SourceChip from "./SourceChip"
 import FeatureGate from "./FeatureGate"
+import {
+  dedupeBuyerHeroPlaybookFixes,
+  PLAYBOOK_KINDS,
+  type PlaybookFixKind,
+} from "./playbookDedupe"
+import {
+  trackPlaybookFixCardClick,
+  trackPlaybookFixCopy,
+  trackPlaybookFixPageClick,
+} from "@/lib/playbookAnalytics"
 
 export type FixImpactContribution = {
   close_rate: string
@@ -16,6 +26,8 @@ export type ActionFix = {
   current_example: string
   suggested_change: string
   reason: string
+  /** When set (API or client), dedupe uses this instead of title regex */
+  playbookKind?: PlaybookFixKind
   impact_contribution?: FixImpactContribution
   behavioral_source?: boolean  // true when Fix #1 is driven by real GA4+GSC data
   page_url?: string | null
@@ -131,6 +143,7 @@ export function buildLightweightActionLayer(
               : "State category + ‘Unlike X, we Y’ with one proof point in hero.",
       reason: "Highest ROI comes from fixing the lowest structural score first.",
       impact_contribution: perFix(0),
+      playbookKind: PLAYBOOK_KINDS.GENERAL,
     },
     {
       title: "Align secondary pages to the same story",
@@ -138,6 +151,7 @@ export function buildLightweightActionLayer(
       suggested_change: "Use the same buyer + outcome language on pricing and product as the homepage.",
       reason: "Inconsistent pages create late-stage drop-off.",
       impact_contribution: perFix(1),
+      playbookKind: PLAYBOOK_KINDS.POSITIONING,
     },
     {
       title: "Measure proof next to CTAs",
@@ -145,6 +159,7 @@ export function buildLightweightActionLayer(
       suggested_change: "Add logos + one quantified customer line beside primary CTAs.",
       reason: "Decisions happen where the CTA is.",
       impact_contribution: perFix(2),
+      playbookKind: PLAYBOOK_KINDS.PROOF_CTA,
     },
   ]
 
@@ -195,13 +210,15 @@ interface ActionableInsightsProps {
   useMonitoringSnapshot?: boolean
 }
 
-function CopyButton({ text }: { text: string }) {
+function CopyButton({ text, onCopied }: { text: string; onCopied?: () => void }) {
   const [copied, setCopied] = useState(false)
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(text).then(() => {
+    const fireCopied = () => {
+      onCopied?.()
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    }).catch(() => {
+    }
+    navigator.clipboard.writeText(text).then(fireCopied).catch(() => {
       // fallback for older browsers
       const el = document.createElement("textarea")
       el.value = text
@@ -209,10 +226,9 @@ function CopyButton({ text }: { text: string }) {
       el.select()
       document.execCommand("copy")
       document.body.removeChild(el)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      fireCopied()
     })
-  }, [text])
+  }, [text, onCopied])
 
   return (
     <button
@@ -261,8 +277,24 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
   const monthlyChip = fix.impact_contribution?.monthly_impact || ""
   const compact = formatCompactMoneyLabel(monthlyChip)
 
+  const analyticsPayload = {
+    fix_index: index,
+    fix_title: fix.title,
+    playbook_kind: fix.playbookKind ?? null,
+    page_url: fix.page_url ?? null,
+  }
+
   return (
-    <div className="rounded-lg bg-[#0B0F19] border border-gray-800 overflow-hidden" style={{ display: 'block', opacity: 1 }}>
+    <div
+      className="rounded-lg bg-[#0B0F19] border border-gray-800 overflow-hidden"
+      style={{ display: "block", opacity: 1 }}
+      data-playbook-fix-index={index}
+      onClick={(e) => {
+        const t = e.target as HTMLElement
+        if (t.closest("button, a")) return
+        trackPlaybookFixCardClick(analyticsPayload)
+      }}
+    >
       {/* Header */}
       <div className="px-4 pt-4 pb-3 border-b border-gray-800/60">
         <p className="text-xs font-semibold uppercase tracking-wide text-cyan-500/90">
@@ -288,6 +320,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
             target="_blank"
             rel="noreferrer"
             className="block text-[11px] text-cyan-300 hover:text-cyan-200 mt-1.5"
+            onClick={() => trackPlaybookFixPageClick(analyticsPayload)}
           >
             Open page →
           </a>
@@ -314,7 +347,12 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
         <div className="px-4 py-3 space-y-2">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/70">After (suggested)</p>
-            {hasRealAfter && <CopyButton text={fix.suggested_change} />}
+            {hasRealAfter && (
+              <CopyButton
+                text={fix.suggested_change}
+                onCopied={() => trackPlaybookFixCopy(analyticsPayload)}
+              />
+            )}
           </div>
           <p className="text-sm text-white leading-relaxed">{fix.suggested_change}</p>
           {/* Evidence bullets from badges / behavioral signals */}
@@ -386,7 +424,8 @@ export default function ActionableInsights({
   // Merge fixes: take baseLayer fixes, then add any placeholder fixes not already present (by title)
   const existingTitles = new Set(baseLayer.fixes.map(f => f.title.toLowerCase()));
   const additionalFixes = placeholderLayer.fixes.filter(f => !existingTitles.has(f.title.toLowerCase()));
-  const mergedFixes = [...baseLayer.fixes, ...additionalFixes].slice(0, 3); // keep at most 3
+  const combined = [...baseLayer.fixes, ...additionalFixes].slice(0, 8);
+  const mergedFixes = dedupeBuyerHeroPlaybookFixes(combined);
 
   const effectiveLayer = {
     ...baseLayer,
