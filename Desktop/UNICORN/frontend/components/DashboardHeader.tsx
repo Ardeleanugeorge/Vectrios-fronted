@@ -4,7 +4,7 @@ import { API_URL } from '@/lib/config'
 import { isScanUnlockedWithEmail } from "@/lib/scanResultsRefine"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import Link from "next/link"
 
 const PLAN_COLORS: Record<string, string> = {
@@ -48,6 +48,61 @@ function writeSubCache(data: Omit<SubCache, "ts">) {
   } catch {}
 }
 
+/** e.g. vercel.com → Vercel */
+function brandLabelFromMonitoredHost(host: string): string {
+  const h = (host || "").replace(/^www\./i, "").split("/")[0].trim()
+  if (!h) return ""
+  const first = h.split(".")[0] || h
+  return first.charAt(0).toUpperCase() + first.slice(1).replace(/[-_]/g, " ")
+}
+
+function readPreferredScanTokenForApi(): string | null {
+  try {
+    if (typeof window === "undefined") return null
+    const tokenCandidates: string[] = []
+    const pushToken = (value: unknown) => {
+      const t = typeof value === "string" ? value.trim() : ""
+      if (t && !tokenCandidates.includes(t)) tokenCandidates.push(t)
+    }
+    const readJson = (raw: string | null) => {
+      if (!raw) return null
+      try {
+        return JSON.parse(raw) as { scan_token?: string }
+      } catch {
+        return null
+      }
+    }
+    const diagFull =
+      readJson(sessionStorage.getItem("diagnostic_result_full")) ||
+      readJson(localStorage.getItem("diagnostic_result_full"))
+    const diagPartial =
+      readJson(sessionStorage.getItem("diagnostic_result")) ||
+      readJson(localStorage.getItem("diagnostic_result"))
+    const scanData =
+      readJson(sessionStorage.getItem("scan_data")) ||
+      readJson(localStorage.getItem("scan_data"))
+    pushToken(diagFull?.scan_token)
+    pushToken(diagPartial?.scan_token)
+    pushToken(scanData?.scan_token)
+    return tokenCandidates.find((t) => isScanUnlockedWithEmail(t)) || tokenCandidates[0] || null
+  } catch {
+    return null
+  }
+}
+
+/** Dashboard ?token= wins so header matches the scan context. */
+function scanTokenForMonitoringFetch(): string | null {
+  if (typeof window !== "undefined") {
+    try {
+      const u = new URLSearchParams(window.location.search).get("token")
+      if (u?.trim()) return u.trim()
+    } catch {
+      /* ignore */
+    }
+  }
+  return readPreferredScanTokenForApi()
+}
+
 // ── Lazy initializer — runs synchronously client-side before first paint ──────
 function initFromCache<T>(key: keyof SubCache, fallback: T): T {
   if (typeof window === "undefined") return fallback
@@ -57,6 +112,9 @@ function initFromCache<T>(key: keyof SubCache, fallback: T): T {
 export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadge?: boolean }) {
   const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const scanTokenKey = searchParams.get("token") || ""
 
   // Read user_data synchronously — no flash on client
   const [user, setUser] = useState<any>(() => {
@@ -74,6 +132,8 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const [currentPlan,   setCurrentPlan]   = useState<string | null>(() => initFromCache("plan",          null))
   const [billingCycle,  setBillingCycle]   = useState<string | null>(() => initFromCache("billingCycle",  null))
   const [trialDaysLeft, setTrialDaysLeft]  = useState<number | null>(() => initFromCache("trialDaysLeft", null))
+
+  const [monitoredBrand, setMonitoredBrand] = useState<{ label: string; domain: string } | null>(null)
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -214,6 +274,45 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     }
   }, [router])
 
+  useEffect(() => {
+    const companyId = user?.company_id
+    const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!companyId || !auth) {
+      setMonitoredBrand(null)
+      return
+    }
+    const st = scanTokenForMonitoringFetch()
+    const qs = st ? `?scan_token=${encodeURIComponent(st)}` : ""
+    let cancelled = false
+    const run = () => {
+      fetch(`${API_URL}/monitoring/status/${companyId}${qs}`, {
+        headers: { Authorization: `Bearer ${auth}` },
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (cancelled) return
+          if (data?.monitoring_active && data?.monitored_domain) {
+            const domain = String(data.monitored_domain)
+            const label = brandLabelFromMonitoredHost(domain)
+            if (label) setMonitoredBrand({ domain, label })
+            else setMonitoredBrand(null)
+          } else {
+            setMonitoredBrand(null)
+          }
+        })
+        .catch(() => {
+          if (!cancelled) setMonitoredBrand(null)
+        })
+    }
+    run()
+    const onRefresh = () => run()
+    window.addEventListener("subscription_updated", onRefresh)
+    return () => {
+      cancelled = true
+      window.removeEventListener("subscription_updated", onRefresh)
+    }
+  }, [user?.company_id, pathname, scanTokenKey])
+
   const handleLogout = () => {
     sessionStorage.removeItem("auth_token")
     localStorage.removeItem("auth_token")
@@ -229,39 +328,12 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const planColorClass = planDisplay ? (PLAN_COLORS[planDisplay.colorKey] || PLAN_COLORS.starter) : ""
   const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
   const displayCompanyName = isOwner ? "VectriOS" : (user?.company_name || "Account")
+  const headerPrimaryName =
+    !isOwner && monitoredBrand ? monitoredBrand.label : displayCompanyName
+  const headerPrimaryInitial =
+    (headerPrimaryName?.trim()?.[0] || "A").toUpperCase()
 
-  const readPreferredScanToken = (): string | null => {
-    try {
-      const tokenCandidates: string[] = []
-      const pushToken = (value: unknown) => {
-        const t = typeof value === "string" ? value.trim() : ""
-        if (t && !tokenCandidates.includes(t)) tokenCandidates.push(t)
-      }
-      const readJson = (raw: string | null) => {
-        if (!raw) return null
-        try {
-          return JSON.parse(raw) as { scan_token?: string }
-        } catch {
-          return null
-        }
-      }
-      const diagFull =
-        readJson(sessionStorage.getItem("diagnostic_result_full")) ||
-        readJson(localStorage.getItem("diagnostic_result_full"))
-      const diagPartial =
-        readJson(sessionStorage.getItem("diagnostic_result")) ||
-        readJson(localStorage.getItem("diagnostic_result"))
-      const scanData =
-        readJson(sessionStorage.getItem("scan_data")) ||
-        readJson(localStorage.getItem("scan_data"))
-      pushToken(diagFull?.scan_token)
-      pushToken(diagPartial?.scan_token)
-      pushToken(scanData?.scan_token)
-      return tokenCandidates.find((t) => isScanUnlockedWithEmail(t)) || tokenCandidates[0] || null
-    } catch {
-      return null
-    }
-  }
+  const readPreferredScanToken = (): string | null => readPreferredScanTokenForApi()
 
   const handleSmartDashboard = async () => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -269,7 +341,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       router.push("/login")
       return
     }
-    const activeToken = readPreferredScanToken()
+    const activeToken = scanTokenForMonitoringFetch()
     const companyId = user?.company_id || null
     try {
       if (companyId) {
@@ -327,17 +399,13 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
               className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition"
             >
               <div className="text-right">
-                <p className="text-sm font-medium text-white">
-                  {displayCompanyName}
-                </p>
+                <p className="text-sm font-medium text-white">{headerPrimaryName}</p>
                 {user?.email && (
                   <p className="text-xs text-gray-400">{user.email}</p>
                 )}
               </div>
               <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
-                <span className="text-cyan-400 font-semibold">
-                  {displayCompanyName?.[0]?.toUpperCase() || "A"}
-                </span>
+                <span className="text-cyan-400 font-semibold">{headerPrimaryInitial}</span>
               </div>
               <svg
                 className={`w-5 h-5 text-gray-400 transition-transform ${showMenu ? "rotate-180" : ""}`}
@@ -352,7 +420,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
               <div className="absolute right-0 top-full mt-2 w-56 bg-[#111827] border border-gray-800 rounded-lg shadow-xl z-[100]">
                 <div className="py-2">
                   <div className="px-4 py-3 border-b border-gray-800">
-                    <p className="text-sm font-medium text-white">{displayCompanyName}</p>
+                    <p className="text-sm font-medium text-white">{headerPrimaryName}</p>
                     {user?.email && (
                       <p className="text-xs text-gray-400 mt-0.5">{user.email}</p>
                     )}
