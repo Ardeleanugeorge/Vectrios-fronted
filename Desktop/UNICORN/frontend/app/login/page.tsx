@@ -131,7 +131,10 @@ export default function LoginPage() {
         setSubmitting(false)
         return
       }
-      setOtpInfo(data.message || "If this email is registered, a sign-in code was sent.")
+      setOtpInfo(
+        data.message ||
+          "If this email is registered, we sent a code — check inbox and spam; wait 1–2 minutes."
+      )
       setOtpStep("code")
       setOtpCode("")
     } catch {
@@ -297,8 +300,8 @@ export default function LoginPage() {
                 {submitting ? "Sending…" : "Email me a sign-in code"}
               </button>
               <p className="text-center text-sm text-gray-500">
-                We&apos;ll email a 6-digit code. Sessions stay signed in for a long time — you won&apos;t need a code
-                every visit.
+                We email a 6-digit code only if this address is already registered. Check Spam/Junk (iCloud/Gmail).
+                Sessions stay signed in for a long time — you won&apos;t need a code every visit.
               </p>
               <button
                 type="button"
@@ -318,8 +321,14 @@ export default function LoginPage() {
             <form onSubmit={handleVerifyOtp} className="space-y-6">
               <div>
                 <p className="text-sm text-gray-400 mb-2">
-                  Code sent to <span className="text-white font-medium">{email}</span>
+                  Use the code for <span className="text-white font-medium">{email}</span> (inbox + Spam/Junk +
+                  Promotions). Nothing there? Confirm the email matches your account or use password below.
                 </p>
+                {otpInfo && (
+                  <div className="mb-3 p-3 bg-emerald-500/10 border border-emerald-500/25 rounded-lg text-emerald-200 text-sm">
+                    {otpInfo}
+                  </div>
+                )}
                 <label className="block text-sm font-medium mb-2">6-digit code *</label>
                 <input
                   type="text"
