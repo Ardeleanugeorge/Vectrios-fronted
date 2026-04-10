@@ -462,7 +462,7 @@ function ScanResultsContent() {
       const result = await res.json()
 
       // ── Existing user with password → redirect to login ──────────────────────
-      if (result.requires_login) {
+      if (result.requires_login || result.status === "login_required") {
         const loginUrl = `/login?email=${encodeURIComponent(result.email || email.trim())}&reason=existing_account`
         setCapturing(false)
         // Show a brief confirmation before redirect
