@@ -270,17 +270,35 @@ export default function PricingPage() {
       router.replace("/login")
       return
     }
-    const companyId = await resolveCompanyId(token)
+    let companyId = await resolveCompanyId(token)
     if (!companyId) {
-      setIsRouteTransitioning(true)
-      router.replace("/account")
+      setIsProcessing(false)
+      alert("Could not resolve your workspace. Please refresh the page and try again, or sign out and back in.")
       return
+    }
+    try {
+      const ud = localStorage.getItem("user_data")
+      if (ud) {
+        const p = JSON.parse(ud) as { company_id?: string }
+        if (p.company_id !== companyId) {
+          localStorage.setItem("user_data", JSON.stringify({ ...p, company_id: companyId }))
+        }
+      }
+      localStorage.setItem("company_id", companyId)
+      sessionStorage.setItem("company_id", companyId)
+    } catch {
+      /* ignore */
     }
 
     setIsProcessing(true)
     setSelectedPlanName("Trial (Scale)")
     try {
-      const res = await fetch(`${API_URL}/monitoring/activate/${companyId}`, {
+      const scanTok = currentScanTokenFromStorage()
+      const activateUrl =
+        scanTok != null && scanTok !== ""
+          ? `${API_URL}/monitoring/activate/${companyId}?scan_token=${encodeURIComponent(scanTok)}`
+          : `${API_URL}/monitoring/activate/${companyId}`
+      const res = await fetch(activateUrl, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -304,11 +322,23 @@ export default function PricingPage() {
       router.replace("/login")
       return
     }
-    const companyId = await resolveCompanyId(token)
+    let companyId = await resolveCompanyId(token)
     if (!companyId) {
-      setIsRouteTransitioning(true)
-      router.replace("/account")
+      alert("Could not resolve your workspace. Please refresh the page and try again, or sign out and back in.")
       return
+    }
+    try {
+      const ud = localStorage.getItem("user_data")
+      if (ud) {
+        const p = JSON.parse(ud) as { company_id?: string }
+        if (p.company_id !== companyId) {
+          localStorage.setItem("user_data", JSON.stringify({ ...p, company_id: companyId }))
+        }
+      }
+      localStorage.setItem("company_id", companyId)
+      sessionStorage.setItem("company_id", companyId)
+    } catch {
+      /* ignore */
     }
 
     setIsProcessing(true)
@@ -339,7 +369,12 @@ export default function PricingPage() {
       }
       // Test fallback: if checkout is not configured yet, still activate monitoring
       // and keep the user in pricing experience with selected plan context.
-      await fetch(`${API_URL}/monitoring/activate/${companyId}`, {
+      const scanTokPlan = currentScanTokenFromStorage()
+      const activatePlanUrl =
+        scanTokPlan != null && scanTokPlan !== ""
+          ? `${API_URL}/monitoring/activate/${companyId}?scan_token=${encodeURIComponent(scanTokPlan)}`
+          : `${API_URL}/monitoring/activate/${companyId}`
+      await fetch(activatePlanUrl, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       }).catch(() => {})

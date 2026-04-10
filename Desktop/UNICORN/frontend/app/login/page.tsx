@@ -62,13 +62,27 @@ export default function LoginPage() {
         localStorage.setItem("auth_token", data.token)
       }
       if (data.user_id) {
+        let prev: Record<string, unknown> = {}
+        try {
+          prev = JSON.parse(localStorage.getItem("user_data") || "{}") as Record<string, unknown>
+        } catch {
+          prev = {}
+        }
+        const coId =
+          data.company_id != null && String(data.company_id).trim() !== ""
+            ? data.company_id
+            : (prev.company_id as string | null | undefined) ?? null
+        const coName =
+          data.company_name != null && String(data.company_name).trim() !== ""
+            ? data.company_name
+            : (prev.company_name as string) || ""
         localStorage.setItem(
           "user_data",
           JSON.stringify({
             user_id: data.user_id,
             email: data.email || resolvedEmail,
-            company_name: data.company_name || "",
-            company_id: data.company_id || null,
+            company_name: coName,
+            company_id: coId,
           })
         )
       }
