@@ -13,6 +13,17 @@ type LoginPayload = {
   email: string
   company_name?: string
   company_id?: string | null
+  /** From UserProgress.last_route — e.g. /scan-results?token=… after unlock-with-existing-account */
+  resume_target?: string | null
+}
+
+/** Only allow same-origin paths (no open redirect). */
+function safeInternalResumePath(raw: string | null | undefined): string | null {
+  if (!raw || typeof raw !== "string") return null
+  const t = raw.trim()
+  if (!t.startsWith("/") || t.startsWith("//")) return null
+  if (t.includes("://") || t.includes("\\")) return null
+  return t
 }
 
 export default function LoginPage() {
@@ -66,6 +77,12 @@ export default function LoginPage() {
         .toLowerCase()
       if (em === OWNER_EMAIL.toLowerCase()) {
         router.push("/account?tab=system")
+        return
+      }
+
+      const resume = safeInternalResumePath(data.resume_target)
+      if (resume) {
+        router.push(resume)
         return
       }
 
@@ -174,6 +191,7 @@ export default function LoginPage() {
           email: data.email,
           company_name: data.company_name,
           company_id: data.company_id,
+          resume_target: data.resume_target,
         },
         email
       )
@@ -204,6 +222,7 @@ export default function LoginPage() {
             email: data.email,
             company_name: data.company_name,
             company_id: data.company_id,
+            resume_target: data.resume_target,
           },
           email
         )
