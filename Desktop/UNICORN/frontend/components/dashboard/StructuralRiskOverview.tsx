@@ -6,7 +6,6 @@ interface StructuralRiskOverviewProps {
   riskLevel: string
   trendDirection?: string
   driftStatus?: string
-  volatility?: string
   riskDelta?: number
   suppressTrend?: boolean
 }
@@ -17,7 +16,6 @@ export default function StructuralRiskOverview({
   riskLevel,
   trendDirection = "unstable",
   driftStatus = "stable",
-  volatility = "stable",
   riskDelta,
   suppressTrend = false
 }: StructuralRiskOverviewProps) {
@@ -124,17 +122,6 @@ export default function StructuralRiskOverview({
           <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Drift Detection</p>
           <p className={`text-2xl font-semibold ${getDriftColor(driftStatus)}`}>
             {getDriftLabel(driftStatus)}
-          </p>
-        </div>
-
-        <div>
-          <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Volatility Profile</p>
-          <p className={`text-2xl font-semibold ${
-            volatility === "high" ? "text-red-400" :
-            volatility === "moderate" ? "text-yellow-400" :
-            "text-green-400"
-          }`}>
-            {volatility.charAt(0).toUpperCase() + volatility.slice(1)}
           </p>
         </div>
       </div>

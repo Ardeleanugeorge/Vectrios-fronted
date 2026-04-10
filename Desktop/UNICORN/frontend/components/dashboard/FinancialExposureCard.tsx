@@ -33,6 +33,10 @@ function fmt(val: number): string {
   return `$${Math.round(val).toLocaleString()}`
 }
 
+/** Single ARR / exposure framing — shown once per surface (non–low-risk) */
+const MODELED_EXPOSURE_DISCLAIMER =
+  "Driven by scale — not high structural risk. Represents modeled exposure, not immediate loss."
+
 /** Semi-circular gauge — supports risk and opportunity modes */
 function CompressionGauge({ raw, isLowRisk }: { raw: number; isLowRisk: boolean }) {
   const value = Math.abs(raw)                      // ← fix: always positive
@@ -63,7 +67,7 @@ function CompressionGauge({ raw, isLowRisk }: { raw: number; isLowRisk: boolean 
           {isLowRisk ? "+" : "-"}{value.toFixed(1)}%
         </span>
         <p className="text-xs text-gray-500 mt-0.5">
-          {isLowRisk ? "Performance improvement available" : "Revenue inefficiency (modeled close-rate impact)"}
+          {isLowRisk ? "Performance improvement available" : "Modeled close-rate impact"}
         </p>
       </div>
     </div>
@@ -155,8 +159,7 @@ export default function FinancialExposureCard({
         </p>
         {!isLowRisk && (
           <p className="text-[11px] text-gray-500 mt-3 leading-relaxed border-t border-gray-800/80 pt-3">
-            <span className="text-gray-400">Driven by scale — not high structural risk.</span>{" "}
-            Represents modeled exposure, not immediate cash loss.
+            {MODELED_EXPOSURE_DISCLAIMER}
           </p>
         )}
       </div>
@@ -181,17 +184,9 @@ export default function FinancialExposureCard({
               {Math.round(confidence * 100)}% model confidence
             </span>
           )}
-          {isLowRisk && (
-            <span className="mb-1 ml-2 text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/30 text-emerald-300 bg-emerald-500/10">
-              Driven by scale, not high risk
-            </span>
-          )}
         </div>
         {!isLowRisk && (
-          <p className="text-[11px] text-gray-500 mt-3 max-w-xl">
-            <span className="text-gray-400">Driven by scale — not high structural risk.</span>{" "}
-            Represents modeled exposure, not immediate loss.
-          </p>
+          <p className="text-[11px] text-gray-500 mt-3 max-w-xl">{MODELED_EXPOSURE_DISCLAIMER}</p>
         )}
 
         {/* Gauge + side stats */}
@@ -266,7 +261,7 @@ export default function FinancialExposureCard({
           {isLowRisk
             ? "Low structural risk. Remaining impact reflects optimization opportunity, not critical revenue leakage."
             : isMediumRisk
-              ? "Revenue inefficiency detected. Alignment improvements can recover meaningful upside."
+              ? "Alignment improvements can recover meaningful upside — see playbook and model for levers."
               : "Structural degradation indicates active revenue leakage risk if left uncorrected."}
         </p>
       </div>

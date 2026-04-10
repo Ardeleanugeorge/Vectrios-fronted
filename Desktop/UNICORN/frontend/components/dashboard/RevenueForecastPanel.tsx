@@ -96,7 +96,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
           </div>
           {forecast.primary_stage && (
             <div className={`mt-2 text-sm ${uiState === "low" ? "text-emerald-300/70" : "text-red-300/70"}`}>
-              {uiState === "low" ? "Primary optimization gap: " : "Revenue inefficiency — primary stage: "}
+              {uiState === "low" ? "Primary optimization gap: " : "Primary compression stage: "}
               <span className={`font-medium ${uiState === "low" ? "text-emerald-300" : "text-red-300"}`}>{forecast.primary_stage}</span>
             </div>
           )}
@@ -115,8 +115,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
           )}
           {uiState !== "low" && (
             <p className="text-[11px] text-gray-500 mt-3 pt-3 border-t border-gray-800/80">
-              <span className="text-gray-400">Driven by scale — not high structural risk.</span>{" "}
-              Figures are modeled exposure, not booked loss.
+              Driven by scale — not high structural risk. Represents modeled exposure, not immediate loss.
             </p>
           )}
         </div>

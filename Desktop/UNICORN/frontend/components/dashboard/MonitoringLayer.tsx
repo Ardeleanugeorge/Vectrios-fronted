@@ -19,7 +19,6 @@ import RevenueRiskTrajectoryPanel from "./RevenueRiskTrajectoryPanel"
 import RevenueTrajectorySimulation from "./RevenueTrajectorySimulation"
 import BenchmarkPanel from "./BenchmarkPanel"
 import FinancialExposureCard from "./FinancialExposureCard"
-import { computeRevenueTruth, type AlertLite } from "./RevenueTruth"
 import SystemHealthIndicator from "./SystemHealthIndicator"
 import FeatureGate from "./FeatureGate"
 import ActionableInsights, { type ActionLayerPayload } from "./ActionableInsights"
@@ -275,7 +274,7 @@ export default function MonitoringLayer({
       ? "Revenue system is healthy"
       : uiState === "medium"
         ? "Revenue performance can be further optimized"
-        : "Revenue inefficiency detected"
+        : "Elevated revenue-stage risk"
   )
   const subtext = monitoringStatus.ui_state_payload?.subtext ?? (
     uiState === "low"
@@ -409,25 +408,6 @@ export default function MonitoringLayer({
     }).catch(() => {})
   }, [companyId, diagnostic?.action_layer])
 
-  // Build Revenue Truth Layer (frontend interim until backend supplies it)
-  const alertsLite: AlertLite[] = (monitoringStatus.recent_drift_events || []).map(e => ({
-    severity: (e.severity?.toLowerCase?.() as any) || "info",
-    delta: e.delta
-  }))
-  const arrUsed = forecast?.arr_used ?? null
-  const monthlyLossTruth = monthlyExposure || forecast?.estimated_monthly_exposure || null
-  const truth = monitoringStatus.revenue_truth ?? computeRevenueTruth({
-      rii: rii ?? null,
-      arr: arrUsed,
-      monthlyLoss: monthlyLossTruth,
-      closeRateDelta: closeRateDelta ?? null,
-      alerts: alertsLite,
-      trend: monitoringStatus.trend_direction || null,
-      volatility: monitoringStatus.volatility_classification || null,
-    })
-  const truthLossPct = (truth as any).loss_pct_text ?? (truth as any).lossPctText ?? undefined
-
-
   return (
     <div className="space-y-6">
       
@@ -467,13 +447,6 @@ export default function MonitoringLayer({
           primaryRiskDriver={primaryRiskDriver}
         />
       )}
-
-      {/* REVENUE TRUTH BANNER — unified semantic layer */}
-      <div className="p-5 rounded-lg border border-cyan-700/30 bg-cyan-950/10">
-        <p className="text-sm font-semibold text-cyan-300">{truth.headline}</p>
-        <p className="text-xs text-gray-300 mt-1">{truth.subtext}{truthLossPct ? ` — ${truthLossPct}` : ""}</p>
-        <p className="text-xs text-gray-500 mt-1">{truth.explanation}</p>
-      </div>
 
       {/* FULL DIAGNOSTIC NUDGE — shown only when monitoring has NEVER run
            (no last_evaluated_at = no monitoring cycle completed yet).
@@ -807,7 +780,6 @@ export default function MonitoringLayer({
         riskLevel={diagnostic?.risk_level || "MODERATE"}
         trendDirection={monitoringStatus.trend_direction || "unstable"}
         driftStatus={monitoringStatus.drift_status || "stable"}
-        volatility={monitoringStatus.volatility_classification || "stable"}
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
         suppressTrend={zeroDelta === true}
       />

@@ -9,7 +9,6 @@ interface RevenueRiskIndexProps {
   source?: "monitoring" | "diagnostic" | "fallback"
   coveragePct?: number | null
   assessmentDate?: string | null
-  contextNote?: string | null
 }
 
 export default function RevenueRiskIndex({
@@ -21,7 +20,6 @@ export default function RevenueRiskIndex({
   source,
   coveragePct = null,
   assessmentDate = null,
-  contextNote = null,
 }: RevenueRiskIndexProps) {
   const effectiveConfidence = typeof coveragePct === "number" ? coveragePct : confidence
   const displayScore = riskScore !== null ? Math.min(riskScore, 100) : null
@@ -54,14 +52,14 @@ export default function RevenueRiskIndex({
     scoreClass === "LOW"
       ? "Your messaging is structurally strong; primary revenue-stage risk is low."
       : scoreClass === "MODERATE"
-        ? "Moderate inefficiencies detected — not a primary structural risk."
+        ? "Moderate revenue inefficiencies detected — not a primary structural risk."
         : "Elevated structural risk on revenue-stage messaging — prioritize the playbook and monitoring signals."
 
   const heroBodySecondary =
     scoreClass === "LOW"
       ? "At your scale, small gaps still move the needle — optimization here has outsized returns."
       : scoreClass === "MODERATE"
-        ? "Inefficiencies are addressable without a full rebuild — see Alignment Map and playbook for levers."
+        ? "At your scale, even small inefficiencies create significant revenue impact."
         : "Large dollar exposure can reflect scale as much as urgency — use model inputs below for context."
 
   return (
@@ -101,9 +99,6 @@ export default function RevenueRiskIndex({
         <p className="text-xs text-gray-500 italic mb-6">
           Risk classification derived from revenue-stage alignment analysis.
         </p>
-        {contextNote && (
-          <p className="text-xs text-amber-300 mb-4">{contextNote}</p>
-        )}
         {/* Visual legend */}
         <div className="text-[11px] text-gray-500 mb-4">
           <span className="mr-2">0–30: <span className="text-emerald-400">Excellent</span></span>

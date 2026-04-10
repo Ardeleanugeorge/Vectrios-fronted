@@ -44,7 +44,7 @@ export default function ExecutiveInterpretation({
   const takeawayLine =
     uiState === "low"
       ? "Low structural risk, with meaningful upside at scale driven by ICP and positioning clarity."
-      : "Revenue inefficiency detected — tighten messaging alignment using the playbook and Revenue-Stage Alignment Map."
+      : "Tighten conversion-stage messaging using the playbook and Revenue-Stage Alignment Map — ICP clarity, anchors, and positioning carry the most leverage."
 
   return (
     <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">

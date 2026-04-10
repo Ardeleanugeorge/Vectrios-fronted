@@ -64,7 +64,7 @@ export default function RevenueSystemStatus({
           <p className="text-sm text-gray-500 mt-2">
             {uiState === "low"
               ? "Structurally healthy — low revenue risk."
-              : `Revenue inefficiency is ${deltaDirection === "better" ? "improving" : "worsening"} versus last scan (structural ${deltaDirection === "better" ? "gains" : "gaps"}).`}
+              : `Versus last scan: ${deltaDirection === "better" ? "improving" : "worsening"} (${deltaDirection === "better" ? "structural gains" : "structural gaps"}).`}
           </p>
         </div>
       ) : (
