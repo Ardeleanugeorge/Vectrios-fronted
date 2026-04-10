@@ -262,7 +262,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
   const compact = formatCompactMoneyLabel(monthlyChip)
 
   return (
-    <div className="rounded-lg bg-[#0B0F19] border border-gray-800 overflow-hidden">
+    <div className="rounded-lg bg-[#0B0F19] border border-gray-800 overflow-hidden" style={{ display: 'block', opacity: 1 }}>
       {/* Header */}
       <div className="px-4 pt-4 pb-3 border-b border-gray-800/60">
         <p className="text-xs font-semibold uppercase tracking-wide text-cyan-500/90">
@@ -368,17 +368,30 @@ export default function ActionableInsights({
         ? "border-amber-800/40"
         : "border-red-800/40"
 
-  const effectiveLayer =
-    actionLayer?.primary_issue?.title && actionLayer.fixes?.length
-      ? actionLayer
-      : buildLightweightActionLayer(
-          alignmentScore,
-          icpClarity,
-          anchorDensity,
-          positioningScore,
-          riskScore,
-          monthlyExposureReal
-        )
+  // Generate placeholder fixes as fallback
+  const placeholderLayer = buildLightweightActionLayer(
+    alignmentScore,
+    icpClarity,
+    anchorDensity,
+    positioningScore,
+    riskScore,
+    monthlyExposureReal
+  );
+
+  // Start with actionLayer if it exists and has fixes, otherwise use placeholder
+  const baseLayer = actionLayer?.primary_issue?.title && actionLayer.fixes?.length
+    ? actionLayer
+    : placeholderLayer;
+
+  // Merge fixes: take baseLayer fixes, then add any placeholder fixes not already present (by title)
+  const existingTitles = new Set(baseLayer.fixes.map(f => f.title.toLowerCase()));
+  const additionalFixes = placeholderLayer.fixes.filter(f => !existingTitles.has(f.title.toLowerCase()));
+  const mergedFixes = [...baseLayer.fixes, ...additionalFixes].slice(0, 3); // keep at most 3
+
+  const effectiveLayer = {
+    ...baseLayer,
+    fixes: mergedFixes,
+  };
 
   if (effectiveLayer?.primary_issue?.title && effectiveLayer.fixes?.length) {
     const fixes = effectiveLayer.fixes
@@ -388,7 +401,7 @@ export default function ActionableInsights({
     const isHigh = (pri.level || "").toLowerCase() === "high"
 
     return (
-      <div className={`relative z-20 mb-6 p-6 bg-[#111827] rounded-lg border ${tone}`}>
+      <div className={`relative z-10 mb-8 p-6 bg-[#111827] rounded-lg border ${tone}`}>
         <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-4">
           Revenue playbook
         </h3>
@@ -480,9 +493,12 @@ export default function ActionableInsights({
             </div>
           )}
 
-          <div className="relative">
-            <div className="absolute -left-0.5 top-0 bottom-0 w-0.5 rounded-full bg-gradient-to-b from-red-500 to-orange-500" />
-            <div className="pl-4">
+          <div className="flex gap-3 items-stretch">
+            <div
+              className="w-0.5 shrink-0 rounded-full bg-gradient-to-b from-red-500 to-orange-500 self-stretch min-h-[3rem]"
+              aria-hidden
+            />
+            <div className="flex-1 min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-widest text-red-400 mb-1.5">
                 🔴 Start here
                 {first.behavioral_source && (

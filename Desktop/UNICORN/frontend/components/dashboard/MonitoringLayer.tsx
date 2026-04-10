@@ -95,6 +95,7 @@ interface MonitoringStatus {
     delta: number
     severity: string
   }>
+  action_layer?: ActionLayerPayload | null
 }
 
 interface DiagnosticResult {
@@ -155,6 +156,9 @@ export default function MonitoringLayer({
   currentPlan = null,
   companyDomain = null,
 }: MonitoringLayerProps) {
+  console.log('MonitoringLayer diagnostic:', diagnostic);
+  console.log('MonitoringLayer diagnostic.action_layer:', diagnostic?.action_layer);
+  console.log('MonitoringLayer monitoringStatus.action_layer:', monitoringStatus?.action_layer);
   // Revenue Delta (last scan vs previous)
   const [revenueDelta, setRevenueDelta] = useState<null | {
     has_delta: boolean
@@ -719,13 +723,15 @@ export default function MonitoringLayer({
 
       {/* AI Playbook block removed — fixes are integrated into ActionableInsights above */}
 
-      {/* 1. FINANCIAL EXPOSURE — ARR at risk, recovery potential, compression gauge */}
-      <FinancialExposureCard
-        forecast={forecast}
-        riskScore={diagnostic?.risk_score || null}
-        riskLevel={diagnostic?.risk_level || null}
-        uiState={uiState}
-      />
+      {/* 1. FINANCIAL EXPOSURE — z-0 vs playbook z-10 avoids ARR card painting over fixes */}
+      <div className="relative z-0 mt-2">
+        <FinancialExposureCard
+          forecast={forecast}
+          riskScore={diagnostic?.risk_score || null}
+          riskLevel={diagnostic?.risk_level || null}
+          uiState={uiState}
+        />
+      </div>
 
       {/* 2. SYSTEM STATUS — Heartbeat of the system */}
       <RevenueSystemStatus

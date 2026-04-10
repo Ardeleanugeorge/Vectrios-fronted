@@ -86,7 +86,7 @@ export default function FinancialExposureCard({
   // ── Fallback: forecast not yet available ──
   if (!forecast) {
     return (
-      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+      <div className="relative z-0 p-8 bg-[#111827] rounded-lg border border-gray-800">
         <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">{sectionTitle}</p>
         <p className="text-sm text-gray-500">Forecast not available yet.</p>
         <p className="text-xs text-gray-600 mt-1">Run an assessment to see financial impact.</p>
@@ -112,7 +112,7 @@ export default function FinancialExposureCard({
 
   if (!hasRealData) {
     return (
-      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+      <div className="relative z-0 p-8 bg-[#111827] rounded-lg border border-gray-800">
         <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">{sectionTitle}</p>
         <p className="text-sm text-gray-400">Financial impact not yet observable.</p>
         <p className="text-sm text-gray-500">Structural risk signals detected.</p>
@@ -121,7 +121,7 @@ export default function FinancialExposureCard({
   }
 
   return (
-    <div className="bg-[#111827] rounded-lg border border-gray-800 overflow-hidden">
+    <div className="relative z-0 bg-[#111827] rounded-lg border border-gray-800 overflow-hidden">
 
       {/* ── 1️⃣  ARR AT RISK ─────────────────────────────────────────── */}
       <div className={`p-8 border-b border-gray-800 ${isLowRisk ? "bg-emerald-950/15" : isMediumRisk ? "bg-amber-950/15" : "bg-red-950/20"}`}>
