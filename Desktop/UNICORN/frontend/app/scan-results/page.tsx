@@ -1283,14 +1283,25 @@ function ScanResultsContent() {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  href="/pricing?from=scan&focus=recovery"
+                <button
+                  type="button"
+                  onClick={handleUnlock}
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
                   See exactly what&apos;s costing you revenue →
-                </Link>
+                </button>
                 <p className="text-xs text-gray-500 mt-3">
                   Takes 30 seconds · Instant access · No spam
+                </p>
+                <p className="text-xs text-gray-600 mt-4">
+                  Already have an account?{" "}
+                  <Link href="/login" className="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline">
+                    Sign in
+                  </Link>
+                  {" · "}
+                  <Link href="/pricing?from=scan&focus=recovery" className="text-gray-400 hover:text-cyan-300 underline-offset-2 hover:underline">
+                    View plans
+                  </Link>
                 </p>
               </div>
             )}
