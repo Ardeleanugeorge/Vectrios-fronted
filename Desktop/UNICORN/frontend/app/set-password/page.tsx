@@ -53,8 +53,54 @@ export default function SetPasswordPage() {
         setLoading(false)
         return
       }
+      const data = await res.json().catch(() => ({} as Record<string, unknown>))
+      const tok = typeof data.token === "string" ? data.token : ""
+      if (tok) {
+        sessionStorage.setItem("auth_token", tok)
+        localStorage.setItem("auth_token", tok)
+        let prev: Record<string, unknown> = {}
+        try {
+          prev = JSON.parse(localStorage.getItem("user_data") || "{}") as Record<string, unknown>
+        } catch {
+          prev = {}
+        }
+        const coId = data.company_id != null && String(data.company_id).trim() !== "" ? String(data.company_id) : prev.company_id
+        localStorage.setItem(
+          "user_data",
+          JSON.stringify({
+            user_id: data.user_id ?? prev.user_id,
+            email: data.email ?? prev.email,
+            company_id: coId ?? null,
+            company_name: (prev.company_name as string) || "",
+          })
+        )
+        sessionStorage.setItem("dashboard_needs_refresh", "1")
+        if (coId) {
+          try {
+            const subRes = await fetch(`${API_URL}/subscription/${encodeURIComponent(String(coId))}`, {
+              headers: { Authorization: `Bearer ${tok}` },
+            })
+            if (subRes.ok) {
+              const sub = await subRes.json()
+              const plan = (sub?.plan || "").toLowerCase()
+              const billing = (sub?.billing_cycle || "").toLowerCase()
+              localStorage.setItem(
+                "subscription_cache",
+                JSON.stringify({
+                  plan: plan || null,
+                  billing_cycle: billing || null,
+                  trialDaysLeft: typeof sub?.trial_days_left === "number" ? sub.trial_days_left : null,
+                })
+              )
+            }
+          } catch {
+            /* ignore */
+          }
+        }
+      }
       setDone(true)
-      setTimeout(() => router.push("/login"), 900)
+      const next = tok ? "/pricing?from=scan&focus=recovery" : "/login"
+      setTimeout(() => router.push(next), 600)
     } catch {
       setError("Network error. Please try again.")
       setLoading(false)
@@ -70,12 +116,12 @@ export default function SetPasswordPage() {
             Set your Vectri<span className="text-cyan-400">OS</span> password
           </h1>
           <p className="text-sm text-gray-400 mb-6">
-            Secure your account, then sign in normally with email and password.
+            Secure your account. After this step you&apos;ll continue to plans — no extra sign-in if you open the link in the same browser.
           </p>
 
           {done ? (
             <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm">
-              Password set successfully. Redirecting to sign in...
+              Password set. Redirecting to plans…
             </div>
           ) : (
             <form onSubmit={onSubmit} className="space-y-4">

@@ -6,6 +6,7 @@ import {
   isScanUnlockedWithEmail,
   markScanUnlockedWithEmail,
   readScanResultsRefined,
+  scanUnlockStorageKey,
 } from "@/lib/scanResultsRefine"
 
 import { useEffect, useState, useMemo, Suspense } from "react"
@@ -333,6 +334,24 @@ function ScanResultsContent() {
   const [isTrialPlan, setIsTrialPlan] = useState(false)
   const [unlockTransitioning, setUnlockTransitioning] = useState(false)
   const [previousSnapshot, setPreviousSnapshot] = useState<ScanSnapshot | null>(null)
+  /** True when this browser already has scan unlock and/or saved email — do not push user through email-capture again. */
+  const [returningAccountHint, setReturningAccountHint] = useState(false)
+  const [savedWorkEmail, setSavedWorkEmail] = useState("")
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !token) return
+    try {
+      const raw = localStorage.getItem("user_data")
+      const ud = raw ? (JSON.parse(raw) as { email?: string }) : {}
+      const em = String(ud?.email || "").trim()
+      const scanMarked = localStorage.getItem(scanUnlockStorageKey(token)) === "1"
+      setSavedWorkEmail(em)
+      setReturningAccountHint(Boolean(em) || scanMarked)
+    } catch {
+      setSavedWorkEmail("")
+      setReturningAccountHint(false)
+    }
+  }, [token, unlocked, isAuthenticated])
 
   useEffect(() => {
     if (!token) { setError("No scan token found."); setLoading(false); return }
@@ -503,7 +522,42 @@ function ScanResultsContent() {
   const financialImpact = data?.financial_impact || null
   const driverImpacts = Array.isArray(data?.driver_impacts) ? (data?.driver_impacts as any[]) : []
 
+  const readStoredUserEmail = (): string => {
+    if (typeof window === "undefined") return ""
+    try {
+      const ud = JSON.parse(localStorage.getItem("user_data") || "{}") as { email?: string }
+      return String(ud.email || "").trim()
+    } catch {
+      return ""
+    }
+  }
+
   const handleUnlock = () => {
+    if (typeof window !== "undefined") {
+      const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      if (auth) {
+        router.push("/pricing?from=scan&focus=recovery")
+        return
+      }
+      const storedEmail = readStoredUserEmail()
+      if (token && isScanUnlockedWithEmail(token)) {
+        router.push(
+          storedEmail
+            ? `/login?email=${encodeURIComponent(storedEmail)}&reason=resume_scan`
+            : "/login?reason=resume_scan"
+        )
+        return
+      }
+      // Same browser already used this email for the scan, but session was lost (e.g. set password in another app).
+      if (storedEmail || returningAccountHint) {
+        router.push(
+          storedEmail
+            ? `/login?email=${encodeURIComponent(storedEmail)}&reason=resume_scan`
+            : "/login?reason=resume_scan"
+        )
+        return
+      }
+    }
     setShowEmailCapture(true)
   }
 
@@ -533,15 +587,13 @@ function ScanResultsContent() {
       
       const result = await res.json()
 
-      // ── Existing user with password → redirect to login ──────────────────────
+      // ── Account already complete (e.g. password set) → login, not another email gate ──
       if (result.requires_login || result.status === "login_required") {
-        const loginUrl = `/login?email=${encodeURIComponent(result.email || email.trim())}&reason=existing_account`
+        const em = String(result.email || email.trim() || "").trim()
+        const loginUrl = `/login?email=${encodeURIComponent(em)}&reason=resume_scan`
         setCapturing(false)
-        // Show a brief confirmation before redirect
-        setCaptureError("✓ Account found — redirecting to login…")
-        window.setTimeout(() => {
-          window.location.href = loginUrl
-        }, 1200)
+        setCaptureError("")
+        window.location.href = loginUrl
         return
       }
       
@@ -1334,13 +1386,15 @@ function ScanResultsContent() {
                 </Link>
               </div>
             ) : (
-              /* ── STATE C: Unauthenticated → standard paywall ── */
+              /* ── STATE C: Unauthenticated → continue to login/plans (not a second signup) ── */
               <div className="p-5 sm:p-6 rounded-xl bg-[#111827] border border-gray-800/80">
                 <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
-                  Full recovery plan locked
+                  {returningAccountHint ? "Next step" : "Full recovery plan locked"}
                 </p>
                 <p className="text-sm text-gray-300 mb-3">
-                  We&apos;ve mapped exactly which pages are causing the loss, where conversion breaks, what to fix first, and how much you can recover.
+                  {returningAccountHint
+                    ? "You already unlocked this scan from this browser. Sign in (password or one-time code) if the page lost your session, or open plans to activate monitoring."
+                    : "We've mapped exactly which pages are causing the loss, where conversion breaks, what to fix first, and how much you can recover."}
                 </p>
                 <ul className="space-y-2 text-sm text-gray-400 mb-4">
                   {[
@@ -1355,25 +1409,73 @@ function ScanResultsContent() {
                     </li>
                   ))}
                 </ul>
-                <button
-                  type="button"
-                  onClick={handleUnlock}
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
-                >
-                  See exactly what&apos;s costing you revenue →
-                </button>
-                <p className="text-xs text-gray-500 mt-3">
-                  Takes 30 seconds · Instant access · No spam
-                </p>
+                {returningAccountHint ? (
+                  <div className="flex flex-col sm:flex-row gap-3 mb-2">
+                    <Link
+                      href="/pricing?from=scan&focus=recovery"
+                      className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto text-center"
+                    >
+                      View plans →
+                    </Link>
+                    <Link
+                      href={
+                        savedWorkEmail
+                          ? `/login?email=${encodeURIComponent(savedWorkEmail)}&reason=resume_scan`
+                          : "/login?reason=resume_scan"
+                      }
+                      className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-cyan-700/80 text-cyan-300 hover:bg-cyan-950/40 font-semibold text-sm sm:text-base transition w-full sm:w-auto text-center"
+                    >
+                      Sign in
+                    </Link>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleUnlock}
+                      className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+                    >
+                      See exactly what&apos;s costing you revenue →
+                    </button>
+                    <p className="text-xs text-gray-500 mt-3">
+                      Takes 30 seconds · Instant access · No spam
+                    </p>
+                  </>
+                )}
                 <p className="text-xs text-gray-600 mt-4">
-                  Already have an account?{" "}
-                  <Link href="/login" className="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline">
-                    Sign in
-                  </Link>
-                  {" · "}
-                  <Link href="/pricing?from=scan&focus=recovery" className="text-gray-400 hover:text-cyan-300 underline-offset-2 hover:underline">
-                    View plans
-                  </Link>
+                  {token && isScanUnlockedWithEmail(token) ? (
+                    <>
+                      Pick up where you left off:{" "}
+                      <Link
+                        href={
+                          savedWorkEmail
+                            ? `/login?email=${encodeURIComponent(savedWorkEmail)}&reason=resume_scan`
+                            : "/login?reason=resume_scan"
+                        }
+                        className="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline"
+                      >
+                        Sign in
+                      </Link>
+                      {" · "}
+                      <Link
+                        href="/pricing?from=scan&focus=recovery"
+                        className="text-gray-400 hover:text-cyan-300 underline-offset-2 hover:underline"
+                      >
+                        View plans
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      Already have an account?{" "}
+                      <Link href="/login" className="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline">
+                        Sign in
+                      </Link>
+                      {" · "}
+                      <Link href="/pricing?from=scan&focus=recovery" className="text-gray-400 hover:text-cyan-300 underline-offset-2 hover:underline">
+                        View plans
+                      </Link>
+                    </>
+                  )}
                 </p>
               </div>
             )}

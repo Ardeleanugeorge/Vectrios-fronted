@@ -47,7 +47,9 @@ export default function LoginPage() {
   const infoMessage =
     infoReason === "existing_account"
       ? "You already have an account — sign in with a code sent to your email."
-      : null
+      : infoReason === "resume_scan"
+        ? "Your scan is saved to this account — sign in with the password you set, or use “Email me a sign-in code” below."
+        : null
 
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
