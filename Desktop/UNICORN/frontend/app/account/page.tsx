@@ -5,7 +5,6 @@ import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
-import LightModeToggle from "@/components/LightModeToggle"
 import SiteFooter from "@/components/SiteFooter"
 
 interface Subscription {
@@ -943,7 +942,6 @@ export default function AccountPage() {
               <p className="text-gray-500 text-sm mt-1">{user?.email}</p>
             </div>
             <div className="flex flex-wrap items-center gap-3 justify-end">
-              <LightModeToggle showLabel />
               <Link
                 href={getDashboardUrl()}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm transition"
