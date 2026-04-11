@@ -253,11 +253,70 @@ export default function DashboardPage() {
       } else {
         // No company ID yet — don't keep spinner spinning
         setMonitoringLoading(false)
+        setSubscriptionLoading(false)
       }
     } finally {
       setLoading(false)
     }
   }, [companyId, router])
+
+  // Server is source of truth for company_id (avoids stale localStorage / wrong workspace → stuck spinners).
+  useEffect(() => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const pr = await fetch(`${API_URL}/account/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (!pr.ok || cancelled) return
+        const p = await pr.json()
+        const cid = p?.company_id != null ? String(p.company_id).trim() : ""
+        if (!cid) return
+        try {
+          const raw = localStorage.getItem("user_data")
+          const parsed = raw ? JSON.parse(raw) : {}
+          const updated = {
+            ...parsed,
+            company_id: cid,
+            user_id: p.user_id ?? parsed.user_id,
+            email: p.email ?? parsed.email,
+            company_name: p.company_name ?? parsed.company_name ?? "",
+          }
+          localStorage.setItem("user_data", JSON.stringify(updated))
+          sessionStorage.setItem("user_data", JSON.stringify(updated))
+          localStorage.setItem("company_id", cid)
+          sessionStorage.setItem("company_id", cid)
+        } catch {
+          /* ignore */
+        }
+        if (cancelled) return
+        setCompanyId(cid)
+        setUser((prev: any) =>
+          prev && typeof prev === "object"
+            ? {
+                ...prev,
+                company_id: cid,
+                user_id: p.user_id ?? prev.user_id,
+                email: p.email ?? prev.email,
+                company_name: p.company_name ?? prev.company_name,
+              }
+            : {
+                company_id: cid,
+                user_id: p.user_id,
+                email: p.email,
+                company_name: p.company_name ?? "",
+              }
+        )
+      } catch {
+        /* ignore */
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // After returning from a scan (scan-results sets this flag), re-fetch monitoring status
   // so the new RII and structural scores are visible immediately.
@@ -362,7 +421,10 @@ export default function DashboardPage() {
     const cacheKey = `sub_fetched_at_${companyId}`
     const lastFetch = parseInt(sessionStorage.getItem(cacheKey) || "0", 10)
     const now = Date.now()
-    if (!force && now - lastFetch < 10_000) return
+    if (!force && now - lastFetch < 10_000) {
+      setSubscriptionLoading(false)
+      return
+    }
     sessionStorage.setItem(cacheKey, String(now))
 
     setSubscriptionLoading(true)
@@ -415,6 +477,17 @@ export default function DashboardPage() {
     const dedupeKey = `stripe_checkout_confirmed_${sessionId}`
     if (sessionStorage.getItem(dedupeKey)) {
       router.replace("/dashboard")
+      try {
+        const raw = localStorage.getItem("user_data")
+        const u = raw ? JSON.parse(raw) : {}
+        const cid = u?.company_id ? String(u.company_id) : ""
+        if (cid) {
+          loadSubscription(token, cid, true)
+          loadMonitoringStatus(token, cid, readActiveScanToken())
+        }
+      } catch {
+        /* ignore */
+      }
       return
     }
 
