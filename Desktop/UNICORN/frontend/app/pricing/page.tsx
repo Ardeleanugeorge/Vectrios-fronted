@@ -98,31 +98,61 @@ export default function PricingPage() {
     return null
   }
 
+  const persistCompanyId = (companyId: string, p?: { user_id?: string; email?: string }) => {
+    try {
+      const userDataStr = localStorage.getItem("user_data")
+      const parsed = userDataStr ? JSON.parse(userDataStr) : {}
+      const updated = {
+        ...parsed,
+        company_id: companyId,
+        user_id: p?.user_id ?? parsed.user_id,
+        email: p?.email ?? parsed.email,
+      }
+      localStorage.setItem("user_data", JSON.stringify(updated))
+      sessionStorage.setItem("user_data", JSON.stringify(updated))
+    } catch {
+      /* ignore */
+    }
+    localStorage.setItem("company_id", companyId)
+    sessionStorage.setItem("company_id", companyId)
+  }
+
+  /** Server profile first — localStorage company_id can be stale (wrong workspace → 403). */
   const resolveCompanyId = async (token: string): Promise<string | null> => {
-    const direct = resolveCompanyIdFromStorage()
-    if (direct) return direct
+    try {
+      const pr = await fetch(`${API_URL}/account/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (pr.ok) {
+        const p = await pr.json()
+        if (p?.company_id) {
+          const companyId = String(p.company_id)
+          persistCompanyId(companyId, p)
+          return companyId
+        }
+      }
+    } catch {
+      /* fall through */
+    }
 
     try {
       const userDataStr = localStorage.getItem("user_data")
-      if (!userDataStr) return null
+      if (!userDataStr) return resolveCompanyIdFromStorage()
       const parsed = JSON.parse(userDataStr)
-      if (!parsed?.user_id) return null
+      if (!parsed?.user_id) return resolveCompanyIdFromStorage()
 
       const res = await fetch(`${API_URL}/user/${parsed.user_id}/company`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      if (!res.ok) return null
+      if (!res.ok) return resolveCompanyIdFromStorage()
       const data = await res.json()
-      if (!data?.company_id) return null
+      if (!data?.company_id) return resolveCompanyIdFromStorage()
 
       const companyId = String(data.company_id)
-      const updated = { ...parsed, company_id: companyId }
-      localStorage.setItem("user_data", JSON.stringify(updated))
-      localStorage.setItem("company_id", companyId)
-      sessionStorage.setItem("company_id", companyId)
+      persistCompanyId(companyId, parsed)
       return companyId
     } catch {
-      return null
+      return resolveCompanyIdFromStorage()
     }
   }
 
