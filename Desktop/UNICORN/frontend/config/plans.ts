@@ -1,7 +1,5 @@
 /**
- * Plans Configuration
- * Single plan: Scale at $99/month
- * Enterprise is handled via "Contact Sales" only
+ * Plans configuration — single commercial plan: Scale ($99/mo) + trial (full Scale access).
  */
 
 export interface Plan {
@@ -57,19 +55,3 @@ export const PLANS: Plan[] = [
     }
   }
 ]
-
-export const ENTERPRISE_PLAN: Plan = {
-  name: "Enterprise",
-  headline: "Custom revenue operations",
-  ctaLabel: "Talk to sales",
-  priceMonthly: 0, // Custom pricing
-  priceAnnual: 0,
-  maxUsers: -1, // Unlimited
-  features: [
-    "Custom integrations",
-    "Dedicated support",
-    "Advanced forecasting models",
-    "SLA guarantees",
-    "Custom reporting"
-  ]
-}

@@ -26,23 +26,6 @@ import { dedupeBuyerHeroPlaybookFixes, playbookKindFromApi } from "./playbookDed
 import Link from "next/link"
 // API_URL already imported above
 
-type PlaybookFix = {
-  title: string
-  before?: string | null
-  after: string
-  why: string
-  impact_level: "High" | "Medium" | "Low"
-  page_url?: string | null
-  badges?: string[] | null
-  estimated_monthly_impact_low?: number | null
-  estimated_monthly_impact_high?: number | null
-}
-
-type PlaybookResponse = {
-  company_id: string
-  fixes: PlaybookFix[]
-}
-
 interface MonitoringStatus {
   monitoring_active: boolean
   created_at?: string
@@ -193,19 +176,6 @@ export default function MonitoringLayer({
       .catch(() => {})
   }, [companyId])
 
-  // Fetch AI playbook (top 3 fixes)
-  const [playbook, setPlaybook] = useState<PlaybookResponse | null>(null)
-  useEffect(() => {
-    if (!companyId) return
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`${API_URL}/playbook/${companyId}`, {
-      headers: { "Authorization": `Bearer ${token || ""}` }
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then((data: PlaybookResponse | null) => { if (data && Array.isArray(data.fixes)) setPlaybook(data) })
-      .catch(() => {})
-  }, [companyId])
-
   // Check for critical alerts to show banner
   const criticalAlerts = alerts.filter(a => !a.is_read && a.severity_level === "critical")
   const hasCriticalAlerts = criticalAlerts.length > 0
@@ -324,10 +294,9 @@ export default function MonitoringLayer({
   useEffect(() => {
     if (!companyId) return
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) return
-    fetch(`${API_URL}/playbook/${companyId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }).then(async (r) => {
+    const headers: Record<string, string> = {}
+    if (token) headers.Authorization = `Bearer ${token}`
+    fetch(`${API_URL}/playbook/${companyId}`, { headers }).then(async (r) => {
       if (!r.ok) return
       const data = await r.json()
       const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 8) : []

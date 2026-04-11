@@ -122,7 +122,7 @@ export default function SaaSRevenueIndex() {
   const s = data?.stats;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white font-sans">
+    <div className="page-root font-sans">
 
       {/* Header */}
       <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between">

@@ -116,7 +116,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
+    <div className="page-root">
       <Header />
       <main className="flex items-center justify-center px-6 py-12">
       <div className="max-w-md w-full">

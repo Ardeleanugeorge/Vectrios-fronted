@@ -219,7 +219,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
+    <div className="page-root">
       <Header />
       <main>
 
@@ -229,12 +229,12 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-8 uppercase tracking-wider">
             Revenue Loss Early Warning
           </div>
-          <h1 className="text-4xl md:text-6xl text-white mb-6 font-bold leading-tight">
+          <h1 className="text-4xl md:text-6xl text-slate-900 dark:text-white mb-6 font-bold leading-tight">
             Your website is already losing revenue.
             <br className="hidden md:block" />
             <span className="text-cyan-400"> You just don't see it yet.</span>
           </h1>
-          <p className="text-lg md:text-xl text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-slate-600 dark:text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto">
             Your messaging is already costing you deals.
             We show you where — before pipeline drops.
           </p>
@@ -297,7 +297,7 @@ export default function Home() {
             <p className="font-medium">
               Takes 30 seconds · No signup · Instant baseline
             </p>
-            <p className="text-gray-500 leading-relaxed border-t border-gray-800/80 pt-3">
+            <p className="text-gray-500 leading-relaxed border-t border-slate-200 dark:border-gray-800/80 pt-3">
               Get your baseline risk score, see where revenue leaks, then track drift weekly.
             </p>
           </div>
@@ -310,7 +310,7 @@ export default function Home() {
                 className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 hover:border-cyan-500/30 hover:bg-white/[0.06] transition-all text-sm text-gray-500"
               >
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span className="font-semibold text-gray-300 group-hover:text-white transition-colors">
+                <span className="font-semibold text-slate-600 group-hover:text-slate-900 dark:text-gray-300 dark:group-hover:text-white transition-colors">
                   {scanCount.toLocaleString("en-US")}+
                 </span>
                 <span className="text-gray-500">revenue architectures analyzed</span>
@@ -324,7 +324,7 @@ export default function Home() {
       </section>
 
       {/* ── 2. PROBLEM ──────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Your dashboard shows the result.
@@ -361,10 +361,10 @@ export default function Home() {
       </section>
 
       {/* ── 3. PRODUCT VISUALIZATION ────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">Example Revenue Architecture Scan</p>
-          <p className="text-center text-base md:text-lg font-semibold text-white mb-6 max-w-xl mx-auto leading-snug">
+          <p className="text-center text-base md:text-lg font-semibold text-slate-900 dark:text-white mb-6 max-w-xl mx-auto leading-snug">
             Example:{" "}
             <span className="text-red-400">$287K</span> lost potential —{" "}
             <span className="text-gray-300 font-medium">
@@ -447,8 +447,8 @@ export default function Home() {
           </p>
 
           {/* Financial proof — hook */}
-          <div className="mt-10 p-6 rounded-2xl border border-amber-500/25 bg-gradient-to-br from-amber-950/30 to-[#111827] text-center">
-            <p className="text-lg md:text-xl font-semibold text-white">
+          <div className="mt-10 p-6 rounded-2xl border border-amber-200/80 bg-amber-50/90 text-center dark:border-amber-500/25 dark:bg-gradient-to-br dark:from-amber-950/30 dark:to-[#111827]">
+            <p className="text-lg md:text-xl font-semibold text-slate-900 dark:text-white">
               Companies we analyze typically uncover{" "}
               <span className="text-amber-300">$20K–$200K</span> in hidden revenue loss.
             </p>
@@ -460,7 +460,7 @@ export default function Home() {
       </section>
 
       {/* ── 4. WHAT IT DOES ─────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Why deals slow down (without you noticing)</h2>
           <p className="text-lg text-gray-300 mb-8">
@@ -488,7 +488,7 @@ export default function Home() {
       </section>
 
       {/* ── 5. FINANCIAL FRAMING ────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">How messaging gaps turn into lost revenue</h2>
           <p className="text-lg text-gray-300 mb-8">
@@ -511,7 +511,7 @@ export default function Home() {
       </section>
 
       {/* ── 6. MONITORING LAYER ─────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Continuous revenue monitoring</h2>
           <p className="text-lg text-gray-300 mb-8">
@@ -540,7 +540,7 @@ export default function Home() {
       </section>
 
       {/* ── 7. BUILT FOR ────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-gray-800">
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-8">Built For</h2>
           <div className="grid md:grid-cols-1 gap-6 mb-10">
@@ -566,7 +566,7 @@ export default function Home() {
       </section>
 
       {/* ── 8. FINAL CTA ────────────────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-20 border-t border-gray-800">
+      <section className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Find what&apos;s already costing you revenue — before it compounds
@@ -598,9 +598,9 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ──────────────────────────────────────────────────────── */}
-      <footer className="max-w-6xl mx-auto px-6 py-12 border-t border-gray-800">
+      <footer className="max-w-6xl mx-auto px-6 py-12 border-t border-slate-200 dark:border-gray-800">
         <div className="text-center">
-          <h3 className="text-2xl font-bold mb-2">Vectri<span className="text-cyan-400">OS</span></h3>
+          <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Vectri<span className="text-cyan-500 dark:text-cyan-400">OS</span></h3>
           <p className="text-gray-500 mb-4">
             Revenue-Stage Monitoring Infrastructure for B2B SaaS
           </p>

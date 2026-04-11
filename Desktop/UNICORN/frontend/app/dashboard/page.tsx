@@ -469,7 +469,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center">
+      <div className="page-root flex items-center justify-center">
         <div className="text-center">
           <p className="text-xl text-gray-400">Loading...</p>
         </div>
@@ -480,7 +480,7 @@ export default function DashboardPage() {
   // Safety check - if no user, redirect
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center">
+      <div className="page-root flex items-center justify-center">
         <div className="text-center">
           <p className="text-xl text-gray-400">Please log in</p>
         </div>
@@ -562,7 +562,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
+    <div className="page-root">
       <DashboardHeader />
       <main className="py-12">
         <div className="max-w-7xl mx-auto px-6">

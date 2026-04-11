@@ -89,7 +89,15 @@ export function buildLightweightActionLayer(
   const arr_hi = realMonthlyLoss ? realMonthlyLoss * 12 * 1.1 : 35_000
   const n = 3
   const fmt = (x: number) =>
-    x >= 1_000_000 ? `$${(x / 1_000_000).toFixed(1)}M` : `$${Math.round(x / 1000)}K`
+    x >= 1_000_000
+      ? `$${(x / 1_000_000).toFixed(1)}M`
+      : x >= 1000
+        ? `$${Math.round(x / 1000)}K`
+        : x >= 1
+          ? `$${Math.round(x)}`
+          : x > 0
+            ? "<$1K"
+            : "$0"
   const perFix = (i: number) => {
     const mo_lo = (arr_lo / n) / 12
     const mo_hi = (arr_hi / n) / 12
@@ -259,14 +267,28 @@ function CopyButton({ text, onCopied }: { text: string; onCopied?: () => void })
   )
 }
 
-function formatCompactMoneyLabel(m: string | undefined): { short: string; full: string } {
+function formatCompactMoneyLabel(m: string | undefined, rawHi?: number): { short: string; full: string } {
+  if (typeof rawHi === "number" && rawHi > 0 && rawHi < 1000) {
+    const s = `$${Math.round(rawHi).toLocaleString()}`
+    return { short: s, full: s }
+  }
   if (!m) return { short: "", full: "" }
-  // Extract first money like $123,456,789 from string
+  // Prefer high end of range: "+$low – $high/month"
+  const range = m.match(/\$\s*([\d,\.]+)\s*[–-]\s*\$?\s*([\d,\.]+)/i)
+  if (range) {
+    const hi = Number(range[2].replace(/,/g, ""))
+    if (Number.isFinite(hi)) {
+      const short =
+        hi >= 1_000_000 ? `$${(hi / 1_000_000).toFixed(2)}M` : hi >= 1000 ? `$${Math.round(hi / 1000)}K` : `$${Math.round(hi)}`
+      return { short, full: `$${hi.toLocaleString()}` }
+    }
+  }
   const match = m.match(/\$([\d,\.]+)/)
   if (!match) return { short: m, full: m }
   const num = Number(match[1].replace(/,/g, ""))
   if (!Number.isFinite(num)) return { short: m, full: m }
-  const short = num >= 1_000_000 ? `$${(num / 1_000_000).toFixed(2)}M` : num >= 1_000 ? `$${Math.round(num / 1000)}K` : `$${num}`
+  const short =
+    num >= 1_000_000 ? `$${(num / 1_000_000).toFixed(2)}M` : num >= 1000 ? `$${Math.round(num / 1000)}K` : `$${Math.round(num)}`
   return { short, full: `$${num.toLocaleString()}` }
 }
 
@@ -275,7 +297,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
   const hasRealBefore = beforeVal.length > 0 && beforeVal !== "—" && beforeVal !== "-" && !beforeVal.startsWith("—")
   const hasRealAfter = fix.suggested_change && fix.suggested_change.length > 0
   const monthlyChip = fix.impact_contribution?.monthly_impact || ""
-  const compact = formatCompactMoneyLabel(monthlyChip)
+  const compact = formatCompactMoneyLabel(monthlyChip, fix.impact_contribution?.monthly_impact_hi_raw)
 
   const analyticsPayload = {
     fix_index: index,
@@ -416,16 +438,27 @@ export default function ActionableInsights({
     monthlyExposureReal
   );
 
-  // Start with actionLayer if it exists and has fixes, otherwise use placeholder
-  const baseLayer = actionLayer?.primary_issue?.title && actionLayer.fixes?.length
-    ? actionLayer
-    : placeholderLayer;
+  // Prefer API/playbook fixes whenever present; backfill primary_issue from placeholder if missing
+  const baseLayer =
+    actionLayer?.fixes?.length
+      ? {
+          ...placeholderLayer,
+          ...actionLayer,
+          fixes: actionLayer.fixes,
+          primary_issue: actionLayer.primary_issue?.title
+            ? actionLayer.primary_issue
+            : placeholderLayer.primary_issue,
+        }
+      : placeholderLayer
 
-  // Merge fixes: take baseLayer fixes, then add any placeholder fixes not already present (by title)
-  const existingTitles = new Set(baseLayer.fixes.map(f => f.title.toLowerCase()));
-  const additionalFixes = placeholderLayer.fixes.filter(f => !existingTitles.has(f.title.toLowerCase()));
-  const combined = [...baseLayer.fixes, ...additionalFixes].slice(0, 8);
-  const mergedFixes = dedupeBuyerHeroPlaybookFixes(combined);
+  // Do not mix score-only placeholder fixes with API/playbook fixes (avoids duplicate "Unlike X, we Y" rows)
+  const fromApiOrPlaybook = !!(actionLayer?.fixes?.length)
+  const existingTitles = new Set(baseLayer.fixes.map(f => f.title.toLowerCase()))
+  const additionalFixes = placeholderLayer.fixes.filter(f => !existingTitles.has(f.title.toLowerCase()))
+  const combined = fromApiOrPlaybook
+    ? [...baseLayer.fixes]
+    : [...baseLayer.fixes, ...additionalFixes].slice(0, 8)
+  const mergedFixes = dedupeBuyerHeroPlaybookFixes(combined)
 
   const effectiveLayer = {
     ...baseLayer,

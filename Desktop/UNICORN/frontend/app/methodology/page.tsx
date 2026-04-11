@@ -3,7 +3,7 @@ import Header from "@/components/Header"
 
 export default function MethodologyPage() {
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
+    <div className="page-root">
       <Header />
       <main className="py-12">
         <div className="max-w-5xl mx-auto px-6">

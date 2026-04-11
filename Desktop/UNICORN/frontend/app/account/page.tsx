@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
+import LightModeToggle from "@/components/LightModeToggle"
 import SiteFooter from "@/components/SiteFooter"
 
 interface Subscription {
@@ -160,6 +161,12 @@ export default function AccountPage() {
   const [selectedTicket, setSelectedTicket] = useState<SupportTicketDetail | null>(null)
   const [supportThreadLoading, setSupportThreadLoading] = useState(false)
   const [supportFollowupMessage, setSupportFollowupMessage] = useState("")
+  /** Same flow as /pricing#contact — general questions (not a tracked ticket). */
+  const [generalContactName, setGeneralContactName] = useState("")
+  const [generalContactMessage, setGeneralContactMessage] = useState("")
+  const [generalContactLoading, setGeneralContactLoading] = useState(false)
+  const [generalContactError, setGeneralContactError] = useState("")
+  const [generalContactSuccess, setGeneralContactSuccess] = useState("")
   const [adminTickets, setAdminTickets] = useState<AdminSupportTicketSummary[]>([])
   const [adminSelectedTicketId, setAdminSelectedTicketId] = useState<string | null>(null)
   const [adminSelectedTicket, setAdminSelectedTicket] = useState<AdminSupportTicketDetail | null>(null)
@@ -383,7 +390,9 @@ export default function AccountPage() {
     const desiredTab = (searchParams.get("tab") || "").toLowerCase()
     if (desiredTab === "system" && isOwner) {
       setActiveTab("system")
-      }
+    } else if (desiredTab === "support" && !isOwner) {
+      setActiveTab("support")
+    }
   }, [searchParams, isOwner])
 
   const loadSubscription = async (token: string, cid: string) => {
@@ -549,6 +558,53 @@ export default function AccountPage() {
       setSupportError("Network error while creating ticket.")
     } finally {
       setSupportLoading(false)
+    }
+  }
+
+  const handleGeneralContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setGeneralContactError("")
+    setGeneralContactSuccess("")
+    const email = (profileEmail || user?.email || "").trim()
+    const name =
+      generalContactName.trim() ||
+      profileCompanyName.trim() ||
+      (email ? email.split("@")[0] : "")
+    const msg = generalContactMessage.trim()
+    if (!email || !msg) {
+      setGeneralContactError("Please add a message. Your account email will be used automatically.")
+      return
+    }
+    if (!name) {
+      setGeneralContactError("Please enter your name (or set your company name on the Profile tab).")
+      return
+    }
+    setGeneralContactLoading(true)
+    try {
+      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      const headers: Record<string, string> = { "Content-Type": "application/json" }
+      if (token) headers.Authorization = `Bearer ${token}`
+      const res = await fetch(`${API_URL}/contact`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          name: name.slice(0, 120),
+          email,
+          company: profileCompanyName.trim() || null,
+          message: `[Account → Support / general question]\n\n${msg}`.slice(0, 4000),
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setGeneralContactError(typeof data.detail === "string" ? data.detail : "Could not send message.")
+        return
+      }
+      setGeneralContactSuccess(data.message || "Message sent — we'll reply by email.")
+      setGeneralContactMessage("")
+    } catch {
+      setGeneralContactError("Network error. Please try again.")
+    } finally {
+      setGeneralContactLoading(false)
     }
   }
 
@@ -860,7 +916,7 @@ export default function AccountPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050810] text-white flex items-center justify-center">
+      <div className="page-root flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
           <p className="text-gray-400 text-sm">Loading account…</p>
@@ -870,7 +926,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050810] text-white">
+    <div className="page-root">
       <Header />
       <main className="pt-24 pb-24">
         <div className="max-w-4xl mx-auto px-6">
@@ -878,15 +934,16 @@ export default function AccountPage() {
           {/* ── Page header ──────────────────────────────────────────────────── */}
           <div className="flex items-start justify-between mb-10 gap-4 flex-wrap">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-800 border border-gray-700 text-gray-400 text-xs font-medium mb-3 uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-200 border border-slate-300 text-slate-600 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 text-xs font-medium mb-3 uppercase tracking-widest">
                 Account Settings
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">
                 {isOwner ? "VectriOS" : (user?.company_name || "Your Account")}
               </h1>
               <p className="text-gray-500 text-sm mt-1">{user?.email}</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 justify-end">
+              <LightModeToggle showLabel />
               <Link
                 href={getDashboardUrl()}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm transition"
@@ -895,7 +952,7 @@ export default function AccountPage() {
               </Link>
               <button
                 onClick={handleSignOut}
-                className="px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium text-sm transition"
+                className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 font-medium text-sm transition"
               >
                 Sign out
               </button>
@@ -929,15 +986,15 @@ export default function AccountPage() {
           )}
 
           {/* ── Tabs ──────────────────────────────────────────────────────── */}
-          <div className="flex gap-1 mb-8 p-1 bg-gray-900/60 border border-gray-800 rounded-2xl w-fit">
+          <div className="flex gap-1 mb-8 p-1 bg-slate-200/90 border border-slate-300 rounded-2xl w-fit dark:bg-gray-900/60 dark:border-gray-800">
             {TABS.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition ${
                   activeTab === tab.id
-                    ? 'bg-gray-800 text-white shadow-sm'
-                    : 'text-gray-500 hover:text-gray-300'
+                    ? 'bg-white text-slate-900 shadow-sm border border-slate-200 dark:bg-gray-800 dark:text-white dark:border-transparent'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-gray-500 dark:hover:text-gray-300'
                 }`}
               >
                 <span className="text-base">{tab.icon}</span>
@@ -948,9 +1005,9 @@ export default function AccountPage() {
                 
           {/* ── PROFILE TAB ───────────────────────────────────────────────── */}
           {activeTab === 'profile' && (
-            <div className="rounded-2xl border border-gray-800 bg-gray-900/40 backdrop-blur-sm overflow-hidden">
-              <div className="p-6 border-b border-gray-800">
-                <h2 className="text-lg font-semibold">Profile information</h2>
+            <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/40 dark:shadow-none overflow-hidden">
+              <div className="p-6 border-b border-slate-200 dark:border-gray-800">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Profile information</h2>
                 <p className="text-gray-500 text-sm mt-0.5">Update your email and company name.</p>
               </div>
               <form onSubmit={handleProfileSave} className="p-6 space-y-5">
@@ -962,7 +1019,7 @@ export default function AccountPage() {
                       value={profileEmail}
                       onChange={e => setProfileEmail(e.target.value)}
                       disabled={profileLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
                       placeholder="you@company.com"
                     />
                     <p className="text-xs text-gray-600 mt-1">Changing email sends a verification link first.</p>
@@ -974,7 +1031,7 @@ export default function AccountPage() {
                       value={profileCompanyName}
                       onChange={e => setProfileCompanyName(e.target.value)}
                       disabled={profileLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
                       placeholder="Acme Corp"
                     />
                   </div>
@@ -1001,8 +1058,8 @@ export default function AccountPage() {
             <div className="space-y-5">
               {/* Current plan card */}
               <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-                <div className="p-6 border-b border-gray-800">
-                  <h2 className="text-lg font-semibold">Current plan</h2>
+                <div className="p-6 border-b border-slate-200 dark:border-gray-800">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Current plan</h2>
                 </div>
                 <div className="p-6">
                   {planLabel ? (
@@ -1065,9 +1122,9 @@ export default function AccountPage() {
 
               {/* Included features — always visible, grouped by plan tier */}
               <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-                <div className="px-6 py-5 border-b border-gray-800 flex items-center justify-between">
+                <div className="px-6 py-5 border-b border-slate-200 dark:border-gray-800 flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-semibold">Included features</h2>
+                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Included features</h2>
                     <p className="text-gray-500 text-sm mt-0.5">
                       {planLabel ? `What's active on your ${planLabel} plan` : "Start a plan to unlock features"}
                     </p>
@@ -1162,8 +1219,8 @@ export default function AccountPage() {
 
               {/* Billing card */}
               <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-                <div className="p-6 border-b border-gray-800">
-                  <h2 className="text-lg font-semibold">Payment & billing</h2>
+                <div className="p-6 border-b border-slate-200 dark:border-gray-800">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Payment & billing</h2>
                 </div>
                 <div className="p-6 flex items-center justify-between flex-wrap gap-4">
                   <div>
@@ -1184,9 +1241,9 @@ export default function AccountPage() {
           {/* ── REVENUE MODEL TAB ─────────────────────────────────────────── */}
           {activeTab === 'revenue' && (
             <div className="space-y-5">
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 backdrop-blur-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-800">
-                  <h2 className="text-lg font-semibold">Financial calibration</h2>
+              <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/40 dark:shadow-none overflow-hidden">
+                <div className="p-6 border-b border-slate-200 dark:border-gray-800">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Financial calibration</h2>
                   <p className="text-gray-500 text-sm mt-0.5">
                     Set your real business numbers to improve financial impact estimates. Structural risk is derived from website scan signals — these values calibrate the dollar output.
                   </p>
@@ -1205,7 +1262,7 @@ export default function AccountPage() {
                           value={calibrationArr}
                           onChange={e => setCalibrationArr(e.target.value)}
                           placeholder="1000000"
-                          className="w-full pl-8 pr-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                          className="w-full pl-8 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
                         />
                       </div>
                       <p className="text-xs text-gray-600 mt-1.5">Your current ARR in USD</p>
@@ -1223,7 +1280,7 @@ export default function AccountPage() {
                           value={calibrationCurrentCloseRate}
                           onChange={e => setCalibrationCurrentCloseRate(e.target.value)}
                           placeholder="12.5"
-                          className="w-full px-4 pr-10 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">%</span>
                       </div>
@@ -1242,7 +1299,7 @@ export default function AccountPage() {
                           value={calibrationTargetCloseRate}
                           onChange={e => setCalibrationTargetCloseRate(e.target.value)}
                           placeholder="18.0"
-                          className="w-full px-4 pr-10 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">%</span>
                       </div>
@@ -1256,7 +1313,7 @@ export default function AccountPage() {
                       <p className="text-xs text-cyan-400 font-medium uppercase tracking-wider mb-1">Model preview</p>
                       <p className="text-sm text-gray-300">
                         Closing gap:{" "}
-                        <span className="text-white font-semibold">
+                        <span className="text-slate-900 dark:text-white font-semibold">
                           +{(Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)).toFixed(1)}pp
                         </span>
                         {" "}on ${(Number(calibrationArr) / 1_000_000).toFixed(1)}M ARR →{" "}
@@ -1308,8 +1365,8 @@ export default function AccountPage() {
           {/* ── SECURITY TAB ──────────────────────────────────────────────── */}
           {activeTab === 'security' && (
             <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-              <div className="p-6 border-b border-gray-800">
-                <h2 className="text-lg font-semibold">Change password</h2>
+              <div className="p-6 border-b border-slate-200 dark:border-gray-800">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Change password</h2>
                 <p className="text-gray-500 text-sm mt-0.5">Use a strong password of at least 8 characters.</p>
               </div>
               <form onSubmit={handleChangePassword} className="p-6 space-y-5 max-w-md">
@@ -1322,7 +1379,7 @@ export default function AccountPage() {
                     disabled={passwordLoading}
                     minLength={8}
                     required
-                    className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
                     placeholder="At least 8 characters"
                   />
                 </div>
@@ -1335,7 +1392,7 @@ export default function AccountPage() {
                     disabled={passwordLoading}
                     minLength={8}
                     required
-                    className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
                     placeholder="Repeat new password"
                   />
                 </div>
@@ -1369,11 +1426,70 @@ export default function AccountPage() {
 
           {/* ── SUPPORT TAB ───────────────────────────────────────────────── */}
           {activeTab === 'support' && (
+            <div className="space-y-8">
             <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-              <div className="p-6 border-b border-gray-800">
-                <h2 className="text-lg font-semibold">Contact support</h2>
+              <div className="p-6 border-b border-slate-200 dark:border-gray-800">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Ask a question</h2>
                 <p className="text-gray-500 text-sm mt-0.5">
-                  Open a ticket with technical context attached automatically.
+                  Billing, trial, Scale features, or how something works — same as the form on the pricing page. We&apos;ll email you back.
+                </p>
+              </div>
+              <form onSubmit={handleGeneralContactSubmit} className="p-6 space-y-5">
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Your name</label>
+                  <input
+                    type="text"
+                    value={generalContactName}
+                    onChange={(e) => setGeneralContactName(e.target.value)}
+                    disabled={generalContactLoading}
+                    placeholder={profileCompanyName || "Your name"}
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={profileEmail || user?.email || ""}
+                    readOnly
+                    className="w-full px-4 py-3 rounded-xl bg-gray-950 border border-gray-800 text-gray-400 cursor-not-allowed"
+                  />
+                  <p className="text-xs text-gray-600 mt-1.5">From your account. Change it on the Profile tab if needed.</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Message</label>
+                  <textarea
+                    value={generalContactMessage}
+                    onChange={(e) => setGeneralContactMessage(e.target.value)}
+                    rows={5}
+                    maxLength={3500}
+                    required
+                    disabled={generalContactLoading}
+                    placeholder="What would you like to know?"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                  />
+                </div>
+                {generalContactError && (
+                  <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm">{generalContactError}</div>
+                )}
+                {generalContactSuccess && (
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">{generalContactSuccess}</div>
+                )}
+                <button
+                  type="submit"
+                  disabled={generalContactLoading || !(profileEmail || user?.email)}
+                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                >
+                  {generalContactLoading ? "Sending…" : "Send message"}
+                </button>
+              </form>
+            </div>
+
+            <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
+              <div className="p-6 border-b border-slate-200 dark:border-gray-800">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Technical support ticket</h2>
+                <p className="text-gray-500 text-sm mt-0.5">
+                  For bugs or product issues — opens a tracked thread with technical context attached automatically.
                 </p>
               </div>
               <form onSubmit={handleSupportSubmit} className="p-6 space-y-5">
@@ -1387,7 +1503,7 @@ export default function AccountPage() {
                       maxLength={160}
                       required
                       disabled={supportLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
                       placeholder="Briefly describe the issue"
                     />
                   </div>
@@ -1397,7 +1513,7 @@ export default function AccountPage() {
                       value={supportPriority}
                       onChange={e => setSupportPriority(e.target.value)}
                       disabled={supportLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
                     >
                       <option value="low">Low</option>
                       <option value="normal">Normal</option>
@@ -1416,7 +1532,7 @@ export default function AccountPage() {
                     maxLength={5000}
                     required
                     disabled={supportLoading}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
                     placeholder="What happened, what you expected, and any steps to reproduce."
                   />
                   <p className="text-xs text-gray-600 mt-1.5">
@@ -1440,7 +1556,7 @@ export default function AccountPage() {
                 </button>
               </form>
 
-              <div className="px-6 pb-6">
+              <div className="px-6 pb-6 border-t border-gray-800/80">
                 <div className="grid md:grid-cols-3 gap-5">
                   <div className="rounded-xl border border-gray-800 bg-gray-950/40 p-4 md:col-span-1">
                     <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">My tickets</p>
@@ -1481,7 +1597,7 @@ export default function AccountPage() {
                     )}
                     {!supportThreadLoading && selectedTicket && (
                       <div className="space-y-3">
-                        <div className="pb-2 border-b border-gray-800">
+                        <div className="pb-2 border-b border-slate-200 dark:border-gray-800">
                           <p className="text-sm font-semibold text-gray-200">{selectedTicket.subject}</p>
                           <p className="text-xs text-gray-500 mt-0.5">
                             {selectedTicket.ticket_id} • {selectedTicket.priority} • {selectedTicket.status}
@@ -1513,7 +1629,7 @@ export default function AccountPage() {
                             maxLength={5000}
                             placeholder="Add a follow-up message"
                             disabled={supportThreadLoading}
-                            className="w-full px-3 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
                           />
                           <button
                             type="submit"
@@ -1528,6 +1644,7 @@ export default function AccountPage() {
                   </div>
                 </div>
               </div>
+            </div>
             </div>
           )}
 
@@ -1554,8 +1671,8 @@ export default function AccountPage() {
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">System Health</h3>
                   <div className="space-y-2 text-sm">
                     <p className="text-gray-300">DB: <span className={adminSystemHealth?.db_connected ? "text-emerald-300" : "text-red-300"}>{adminSystemHealth?.db_connected ? "Connected" : "Down"}</span></p>
-                    <p className="text-gray-300">Companies: <span className="text-white font-semibold">{adminSystemHealth?.counts?.companies_total ?? "—"}</span></p>
-                    <p className="text-gray-300">Monitoring active: <span className="text-white font-semibold">{adminSystemHealth?.counts?.monitoring_active ?? "—"}</span></p>
+                    <p className="text-gray-300">Companies: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.companies_total ?? "—"}</span></p>
+                    <p className="text-gray-300">Monitoring active: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.monitoring_active ?? "—"}</span></p>
                     <p className="text-gray-500 text-xs">Last monitoring: {adminSystemHealth?.minutes_since_last_monitoring != null ? `${adminSystemHealth.minutes_since_last_monitoring} min ago` : "—"}</p>
                   </div>
                 </div>
@@ -1563,10 +1680,10 @@ export default function AccountPage() {
                 <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pipeline Metrics</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">Scans 24h: <span className="text-white font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "—"}</span></p>
-                    <p className="text-gray-300">Success 24h: <span className="text-white font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "—"}%</span></p>
-                    <p className="text-gray-300">Scans 7d: <span className="text-white font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "—"}</span></p>
-                    <p className="text-gray-300">No-evidence 7d: <span className="text-white font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "—"}%</span></p>
+                    <p className="text-gray-300">Scans 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "—"}</span></p>
+                    <p className="text-gray-300">Success 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "—"}%</span></p>
+                    <p className="text-gray-300">Scans 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "—"}</span></p>
+                    <p className="text-gray-300">No-evidence 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "—"}%</span></p>
                     <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(noEvidenceStatus)}`}>
                       No-evidence status: {noEvidenceStatus === "good" ? "healthy" : noEvidenceStatus === "warn" ? "watch" : "critical"}
                     </span>
@@ -1576,9 +1693,9 @@ export default function AccountPage() {
                 <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">RII Consistency Guard</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">Checked: <span className="text-white font-semibold">{adminRiiConsistency?.checked_companies ?? "—"}</span></p>
+                    <p className="text-gray-300">Checked: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.checked_companies ?? "—"}</span></p>
                     <p className="text-gray-300">Mismatches: <span className={`${(adminRiiConsistency?.mismatch_count || 0) > 0 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{adminRiiConsistency?.mismatch_count ?? "—"}</span></p>
-                    <p className="text-gray-300">Mismatch rate: <span className="text-white font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "—"}%</span></p>
+                    <p className="text-gray-300">Mismatch rate: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "—"}%</span></p>
                     <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(mismatchStatus)}`}>
                       Consistency status: {mismatchStatus === "good" ? "healthy" : mismatchStatus === "warn" ? "watch" : "critical"}
                     </span>
@@ -1593,7 +1710,7 @@ export default function AccountPage() {
                     {(adminPipelineMetrics?.window_7d?.top_reasons || []).slice(0, 5).map((r) => (
                       <div key={`${r.reason}-${r.count}`} className="text-sm text-gray-300 flex items-center justify-between">
                         <span>{r.reason}</span>
-                        <span className="text-white font-semibold">{r.count}</span>
+                        <span className="text-slate-900 dark:text-white font-semibold">{r.count}</span>
                       </div>
                     ))}
                     {(!adminPipelineMetrics?.window_7d?.top_reasons || adminPipelineMetrics.window_7d.top_reasons.length === 0) && (
@@ -1623,11 +1740,11 @@ export default function AccountPage() {
                 <div className="grid md:grid-cols-4 gap-3 mb-4">
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Active companies</p>
-                    <p className="text-lg font-semibold text-white">{adminCoverage?.active_companies ?? "—"}</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.active_companies ?? "—"}</p>
                   </div>
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Scanned in 24h</p>
-                    <p className="text-lg font-semibold text-white">{adminCoverage?.companies_scanned_in_window ?? "—"}</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.companies_scanned_in_window ?? "—"}</p>
                   </div>
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Coverage</p>
@@ -1637,22 +1754,22 @@ export default function AccountPage() {
                   </div>
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Cycles</p>
-                    <p className="text-lg font-semibold text-white">{adminCoverage?.cycles_breakdown?.total_cycles ?? "—"}</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.total_cycles ?? "—"}</p>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-3 mb-4">
                   <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3">
                     <p className="text-xs text-emerald-300">Success cycles</p>
-                    <p className="text-base font-semibold text-white">{adminCoverage?.cycles_breakdown?.success_cycles ?? "—"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.success_cycles ?? "—"}</p>
                   </div>
                   <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
                     <p className="text-xs text-amber-300">No-evidence cycles</p>
-                    <p className="text-base font-semibold text-white">{adminCoverage?.cycles_breakdown?.no_evidence_cycles ?? "—"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.no_evidence_cycles ?? "—"}</p>
                   </div>
                   <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
                     <p className="text-xs text-red-300">Failed-like cycles</p>
-                    <p className="text-base font-semibold text-white">{adminCoverage?.cycles_breakdown?.failed_like_cycles ?? "—"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.failed_like_cycles ?? "—"}</p>
                   </div>
                 </div>
 
@@ -1696,12 +1813,12 @@ export default function AccountPage() {
                 {calibStatus ? (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-white">{calibStatus.total_scans_in_db ?? "—"}</div>
+                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.total_scans_in_db ?? "—"}</div>
                       <div className="text-xs text-gray-500 mt-1">Total scans in DB</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">incl. monitoring cycles</div>
                     </div>
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-white">{calibStatus.n_scans || "—"}</div>
+                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.n_scans || "—"}</div>
                       <div className="text-xs text-gray-500 mt-1">Last calibration scans</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">unique companies used</div>
                     </div>
@@ -1755,7 +1872,7 @@ export default function AccountPage() {
                     <div className="flex flex-wrap gap-3">
                       {Object.entries(calibStatus.global_weights).map(([k, v]) => (
                         <div key={k} className="text-xs font-mono bg-gray-800 rounded-lg px-3 py-1.5 text-cyan-300">
-                          {k}: <span className="text-white font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
+                          {k}: <span className="text-slate-900 dark:text-white font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
                         </div>
                       ))}
                     </div>
@@ -1775,7 +1892,7 @@ export default function AccountPage() {
                       <div className="flex flex-wrap gap-3 mb-3">
                         {Object.entries(calibStatus.candidate.weights).map(([k, v]) => (
                           <div key={k} className="text-xs font-mono bg-gray-800 rounded-lg px-3 py-1.5 text-amber-300">
-                            {k}: <span className="text-white font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
+                            {k}: <span className="text-slate-900 dark:text-white font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
                           </div>
                         ))}
                       </div>
@@ -1894,7 +2011,7 @@ export default function AccountPage() {
                     )}
                     {!adminSupportLoading && adminSelectedTicket && (
                       <div className="space-y-3">
-                        <div className="pb-2 border-b border-gray-800">
+                        <div className="pb-2 border-b border-slate-200 dark:border-gray-800">
                           <p className="text-sm font-semibold text-gray-200">{adminSelectedTicket.subject}</p>
                           <p className="text-xs text-gray-500 mt-0.5">
                             {adminSelectedTicket.ticket_id} • {adminSelectedTicket.company_name || "Unknown company"} • {adminSelectedTicket.status}
@@ -1916,7 +2033,7 @@ export default function AccountPage() {
                             maxLength={5000}
                             placeholder="Write support reply..."
                             disabled={adminSupportLoading}
-                            className="w-full px-3 py-2 rounded-lg bg-gray-950 border border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-950 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
                           />
                           <button
                             type="submit"

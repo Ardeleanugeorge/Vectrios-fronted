@@ -163,7 +163,7 @@ export default function OnboardingPage() {
   }, [])
   if (shouldSuppressUi) {
     return (
-      <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center">
+      <div className="page-root flex items-center justify-center">
         <span className="text-gray-400">Redirecting…</span>
       </div>
     )
@@ -585,7 +585,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0B0F19] text-white">
+    <main className="page-root">
       {/* Shared app header with company + email + plan badge */}
       <DashboardHeader showPlanBadge={false} />
       <div className="max-w-3xl mx-auto px-6 py-12">

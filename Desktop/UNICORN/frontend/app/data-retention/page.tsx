@@ -5,7 +5,7 @@ import Header from "@/components/Header"
 
 export default function DataRetentionPage() {
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
+    <div className="page-root">
       <Header />
       <main className="max-w-4xl mx-auto px-6 py-16">
         
@@ -119,7 +119,7 @@ export default function DataRetentionPage() {
               <li>Executive summaries (PDF)</li>
             </ul>
             <p className="text-gray-400 mt-4">
-              Export functionality is available in account settings. Enterprise customers can request bulk exports via support.
+              Export functionality is available in account settings. You can request bulk exports via support.
             </p>
           </div>
         </section>

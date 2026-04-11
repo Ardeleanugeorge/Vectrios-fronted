@@ -78,15 +78,14 @@ export default function LoginPage() {
           data.company_name != null && String(data.company_name).trim() !== ""
             ? data.company_name
             : (prev.company_name as string) || ""
-        localStorage.setItem(
-          "user_data",
-          JSON.stringify({
-            user_id: data.user_id,
-            email: data.email || resolvedEmail,
-            company_name: coName,
-            company_id: coId,
-          })
-        )
+        const ud = JSON.stringify({
+          user_id: data.user_id,
+          email: data.email || resolvedEmail,
+          company_name: coName,
+          company_id: coId,
+        })
+        localStorage.setItem("user_data", ud)
+        sessionStorage.setItem("user_data", ud)
       }
       const em = String(data.email || resolvedEmail || "")
         .trim()
@@ -97,11 +96,54 @@ export default function LoginPage() {
       }
 
       const authTok = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token") || ""
-      const companyIdForSub = data.company_id || null
+
+      /** Canonical company_id for subscription + redirects (login payload often omits it). */
+      let companyIdForSub: string | null = null
+      try {
+        const raw = localStorage.getItem("user_data")
+        if (raw) {
+          const u = JSON.parse(raw) as { company_id?: string | null }
+          if (u?.company_id && String(u.company_id).trim()) companyIdForSub = String(u.company_id).trim()
+        }
+      } catch {
+        /* ignore */
+      }
+      if (authTok && !companyIdForSub) {
+        try {
+          const pr = await fetch(`${API_URL}/account/profile`, {
+            headers: { Authorization: `Bearer ${authTok}` },
+          })
+          if (pr.ok) {
+            const p = await pr.json()
+            const pcid = p?.company_id != null ? String(p.company_id).trim() : ""
+            if (pcid) {
+              companyIdForSub = pcid
+              try {
+                const prev = JSON.parse(localStorage.getItem("user_data") || "{}") as Record<string, unknown>
+                const merged = JSON.stringify({
+                  ...prev,
+                  user_id: p?.user_id ?? prev.user_id ?? data.user_id,
+                  email: p?.email ?? prev.email ?? data.email ?? resolvedEmail,
+                  company_name: p?.company_name ?? prev.company_name ?? "",
+                  company_id: pcid,
+                })
+                localStorage.setItem("user_data", merged)
+                sessionStorage.setItem("user_data", merged)
+              } catch {
+                /* ignore */
+              }
+            }
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+
+      let hasActivePlan = false
       if (authTok && companyIdForSub) {
         try {
           const subRes = await fetch(
-            `${API_URL}/subscription/${encodeURIComponent(String(companyIdForSub))}`,
+            `${API_URL}/subscription/${encodeURIComponent(companyIdForSub)}`,
             { headers: { Authorization: `Bearer ${authTok}` } }
           )
           if (subRes.ok) {
@@ -116,10 +158,22 @@ export default function LoginPage() {
                 trialDaysLeft: typeof sub?.trial_days_left === "number" ? sub.trial_days_left : null,
               })
             )
+            // Backend: has_full_access = active paid OR active trial
+            hasActivePlan =
+              sub?.has_full_access === true ||
+              (!!plan &&
+                (sub?.has_active_subscription === true ||
+                  sub?.is_trial_active === true))
           }
         } catch {
           /* ignore */
         }
+      }
+
+      // Existing paying / trial customer → dashboard first (skip resume scan + scan-results nudge)
+      if (hasActivePlan) {
+        router.push("/dashboard")
+        return
       }
 
       const resume = safeInternalResumePath(data.resume_target)
@@ -310,7 +364,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
+    <div className="page-root">
       <Header />
       <main className="flex items-center justify-center px-6 py-12">
         <div className="max-w-md w-full">

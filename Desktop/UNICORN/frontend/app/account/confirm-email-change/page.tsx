@@ -41,7 +41,7 @@ export default function ConfirmEmailChangePage() {
   }, [params])
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center px-6">
+    <div className="page-root flex items-center justify-center px-6">
       <div className="w-full max-w-xl rounded-2xl border border-gray-800 bg-[#111827] p-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Email Change Verification</h1>
         <p className={status === "error" ? "text-red-400" : status === "success" ? "text-emerald-300" : "text-gray-300"}>

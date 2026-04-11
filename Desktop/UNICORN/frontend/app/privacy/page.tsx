@@ -5,7 +5,7 @@ import Header from "@/components/Header"
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
+    <div className="page-root">
       <Header />
       <main className="max-w-4xl mx-auto px-6 py-16">
         

@@ -5,7 +5,7 @@ import Header from "@/components/Header"
 
 export default function SecurityPage() {
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
+    <div className="page-root">
       <Header />
       <main className="max-w-4xl mx-auto px-6 py-16">
         
@@ -124,7 +124,7 @@ export default function SecurityPage() {
             <div>
               <h3 className="font-semibold mb-2">Data Processing Agreement (DPA)</h3>
               <p className="text-gray-400">
-                Standard DPA available upon request for enterprise customers. Custom DPA terms can be negotiated for high-volume contracts.
+                Standard DPA available upon request. Custom DPA terms can be negotiated for high-volume contracts.
               </p>
             </div>
           </div>
@@ -145,7 +145,7 @@ export default function SecurityPage() {
               <li>Executive summaries</li>
             </ul>
             <p className="text-gray-400 mt-4">
-              Export functionality is available in the dashboard under account settings. Enterprise customers can request bulk exports via support.
+              Export functionality is available in the dashboard under account settings. You can request bulk exports via support.
             </p>
           </div>
         </section>

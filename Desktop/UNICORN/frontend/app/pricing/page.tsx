@@ -16,13 +16,14 @@ export default function PricingPage() {
   const [selectedPlanName, setSelectedPlanName] = useState("")
   const [plans, setPlans] = useState<Plan[]>(PLANS)
 
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [company, setCompany] = useState("")
-  const [message, setMessage] = useState("")
+  const [contactName, setContactName] = useState("")
+  const [contactEmail, setContactEmail] = useState("")
+  const [contactCompany, setContactCompany] = useState("")
+  const [contactMessage, setContactMessage] = useState("")
   const [contactLoading, setContactLoading] = useState(false)
   const [contactSuccess, setContactSuccess] = useState<string | null>(null)
   const [contactError, setContactError] = useState<string | null>(null)
+
   const [resumeTriggered, setResumeTriggered] = useState(false)
   const [isRouteTransitioning, setIsRouteTransitioning] = useState(false)
   const [pendingActivationLabel, setPendingActivationLabel] = useState("")
@@ -67,8 +68,12 @@ export default function PricingPage() {
   }, [])
 
   const canSendContact = useMemo(() => {
-    return name.trim().length > 0 && email.trim().length > 0 && message.trim().length > 0
-  }, [name, email, message])
+    return (
+      contactName.trim().length > 0 &&
+      contactEmail.trim().length > 0 &&
+      contactMessage.trim().length > 0
+    )
+  }, [contactName, contactEmail, contactMessage])
 
   const resolveCompanyIdFromStorage = (): string | null => {
     const direct = localStorage.getItem("company_id") || sessionStorage.getItem("company_id")
@@ -389,7 +394,7 @@ export default function PricingPage() {
     }
   }
 
-  const handleContactSales = async () => {
+  const handleContactQuestion = async () => {
     if (!canSendContact || contactLoading) return
     setContactLoading(true)
     setContactError(null)
@@ -399,19 +404,19 @@ export default function PricingPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim(),
-          company: company.trim() || null,
-          message: message.trim(),
+          name: contactName.trim(),
+          email: contactEmail.trim(),
+          company: contactCompany.trim() || null,
+          message: contactMessage.trim(),
         }),
       })
       const data = await res.json().catch(() => ({}))
       if (res.ok) {
-        setContactSuccess(data.message || "Message sent! We'll get back to you within 24 hours.")
-        setName("")
-        setEmail("")
-        setCompany("")
-        setMessage("")
+        setContactSuccess(data.message || "Message sent — we'll get back to you soon.")
+        setContactName("")
+        setContactEmail("")
+        setContactCompany("")
+        setContactMessage("")
       } else {
         setContactError(data.detail || "Something went wrong. Please try again.")
       }
@@ -463,7 +468,7 @@ export default function PricingPage() {
   }, [resumeTriggered])
 
   return (
-    <div className="min-h-screen bg-[#0A0E1A] text-white">
+    <div className="page-root">
       <Header />
 
       <main className="max-w-6xl mx-auto px-6 py-12">
@@ -489,7 +494,7 @@ export default function PricingPage() {
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-3">Recover revenue—not features</h1>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Outcome-based plans: find what&apos;s leaking, fix it, and quantify what you get back.
+            One plan — Scale: find what&apos;s leaking, fix it, and quantify what you get back. Start with a 14-day full-access trial.
           </p>
         </div>
 
@@ -605,76 +610,80 @@ export default function PricingPage() {
           })}
         </div>
 
-        <div className="border-t border-gray-800 pt-12">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-2">Contact Sales</h2>
-            <p className="text-gray-400">Optional, if you need a custom setup.</p>
+        <div id="contact" className="border-t border-gray-800 pt-12 mt-4 scroll-mt-24">
+          <div className="text-center mb-8 max-w-xl mx-auto">
+            <h2 className="text-2xl font-bold mb-2">Questions?</h2>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Ask anything about Scale, the trial, or how monitoring works — we&apos;ll reply by email.
+            </p>
           </div>
 
-          <div className="p-8 bg-[#111827] rounded-lg border border-gray-800 space-y-5">
+          <div className="max-w-lg mx-auto p-8 bg-[#111827] rounded-lg border border-gray-800 space-y-5">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-gray-300 mb-2">Name</label>
                 <input
                   type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500"
                   placeholder="Your name"
+                  autoComplete="name"
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">Business Email</label>
+                <label className="block text-sm text-gray-300 mb-2">Email</label>
                 <input
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500"
-                  placeholder="name@company.com"
+                  placeholder="you@company.com"
+                  autoComplete="email"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm text-gray-300 mb-2">Company</label>
+              <label className="block text-sm text-gray-300 mb-2">Company (optional)</label>
               <input
                 type="text"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
+                value={contactCompany}
+                onChange={(e) => setContactCompany(e.target.value)}
                 className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500"
                 placeholder="Company name"
+                autoComplete="organization"
               />
             </div>
 
             <div>
               <label className="block text-sm text-gray-300 mb-2">Message</label>
               <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                value={contactMessage}
+                onChange={(e) => setContactMessage(e.target.value)}
                 rows={5}
-                className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500"
-                placeholder="Tell us what you need."
+                className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500 resize-y min-h-[120px]"
+                placeholder="What would you like to know?"
               />
             </div>
 
-            {/* Success message */}
             {contactSuccess && (
-              <div className="w-full px-4 py-3 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 text-sm text-center">
-                ✅ {contactSuccess}
+              <div className="w-full px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm text-center">
+                {contactSuccess}
               </div>
             )}
 
-            {/* Error message */}
             {contactError && (
               <div className="w-full px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
-                ❌ {contactError}
+                {contactError}
               </div>
             )}
 
             {!contactSuccess && (
               <>
                 <button
-                  onClick={handleContactSales}
+                  type="button"
+                  onClick={handleContactQuestion}
                   disabled={!canSendContact || contactLoading}
                   className={`w-full py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 ${
                     canSendContact && !contactLoading
@@ -685,16 +694,18 @@ export default function PricingPage() {
                   {contactLoading ? (
                     <>
                       <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                       </svg>
                       Sending…
                     </>
-                  ) : "Send Message"}
+                  ) : (
+                    "Send message"
+                  )}
                 </button>
                 {!canSendContact && (
                   <p className="text-xs text-gray-500 text-center -mt-2">
-                    Fill in name, email, and message to send.
+                    Add your name, email, and a message to send.
                   </p>
                 )}
               </>

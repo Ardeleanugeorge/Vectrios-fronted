@@ -169,7 +169,7 @@ export default function CompanyProfilePage() {
   }, [domain]);
 
   if (loading) return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center">
+    <div className="page-root flex items-center justify-center">
       <div className="text-center">
         <div className="w-8 h-8 border border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin mx-auto mb-3" />
         <p className="text-gray-500 text-sm">Loading profile…</p>
@@ -178,7 +178,7 @@ export default function CompanyProfilePage() {
   );
 
   if (error || !data) return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center">
+    <div className="page-root flex items-center justify-center">
       <div className="text-center max-w-sm">
         <p className="text-gray-400 mb-4">{error || "Company not found."}</p>
         <Link href="/saas-revenue-index" className="text-cyan-400 hover:underline text-sm">
@@ -195,7 +195,7 @@ export default function CompanyProfilePage() {
   const delta = Math.round(rii - firstRii);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white font-sans">
+    <div className="page-root font-sans">
 
       {/* Header */}
       <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between">

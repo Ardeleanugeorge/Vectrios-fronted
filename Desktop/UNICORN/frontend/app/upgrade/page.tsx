@@ -38,6 +38,8 @@ interface SubStatus {
   billing_cycle: string | null
   trial_days_left?: number | null
   is_trial_active?: boolean
+  has_active_subscription?: boolean
+  has_full_access?: boolean
   next_billing?: string | null
 }
 
@@ -51,44 +53,31 @@ export default function UpgradePage() {
   const [activatingPlan, setActivatingPlan] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState('')
 
-  // Contact form state
-  const [contactName, setContactName] = useState('')
-  const [contactEmail, setContactEmail] = useState('')
-  const [contactCompany, setContactCompany] = useState('')
-  const [contactMessage, setContactMessage] = useState('')
-  const [isSendingContact, setIsSendingContact] = useState(false)
-  const [contactSuccess, setContactSuccess] = useState(false)
-  const [contactError, setContactError] = useState<string | null>(null)
-  const [showContactForm, setShowContactForm] = useState(false)
-
   useEffect(() => {
     const token = sessionStorage.getItem('auth_token') || localStorage.getItem('auth_token')
     if (!token) { router.push('/login'); return }
 
-    // Resolve company_id
-    let cid: string | null = null
-    try {
-      const ud = localStorage.getItem('user_data')
-      if (ud) cid = JSON.parse(ud)?.company_id || null
-    } catch {}
-
-    if (!cid) {
-      // Fetch from profile
-      fetch(`${API_URL}/account/profile`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(r => r.ok ? r.json() : null)
-        .then(p => {
-          if (p?.company_id) {
-            cid = p.company_id
-            setCompanyId(cid)
-            loadSub(token, cid!)
-          }
-        })
-        .catch(() => {})
-        .finally(() => setLoadingStatus(false))
-    } else {
-      setCompanyId(cid)
-      loadSub(token, cid)
-    }
+    // Always use server profile as source of truth (avoids stale/wrong company_id in localStorage).
+    setLoadingStatus(true)
+    fetch(`${API_URL}/account/profile`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => (r.ok ? r.json() : null))
+      .then(p => {
+        const cid = p?.company_id || null
+        if (cid) {
+          setCompanyId(cid)
+          try {
+            const raw = localStorage.getItem('user_data') || sessionStorage.getItem('user_data')
+            const ud = raw ? JSON.parse(raw) : {}
+            const next = { ...ud, company_id: cid, user_id: p?.user_id ?? ud.user_id, email: p?.email ?? ud.email }
+            localStorage.setItem('user_data', JSON.stringify(next))
+            sessionStorage.setItem('user_data', JSON.stringify(next))
+          } catch { /* ignore */ }
+          loadSub(token, cid)
+        } else {
+          setLoadingStatus(false)
+        }
+      })
+      .catch(() => setLoadingStatus(false))
   }, [router])
 
   const loadSub = async (token: string, cid: string) => {
@@ -115,33 +104,6 @@ export default function UpgradePage() {
   const isTrial = subStatus?.is_trial_active === true
   const isScale = currentPlanName === 'scale' && !isTrial
 
-  const handleContactSales = async () => {
-    if (isSendingContact) return
-    setIsSendingContact(true)
-    setContactError(null)
-    setContactSuccess(false)
-    try {
-      const token = sessionStorage.getItem('auth_token') || localStorage.getItem('auth_token')
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-      if (token) headers['Authorization'] = `Bearer ${token}`
-      const res = await fetch(`${API_URL}/contact`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ name: contactName, email: contactEmail, company: contactCompany, message: contactMessage })
-      })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.detail || 'Failed to send message.')
-      }
-      setContactSuccess(true)
-      setContactName(''); setContactEmail(''); setContactCompany(''); setContactMessage('')
-    } catch (e: any) {
-      setContactError(e.message || 'An unexpected error occurred.')
-    } finally {
-      setIsSendingContact(false)
-    }
-  }
-
   const handleActivate = async (planName: string) => {
     const token = sessionStorage.getItem('auth_token') || localStorage.getItem('auth_token')
     if (!token) { router.push('/login'); return }
@@ -159,29 +121,73 @@ export default function UpgradePage() {
     setIsActivating(true)
     setActivatingPlan(planName)
     try {
-      const res = await fetch(`${API_URL}/monitoring/activate/${cid}`, {
+      // Paid Scale in DB (monthly/annual) — replaces trial; persisted for GET /subscription + header cache.
+      const upRes = await fetch(`${API_URL}/subscription/${cid}/upgrade-scale`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ billing_cycle: billing }),
       })
-      if (res.ok) {
-        setSuccessMsg(`${planName.charAt(0).toUpperCase() + planName.slice(1)} plan activated!`)
-        await new Promise(r => setTimeout(r, 1000))
-        const scanToken = (() => {
-          try {
-            const raw = sessionStorage.getItem('scan_data') || localStorage.getItem('scan_data')
-            if (!raw) return null
-            return (JSON.parse(raw) as { scan_token?: string })?.scan_token || null
-          } catch { return null }
-        })()
-        router.push(scanToken
-            ? `/dashboard?governance=activated&token=${encodeURIComponent(scanToken)}`
-          : '/dashboard?governance=activated'
-        )
-      } else {
-        const err = await res.json().catch(() => ({}))
-        alert(err.detail || 'Activation failed. Please try again.')
+      if (!upRes.ok) {
+        const err = await upRes.json().catch(() => ({}))
+        const msg = typeof err?.detail === 'string' ? err.detail : Array.isArray(err?.detail) ? err.detail.map((x: { msg?: string }) => x?.msg).filter(Boolean).join(' ') : 'Upgrade failed. Please try again.'
+        alert(msg || 'Upgrade failed. Please try again.')
+        return
       }
-    } catch { alert('Network error. Please try again.') }
+      const access = (await upRes.json()) as SubStatus
+      setSubStatus(access)
+
+      try {
+        const newCycle = access?.billing_cycle ?? billing
+        const newPlan =
+          newCycle === 'trial'
+            ? 'scale'
+            : access?.plan
+              ? String(access.plan).toLowerCase()
+              : 'scale'
+        const newDays =
+          newCycle === 'trial' && typeof access?.trial_days_left === 'number'
+            ? access.trial_days_left
+            : null
+        localStorage.setItem(
+          'subscription_cache',
+          JSON.stringify({ plan: newPlan, billingCycle: newCycle, trialDaysLeft: newDays, ts: Date.now() }),
+        )
+      } catch {
+        /* ignore */
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('subscription_updated'))
+      }
+
+      // Turn on monitoring / governance; does not downgrade an existing paid sub.
+      await fetch(`${API_URL}/monitoring/activate/${cid}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => {})
+
+      const label = billing === 'annual' ? 'annual' : 'monthly'
+      setSuccessMsg(`Scale activated — ${label} billing`)
+      await new Promise((r) => setTimeout(r, 800))
+      const scanToken = (() => {
+        try {
+          const raw = sessionStorage.getItem('scan_data') || localStorage.getItem('scan_data')
+          if (!raw) return null
+          return (JSON.parse(raw) as { scan_token?: string })?.scan_token || null
+        } catch {
+          return null
+        }
+      })()
+      router.push(
+        scanToken
+          ? `/dashboard?governance=activated&token=${encodeURIComponent(scanToken)}`
+          : '/dashboard?governance=activated',
+      )
+    } catch {
+      alert('Network error. Please try again.')
+    }
     finally { setIsActivating(false); setActivatingPlan(null) }
   }
 
@@ -195,7 +201,7 @@ export default function UpgradePage() {
 
   if (loadingStatus) {
     return (
-      <div className="min-h-screen bg-[#050810] text-white flex items-center justify-center">
+      <div className="page-root flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
           <p className="text-gray-400 text-sm">Loading plan status…</p>
@@ -205,7 +211,7 @@ export default function UpgradePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050810] text-white">
+    <div className="page-root">
       <DashboardHeader />
       <main className="pt-20 pb-24">
         <div className="max-w-5xl mx-auto px-6">
@@ -213,7 +219,7 @@ export default function UpgradePage() {
           {/* ── Header ─────────────────────────────────────────────────────── */}
           <div className="text-center mb-14 pt-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-5 uppercase tracking-widest">
-              Revenue Monitoring Plans
+              Scale — one plan
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
               {isScale ? 'You\'re on the highest plan' : 'Upgrade your monitoring'}
@@ -277,16 +283,16 @@ export default function UpgradePage() {
               <div className="text-5xl mb-4">🔒</div>
               <h2 className="text-2xl font-bold mb-3 text-white">You're on Scale — the highest plan</h2>
               <p className="text-gray-400 mb-6 max-w-lg mx-auto">
-                Downgrade is not available. Scale gives you continuous monitoring, delta engine, and behavioral intelligence. Contact us if you need a custom arrangement.
+                Downgrade is not available. Scale includes continuous monitoring, delta engine, and behavioral intelligence. For billing or account help, use Account → Support.
               </p>
               <div className="flex items-center justify-center gap-4 flex-wrap">
                 <Link href="/dashboard" className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl transition">
                   Go to dashboard
                 </Link>
-                <button onClick={() => setShowContactForm(true)} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium rounded-xl transition">
-                  Contact us
-                </button>
-                  </div>
+                <Link href="/account?tab=support" className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium rounded-xl transition">
+                  Account &amp; help
+                </Link>
+              </div>
                 </div>
           ) : (
             <>
@@ -423,78 +429,15 @@ export default function UpgradePage() {
             </div>
           </div>
 
-          {/* ── Enterprise CTA ─────────────────────────────────────────────── */}
-          <div className="rounded-2xl border border-gray-700/50 bg-gray-900/40 p-8">
-            <div className="text-center mb-6">
-              <h3 className="text-xl font-bold mb-2">Need a custom plan?</h3>
-              <p className="text-gray-400">Custom integrations, dedicated support, and SLA guarantees for larger teams.</p>
-            </div>
-
-            {contactSuccess ? (
-              <div className="text-center py-6">
-                <div className="text-3xl mb-2">✅</div>
-                <p className="text-green-400 font-medium">Message sent! We'll get back to you within 24h.</p>
-              </div>
-            ) : !showContactForm ? (
-              <div className="text-center">
-                <button
-                  onClick={() => setShowContactForm(true)}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium transition"
-                >
-                  Contact sales →
-                </button>
-              </div>
-            ) : (
-              <div className="max-w-lg mx-auto space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    placeholder="Your name"
-                    value={contactName}
-                    onChange={e => setContactName(e.target.value)}
-                    className="px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-cyan-500"
-                  />
-                  <input
-                    type="email"
-                    placeholder="Work email"
-                    value={contactEmail}
-                    onChange={e => setContactEmail(e.target.value)}
-                    className="px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Company name"
-                  value={contactCompany}
-                  onChange={e => setContactCompany(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-cyan-500"
-                />
-                <textarea
-                  placeholder="Tell us about your needs..."
-                  value={contactMessage}
-                  onChange={e => setContactMessage(e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-2.5 rounded-xl bg-gray-800 border border-gray-700 text-white text-sm focus:outline-none focus:border-cyan-500 resize-none"
-                />
-                {contactError && <p className="text-red-400 text-xs">{contactError}</p>}
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setShowContactForm(false)}
-                    className="flex-1 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-400 text-sm transition"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleContactSales}
-                    disabled={isSendingContact || !contactName || !contactEmail || !contactMessage}
-                    className="flex-1 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSendingContact ? 'Sending…' : 'Send message →'}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          <p className="text-center text-sm text-gray-500 pb-6">
+            Have a question?{" "}
+            <Link
+              href="/pricing#contact"
+              className="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline"
+            >
+              Send us a message
+            </Link>
+          </p>
 
         </div>
       </main>

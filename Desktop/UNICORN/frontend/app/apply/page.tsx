@@ -97,7 +97,7 @@ export default function ApplyPage() {
 
   if (submitted) {
     return (
-      <main className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center px-6">
+      <main className="page-root flex items-center justify-center px-6">
         <div className="max-w-2xl text-center">
           <h1 className="text-4xl font-bold mb-6">Application Received</h1>
           <p className="text-xl text-gray-300 mb-4">
@@ -115,7 +115,7 @@ export default function ApplyPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0B0F19] text-white py-12">
+    <main className="page-root py-12">
       <div className="max-w-3xl mx-auto px-6">
         {/* HERO SECTION */}
         <div className="text-center mb-12">

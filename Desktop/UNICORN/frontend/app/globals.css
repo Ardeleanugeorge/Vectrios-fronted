@@ -4,14 +4,21 @@
 
 @layer base {
   body {
-    @apply bg-[#0B0F19] text-white;
+    @apply min-h-screen bg-slate-100 text-slate-900 antialiased;
+    @apply dark:bg-[#0B0F19] dark:text-white;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 }
 
 @layer components {
+  /* Full-height page root: inherit body theme (do not set another bg here). */
+  .page-root {
+    @apply min-h-screen;
+  }
+
   .input {
-    @apply w-full p-4 bg-[#111827] rounded-lg border border-gray-700 text-white placeholder-gray-500;
+    @apply w-full p-4 rounded-lg border bg-white border-slate-200 text-slate-900 placeholder-slate-400;
+    @apply dark:bg-[#111827] dark:border-gray-700 dark:text-white dark:placeholder-gray-500;
     @apply focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500;
   }
   

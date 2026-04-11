@@ -42,14 +42,14 @@ export default function ResultsPage() {
 
   if (!data) {
     return (
-      <main className="min-h-screen bg-[#0B0F19] text-white p-8 flex items-center justify-center">
+      <main className="page-root p-8 flex items-center justify-center">
         <p className="text-gray-400">Loading results...</p>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-[#0B0F19] text-white p-8">
+    <main className="page-root p-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
           <h2 className="text-3xl font-semibold mb-2">Diagnostic Results</h2>

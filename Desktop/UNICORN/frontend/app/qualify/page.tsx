@@ -75,7 +75,7 @@ export default function QualifyPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center px-6 py-12">
+    <main className="page-root flex items-center justify-center px-6 py-12">
       <div className="max-w-2xl w-full">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
