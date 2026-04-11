@@ -600,6 +600,7 @@ function ScanResultsContent() {
       // Save auth token and user data
       sessionStorage.setItem("auth_token", result.token)
       localStorage.setItem("auth_token", result.token)
+      setIsAuthenticated(true)
       if (token) {
         markScanUnlockedWithEmail(token)
       }
