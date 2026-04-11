@@ -141,38 +141,6 @@ export default function DashboardPage() {
     return null
   })
 
-  // After Stripe Checkout: sync subscription if webhook is slow (same tab keeps auth token).
-  useEffect(() => {
-    if (typeof window === "undefined") return
-    const params = new URLSearchParams(window.location.search)
-    if (params.get("checkout_success") !== "1") return
-    const sessionId = params.get("session_id")
-    if (!sessionId) return
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) return
-
-    let cancelled = false
-    void (async () => {
-      try {
-        const res = await fetch(`${API_URL}/billing/confirm-checkout`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ session_id: sessionId }),
-        })
-        if (!res.ok || cancelled) return
-        router.replace("/dashboard")
-      } catch {
-        /* webhook may still finalize; user can refresh */
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [router])
-
   const readActiveScanToken = (): string | null => {
     try {
       const params = new URLSearchParams(window.location.search)
@@ -196,29 +164,30 @@ export default function DashboardPage() {
 
 
   useEffect(() => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) {
-      router.push("/login")
-      return
-    }
-
-    // Get company ID from user data
-    const userData = localStorage.getItem("user_data")
-    if (userData) {
-      try {
-        const parsed = JSON.parse(userData)
-        if ((parsed?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()) {
-          router.replace("/account?tab=system")
-          return
-        }
-        setUser(parsed)
-        if (parsed.company_id) {
-          setCompanyId(parsed.company_id)
-        }
-      } catch (e) {
-        console.error("Error parsing user data:", e)
+    try {
+      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      if (!token) {
+        router.push("/login")
+        return
       }
-    }
+
+      // Get company ID from user data
+      const userData = localStorage.getItem("user_data")
+      if (userData) {
+        try {
+          const parsed = JSON.parse(userData)
+          if ((parsed?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()) {
+            router.replace("/account?tab=system")
+            return
+          }
+          setUser(parsed)
+          if (parsed.company_id) {
+            setCompanyId(parsed.company_id)
+          }
+        } catch (e) {
+          console.error("Error parsing user data:", e)
+        }
+      }
 
     // Check for diagnostic result from onboarding or scan.
     // Priority: active scan token match > full diagnostic > partial diagnostic.
@@ -277,16 +246,17 @@ export default function DashboardPage() {
     } catch {}
 
     // Load monitoring status and subscription if company ID available
-    if (companyId) {
-      loadMonitoringStatus(token, companyId, readActiveScanToken())
-      loadAlerts(token, companyId)
-      loadSubscription(token, companyId)
-    } else {
-      // No company ID yet — don't keep spinner spinning
-      setMonitoringLoading(false)
+      if (companyId) {
+        loadMonitoringStatus(token, companyId, readActiveScanToken())
+        loadAlerts(token, companyId)
+        loadSubscription(token, companyId)
+      } else {
+        // No company ID yet — don't keep spinner spinning
+        setMonitoringLoading(false)
+      }
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }, [companyId, router])
 
   // After returning from a scan (scan-results sets this flag), re-fetch monitoring status
@@ -425,6 +395,118 @@ export default function DashboardPage() {
       setSubscriptionLoading(false)
     }
   }
+
+  // Stripe return: confirm server-side, refresh profile (fixes stale/wrong company_id), unstick URL
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("checkout_success") !== "1") return
+    const sessionId = params.get("session_id")
+    if (!sessionId) return
+
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) {
+      const fullPath =
+        window.location.pathname + window.location.search + (window.location.hash || "")
+      router.replace(`/login?next=${encodeURIComponent(fullPath)}`)
+      return
+    }
+
+    const dedupeKey = `stripe_checkout_confirmed_${sessionId}`
+    if (sessionStorage.getItem(dedupeKey)) {
+      router.replace("/dashboard")
+      return
+    }
+
+    let cancelled = false
+    void (async () => {
+      try {
+        const res = await fetch(`${API_URL}/billing/confirm-checkout`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ session_id: sessionId }),
+        })
+        if (cancelled) return
+
+        if (res.ok) {
+          try {
+            const access = await res.json()
+            if (access?.plan) {
+              setCurrentPlan(String(access.plan).toLowerCase())
+            }
+          } catch {
+            /* non-JSON body */
+          }
+
+          let resolvedCompanyId: string | null = null
+          try {
+            const pr = await fetch(`${API_URL}/account/profile`, {
+              headers: { Authorization: `Bearer ${token}` },
+            })
+            if (pr.ok && !cancelled) {
+              const p = await pr.json()
+              if (p?.company_id) {
+                resolvedCompanyId = String(p.company_id)
+                const userDataStr = localStorage.getItem("user_data")
+                const parsed = userDataStr ? JSON.parse(userDataStr) : {}
+                const updated = {
+                  ...parsed,
+                  company_id: resolvedCompanyId,
+                  user_id: p.user_id ?? parsed.user_id,
+                  email: p.email ?? parsed.email,
+                }
+                localStorage.setItem("user_data", JSON.stringify(updated))
+                sessionStorage.setItem("user_data", JSON.stringify(updated))
+                localStorage.setItem("company_id", resolvedCompanyId)
+                sessionStorage.setItem("company_id", resolvedCompanyId)
+                setCompanyId(resolvedCompanyId)
+                setUser(updated)
+              }
+            }
+          } catch (e) {
+            console.error("[DASHBOARD] profile refresh after checkout:", e)
+          }
+
+          if (!cancelled) {
+            sessionStorage.setItem(dedupeKey, "1")
+            router.replace("/dashboard")
+            window.dispatchEvent(new CustomEvent("subscription_updated"))
+            const cid =
+              resolvedCompanyId ||
+              (() => {
+                try {
+                  const raw = localStorage.getItem("user_data")
+                  if (!raw) return null
+                  const u = JSON.parse(raw)
+                  return u?.company_id ? String(u.company_id) : null
+                } catch {
+                  return null
+                }
+              })()
+            if (cid) {
+              loadSubscription(token, cid, true)
+              loadMonitoringStatus(token, cid, readActiveScanToken())
+              loadAlerts(token, cid)
+            }
+          }
+        } else {
+          const detail = await res.text().catch(() => "")
+          console.error("[DASHBOARD] confirm-checkout failed:", res.status, detail)
+          if (!cancelled) router.replace("/dashboard")
+        }
+      } catch (e) {
+        console.error("[DASHBOARD] checkout confirm:", e)
+        if (!cancelled) router.replace("/dashboard")
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [router])
 
   const loadAlerts = async (token: string, companyId: string) => {
     try {

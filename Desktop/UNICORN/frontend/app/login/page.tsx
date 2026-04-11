@@ -139,6 +139,13 @@ export default function LoginPage() {
         }
       }
 
+      // Return here after Stripe (or any flow) sent user to /login?next=/dashboard?checkout_success=…
+      const nextReturn = safeInternalResumePath(searchParams.get("next"))
+      if (nextReturn) {
+        router.push(nextReturn)
+        return
+      }
+
       let hasActivePlan = false
       if (authTok && companyIdForSub) {
         try {
@@ -224,7 +231,7 @@ export default function LoginPage() {
         router.push("/dashboard")
       }
     },
-    [router]
+    [router, searchParams]
   )
 
   const sendOtpCode = async () => {
