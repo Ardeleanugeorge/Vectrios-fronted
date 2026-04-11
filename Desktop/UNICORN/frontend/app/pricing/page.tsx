@@ -268,6 +268,40 @@ export default function PricingPage() {
     if (token) ensurePlanIds(token)
   }, [])
 
+  // After Stripe Checkout redirect: sync subscription if webhook is slow
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("checkout_success") !== "1") return
+    const sessionId = params.get("session_id")
+    if (!sessionId) return
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+
+    let cancelled = false
+    void (async () => {
+      try {
+        const res = await fetch(`${API_URL}/billing/confirm-checkout`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ session_id: sessionId }),
+        })
+        if (!res.ok || cancelled) return
+        setShowActivatedBanner(true)
+        setActivePlanFromQuery("scale")
+        router.replace("/pricing?governance=activated&active_plan=scale")
+      } catch {
+        /* webhook may still finalize; user can refresh */
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [router])
+
   const handleTrial = async () => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) {
