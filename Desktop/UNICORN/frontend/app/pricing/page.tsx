@@ -322,7 +322,7 @@ export default function PricingPage() {
         if (!res.ok || cancelled) return
         setShowActivatedBanner(true)
         setActivePlanFromQuery("scale")
-        router.replace("/pricing?governance=activated&active_plan=scale")
+        router.replace("/dashboard")
       } catch {
         /* webhook may still finalize; user can refresh */
       }

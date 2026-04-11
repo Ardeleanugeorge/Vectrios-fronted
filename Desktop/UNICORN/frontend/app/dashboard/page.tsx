@@ -141,6 +141,38 @@ export default function DashboardPage() {
     return null
   })
 
+  // After Stripe Checkout: sync subscription if webhook is slow (same tab keeps auth token).
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("checkout_success") !== "1") return
+    const sessionId = params.get("session_id")
+    if (!sessionId) return
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+
+    let cancelled = false
+    void (async () => {
+      try {
+        const res = await fetch(`${API_URL}/billing/confirm-checkout`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ session_id: sessionId }),
+        })
+        if (!res.ok || cancelled) return
+        router.replace("/dashboard")
+      } catch {
+        /* webhook may still finalize; user can refresh */
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [router])
+
   const readActiveScanToken = (): string | null => {
     try {
       const params = new URLSearchParams(window.location.search)
