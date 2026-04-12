@@ -28,6 +28,8 @@ import Link from "next/link"
 
 interface MonitoringStatus {
   monitoring_active: boolean
+  /** Hostname under monitoring — same source as header; pass through to playbook for vendor naming */
+  monitored_domain?: string | null
   created_at?: string
   last_evaluated_at?: string
   data_coverage_pct?: number | null
@@ -306,7 +308,11 @@ export default function MonitoringLayer({
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     const headers: Record<string, string> = {}
     if (token) headers.Authorization = `Bearer ${token}`
-    fetch(`${API_URL}/playbook/${companyId}`, { headers, signal: ac.signal })
+    const md = (monitoringStatus.monitored_domain || "").trim()
+    const playbookQs = new URLSearchParams()
+    if (md) playbookQs.set("monitored_domain", md)
+    const playbookSuffix = playbookQs.toString() ? `?${playbookQs.toString()}` : ""
+    fetch(`${API_URL}/playbook/${companyId}${playbookSuffix}`, { headers, signal: ac.signal })
       .then(async (r) => {
         if (!r.ok) return
         const data = await r.json()
@@ -361,7 +367,7 @@ export default function MonitoringLayer({
         if (playbookRequestGenRef.current === myGen) setPlaybookFetchSettled(true)
       })
     return () => ac.abort()
-  }, [companyId, diagnostic?.action_layer])
+  }, [companyId, diagnostic?.action_layer, monitoringStatus.monitored_domain])
 
   const diagnosticFixCount = diagnostic?.action_layer?.fixes?.length ?? 0
   const playbookReady =
