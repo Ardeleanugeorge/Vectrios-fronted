@@ -26,6 +26,12 @@ interface RevenueForecast {
 interface RevenueForecastPanelProps {
   companyId: string | null
   uiState?: "low" | "medium" | "high"
+  /**
+   * Parent (MonitoringLayer) already fetches /revenue-forecast for FinancialExposureCard.
+   * When true, use `sharedForecast` and do not call the API again.
+   */
+  fetchSuppressed?: boolean
+  sharedForecast?: RevenueForecast | null
 }
 
 function formatCurrency(val: number): string {
@@ -34,12 +40,26 @@ function formatCurrency(val: number): string {
   return `$${Math.round(val).toLocaleString()}`
 }
 
-export default function RevenueForecastPanel({ companyId, uiState = "medium" }: RevenueForecastPanelProps) {
+export default function RevenueForecastPanel({
+  companyId,
+  uiState = "medium",
+  fetchSuppressed = false,
+  sharedForecast = null,
+}: RevenueForecastPanelProps) {
   const [forecast, setForecast] = useState<RevenueForecast | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!companyId) { setLoading(false); return }
+    if (fetchSuppressed) {
+      setForecast(sharedForecast ?? null)
+      setLoading(false)
+      return
+    }
+
+    if (!companyId) {
+      setLoading(false)
+      return
+    }
 
     async function loadForecast() {
       try {
@@ -55,7 +75,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
       }
     }
     loadForecast()
-  }, [companyId])
+  }, [companyId, fetchSuppressed, sharedForecast])
 
   const getConfidenceLabel = (s: number) => s >= 0.7 ? "High" : s >= 0.5 ? "Moderate" : "Low"
   const getConfidenceColor = (s: number) => s >= 0.7 ? "text-green-400" : s >= 0.5 ? "text-amber-400" : "text-gray-400"

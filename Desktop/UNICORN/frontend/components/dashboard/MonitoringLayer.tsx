@@ -139,9 +139,6 @@ export default function MonitoringLayer({
   currentPlan = null,
   companyDomain = null,
 }: MonitoringLayerProps) {
-  console.log('MonitoringLayer diagnostic:', diagnostic);
-  console.log('MonitoringLayer diagnostic.action_layer:', diagnostic?.action_layer);
-  console.log('MonitoringLayer monitoringStatus.action_layer:', monitoringStatus?.action_layer);
   // Revenue Delta (last scan vs previous)
   const [revenueDelta, setRevenueDelta] = useState<null | {
     has_delta: boolean
@@ -737,7 +734,12 @@ export default function MonitoringLayer({
 
       {/* 11. REVENUE COMPRESSION FORECAST — 30-day prediction (Growth+) */}
       <FeatureGate feature="Forecast Engine" planRequired="growth" currentPlan={currentPlan}>
-        <RevenueForecastPanel companyId={companyId} uiState={uiState} />
+        <RevenueForecastPanel
+          companyId={companyId}
+          uiState={uiState}
+          fetchSuppressed
+          sharedForecast={forecast}
+        />
       </FeatureGate>
 
       {/* 12. REVENUE TRAJECTORY SIMULATION — 12-month ARR (Scale+) */}
