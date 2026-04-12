@@ -1,4 +1,4 @@
-"use client"
+ï»¿"use client"
 
 import { API_URL } from '@/lib/config'
 import { isScanUnlockedWithEmail } from "@/lib/scanResultsRefine"
@@ -251,7 +251,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     window.addEventListener("storage", handleStorageChange)
     window.addEventListener("subscription_updated", handleSubscriptionUpdate)
     
-    // Single refresh after trial activation — no aggressive polling
+    // Single refresh after trial activation ï¿½ no aggressive polling
     const urlParams = new URLSearchParams(window.location.search)
     const isTrialActivated = urlParams.get("trial") === "activated"
     let pollTimeout: ReturnType<typeof setTimeout> | null = null
