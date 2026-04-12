@@ -1,6 +1,7 @@
 "use client"
 
 import { API_URL } from '@/lib/config'
+import { RII_ABBREV, RII_NAME } from "@/lib/rii"
 
 import { useEffect, useState } from "react"
 
@@ -95,7 +96,9 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
   return (
     <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
       <h2 className="text-xl font-bold mb-2 uppercase tracking-wide">Revenue Risk Trajectory</h2>
-      <p className="text-xs text-gray-500 mb-6">Projected RII evolution if no intervention occurs</p>
+      <p className="text-xs text-gray-500 mb-6">
+        Projected {RII_NAME} ({RII_ABBREV}) if no intervention — same 0–100 scale as your dashboard headline score.
+      </p>
       
       <div className="grid grid-cols-4 gap-4 mb-6">
         {/* Current */}

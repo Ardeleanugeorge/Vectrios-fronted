@@ -1,5 +1,7 @@
 "use client"
 
+import { RII_TAGLINE } from "@/lib/rii"
+
 interface StructuralRiskOverviewProps {
   riskScore: number | null
   alignmentScore?: number | null
@@ -99,9 +101,16 @@ export default function StructuralRiskOverview({
               <p className={`text-4xl font-bold ${getIntegrityColor(integrityStatus)}`}>
                 {integrityStatus}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
-                Alignment Score: {(alignmentScore ?? riskScore).toFixed(0)}
+              <p className="text-sm text-gray-500 mt-1" title={RII_TAGLINE}>
+                Revenue Impact Index (RII): {riskScore.toFixed(0)}
               </p>
+              {alignmentScore != null &&
+                alignmentScore > 0 &&
+                Math.round(alignmentScore) !== Math.round(riskScore) && (
+                  <p className="text-xs text-gray-600 mt-0.5">
+                    Messaging alignment (sub-metric): {alignmentScore.toFixed(0)}
+                  </p>
+                )}
             </div>
           ) : (
             <p className="text-2xl font-bold text-gray-500">Monitoring</p>

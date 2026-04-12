@@ -12,7 +12,7 @@ const PLAN_RANK: Record<string, number> = { scale: 0 }
 
 const PLAN_FEATURES: Record<string, string[]> = {
   scale: [
-    '📊 RII Score — structural risk 0–100',
+    '📊 Revenue Impact Index (RII) — structural score 0–100',
     '🔍 Revenue leak detection (page-by-page)',
     '📋 Full fix playbook — step-by-step with $/month recovery',
     '💰 ARR at risk + close rate impact modeling',
@@ -402,7 +402,7 @@ export default function UpgradePage() {
                 <tbody>
                   {[
                     'Revenue leak detection',
-                    'RII score (0–100)',
+                    'Revenue Impact Index / RII (0–100)',
                     'Close rate modeling',
                     'ARR at risk calculation',
                     'Page-by-page breakdown',

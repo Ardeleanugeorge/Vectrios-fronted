@@ -1,5 +1,8 @@
 "use client"
 
+import Link from "next/link"
+import { METHODOLOGY_RII_HREF, RII_ABBREV, RII_NAME } from "@/lib/rii"
+
 function getBarColor(score: number): string {
   if (score >= 65) return "bg-gradient-to-r from-emerald-500 to-green-400"
   if (score >= 40) return "bg-gradient-to-r from-yellow-500 to-orange-400"
@@ -70,8 +73,13 @@ export default function StructuralBreakdownWithDelta({
   return (
     <div id="revenue-alignment-map" className="p-8 bg-[#111827] rounded-lg border border-gray-800 scroll-mt-24">
       <h2 className="text-xl font-bold mb-2 uppercase tracking-wide">Revenue-Stage Alignment Map</h2>
-      <p className="text-xs text-gray-500 mb-6 italic">
-        Alignment scoring reflects revenue-stage priority weighting.
+      <p className="text-xs text-gray-500 mb-2 leading-relaxed">
+        These four dimensions feed your headline {RII_NAME} ({RII_ABBREV}). They explain <em>where</em> structural risk concentrates — not dollar impact (see model below).
+      </p>
+      <p className="text-xs text-gray-600 mb-6">
+        <Link href={METHODOLOGY_RII_HREF} className="text-cyan-600 hover:text-cyan-400 hover:underline">
+          How {RII_ABBREV} combines these signals →
+        </Link>
       </p>
       <div className="grid md:grid-cols-2 gap-6">
         <div>

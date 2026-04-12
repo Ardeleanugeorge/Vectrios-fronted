@@ -26,7 +26,13 @@ export default function Header() {
         <Link href="/" className="text-2xl font-bold text-white hover:text-cyan-400 transition">
           Vectri<span className="text-cyan-400">OS</span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          <Link
+            href="/methodology#revenue-impact-index"
+            className="text-gray-500 hover:text-gray-300 transition text-sm"
+          >
+            Methodology
+          </Link>
           <Link href="/login" className="text-gray-400 hover:text-white transition text-sm">
             Log in
           </Link>

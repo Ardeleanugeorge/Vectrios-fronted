@@ -1,5 +1,8 @@
 "use client"
 
+import Link from "next/link"
+import { METHODOLOGY_RII_HREF, RII_ABBREV, RII_INTRO, RII_NAME, RII_TAGLINE } from "@/lib/rii"
+
 interface RevenueRiskIndexProps {
   riskScore: number | null
   riskLevel: string
@@ -63,33 +66,52 @@ export default function RevenueRiskIndex({
         : "Large dollar exposure can reflect scale as much as urgency — use model inputs below for context."
 
   return (
-    <div className="p-10 bg-[#111827] rounded-lg border-2 border-gray-800 mb-8">
+    <div className="p-10 bg-[#111827] rounded-lg border-2 border-cyan-900/40 mb-8 shadow-[0_0_40px_rgba(34,211,238,0.06)]">
       <div className="text-center">
-        <p
-          className="text-sm text-gray-400 mb-4 uppercase tracking-wide cursor-help inline-block border-b border-dotted border-gray-600"
-          title="Risk classification derived from revenue-stage alignment analysis."
-        >
-          Revenue Risk Index
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-500/90 mb-2">
+          Core metric
         </p>
-        <p className="text-xs text-gray-500 mb-3">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-1 tracking-tight">
+          {RII_NAME}
+        </h2>
+        <p className="text-sm text-gray-400 mb-3">
+          <abbr title={RII_TAGLINE} className="cursor-help font-semibold text-cyan-400/90 border-b border-dotted border-cyan-500/50">
+            {RII_ABBREV}
+          </abbr>
+          <span className="text-gray-500"> · </span>
+          <span title={RII_TAGLINE}>0–100 scale · lower is stronger architecture</span>
+        </p>
+        <p className="text-xs text-gray-500 max-w-2xl mx-auto leading-relaxed mb-4">
+          {RII_INTRO}{" "}
+          <Link
+            href={METHODOLOGY_RII_HREF}
+            className="text-cyan-500 hover:text-cyan-400 underline-offset-2 hover:underline whitespace-nowrap"
+          >
+            How RII is calculated →
+          </Link>
+        </p>
+        <p className="text-[11px] text-gray-600 mb-5 uppercase tracking-wide">
           {(() => {
-            // Prefer normalized "source" from monitoring status when available
-            if (source === "monitoring") return <>Source: Monitoring RII</>
-            if (source === "diagnostic") return <>Source: Full Diagnostic RII</>
-            if (source === "fallback") return <>Source: Fallback RII</>
-            // Legacy: use scoreSource hint
-            return <>Source: {scoreSource === "instant_scan" ? "Instant Scan RII" : "Full Diagnostic RII"}</>
+            if (source === "monitoring") return <>Score source: monitoring snapshot ({RII_ABBREV})</>
+            if (source === "diagnostic") return <>Score source: full diagnostic ({RII_ABBREV})</>
+            if (source === "fallback") return <>Score source: estimated ({RII_ABBREV})</>
+            return (
+              <>
+                Score source: {scoreSource === "instant_scan" ? "instant scan" : "full diagnostic"} ({RII_ABBREV})
+              </>
+            )
           })()}
         </p>
         {displayScore !== null ? (
           <>
             <div className="mb-4">
-            <span className={`text-5xl font-bold ${getRiskColor()}`}>
+            <span className={`text-5xl font-bold ${getRiskColor()}`} title={RII_TAGLINE}>
               {displayScore.toFixed(0)}
             </span>
           </div>
-          <p className={`text-2xl font-bold mb-1 ${getRiskColor()}`} title="RII measures revenue risk. Lower score = better performance.">
-            {getRiskLabel()} ✅
+          <p className={`text-2xl font-bold mb-1 ${getRiskColor()}`} title={RII_TAGLINE}>
+            {getRiskLabel()}
+            {scoreClass === "LOW" && <span className="ml-2 text-emerald-400 text-xl" aria-hidden>✓</span>}
           </p>
           <p className="text-sm text-gray-300">
             {heroBodyPrimary}

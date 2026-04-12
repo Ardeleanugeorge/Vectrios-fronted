@@ -32,7 +32,7 @@ export const PLANS: Plan[] = [
     priceAnnual: 79, // per month when billed annually
     maxUsers: 20,
     features: [
-      "RII Score — structural risk 0–100",
+      "Revenue Impact Index (RII) — structural score 0–100",
       "Revenue leak detection (page-by-page)",
       "Full fix playbook — step-by-step with $/month recovery",
       "ARR at risk + close rate impact modeling",

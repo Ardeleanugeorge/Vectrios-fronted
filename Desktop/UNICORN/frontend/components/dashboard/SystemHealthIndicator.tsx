@@ -1,5 +1,7 @@
 "use client"
 
+import { RII_ABBREV, RII_NAME } from "@/lib/rii"
+
 interface SystemHealthIndicatorProps {
   rii: number | null
   riskDelta?: number | null
@@ -73,10 +75,15 @@ export default function SystemHealthIndicator({
   return (
     <div className="mb-6 p-6 bg-[#111827] rounded-lg border border-gray-800">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400">
-          Revenue System Health
-        </h3>
-        <div className="flex items-center gap-3">
+        <div className="min-w-0 flex-1 pr-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400">
+            Revenue System Health
+          </h3>
+          <p className="text-[10px] text-gray-600 mt-1 max-w-xl leading-snug">
+            Inverted view of your {RII_NAME} ({RII_ABBREV}): health = 100 − RII so higher bar means structurally safer messaging.
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-3">
           {getTrendIndicator()}
           <div className={`text-2xl font-bold ${status.color}`}>
             {healthScore} / 100

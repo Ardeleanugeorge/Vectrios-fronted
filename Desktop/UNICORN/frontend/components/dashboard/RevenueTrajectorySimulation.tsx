@@ -1,6 +1,7 @@
 "use client"
 
 import { API_URL } from '@/lib/config'
+import { RII_ABBREV, RII_NAME } from "@/lib/rii"
 
 import { useEffect, useState } from "react"
 
@@ -222,7 +223,7 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
 
       {/* Footer */}
       <div className="px-8 pb-6 pt-2 border-t border-gray-800 text-xs text-gray-600">
-        Simulation based on current RII ({data.rii.toFixed(0)}), ARR, ACV, and close-rate inputs.
+        Simulation based on current {RII_NAME} ({RII_ABBREV} {data.rii.toFixed(0)}), ARR, ACV, and close-rate inputs.
         Recovery assumes gradual messaging alignment over 12 months.
       </div>
     </div>

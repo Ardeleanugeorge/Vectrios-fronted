@@ -568,11 +568,16 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-semibold text-gray-300">Revenue Monitoring Console</h1>
+                <p className="text-sm text-gray-500 mt-1 max-w-2xl">
+                  Headline structural score:{" "}
+                  <span className="text-gray-400 font-medium">Revenue Impact Index (RII)</span>
+                  {" "}— see card below.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* REVENUE RISK INDEX - Always visible when diagnostic exists (Core Metric) */}
+          {/* Revenue Impact Index (RII) — core metric when diagnostic exists */}
           {hasDiagnostic && diagnostic && (
             <RevenueRiskIndex
               riskScore={diagnostic.risk_score || null}

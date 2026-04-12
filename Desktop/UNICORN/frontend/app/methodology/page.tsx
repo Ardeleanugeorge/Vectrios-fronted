@@ -84,8 +84,8 @@ export default function MethodologyPage() {
             </p>
           </section>
 
-          {/* RISK ENGINE */}
-          <section className="mb-16 border-t border-gray-800 pt-12">
+          {/* RISK ENGINE — RII definition (anchor for in-app links) */}
+          <section id="revenue-impact-index" className="mb-16 border-t border-gray-800 pt-12 scroll-mt-24">
             <h2 className="text-3xl font-bold mb-6">1. Risk Engine</h2>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">
               Risk is evaluated across four layers:
@@ -111,13 +111,17 @@ export default function MethodologyPage() {
             </div>
 
             <p className="text-lg text-gray-300 mb-4 leading-relaxed">
-              The output is a <span className="font-semibold text-cyan-400">Close Rate Risk Index (RII)</span>:
+              The headline output is the{" "}
+              <span className="font-semibold text-cyan-400">Revenue Impact Index</span>{" "}
+              (<abbr title="Revenue Impact Index" className="no-underline cursor-help">RII</abbr>
+              ): a <span className="text-gray-300">0–100</span> score summarizing structural revenue-stage risk from your crawl.
+              Lower RII means stronger messaging architecture; higher RII means more exposure to misalignment-driven revenue leakage.
             </p>
             <p className="text-lg text-gray-300 mb-6 font-semibold">
-              LOW / MODERATE / HIGH
+              Bands: LOW / MODERATE / HIGH (derived from score thresholds)
             </p>
             <p className="text-lg text-gray-400 leading-relaxed">
-              Risk classification is derived from structural priority — not surface performance.
+              Classification follows structural priority and dominance rules — not a simple average of sub-scores, and not the same as live conversion rate in analytics.
             </p>
           </section>
 
