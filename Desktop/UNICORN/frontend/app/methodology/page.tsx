@@ -250,7 +250,7 @@ export default function MethodologyPage() {
               Structural Revenue Risk Modeling Infrastructure for B2B SaaS
             </p>
             <p className="text-sm text-gray-600">
-              © 2025 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
+              © 2026 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
             </p>
           </footer>
         </div>

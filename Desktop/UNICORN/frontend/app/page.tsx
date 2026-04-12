@@ -610,7 +610,7 @@ export default function Home() {
             <Link href="/data-retention" className="text-gray-500 hover:text-gray-400">Data Retention</Link>
           </div>
           <p className="text-sm text-gray-600">
-            © 2025 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
+            © 2026 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
           </p>
         </div>
       </footer>

@@ -30,31 +30,23 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
       return
     }
 
-    console.log(`RevenueRiskTrajectoryPanel: Loading trajectory for company ${companyId}`)
-
     async function loadTrajectory() {
       try {
         const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
         const url = `${API_URL}/revenue-risk-trajectory/${companyId}`
-        console.log(`RevenueRiskTrajectoryPanel: Fetching from ${url}`)
-        
+
         const response = await fetch(url, {
           headers: {
             "Authorization": `Bearer ${token || ""}`
           }
         })
-        
+
         if (response.ok) {
           const data = await response.json()
-          console.log(`RevenueRiskTrajectoryPanel: Loaded trajectory for company ${companyId}`, data)
           setTrajectory(data)
-        } else {
-          console.error(`RevenueRiskTrajectoryPanel: Failed to load trajectory: ${response.status} ${response.statusText}`)
-          const errorText = await response.text()
-          console.error("RevenueRiskTrajectoryPanel: Error response:", errorText)
         }
-      } catch (error) {
-        console.error("RevenueRiskTrajectoryPanel: Error loading trajectory:", error)
+      } catch {
+        /* non-blocking: panel shows empty state */
       } finally {
         setLoading(false)
       }

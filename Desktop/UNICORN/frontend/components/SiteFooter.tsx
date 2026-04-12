@@ -31,7 +31,7 @@ export default function SiteFooter() {
           </Link>
         </div>
         <p className="text-sm text-slate-500 dark:text-gray-600">
-          © 2025 Vectri<span className="text-cyan-500 dark:text-cyan-400">OS</span>. All rights reserved.
+          © 2026 Vectri<span className="text-cyan-500 dark:text-cyan-400">OS</span>. All rights reserved.
         </p>
       </div>
     </footer>
