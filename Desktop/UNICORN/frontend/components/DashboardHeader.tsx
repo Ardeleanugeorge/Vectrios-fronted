@@ -157,7 +157,24 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       } catch { if (!user) setUser({ company_name: "Account", email: "" }) }
     }
 
-    const loadSubscriptionForCompany = (companyId: string) => {
+    const subDedupe = { companyId: "", t: 0 }
+
+    const loadSubscriptionForCompany = (
+      companyId: string,
+      options?: { force?: boolean }
+    ) => {
+      const force = options?.force === true
+      const now = Date.now()
+      if (
+        !force &&
+        companyId === subDedupe.companyId &&
+        now - subDedupe.t < 2500
+      ) {
+        return
+      }
+      subDedupe.companyId = companyId
+      subDedupe.t = now
+
       fetch(`${API_URL}/subscription/${companyId}`, {
         headers: { "Authorization": `Bearer ${token}` }
       })
@@ -167,9 +184,12 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
           let newCycle: string | null = data?.billing_cycle ?? null
           let newDays:  number | null = null
 
-          if (data?.billing_cycle === "trial") {
+          if (data?.has_full_access === true || data?.billing_cycle === "trial") {
             newPlan = "scale"
-            newDays = typeof data?.trial_days_left === "number" ? data.trial_days_left : null
+            newDays =
+              data?.billing_cycle === "trial" && typeof data?.trial_days_left === "number"
+                ? data.trial_days_left
+                : null
           } else if (data?.plan) {
             newPlan = data.plan.toLowerCase()
           }
@@ -191,7 +211,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
         const local = raw ? JSON.parse(raw) as any : {}
         const needsProfileRefresh = !local?.company_id
         if (!needsProfileRefresh) {
-          loadSubscriptionForCompany(String(local.company_id))
+          loadSubscriptionForCompany(String(local.company_id), { force: true })
           return
         }
 
@@ -210,7 +230,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
         localStorage.setItem("user_data", JSON.stringify(merged))
         sessionStorage.setItem("user_data", JSON.stringify(merged))
         if (merged.company_id) {
-          loadSubscriptionForCompany(String(merged.company_id))
+          loadSubscriptionForCompany(String(merged.company_id), { force: true })
         }
       } catch {
         /* ignore */
@@ -220,15 +240,19 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     loadUserData()
     void ensureProfileContext()
 
-    // Reload subscription function
-    const reloadSubscription = () => {
+    // Reload subscription function (force=true after explicit account/checkout updates)
+    const reloadSubscription = (force = false) => {
       const storedUser = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
       if (storedUser) {
         try {
           const userData = JSON.parse(storedUser)
           if (userData.company_id) {
-            console.log("[HEADER] Reloading subscription for company_id:", userData.company_id)
-            loadSubscriptionForCompany(String(userData.company_id))
+            if (process.env.NODE_ENV === "development") {
+              console.log("[HEADER] Reloading subscription for company_id:", userData.company_id, {
+                force,
+              })
+            }
+            loadSubscriptionForCompany(String(userData.company_id), { force })
           }
         } catch (e) {
           console.error("[HEADER] Error parsing user_data:", e)
@@ -240,32 +264,35 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       if (e.key === "user_data") {
         loadUserData()
         // Also reload subscription when user_data changes
-        setTimeout(reloadSubscription, 500)
+        setTimeout(() => reloadSubscription(true), 500)
       }
     }
     
     // Listen for custom subscription update events
     const handleSubscriptionUpdate = () => {
-      reloadSubscription()
+      reloadSubscription(true)
     }
     window.addEventListener("storage", handleStorageChange)
     window.addEventListener("subscription_updated", handleSubscriptionUpdate)
     
-    // Poll for subscription updates after page load (for trial activation)
-    // Check URL params first - if trial=activated, poll more aggressively
+    // Light polling only when URL suggests a billing transition (otherwise dedupe + initial fetch is enough)
     const urlParams = new URLSearchParams(window.location.search)
-    const isTrialActivated = urlParams.get("trial") === "activated"
-    
+    const pollAfterBillingTransition =
+      urlParams.get("trial") === "activated" ||
+      urlParams.get("governance") === "activated" ||
+      urlParams.get("checkout_success") === "1"
+
     let pollCount = 0
-    const maxPolls = isTrialActivated ? 10 : 3  // Poll more if trial was just activated
+    const maxPolls = pollAfterBillingTransition ? 8 : 1
+    const pollMs = pollAfterBillingTransition ? 1000 : 4000
     const pollInterval = setInterval(() => {
       if (pollCount < maxPolls) {
-        reloadSubscription()
+        reloadSubscription(false)
         pollCount++
       } else {
         clearInterval(pollInterval)
       }
-    }, isTrialActivated ? 1000 : 2000)  // Poll every 1s if trial activated, otherwise 2s
+    }, pollMs)
     
     return () => {
       window.removeEventListener("storage", handleStorageChange)

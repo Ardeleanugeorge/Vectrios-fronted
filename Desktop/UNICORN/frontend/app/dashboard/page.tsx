@@ -6,11 +6,9 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import DashboardHeader from "@/components/DashboardHeader"
-import SiteFooter from "@/components/SiteFooter"
 import SnapshotLayer from "@/components/dashboard/SnapshotLayer"
 import MonitoringLayer from "@/components/dashboard/MonitoringLayer"
 import RevenueRiskIndex from "@/components/dashboard/RevenueRiskIndex"
-import type { ActionLayerPayload } from "@/components/dashboard/ActionableInsights"
 
 interface DiagnosticResult {
   risk_level?: string
@@ -45,18 +43,10 @@ interface DiagnosticResult {
   risk_override_reason?: string
   // Partial diagnostic flag (from scan results)
   is_partial?: boolean
-  /** Full-diagnostic playbook (backend) */
-  action_layer?: ActionLayerPayload | null
-  scan_token?: string | null
 }
 
 interface MonitoringStatus {
   monitoring_active: boolean
-  // New normalized fields from backend status API
-  source?: "monitoring" | "diagnostic" | "fallback"
-  data_coverage_pct?: number | null
-  confidence_score?: number | null
-  evidence_pages?: { crawled: number; expected: number }
   ui_state_payload?: {
     ui_state: "low" | "medium" | "high"
     financial_mode: "opportunity" | "recoverable" | "risk"
@@ -69,15 +59,6 @@ interface MonitoringStatus {
   structural_health?: {
     health_classification: string
     structural_health_score: number | null
-  }
-  structural_scores?: {
-    alignment_score: number | null
-    icp_clarity_score: number | null
-    anchor_density_score: number | null
-    positioning_coherence_score: number | null
-    primary_risk_driver: string | null
-    rii_score: number | null
-    confidence_score: number | null  // Real confidence from last scan/monitoring cycle
   }
   drift_status?: string
   trend_direction?: string
@@ -100,7 +81,6 @@ interface MonitoringStatus {
   }>
   last_evaluated_at?: string
   created_at?: string
-  action_layer?: ActionLayerPayload | null  // Fresh playbook with real ARR
 }
 
 interface Alert {
@@ -114,7 +94,6 @@ interface Alert {
 }
 
 export default function DashboardPage() {
-  const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
@@ -125,108 +104,42 @@ export default function DashboardPage() {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
-  const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null)
-  const [subscriptionLoading, setSubscriptionLoading] = useState(true)
-  const [monitoringLoading, setMonitoringLoading] = useState(true)
-  // Company domain — used for "Run Full Diagnostic" link pre-fill
-  const [companyDomain, setCompanyDomain] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null
-    try {
-      const raw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
-      if (raw) {
-        const parsed = JSON.parse(raw)
-        return parsed?.domain || parsed?.url || null
-      }
-    } catch {}
-    return null
-  })
-
   const [hasFullAccess, setHasFullAccess] = useState(false)
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const [checkoutSyncing, setCheckoutSyncing] = useState(false)
 
-  const readActiveScanToken = (): string | null => {
-    try {
-      const params = new URLSearchParams(window.location.search)
-      const tokenFromUrl = params.get("token")
-      if (tokenFromUrl) return tokenFromUrl
-    } catch {
-      /* ignore */
-    }
-
-    if (diagnostic?.scan_token) return diagnostic.scan_token
-
-    try {
-      const raw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
-      if (!raw) return null
-      const parsed = JSON.parse(raw) as { scan_token?: string }
-      return parsed?.scan_token || null
-    } catch {
-      return null
-    }
-  }
-
-
   useEffect(() => {
-    try {
-      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-      if (!token) {
-        router.push("/login")
-        return
-      }
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) {
+      router.push("/login")
+      return
+    }
 
-      // Get company ID from user data
-      const userData = localStorage.getItem("user_data")
-      if (userData) {
-        try {
-          const parsed = JSON.parse(userData)
-          if ((parsed?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()) {
-            router.replace("/account?tab=system")
-            return
-          }
-          setUser(parsed)
-          if (parsed.company_id) {
-            setCompanyId(parsed.company_id)
-          }
-        } catch (e) {
-          console.error("Error parsing user data:", e)
-        }
-      }
-
-    // Check for diagnostic result from onboarding or scan.
-    // Priority: active scan token match > full diagnostic > partial diagnostic.
-    const parseStoredDiagnostic = (raw: string | null): DiagnosticResult | null => {
+    // Get company ID from user data
+    const userData = localStorage.getItem("user_data")
+    if (userData) {
       try {
-        return raw ? (JSON.parse(raw) as DiagnosticResult) : null
-      } catch {
-        return null
+        const parsed = JSON.parse(userData)
+        setUser(parsed)
+        if (parsed.company_id) {
+          setCompanyId(parsed.company_id)
+        }
+      } catch (e) {
+        console.error("Error parsing user data:", e)
       }
     }
 
-    const params = new URLSearchParams(window.location.search)
-    const activeScanToken = params.get("token")
-    const fullDiagnostic =
-      parseStoredDiagnostic(sessionStorage.getItem("diagnostic_result_full")) ||
-      parseStoredDiagnostic(localStorage.getItem("diagnostic_result_full"))
-    const partialDiagnostic =
-      parseStoredDiagnostic(sessionStorage.getItem("diagnostic_result")) ||
-      parseStoredDiagnostic(localStorage.getItem("diagnostic_result"))
-    const emailCapturePartial =
-      parseStoredDiagnostic(sessionStorage.getItem("diagnostic_result_partial")) ||
-      parseStoredDiagnostic(localStorage.getItem("diagnostic_result_partial"))
-
-    const tokenMatchedDiagnostic =
-      activeScanToken
-        ? [partialDiagnostic, emailCapturePartial, fullDiagnostic].find(
-            (d) => d?.scan_token === activeScanToken
-          ) || null
-        : null
-
-    const selectedDiagnostic =
-      tokenMatchedDiagnostic || fullDiagnostic || partialDiagnostic || emailCapturePartial
-    if (selectedDiagnostic) {
+    // Check for diagnostic result from onboarding or scan
+    const diagnosticData = sessionStorage.getItem("diagnostic_result") || localStorage.getItem("diagnostic_result")
+    if (diagnosticData) {
       try {
-        const parsed = selectedDiagnostic
-        console.log("[DASHBOARD] Loaded diagnostic:", { hasPartial: parsed.is_partial, riskScore: parsed.risk_score })
+        const parsed = JSON.parse(diagnosticData)
+        if (process.env.NODE_ENV === "development") {
+          console.log("[DASHBOARD] Loaded diagnostic:", {
+            hasPartial: parsed.is_partial,
+            riskScore: parsed.risk_score,
+          })
+        }
         setDiagnostic(parsed)
         setHasDiagnostic(true)  // Set to true even for partial diagnostics
         // Only mark as free diagnostic used if it's a full diagnostic (not partial from scan)
@@ -236,7 +149,7 @@ export default function DashboardPage() {
       } catch (e) {
         console.error("Error parsing diagnostic data:", e)
       }
-    } else {
+    } else if (process.env.NODE_ENV === "development") {
       console.log("[DASHBOARD] No diagnostic data found")
     }
 
@@ -250,138 +163,31 @@ export default function DashboardPage() {
     } catch {}
 
     // Load monitoring status and subscription if company ID available
-      if (companyId) {
-        loadMonitoringStatus(token, companyId, readActiveScanToken())
-        loadAlerts(token, companyId)
-        loadSubscription(token, companyId)
-      } else {
-        // No company ID yet — don't keep spinner spinning
-        setMonitoringLoading(false)
-        setSubscriptionLoading(false)
-      }
-    } finally {
-      setLoading(false)
+    if (companyId) {
+      loadMonitoringStatus(token, companyId)
+      loadAlerts(token, companyId)
+      loadSubscription(token, companyId)
     }
+
+    setLoading(false)
   }, [companyId, router])
 
-  // Server is source of truth for company_id (avoids stale localStorage / wrong workspace → stuck spinners).
-  useEffect(() => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) return
-    let cancelled = false
-    void (async () => {
-      try {
-        const pr = await fetch(`${API_URL}/account/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        if (!pr.ok || cancelled) return
-        const p = await pr.json()
-        const cid = p?.company_id != null ? String(p.company_id).trim() : ""
-        if (!cid) return
-        try {
-          const raw = localStorage.getItem("user_data")
-          const parsed = raw ? JSON.parse(raw) : {}
-          const updated = {
-            ...parsed,
-            company_id: cid,
-            user_id: p.user_id ?? parsed.user_id,
-            email: p.email ?? parsed.email,
-            company_name: p.company_name ?? parsed.company_name ?? "",
-          }
-          localStorage.setItem("user_data", JSON.stringify(updated))
-          sessionStorage.setItem("user_data", JSON.stringify(updated))
-          localStorage.setItem("company_id", cid)
-          sessionStorage.setItem("company_id", cid)
-        } catch {
-          /* ignore */
-        }
-        if (cancelled) return
-        setCompanyId(cid)
-        setUser((prev: any) =>
-          prev && typeof prev === "object"
-            ? {
-                ...prev,
-                company_id: cid,
-                user_id: p.user_id ?? prev.user_id,
-                email: p.email ?? prev.email,
-                company_name: p.company_name ?? prev.company_name,
-              }
-            : {
-                company_id: cid,
-                user_id: p.user_id,
-                email: p.email,
-                company_name: p.company_name ?? "",
-              }
-        )
-      } catch {
-        /* ignore */
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  // After returning from a scan (scan-results sets this flag), re-fetch monitoring status
-  // so the new RII and structural scores are visible immediately.
-  useEffect(() => {
-    if (!companyId) return
-    const needsRefresh = sessionStorage.getItem("dashboard_needs_refresh")
-    if (needsRefresh) {
-      sessionStorage.removeItem("dashboard_needs_refresh")
-      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-      if (token) {
-        // Small delay to let backend finish writing the new scan result
-        setTimeout(() => {
-          loadMonitoringStatus(token, companyId, null)
-          loadSubscription(token, companyId)
-          loadAlerts(token, companyId)
-        }, 800)
-      }
-    }
-  }, [companyId])
-
-    // Check for governance activation from URL params
+  // Check for governance activation from URL params
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get("governance") === "activated" && companyId) {
-      // Prevent stale full-diagnostic payload from overriding current scan score after activation.
-      const activatedToken = params.get("token")
-      try {
-        ;(["diagnostic_result_full"] as const).forEach((key) => {
-          const sessionRaw = sessionStorage.getItem(key)
-          if (sessionRaw) {
-            const parsed = JSON.parse(sessionRaw) as DiagnosticResult
-            if (!activatedToken || parsed?.scan_token !== activatedToken) {
-              sessionStorage.removeItem(key)
-            }
-          }
-          const localRaw = localStorage.getItem(key)
-          if (localRaw) {
-            const parsed = JSON.parse(localRaw) as DiagnosticResult
-            if (!activatedToken || parsed?.scan_token !== activatedToken) {
-              localStorage.removeItem(key)
-            }
-          }
-        })
-      } catch {
-        sessionStorage.removeItem("diagnostic_result_full")
-        localStorage.removeItem("diagnostic_result_full")
-      }
-
       // Reload monitoring status and subscription to reflect activation
       const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
       if (token) {
-        const activeScanToken = params.get("token")
         // Immediate reload - subscription first to set currentPlan
-        loadSubscription(token, companyId, true)  // ← Critical: force reload subscription FIRST
-        loadMonitoringStatus(token, companyId, activeScanToken)
+        loadSubscription(token, companyId)  // ← Critical: reload subscription FIRST to get trial plan
+        loadMonitoringStatus(token, companyId)
         loadAlerts(token, companyId)
         
         // Also reload after delay to ensure backend processed
         setTimeout(() => {
-          loadSubscription(token, companyId, true)  // Force reload again to ensure it's set
-          loadMonitoringStatus(token, companyId, activeScanToken)
+          loadSubscription(token, companyId)  // Reload subscription again to ensure it's set
+          loadMonitoringStatus(token, companyId)
           loadAlerts(token, companyId)
           // Trigger custom event to update DashboardHeader
           window.dispatchEvent(new CustomEvent("subscription_updated"))
@@ -391,19 +197,65 @@ export default function DashboardPage() {
         
         // One more reload after 2 seconds to be absolutely sure
         setTimeout(() => {
-          loadSubscription(token, companyId, true)
+          loadSubscription(token, companyId)
         }, 2000)
       }
     }
   }, [companyId])
 
-  const loadMonitoringStatus = async (token: string, companyId: string, scanToken?: string | null) => {
-    setMonitoringLoading(true)
+  // After Stripe Checkout redirect: sync subscription before GET /subscription (webhook can lag).
+  useEffect(() => {
+    if (!companyId) return
+    const token =
+      sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    if (!token) return
+
+    let cancelled = false
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("checkout_success") !== "1") return
+
+    const sid = (params.get("session_id") || "").trim()
+    if (!sid) {
+      window.history.replaceState({}, "", "/dashboard")
+      return
+    }
+
+    setCheckoutSyncing(true)
+    setCurrentPlan("scale")
+    setHasFullAccess(true)
+
+    ;(async () => {
+      try {
+        const res = await fetch(`${API_URL}/billing/confirm-checkout`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ session_id: sid }),
+        })
+        if (!res.ok) {
+          console.warn("[DASHBOARD] confirm-checkout failed", res.status)
+        }
+      } catch (e) {
+        console.error("[DASHBOARD] confirm-checkout error", e)
+      } finally {
+        if (cancelled) return
+        await loadSubscription(token, companyId)
+        await loadMonitoringStatus(token, companyId)
+        setCheckoutSyncing(false)
+        window.history.replaceState({}, "", "/dashboard")
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [companyId])
+
+  const loadMonitoringStatus = async (token: string, companyId: string) => {
     try {
-      const statusUrl = scanToken
-        ? `${API_URL}/monitoring/status/${companyId}?scan_token=${encodeURIComponent(scanToken)}`
-        : `${API_URL}/monitoring/status/${companyId}`
-      const response = await fetch(statusUrl, {
+      const response = await fetch(`${API_URL}/monitoring/status/${companyId}`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -415,22 +267,31 @@ export default function DashboardPage() {
       }
     } catch (e) {
       console.error("Error loading monitoring status:", e)
-    } finally {
-      setMonitoringLoading(false)
     }
   }
 
-  const loadSubscription = async (token: string, companyId: string, force = false) => {
-    // Debounce: skip if called within 10 seconds of the last fetch (avoid the ~30 calls in logs)
-    const cacheKey = `sub_fetched_at_${companyId}`
-    const lastFetch = parseInt(sessionStorage.getItem(cacheKey) || "0", 10)
-    const now = Date.now()
-    if (!force && now - lastFetch < 10_000) {
-      setSubscriptionLoading(false)
-      return
+  const calculateTrialDays = (status: MonitoringStatus | null): number | null => {
+    if (!status || !status.monitoring_active) return null
+    
+    // Use last_evaluated_at if available, otherwise created_at
+    const startDateStr = status.last_evaluated_at || status.created_at
+    if (!startDateStr) return null
+    
+    try {
+      const startDate = new Date(startDateStr)
+      const today = new Date()
+      const diffTime = Math.abs(today.getTime() - startDate.getTime())
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+      
+      // Return day number (1-14), capped at 14
+      return Math.min(diffDays + 1, 14)
+    } catch (e) {
+      console.error("Error calculating trial days:", e)
+      return null
     }
-    sessionStorage.setItem(cacheKey, String(now))
+  }
 
+  const loadSubscription = async (token: string, companyId: string) => {
     setSubscriptionLoading(true)
     try {
       const response = await fetch(`${API_URL}/subscription/${companyId}`, {
@@ -443,21 +304,18 @@ export default function DashboardPage() {
         const data = await response.json()
         const full = data.has_full_access === true
         setHasFullAccess(full)
-        console.log("[DASHBOARD] Subscription data:", {
-          plan: data.plan,
-          billing_cycle: data.billing_cycle,
-          has_full_access: full,
-        })
+        if (process.env.NODE_ENV === "development") {
+          console.log("[DASHBOARD] Subscription data:", {
+            plan: data.plan,
+            billing_cycle: data.billing_cycle,
+            has_full_access: full,
+          })
+        }
+        // Paid + trial both use Scale feature gates; never rely on plan name alone (can be null).
         if (full || data.billing_cycle === "trial") {
           setCurrentPlan("scale")
-          setTrialDaysLeft(
-            data.billing_cycle === "trial" && typeof data.trial_days_left === "number"
-              ? data.trial_days_left
-              : null
-          )
         } else {
           setCurrentPlan(data.plan || null)
-          setTrialDaysLeft(null)
         }
       } else {
         setHasFullAccess(false)
@@ -469,140 +327,6 @@ export default function DashboardPage() {
       setSubscriptionLoading(false)
     }
   }
-
-  // Stripe return: confirm server-side, refresh profile (fixes stale/wrong company_id), unstick URL
-  useEffect(() => {
-    if (typeof window === "undefined") return
-    const params = new URLSearchParams(window.location.search)
-    if (params.get("checkout_success") !== "1") return
-    const sessionId = params.get("session_id")
-    if (!sessionId) return
-
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) {
-      const fullPath =
-        window.location.pathname + window.location.search + (window.location.hash || "")
-      router.replace(`/login?next=${encodeURIComponent(fullPath)}`)
-      return
-    }
-
-    const dedupeKey = `stripe_checkout_confirmed_${sessionId}`
-    if (sessionStorage.getItem(dedupeKey)) {
-      router.replace("/dashboard")
-      try {
-        const raw = localStorage.getItem("user_data")
-        const u = raw ? JSON.parse(raw) : {}
-        const cid = u?.company_id ? String(u.company_id) : ""
-        if (cid) {
-          loadSubscription(token, cid, true)
-          loadMonitoringStatus(token, cid, readActiveScanToken())
-        }
-      } catch {
-        /* ignore */
-      }
-      return
-    }
-
-    let cancelled = false
-    void (async () => {
-      setCheckoutSyncing(true)
-      try {
-        const res = await fetch(`${API_URL}/billing/confirm-checkout`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ session_id: sessionId }),
-        })
-        if (cancelled) return
-
-        if (res.ok) {
-          try {
-            const access = await res.json()
-            if (access?.has_full_access === true) {
-              setHasFullAccess(true)
-              setCurrentPlan("scale")
-            } else if (access?.plan) {
-              setCurrentPlan(String(access.plan).toLowerCase())
-            }
-          } catch {
-            /* non-JSON body */
-          }
-
-          let resolvedCompanyId: string | null = null
-          try {
-            const pr = await fetch(`${API_URL}/account/profile`, {
-              headers: { Authorization: `Bearer ${token}` },
-            })
-            if (pr.ok && !cancelled) {
-              const p = await pr.json()
-              if (p?.company_id) {
-                resolvedCompanyId = String(p.company_id)
-                const userDataStr = localStorage.getItem("user_data")
-                const parsed = userDataStr ? JSON.parse(userDataStr) : {}
-                const updated = {
-                  ...parsed,
-                  company_id: resolvedCompanyId,
-                  user_id: p.user_id ?? parsed.user_id,
-                  email: p.email ?? parsed.email,
-                }
-                localStorage.setItem("user_data", JSON.stringify(updated))
-                sessionStorage.setItem("user_data", JSON.stringify(updated))
-                localStorage.setItem("company_id", resolvedCompanyId)
-                sessionStorage.setItem("company_id", resolvedCompanyId)
-                setCompanyId(resolvedCompanyId)
-                setUser(updated)
-              }
-            }
-          } catch (e) {
-            console.error("[DASHBOARD] profile refresh after checkout:", e)
-          }
-
-          if (!cancelled) {
-            setCheckoutSyncing(false)
-            sessionStorage.setItem(dedupeKey, "1")
-            router.replace("/dashboard")
-            window.dispatchEvent(new CustomEvent("subscription_updated"))
-            const cid =
-              resolvedCompanyId ||
-              (() => {
-                try {
-                  const raw = localStorage.getItem("user_data")
-                  if (!raw) return null
-                  const u = JSON.parse(raw)
-                  return u?.company_id ? String(u.company_id) : null
-                } catch {
-                  return null
-                }
-              })()
-            if (cid) {
-              loadSubscription(token, cid, true)
-              loadMonitoringStatus(token, cid, readActiveScanToken())
-              loadAlerts(token, cid)
-            }
-          }
-        } else {
-          const detail = await res.text().catch(() => "")
-          console.error("[DASHBOARD] confirm-checkout failed:", res.status, detail)
-          if (!cancelled) {
-            setCheckoutSyncing(false)
-            router.replace("/dashboard")
-          }
-        }
-      } catch (e) {
-        console.error("[DASHBOARD] checkout confirm:", e)
-        if (!cancelled) {
-          setCheckoutSyncing(false)
-          router.replace("/dashboard")
-        }
-      }
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [router])
 
   const loadAlerts = async (token: string, companyId: string) => {
     try {
@@ -651,11 +375,7 @@ export default function DashboardPage() {
     if (!token) return
 
     try {
-      const activeScanToken = readActiveScanToken()
-      const activateUrl = activeScanToken
-        ? `${API_URL}/monitoring/activate/${companyId}?scan_token=${encodeURIComponent(activeScanToken)}`
-        : `${API_URL}/monitoring/activate/${companyId}`
-      const response = await fetch(activateUrl, {
+      const response = await fetch(`${API_URL}/monitoring/activate/${companyId}`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -664,7 +384,7 @@ export default function DashboardPage() {
       
       if (response.ok) {
         // Reload monitoring status and subscription (trial is auto-assigned on activation)
-        loadMonitoringStatus(token, companyId, readActiveScanToken())
+        loadMonitoringStatus(token, companyId)
         loadAlerts(token, companyId)
         loadSubscription(token, companyId)
       } else {
@@ -679,7 +399,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="page-root flex items-center justify-center">
+      <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-xl text-gray-400">Loading...</p>
         </div>
@@ -690,7 +410,7 @@ export default function DashboardPage() {
   // Safety check - if no user, redirect
   if (!user) {
     return (
-      <div className="page-root flex items-center justify-center">
+      <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-xl text-gray-400">Please log in</p>
         </div>
@@ -708,15 +428,10 @@ export default function DashboardPage() {
   // Calculate derived metrics from diagnostic
   // Suportă atât câmpurile noi (din engine actual) cât și cele vechi (legacy)
   const riskLevel = diagnostic?.risk_level || "MODERATE"
-  // Confidence priority:
-  // 1. monitoring structural_scores.confidence_score (most up-to-date — refreshed on every rescan)
-  // 2. diagnostic.confidence (from original scan stored in localStorage)
-  // 3. 0 — genuinely no data, show Low honestly
   const confidence =
-    (monitoringStatus?.structural_scores?.confidence_score ?? null) ??
-    (diagnostic?.confidence && diagnostic.confidence > 0 ? diagnostic.confidence : null) ??
-    (diagnostic?.revenue_leak_confidence && diagnostic.revenue_leak_confidence > 0 ? diagnostic.revenue_leak_confidence : null) ??
-    (diagnostic?.confidence_score && diagnostic.confidence_score > 0 ? diagnostic.confidence_score : null) ??
+    diagnostic?.confidence ??
+    diagnostic?.revenue_leak_confidence ??
+    diagnostic?.confidence_score ??
     0
   const alignmentMean =
     diagnostic?.alignment_score ??
@@ -772,7 +487,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="page-root">
+    <div className="min-h-screen bg-[#0B0F19] text-white">
       <DashboardHeader />
       <main className="py-12">
         <div className="max-w-7xl mx-auto px-6">
@@ -786,100 +501,40 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* REVENUE RISK INDEX - Visible when diagnostic OR monitoring structural scores exist */}
-          {(() => {
-            const riiScore =
-              diagnostic?.risk_score ??
-              monitoringStatus?.structural_scores?.rii_score ??
-              monitoringStatus?.structural_health?.structural_health_score ??
-              null
-            const shouldShowRII =
-              (hasDiagnostic && diagnostic) ||
-              (isMonitoringActive && riiScore !== null && riiScore !== undefined)
-            if (!shouldShowRII) return null
-            return (
-              <RevenueRiskIndex
-                riskScore={riiScore}
-                riskLevel={diagnostic?.risk_level || "MODERATE"}
-                confidence={confidence}
-                overrideTriggered={overrideTriggered}
-                scoreSource={diagnostic?.is_partial ? "instant_scan" : hasDiagnostic ? "full_diagnostic" : undefined}
-                source={
-                  isMonitoringActive
-                    ? (monitoringStatus?.source as any) || "monitoring"
-                    : (hasDiagnostic ? "diagnostic" : undefined)
-                }
-                coveragePct={
-                  isMonitoringActive
-                    ? (typeof monitoringStatus?.data_coverage_pct === "number"
-                        ? monitoringStatus.data_coverage_pct
-                        : (monitoringStatus?.structural_scores?.confidence_score ?? null)) as number | null
-                    : (diagnostic?.confidence ?? diagnostic?.confidence_score ?? null) as number | null
-                }
-                assessmentDate={monitoringStatus?.last_evaluated_at ?? null}
-              />
-            )
-          })()}
-
-          {/* While monitoring status is loading from API, show spinner */}
-          {monitoringLoading && companyId ? (
-            <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
-              <p className="text-sm text-gray-400 animate-pulse">Loading revenue monitoring status…</p>
-            </div>
-          ) : isMonitoringActive && monitoringStatus ? (
-            /* STATE 3 — CONTINUOUS MONITORING ACTIVE */
-            <MonitoringLayer 
-              monitoringStatus={monitoringStatus}
-              diagnostic={
-                (() => {
-                  // Prefer monitoringStatus.action_layer (always uses real company ARR)
-                  // but merge its fixes with existing diagnostic.action_layer to preserve all fixes
-                  const diagAction = diagnostic?.action_layer;
-                  const monitorAction = monitoringStatus.action_layer;
-                  if (!monitorAction) return diagnostic;
-                  if (!diagAction) return { ...diagnostic, action_layer: monitorAction };
-                  // Merge fixes, deduplicate by title (case-insensitive), preferring monitor's version
-                  const existingFixes = diagAction.fixes || [];
-                  const newFixes = monitorAction.fixes || [];
-                  const fixMap = new Map<string, any>();
-                  existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix));
-                  newFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix));
-                  const mergedFixes = Array.from(fixMap.values());
-                  const mergedActionLayer: ActionLayerPayload = {
-                    ...monitorAction,
-                    fixes: mergedFixes,
-                  };
-                  return { ...diagnostic, action_layer: mergedActionLayer };
-                })()
-              }
-              alerts={alerts}
-              onMarkAlertRead={markAlertRead}
-              trialDays={trialDaysLeft}
-              companyId={companyId}
-              currentPlan={currentPlan}
-              companyDomain={companyDomain}
+          {/* REVENUE RISK INDEX - Always visible when diagnostic exists (Core Metric) */}
+          {hasDiagnostic && diagnostic && (
+            <RevenueRiskIndex
+              riskScore={diagnostic.risk_score || null}
+              riskLevel={diagnostic.risk_level || "MODERATE"}
+              confidence={confidence}
+              overrideTriggered={overrideTriggered}
             />
-          ) : !hasDiagnostic && !monitoringLoading ? (
-            /* STATE 1 — NO DIAGNOSTIC & monitoring confirmed off */
+          )}
+
+          {!hasDiagnostic ? (
+            /* STATE 1 — NO DIAGNOSTIC */
             <div className="p-12 border border-gray-800 rounded-lg bg-[#111827] text-center">
               <h2 className="text-2xl font-bold mb-4 text-gray-300">Revenue Monitoring Not Yet Active</h2>
               <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
-                Run a scan first to quantify your revenue-stage exposure and identify compression risk.
+                Run your first diagnostic to quantify revenue-stage exposure and identify compression risk.
               </p>
               <Link
-                href="/"
+                href="/onboarding"
                 className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition"
               >
-                Run a Scan
+                Quantify Revenue Risk
               </Link>
             </div>
           ) : subscriptionLoading || checkoutSyncing ? (
             <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
               <p className="text-sm text-gray-400 animate-pulse">
-                {checkoutSyncing ? "Confirming your subscription…" : "Loading subscription status…"}
+                {checkoutSyncing
+                  ? "Confirming your subscription…"
+                  : "Loading subscription status..."}
               </p>
             </div>
           ) : diagnostic?.is_partial && !hasFullAccess ? (
+            /* PARTIAL SCAN — free funnel only (not for paying subscribers) */
             <>
               <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
               <div className="mt-6 p-8 border border-cyan-500/20 rounded-lg bg-gradient-to-br from-cyan-950/30 to-[#111827] text-center">
@@ -898,7 +553,19 @@ export default function DashboardPage() {
                 </p>
               </div>
             </>
+          ) : isMonitoringActive && monitoringStatus ? (
+            /* CONTINUOUS MONITORING ACTIVE */
+            <MonitoringLayer 
+              monitoringStatus={monitoringStatus}
+              diagnostic={diagnostic}
+              alerts={alerts}
+              onMarkAlertRead={markAlertRead}
+              trialDays={calculateTrialDays(monitoringStatus)}
+              companyId={companyId}
+              currentPlan={currentPlan}
+            />
           ) : hasFullAccess && diagnostic ? (
+            /* Paid or trial: show console — activate monitoring if not on yet */
             <div className="p-10 border border-cyan-500/20 rounded-lg bg-[#111827] text-center max-w-2xl mx-auto">
               <h2 className="text-2xl font-bold text-white mb-3">Turn on revenue monitoring</h2>
               <p className="text-gray-400 mb-8">
@@ -913,15 +580,20 @@ export default function DashboardPage() {
               </button>
             </div>
           ) : (
-            /* STATE 2 — FREE SNAPSHOT (full diagnostic, no monitoring) */
+            /* FREE — full diagnostic snapshot, no monitoring */
             diagnostic && (
               <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
             )
           )}
 
+          {/* FOOTER */}
+          <footer className="mt-16 pt-8 border-t border-gray-800 text-center">
+            <p className="text-sm text-gray-600">
+              © 2025 Vectrios. All rights reserved.
+            </p>
+          </footer>
         </div>
       </main>
-      <SiteFooter />
     </div>
   )
 }
