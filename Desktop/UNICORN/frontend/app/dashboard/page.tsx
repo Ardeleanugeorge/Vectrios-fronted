@@ -141,6 +141,9 @@ export default function DashboardPage() {
     return null
   })
 
+  const [hasFullAccess, setHasFullAccess] = useState(false)
+  const [checkoutSyncing, setCheckoutSyncing] = useState(false)
+
   const readActiveScanToken = (): string | null => {
     try {
       const params = new URLSearchParams(window.location.search)
@@ -242,6 +245,7 @@ export default function DashboardPage() {
       const params = new URLSearchParams(window.location.search)
       if (params.get("trial") === "activated") {
         setCurrentPlan("scale")
+        setHasFullAccess(true)
       }
     } catch {}
 
@@ -437,18 +441,26 @@ export default function DashboardPage() {
       
       if (response.ok) {
         const data = await response.json()
-        console.log("[DASHBOARD] Subscription data:", { plan: data.plan, billing_cycle: data.billing_cycle })
-        // Trial users should have full access equivalent to Scale.
-        if (data.billing_cycle === "trial") {
-          console.log("[DASHBOARD] Setting currentPlan to 'scale' (trial has full access)")
+        const full = data.has_full_access === true
+        setHasFullAccess(full)
+        console.log("[DASHBOARD] Subscription data:", {
+          plan: data.plan,
+          billing_cycle: data.billing_cycle,
+          has_full_access: full,
+        })
+        if (full || data.billing_cycle === "trial") {
           setCurrentPlan("scale")
-          setTrialDaysLeft(typeof data.trial_days_left === "number" ? data.trial_days_left : null)
+          setTrialDaysLeft(
+            data.billing_cycle === "trial" && typeof data.trial_days_left === "number"
+              ? data.trial_days_left
+              : null
+          )
         } else {
-          console.log("[DASHBOARD] Setting currentPlan to:", data.plan || null)
           setCurrentPlan(data.plan || null)
           setTrialDaysLeft(null)
         }
       } else {
+        setHasFullAccess(false)
         console.error("[DASHBOARD] Failed to load subscription:", response.status, response.statusText)
       }
     } catch (e) {
@@ -493,6 +505,7 @@ export default function DashboardPage() {
 
     let cancelled = false
     void (async () => {
+      setCheckoutSyncing(true)
       try {
         const res = await fetch(`${API_URL}/billing/confirm-checkout`, {
           method: "POST",
@@ -507,7 +520,10 @@ export default function DashboardPage() {
         if (res.ok) {
           try {
             const access = await res.json()
-            if (access?.plan) {
+            if (access?.has_full_access === true) {
+              setHasFullAccess(true)
+              setCurrentPlan("scale")
+            } else if (access?.plan) {
               setCurrentPlan(String(access.plan).toLowerCase())
             }
           } catch {
@@ -544,6 +560,7 @@ export default function DashboardPage() {
           }
 
           if (!cancelled) {
+            setCheckoutSyncing(false)
             sessionStorage.setItem(dedupeKey, "1")
             router.replace("/dashboard")
             window.dispatchEvent(new CustomEvent("subscription_updated"))
@@ -568,11 +585,17 @@ export default function DashboardPage() {
         } else {
           const detail = await res.text().catch(() => "")
           console.error("[DASHBOARD] confirm-checkout failed:", res.status, detail)
-          if (!cancelled) router.replace("/dashboard")
+          if (!cancelled) {
+            setCheckoutSyncing(false)
+            router.replace("/dashboard")
+          }
         }
       } catch (e) {
         console.error("[DASHBOARD] checkout confirm:", e)
-        if (!cancelled) router.replace("/dashboard")
+        if (!cancelled) {
+          setCheckoutSyncing(false)
+          router.replace("/dashboard")
+        }
       }
     })()
 
@@ -850,13 +873,45 @@ export default function DashboardPage() {
                 Run a Scan
               </Link>
             </div>
-          ) : subscriptionLoading ? (
+          ) : subscriptionLoading || checkoutSyncing ? (
             <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
-              <p className="text-sm text-gray-400 animate-pulse">Loading subscription status…</p>
+              <p className="text-sm text-gray-400 animate-pulse">
+                {checkoutSyncing ? "Confirming your subscription…" : "Loading subscription status…"}
+              </p>
             </div>
-          ) : diagnostic?.is_partial ? (
-            /* STATE 2 — PARTIAL DIAGNOSTIC (from scan), monitoring not active */
-            <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
+          ) : diagnostic?.is_partial && !hasFullAccess ? (
+            <>
+              <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
+              <div className="mt-6 p-8 border border-cyan-500/20 rounded-lg bg-gradient-to-br from-cyan-950/30 to-[#111827] text-center">
+                <h3 className="text-xl font-bold text-white mb-2">Unlock Full Revenue Diagnostic</h3>
+                <p className="text-gray-400 mb-6 text-sm max-w-2xl mx-auto">
+                  You're viewing initial scan results. Complete a quick diagnostic to see ARR at risk, recovery potential, 12-month trajectory, and root cause analysis.
+                </p>
+                <Link
+                  href="/onboarding"
+                  className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
+                >
+                  Complete Full Diagnostic
+                </Link>
+                <p className="text-xs text-gray-600 mt-4">
+                  Takes 2-3 minutes · Just a few questions
+                </p>
+              </div>
+            </>
+          ) : hasFullAccess && diagnostic ? (
+            <div className="p-10 border border-cyan-500/20 rounded-lg bg-[#111827] text-center max-w-2xl mx-auto">
+              <h2 className="text-2xl font-bold text-white mb-3">Turn on revenue monitoring</h2>
+              <p className="text-gray-400 mb-8">
+                Your plan is active. Enable continuous monitoring to unlock the full dashboard, alerts, and weekly risk signals.
+              </p>
+              <button
+                type="button"
+                onClick={() => activateMonitoring()}
+                className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
+              >
+                Activate monitoring
+              </button>
+            </div>
           ) : (
             /* STATE 2 — FREE SNAPSHOT (full diagnostic, no monitoring) */
             diagnostic && (
