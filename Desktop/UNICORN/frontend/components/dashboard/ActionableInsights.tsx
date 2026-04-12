@@ -13,6 +13,7 @@ import {
   trackPlaybookFixCopy,
   trackPlaybookFixPageClick,
 } from "@/lib/playbookAnalytics"
+import { isPlaybookCustomerSiteUrl } from "@/lib/playbookUrls"
 
 export type FixImpactContribution = {
   close_rate: string
@@ -301,11 +302,14 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
   const monthlyChip = fix.impact_contribution?.monthly_impact || ""
   const compact = formatCompactMoneyLabel(monthlyChip, fix.impact_contribution?.monthly_impact_hi_raw)
 
+  const openPageHref =
+    fix.page_url && isPlaybookCustomerSiteUrl(fix.page_url) ? fix.page_url : null
+
   const analyticsPayload = {
     fix_index: index,
     fix_title: fix.title,
     playbook_kind: fix.playbookKind ?? null,
-    page_url: fix.page_url ?? null,
+    page_url: openPageHref,
   }
 
   return (
@@ -338,9 +342,9 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
           <SourceChip label="Monitoring" tone="cyan" title="Derived from latest monitoring snapshot" />
           {fix.behavioral_source && <SourceChip label="GA4" tone="emerald" title="Behavioral signal present (e.g., high exit)" />}
         </div>
-        {fix.page_url && (
+        {openPageHref && (
           <a
-            href={fix.page_url}
+            href={openPageHref}
             target="_blank"
             rel="noreferrer"
             className="block text-[11px] text-cyan-300 hover:text-cyan-200 mt-1.5"
