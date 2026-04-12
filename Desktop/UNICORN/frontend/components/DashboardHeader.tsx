@@ -1,6 +1,6 @@
 "use client"
 
-import { API_URL } from '@/lib/config'
+import { API_URL, OWNER_EMAIL } from '@/lib/config'
 import { isScanUnlockedWithEmail } from "@/lib/scanResultsRefine"
 
 import { useState, useEffect } from "react"
@@ -124,7 +124,6 @@ function initFromCache<T>(key: keyof SubCache, fallback: T): T {
 }
 
 export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadge?: boolean }) {
-  const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const router = useRouter()
 
   // Read user_data synchronously — no flash on client
@@ -286,29 +285,20 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     window.addEventListener("storage", handleStorageChange)
     window.addEventListener("subscription_updated", handleSubscriptionUpdate)
     
-    // Light polling only when URL suggests a billing transition (otherwise dedupe + initial fetch is enough)
     const urlParams = new URLSearchParams(window.location.search)
-    const pollAfterBillingTransition =
-      urlParams.get("trial") === "activated" ||
-      urlParams.get("governance") === "activated" ||
-      urlParams.get("checkout_success") === "1"
+    const isTrialActivated = urlParams.get("trial") === "activated"
 
-    let pollCount = 0
-    const maxPolls = pollAfterBillingTransition ? 8 : 1
-    const pollMs = pollAfterBillingTransition ? 1000 : 4000
-    const pollInterval = setInterval(() => {
-      if (pollCount < maxPolls) {
-        reloadSubscription(false)
-        pollCount++
-      } else {
-        clearInterval(pollInterval)
-      }
-    }, pollMs)
-    
+    let pollTimeout: ReturnType<typeof setTimeout> | null = null
+    if (isTrialActivated) {
+      pollTimeout = setTimeout(() => {
+        reloadSubscription()
+      }, 1500)
+    }
+
     return () => {
       window.removeEventListener("storage", handleStorageChange)
       window.removeEventListener("subscription_updated", handleSubscriptionUpdate)
-      clearInterval(pollInterval)
+      if (pollTimeout) clearTimeout(pollTimeout)
     }
   }, [router])
 
@@ -362,7 +352,9 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const planDisplay = getPlanDisplay(currentPlan, billingCycle, trialDaysLeft)
   const planLabel = planDisplay?.label ?? null
   const planColorClass = planDisplay ? (PLAN_COLORS[planDisplay.colorKey] || PLAN_COLORS.starter) : ""
-  const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
+  const isOwner =
+    Boolean(OWNER_EMAIL) &&
+    (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
   const displayCompanyName = isOwner ? "VectriOS" : (user?.company_name || "Account")
   /** Always show account / company name here — never replace with a guessed "brand" from hostname (e.g. render.com → "Render"). */
   const headerPrimaryName = displayCompanyName
