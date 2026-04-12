@@ -1,6 +1,7 @@
 "use client"
 
 import { API_URL } from '@/lib/config'
+import { getUserData, setUserData } from "@/lib/cache"
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
@@ -261,13 +262,7 @@ export default function DashboardPage() {
         console.log("[DASHBOARD] No diagnostic data found")
       }
 
-      let mergedUser: Record<string, unknown> | null = null
-      try {
-        const userData = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
-        if (userData) mergedUser = JSON.parse(userData) as Record<string, unknown>
-      } catch (e) {
-        console.error("Error parsing user data:", e)
-      }
+      let mergedUser: Record<string, unknown> | null = getUserData<Record<string, unknown>>(10)
 
       let resolvedCompanyId: string | null = null
       try {
@@ -285,8 +280,7 @@ export default function DashboardPage() {
             company_name: profile?.company_name ?? mergedUser?.company_name ?? "",
             company_id: pcid ?? mergedUser?.company_id ?? null,
           }
-          localStorage.setItem("user_data", JSON.stringify(mergedUser))
-          sessionStorage.setItem("user_data", JSON.stringify(mergedUser))
+          setUserData(mergedUser)
           resolvedCompanyId = (mergedUser.company_id as string) || null
         }
       } catch (e) {
