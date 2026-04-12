@@ -123,7 +123,8 @@ interface MonitoringLayerProps {
   diagnostic: DiagnosticResult | null
   alerts: Alert[]
   onMarkAlertRead: (alertId: string) => void
-  trialDays?: number | null
+  /** Only when API reports billing trial — e.g. " · Trial · 12d left". Never derived from scan dates. */
+  subscriptionTrialSuffix?: string
   companyId: string | null
   currentPlan?: string | null
   companyDomain?: string | null
@@ -136,7 +137,7 @@ export default function MonitoringLayer({
   diagnostic, 
   alerts,
   onMarkAlertRead,
-  trialDays,
+  subscriptionTrialSuffix = "",
   companyId,
   currentPlan = null,
   companyDomain = null,
@@ -567,7 +568,7 @@ export default function MonitoringLayer({
         const lastScanLabel = lastEval ? formatAgo(lastEval) : "—"
         const nextScanLabel = lastEval ? formatNextIn(lastEval) : "~24h"
         const planLabel = currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)
-        const trialLabel = trialDays ? ` · Trial day ${trialDays}` : ""
+        const trialLabel = subscriptionTrialSuffix || ""
 
         return (
           <div className="flex flex-wrap items-center gap-px rounded-2xl overflow-hidden border border-gray-800 bg-[#0d1117] text-sm">

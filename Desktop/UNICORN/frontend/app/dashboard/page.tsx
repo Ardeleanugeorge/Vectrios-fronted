@@ -107,6 +107,9 @@ export default function DashboardPage() {
   const [hasFullAccess, setHasFullAccess] = useState(false)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const [checkoutSyncing, setCheckoutSyncing] = useState(false)
+  const [billingCycle, setBillingCycle] = useState<string | null>(null)
+  const [isTrialActive, setIsTrialActive] = useState(false)
+  const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null)
   const [monitoringAutoStarting, setMonitoringAutoStarting] = useState(false)
   /** False until first /monitoring/status response for this session (avoids "Turn on monitoring" flash before we know server state). */
   const [monitoringStatusLoaded, setMonitoringStatusLoaded] = useState(false)
@@ -289,25 +292,14 @@ export default function DashboardPage() {
     }
   }
 
-  const calculateTrialDays = (status: MonitoringStatus | null): number | null => {
-    if (!status || !status.monitoring_active) return null
-    
-    // Use last_evaluated_at if available, otherwise created_at
-    const startDateStr = status.last_evaluated_at || status.created_at
-    if (!startDateStr) return null
-    
-    try {
-      const startDate = new Date(startDateStr)
-      const today = new Date()
-      const diffTime = Math.abs(today.getTime() - startDate.getTime())
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-      
-      // Return day number (1-14), capped at 14
-      return Math.min(diffDays + 1, 14)
-    } catch (e) {
-      console.error("Error calculating trial days:", e)
-      return null
+  /** Suffix for plan strip — only when subscription is actually in trial (not monitoring tenure). */
+  const subscriptionTrialStripSuffix = (): string => {
+    const inTrial = isTrialActive || billingCycle === "trial"
+    if (!inTrial) return ""
+    if (typeof trialDaysLeft === "number" && trialDaysLeft >= 0) {
+      return ` · Trial · ${trialDaysLeft}d left`
     }
+    return " · Trial"
   }
 
   const loadSubscription = async (token: string, companyId: string) => {
@@ -323,6 +315,11 @@ export default function DashboardPage() {
         const data = await response.json()
         const full = data.has_full_access === true
         setHasFullAccess(full)
+        setBillingCycle(typeof data.billing_cycle === "string" ? data.billing_cycle : null)
+        setIsTrialActive(data.is_trial_active === true)
+        setTrialDaysLeft(
+          typeof data.trial_days_left === "number" ? data.trial_days_left : null
+        )
         if (process.env.NODE_ENV === "development") {
           console.log("[DASHBOARD] Subscription data:", {
             plan: data.plan,
@@ -338,10 +335,16 @@ export default function DashboardPage() {
         }
       } else {
         setHasFullAccess(false)
+        setBillingCycle(null)
+        setIsTrialActive(false)
+        setTrialDaysLeft(null)
         console.error("[DASHBOARD] Failed to load subscription:", response.status, response.statusText)
       }
     } catch (e) {
       console.error("Error loading subscription:", e)
+      setBillingCycle(null)
+      setIsTrialActive(false)
+      setTrialDaysLeft(null)
     } finally {
       setSubscriptionLoading(false)
     }
@@ -636,7 +639,7 @@ export default function DashboardPage() {
               diagnostic={diagnostic}
               alerts={alerts}
               onMarkAlertRead={markAlertRead}
-              trialDays={calculateTrialDays(monitoringStatus)}
+              subscriptionTrialSuffix={subscriptionTrialStripSuffix()}
               companyId={companyId}
               currentPlan={currentPlan}
             />
