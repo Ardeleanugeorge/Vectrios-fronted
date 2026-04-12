@@ -48,14 +48,6 @@ function writeSubCache(data: Omit<SubCache, "ts">) {
   } catch {}
 }
 
-/** e.g. vercel.com → Vercel */
-function brandLabelFromMonitoredHost(host: string): string {
-  const h = (host || "").replace(/^www\./i, "").split("/")[0].trim()
-  if (!h) return ""
-  const first = h.split(".")[0] || h
-  return first.charAt(0).toUpperCase() + first.slice(1).replace(/[-_]/g, " ")
-}
-
 function readPreferredScanTokenForApi(): string | null {
   try {
     if (typeof window === "undefined") return null
@@ -133,7 +125,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const [billingCycle,  setBillingCycle]   = useState<string | null>(() => initFromCache("billingCycle",  null))
   const [trialDaysLeft, setTrialDaysLeft]  = useState<number | null>(() => initFromCache("trialDaysLeft", null))
 
-  const [monitoredBrand, setMonitoredBrand] = useState<{ label: string; domain: string } | null>(null)
+  const [monitoredDomainHost, setMonitoredDomainHost] = useState<string | null>(null)
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -305,7 +297,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     const companyId = user?.company_id
     const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!companyId || !auth) {
-      setMonitoredBrand(null)
+      setMonitoredDomainHost(null)
       return
     }
     const st = scanTokenForMonitoringFetch()
@@ -319,16 +311,14 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
         .then((data) => {
           if (cancelled) return
           if (data?.monitoring_active && data?.monitored_domain) {
-            const domain = String(data.monitored_domain)
-            const label = brandLabelFromMonitoredHost(domain)
-            if (label) setMonitoredBrand({ domain, label })
-            else setMonitoredBrand(null)
+            const domain = String(data.monitored_domain).trim()
+            setMonitoredDomainHost(domain || null)
           } else {
-            setMonitoredBrand(null)
+            setMonitoredDomainHost(null)
           }
         })
         .catch(() => {
-          if (!cancelled) setMonitoredBrand(null)
+          if (!cancelled) setMonitoredDomainHost(null)
         })
     }
     run()
@@ -355,10 +345,14 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const planColorClass = planDisplay ? (PLAN_COLORS[planDisplay.colorKey] || PLAN_COLORS.starter) : ""
   const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
   const displayCompanyName = isOwner ? "VectriOS" : (user?.company_name || "Account")
-  const headerPrimaryName =
-    !isOwner && monitoredBrand ? monitoredBrand.label : displayCompanyName
+  /** Always show account / company name here — never replace with a guessed "brand" from hostname (e.g. render.com → "Render"). */
+  const headerPrimaryName = displayCompanyName
   const headerPrimaryInitial =
     (headerPrimaryName?.trim()?.[0] || "A").toUpperCase()
+  const accountMenuTitle =
+    !isOwner && monitoredDomainHost
+      ? `${displayCompanyName} — monitoring ${monitoredDomainHost}`
+      : undefined
 
   const readPreferredScanToken = (): string | null => readPreferredScanTokenForApi()
 
@@ -427,6 +421,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
               type="button"
               aria-expanded={showMenu}
               aria-haspopup="menu"
+              title={accountMenuTitle}
               onClick={() => setShowMenu(!showMenu)}
               className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition"
             >
