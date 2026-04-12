@@ -284,7 +284,8 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     }
     window.addEventListener("storage", handleStorageChange)
     window.addEventListener("subscription_updated", handleSubscriptionUpdate)
-    
+
+    // Single refresh after trial activation — no aggressive polling
     const urlParams = new URLSearchParams(window.location.search)
     const isTrialActivated = urlParams.get("trial") === "activated"
 
