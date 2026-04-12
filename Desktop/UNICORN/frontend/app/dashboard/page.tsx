@@ -2,7 +2,7 @@
 
 import { API_URL } from '@/lib/config'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import DashboardHeader from "@/components/DashboardHeader"
@@ -107,6 +107,8 @@ export default function DashboardPage() {
   const [hasFullAccess, setHasFullAccess] = useState(false)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const [checkoutSyncing, setCheckoutSyncing] = useState(false)
+  const [monitoringAutoStarting, setMonitoringAutoStarting] = useState(false)
+  const autoMonitorAttempted = useRef(false)
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -368,11 +370,11 @@ export default function DashboardPage() {
     }
   }
 
-  const activateMonitoring = async () => {
-    if (!companyId) return
-    
+  const activateMonitoring = async (options?: { silent?: boolean }): Promise<boolean> => {
+    if (!companyId) return false
+
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) return
+    if (!token) return false
 
     try {
       const response = await fetch(`${API_URL}/monitoring/activate/${companyId}`, {
@@ -381,21 +383,73 @@ export default function DashboardPage() {
           "Authorization": `Bearer ${token}`
         }
       })
-      
+
       if (response.ok) {
-        // Reload monitoring status and subscription (trial is auto-assigned on activation)
         loadMonitoringStatus(token, companyId)
         loadAlerts(token, companyId)
         loadSubscription(token, companyId)
-      } else {
-        const error = await response.json()
-        alert(error.detail || "Failed to activate monitoring")
+        window.dispatchEvent(new CustomEvent("subscription_updated"))
+        return true
       }
+      if (!options?.silent) {
+        try {
+          const error = await response.json()
+          alert(error.detail || "Failed to activate monitoring")
+        } catch {
+          alert("Failed to activate monitoring")
+        }
+      }
+      return false
     } catch (e) {
       console.error("Error activating monitoring:", e)
-      alert("Error activating monitoring. Please try again.")
+      if (!options?.silent) {
+        alert("Error activating monitoring. Please try again.")
+      }
+      return false
     }
   }
+
+  // Scale / trial with access: turn monitoring on without an extra click (checkout does not enable it server-side).
+  useEffect(() => {
+    if (!companyId || subscriptionLoading || !hasFullAccess) return
+    if (!monitoringStatus || monitoringStatus.monitoring_active) return
+
+    const k = `vectrios_auto_monitor_ok_${companyId}`
+    if (typeof sessionStorage !== "undefined" && sessionStorage.getItem(k)) return
+    if (autoMonitorAttempted.current) return
+    autoMonitorAttempted.current = true
+
+    setMonitoringAutoStarting(true)
+    void (async () => {
+      const token =
+        sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      if (!token) {
+        setMonitoringAutoStarting(false)
+        autoMonitorAttempted.current = false
+        return
+      }
+      try {
+        const response = await fetch(`${API_URL}/monitoring/activate/${companyId}`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (response.ok) {
+          if (typeof sessionStorage !== "undefined") sessionStorage.setItem(k, "1")
+          loadMonitoringStatus(token, companyId)
+          loadAlerts(token, companyId)
+          loadSubscription(token, companyId)
+          window.dispatchEvent(new CustomEvent("subscription_updated"))
+        } else {
+          autoMonitorAttempted.current = false
+        }
+      } catch {
+        autoMonitorAttempted.current = false
+      } finally {
+        setMonitoringAutoStarting(false)
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run when status first shows monitoring off
+  }, [companyId, hasFullAccess, subscriptionLoading, monitoringStatus?.monitoring_active])
 
   if (loading) {
     return (
@@ -565,19 +619,27 @@ export default function DashboardPage() {
               currentPlan={currentPlan}
             />
           ) : hasFullAccess && diagnostic ? (
-            /* Paid or trial: show console — activate monitoring if not on yet */
+            /* Paid or trial: monitoring off — auto-start once, or manual fallback */
             <div className="p-10 border border-cyan-500/20 rounded-lg bg-[#111827] text-center max-w-2xl mx-auto">
-              <h2 className="text-2xl font-bold text-white mb-3">Turn on revenue monitoring</h2>
+              <h2 className="text-2xl font-bold text-white mb-3">
+                {monitoringAutoStarting
+                  ? "Starting revenue monitoring…"
+                  : "Turn on revenue monitoring"}
+              </h2>
               <p className="text-gray-400 mb-8">
                 Your plan is active. Enable continuous monitoring to unlock the full dashboard, alerts, and weekly risk signals.
               </p>
-              <button
-                type="button"
-                onClick={() => activateMonitoring()}
-                className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
-              >
-                Activate monitoring
-              </button>
+              {monitoringAutoStarting ? (
+                <p className="text-sm text-gray-500 animate-pulse">This usually takes a few seconds.</p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => void activateMonitoring()}
+                  className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition"
+                >
+                  Activate monitoring
+                </button>
+              )}
             </div>
           ) : (
             /* FREE — full diagnostic snapshot, no monitoring */
