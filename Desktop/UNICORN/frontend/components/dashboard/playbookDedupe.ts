@@ -123,6 +123,62 @@ function toPlaybookFix(f: PlaybookFixLite, kind: PlaybookFixKind): PlaybookFix {
   }
 }
 
+function tokenSet(title: string): Set<string> {
+  return new Set(
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 1)
+  )
+}
+
+/** Word overlap between titles — catches "Enhance Proof Near Key CTAs" vs "Enhance Proof Near CTAs" */
+function titleTokenJaccard(a: string, b: string): number {
+  const ta = tokenSet(a)
+  const tb = tokenSet(b)
+  if (ta.size === 0 || tb.size === 0) return 0
+  let inter = 0
+  for (const w of ta) {
+    if (tb.has(w)) inter++
+  }
+  const union = ta.size + tb.size - inter
+  return union > 0 ? inter / union : 0
+}
+
+/** Same Jaccard on suggested copy — catches twin LLM rows with different punctuation in titles */
+function copyTokenJaccard(a: string, b: string): number {
+  return titleTokenJaccard(a.trim().slice(0, 500), b.trim().slice(0, 500))
+}
+
+function sameImpactBand(a: PlaybookFix, b: PlaybookFix): boolean {
+  const ha = a.impact_contribution?.monthly_impact_hi_raw
+  const hb = b.impact_contribution?.monthly_impact_hi_raw
+  if (typeof ha === "number" && typeof hb === "number" && ha === hb) return true
+  const ma = (a.impact_contribution?.monthly_impact || "").replace(/\s/g, "").toLowerCase()
+  const mb = (b.impact_contribution?.monthly_impact || "").replace(/\s/g, "").toLowerCase()
+  return ma.length > 3 && ma === mb
+}
+
+/**
+ * Same lever repeated under different pages/API rows. Prefer one clear card over 2–3 near-duplicates.
+ * Uses title + suggested copy + modeled band so we keep distinct homepage vs pricing when copy diverges.
+ */
+function isOverlappingPlaybookFix(existing: PlaybookFix, candidate: PlaybookFix): boolean {
+  const jt = titleTokenJaccard(existing.title, candidate.title)
+  const jb = copyTokenJaccard(existing.suggested_change, candidate.suggested_change)
+
+  if (jb >= 0.58) return true
+  if (jt >= 0.5) return true
+  if (sameImpactBand(existing, candidate) && jb >= 0.45) return true
+  if (sameImpactBand(existing, candidate) && jt >= 0.36) return true
+
+  if (existing.playbookKind !== candidate.playbookKind) {
+    return jt >= 0.68
+  }
+  return false
+}
+
 function buildSyntheticProofFix(ref: PlaybookFix | undefined): PlaybookFix {
   const ic = ref?.impact_contribution ?? {
     monthly_impact: "—",
@@ -144,41 +200,50 @@ function buildSyntheticProofFix(ref: PlaybookFix | undefined): PlaybookFix {
   }
 }
 
-/** Collapse duplicate buyer-hero rows; add distinct proof fix when needed */
-export function dedupeBuyerHeroPlaybookFixes(fixes: PlaybookFixLite[]): PlaybookFix[] {
+/**
+ * Collapse overlapping API rows (twin proof/positioning fixes, duplicate buyer hero, same $ band),
+ * then cap at three. Synthetic proof only when output still has no proof row.
+ */
+export function dedupePlaybookFixes(fixes: PlaybookFixLite[]): PlaybookFix[] {
   const inputLen = fixes.length
   const out: PlaybookFix[] = []
   let usedBuyerHero = false
-  let skippedBuyerHeroDupes = 0
+  let skippedOverlaps = 0
 
-  /** Kinds present in source + built rows — avoids double synthetic proof if API already classified proof */
-  const existingKinds = new Set<PlaybookFixKind>()
+  for (const lite of fixes) {
+    const kind = resolveKind(lite)
+    let candidate: PlaybookFix
 
-  for (const f of fixes) {
-    const kind = resolveKind(f)
-    existingKinds.add(kind)
     if (kind === PLAYBOOK_KINDS.BUYER_HERO) {
       if (usedBuyerHero) {
-        skippedBuyerHeroDupes += 1
+        skippedOverlaps += 1
         continue
       }
       usedBuyerHero = true
-      out.push(
-        toPlaybookFix(
-          { ...f, title: "Clarify target buyer in hero" },
-          PLAYBOOK_KINDS.BUYER_HERO
-        )
+      candidate = toPlaybookFix(
+        { ...lite, title: "Clarify target buyer in hero" },
+        PLAYBOOK_KINDS.BUYER_HERO
       )
     } else {
-      out.push(toPlaybookFix(f, kind))
+      candidate = toPlaybookFix(lite, kind)
     }
+
+    if (out.some((g) => isOverlappingPlaybookFix(g, candidate))) {
+      skippedOverlaps += 1
+      continue
+    }
+    out.push(candidate)
   }
 
-  const hasProofCta = existingKinds.has(PLAYBOOK_KINDS.PROOF_CTA)
+  const hasProofInOut = out.some((f) => f.playbookKind === PLAYBOOK_KINDS.PROOF_CTA)
   let addedSyntheticProof = false
 
-  if (usedBuyerHero && out.length < 3 && !hasProofCta) {
-    out.push(buildSyntheticProofFix(out[out.length - 1]))
+  // Only pad with synthetic proof when the sole survivor is buyer-hero — avoid a 2nd card that
+  // duplicates a single proof/positioning fix the user should see alone.
+  const loneBuyerHero =
+    out.length === 1 && out[0].playbookKind === PLAYBOOK_KINDS.BUYER_HERO
+  if (usedBuyerHero && loneBuyerHero && !hasProofInOut) {
+    out.push(buildSyntheticProofFix(out[0]))
     addedSyntheticProof = true
   }
 
@@ -190,12 +255,17 @@ export function dedupeBuyerHeroPlaybookFixes(fixes: PlaybookFixLite[]): Playbook
     console.debug("[playbook-dedupe]", {
       input: inputLen,
       output: deduped.length,
-      removed: skippedBuyerHeroDupes + truncatedByCap,
-      skippedBuyerHeroDupes,
+      removed: skippedOverlaps + truncatedByCap,
+      skippedOverlaps,
       truncatedByCap,
       addedSyntheticProof,
-      hadProofCtaBeforeSynthetic: hasProofCta,
+      hadProofInOutBeforeSynthetic: hasProofInOut,
     })
   }
   return deduped
+}
+
+/** @alias dedupePlaybookFixes — same pipeline (buyer hero + overlap + cap) */
+export function dedupeBuyerHeroPlaybookFixes(fixes: PlaybookFixLite[]): PlaybookFix[] {
+  return dedupePlaybookFixes(fixes)
 }

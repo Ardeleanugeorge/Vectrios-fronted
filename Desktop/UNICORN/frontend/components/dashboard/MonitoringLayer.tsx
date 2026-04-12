@@ -711,6 +711,7 @@ export default function MonitoringLayer({
         anchorDensity={anchorDensity}
         uiState={uiState}
         deltaDirection={revenueDelta?.direction}
+        leadingStructuralSignal={displayRiskDriver}
       />
 
       {/* 5. REVENUE ALIGNMENT STATUS — System state explanation */}

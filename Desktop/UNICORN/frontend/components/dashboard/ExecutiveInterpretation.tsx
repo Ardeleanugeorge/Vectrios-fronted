@@ -10,6 +10,8 @@ interface ExecutiveInterpretationProps {
   icpClarity: number
   anchorDensity: number
   uiState?: "low" | "medium" | "high"
+  /** Same label as health strip / alignment map driver when available */
+  leadingStructuralSignal?: string | null
 }
 
 export default function ExecutiveInterpretation({
@@ -22,6 +24,7 @@ export default function ExecutiveInterpretation({
   icpClarity,
   anchorDensity,
   uiState = "medium",
+  leadingStructuralSignal = null,
 }: ExecutiveInterpretationProps) {
   const hasExposure =
     (monthlyExposure !== null && monthlyExposure > 0) ||
@@ -38,7 +41,9 @@ export default function ExecutiveInterpretation({
   if (anchorDensity === 0) faults.push("Conversion anchor gaps")
   if (alignmentScore < 40) faults.push("Alignment variance across revenue-stage messaging")
   
-  const primaryFault = faults.length > 0 ? faults[0] : "Strategic misalignment"
+  const fallbackFault = faults.length > 0 ? faults[0] : null
+  const primaryStructuralTheme =
+    (leadingStructuralSignal && leadingStructuralSignal.trim()) || fallbackFault
 
   /** One idea, no numbers — dollars live in Financial summary + Optimization Model */
   const takeawayLine =
@@ -50,9 +55,9 @@ export default function ExecutiveInterpretation({
     <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
       <h2 className="text-sm font-semibold mb-3 uppercase tracking-wide text-gray-400">Executive Takeaway</h2>
       <p className="text-sm text-gray-300 leading-relaxed">{takeawayLine}</p>
-      {hasExposure && uiState !== "low" && (
+      {primaryStructuralTheme && (
         <p className="text-xs text-gray-500 mt-2">
-          Primary structural theme: <span className="text-gray-400">{primaryFault}</span> — detailed scores are in the Alignment Map below.
+          Leading structural signal: <span className="text-gray-400">{primaryStructuralTheme}</span> — same theme as the health strip and Alignment Map.
         </p>
       )}
     </div>

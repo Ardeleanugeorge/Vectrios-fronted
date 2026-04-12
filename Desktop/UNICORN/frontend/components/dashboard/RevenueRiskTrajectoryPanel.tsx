@@ -96,8 +96,8 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
   return (
     <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
       <h2 className="text-xl font-bold mb-2 uppercase tracking-wide">Revenue Risk Trajectory</h2>
-      <p className="text-xs text-gray-500 mb-6">
-        Projected {RII_NAME} ({RII_ABBREV}) if no intervention — same 0–100 scale as your dashboard headline score.
+      <p className="text-xs text-gray-500 mb-6 leading-relaxed max-w-3xl">
+        Time-path implied from today’s {RII_ABBREV} snapshot using the engine’s decay model — same 0–100 scale as your headline score. This is not the same as the “no action vs fix” ARR chart below; numbers can move either way depending on scenario math.
       </p>
       
       <div className="grid grid-cols-4 gap-4 mb-6">
