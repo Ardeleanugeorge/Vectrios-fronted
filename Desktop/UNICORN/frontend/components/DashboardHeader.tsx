@@ -4,7 +4,7 @@ import { API_URL } from '@/lib/config'
 import { isScanUnlockedWithEmail } from "@/lib/scanResultsRefine"
 
 import { useState, useEffect } from "react"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 const PLAN_COLORS: Record<string, string> = {
@@ -82,7 +82,29 @@ function readPreferredScanTokenForApi(): string | null {
   }
 }
 
-/** Dashboard ?token= wins so header matches the scan context. */
+/**
+ * Drop garbage / platform apex values so we never show "Monitoring · render.com"
+ * when the real customer site is elsewhere.
+ */
+function displayableMonitoredHost(host: string | null | undefined): string | null {
+  const raw = (host || "").trim()
+  if (!raw) return null
+  let h = raw.toLowerCase().split(":")[0]
+  if (h.startsWith("www.")) h = h.slice(4)
+  const noise = new Set([
+    "render.com",
+    "onrender.com",
+    "vercel.app",
+    "netlify.app",
+    "github.io",
+    "cloudflare.com",
+    "localhost",
+  ])
+  if (noise.has(h)) return null
+  return raw
+}
+
+/** Dashboard ?token= wins for navigation flows; do not use for header domain label (stale token → wrong host). */
 function scanTokenForMonitoringFetch(): string | null {
   if (typeof window !== "undefined") {
     try {
@@ -104,9 +126,6 @@ function initFromCache<T>(key: keyof SubCache, fallback: T): T {
 export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadge?: boolean }) {
   const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const scanTokenKey = searchParams.get("token") || ""
 
   // Read user_data synchronously — no flash on client
   const [user, setUser] = useState<any>(() => {
@@ -300,19 +319,19 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       setMonitoredDomainHost(null)
       return
     }
-    const st = scanTokenForMonitoringFetch()
-    const qs = st ? `?scan_token=${encodeURIComponent(st)}` : ""
+    // Intentionally NO scan_token: a stale token in localStorage points at the wrong ScanResult.domain
+    // (e.g. render.com) while the company row has the real homepage.
     let cancelled = false
     const run = () => {
-      fetch(`${API_URL}/monitoring/status/${companyId}${qs}`, {
+      fetch(`${API_URL}/monitoring/status/${companyId}`, {
         headers: { Authorization: `Bearer ${auth}` },
       })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
           if (cancelled) return
           if (data?.monitoring_active && data?.monitored_domain) {
-            const domain = String(data.monitored_domain).trim()
-            setMonitoredDomainHost(domain || null)
+            const domain = displayableMonitoredHost(String(data.monitored_domain))
+            setMonitoredDomainHost(domain)
           } else {
             setMonitoredDomainHost(null)
           }
@@ -328,7 +347,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       cancelled = true
       window.removeEventListener("subscription_updated", onRefresh)
     }
-  }, [user?.company_id, pathname, scanTokenKey])
+  }, [user?.company_id])
 
   const handleLogout = () => {
     sessionStorage.removeItem("auth_token")
