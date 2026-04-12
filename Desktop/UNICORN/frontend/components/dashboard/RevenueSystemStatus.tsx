@@ -39,11 +39,21 @@ export default function RevenueSystemStatus({
   }
   const compact = moneyCompact(displayMonthlyImpact)
 
+  const versusLastScanLine = (() => {
+    if (deltaDirection === "better") return "Versus last scan: improving (structural gains)."
+    if (deltaDirection === "worse") return "Versus last scan: worsening (structural gaps)."
+    if (deltaDirection === "stable") return "Versus last scan: stable (no material change vs prior cycle)."
+    return "Versus last scan: no labeled trend this cycle — see Revenue Change card above when present."
+  })()
+
   return (
     <div className="p-8 bg-[#111827] rounded-lg border-2 border-gray-800 mb-6">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-300 mb-2">Revenue System Status</h2>
+          <h2 className="text-2xl font-semibold text-gray-300 mb-1">Monitoring &amp; exposure snapshot</h2>
+          <p className="text-xs text-gray-600 max-w-xl leading-relaxed mb-2">
+            Modeled dollars and monitoring pulse — not the same as the structural health bar (100 − RII) above.
+          </p>
           {monitoringActive && (
             <div className="flex items-center gap-2 mt-2">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -64,7 +74,7 @@ export default function RevenueSystemStatus({
           <p className="text-sm text-gray-500 mt-2">
             {uiState === "low"
               ? "Structurally healthy — low revenue risk."
-              : `Versus last scan: ${deltaDirection === "better" ? "improving" : "worsening"} (${deltaDirection === "better" ? "structural gains" : "structural gaps"}).`}
+              : versusLastScanLine}
           </p>
         </div>
       ) : (

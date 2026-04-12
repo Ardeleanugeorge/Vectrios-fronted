@@ -123,13 +123,25 @@ export default function RevenueRiskIndex({
         ) : (
           <p className="text-2xl font-bold text-gray-500 mb-4">Initializing</p>
         )}
-        {/* Visual legend */}
-        <div className="text-[11px] text-gray-500 mb-4 mt-6">
-          <span className="mr-2">0–30: <span className="text-emerald-400">Excellent</span></span>
-          <span className="mr-2">30–50: <span className="text-emerald-300">Strong</span></span>
-          <span className="mr-2">50–70: <span className="text-amber-400">Inefficient</span></span>
+        {/* Visual legend — flex + separators so bands never read as one word */}
+        <div className="text-[11px] text-gray-500 mb-4 mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 max-w-xl mx-auto">
+          <span>0–30: <span className="text-emerald-400">Excellent</span></span>
+          <span className="text-gray-700" aria-hidden>
+            ·
+          </span>
+          <span>30–50: <span className="text-emerald-300">Strong</span></span>
+          <span className="text-gray-700" aria-hidden>
+            ·
+          </span>
+          <span>50–70: <span className="text-amber-400">Inefficient</span></span>
+          <span className="text-gray-700" aria-hidden>
+            ·
+          </span>
           <span>70+: <span className="text-red-400">Critical</span></span>
-          <span className="ml-2 text-gray-600">— Lower is better</span>
+          <span className="text-gray-700 px-1" aria-hidden>
+            ·
+          </span>
+          <span className="text-gray-600">Lower is better</span>
         </div>
         {effectiveConfidence < 50 && (
           <p className="text-xs text-amber-300 mb-4">
