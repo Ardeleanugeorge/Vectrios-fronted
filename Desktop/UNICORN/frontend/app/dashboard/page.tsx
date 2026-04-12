@@ -2,7 +2,7 @@
 
 import { API_URL } from '@/lib/config'
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import DashboardHeader from "@/components/DashboardHeader"
@@ -113,115 +113,240 @@ export default function DashboardPage() {
   const [monitoringAutoStarting, setMonitoringAutoStarting] = useState(false)
   /** False until first /monitoring/status response for this session (avoids "Turn on monitoring" flash before we know server state). */
   const [monitoringStatusLoaded, setMonitoringStatusLoaded] = useState(false)
+  /** True when GET /monitoring/status failed — do not show "Activate monitoring" (unknown state). */
+  const [monitoringStatusFetchFailed, setMonitoringStatusFetchFailed] = useState(false)
   const autoMonitorAttempted = useRef(false)
 
-  useEffect(() => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) {
-      router.push("/login")
-      return
-    }
+  const loadMonitoringStatus = useCallback(async (token: string, cid: string) => {
+    try {
+      setMonitoringStatusFetchFailed(false)
+      const response = await fetch(`${API_URL}/monitoring/status/${cid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
 
-    // Get company ID from user data
-    const userData = localStorage.getItem("user_data")
-    if (userData) {
-      try {
-        const parsed = JSON.parse(userData)
-        setUser(parsed)
-        if (parsed.company_id) {
-          setCompanyId(parsed.company_id)
+      if (response.ok) {
+        const data = await response.json()
+        setMonitoringStatus(data)
+      } else {
+        setMonitoringStatus(null)
+        setMonitoringStatusFetchFailed(true)
+        console.error("[DASHBOARD] monitoring/status HTTP", response.status)
+      }
+    } catch (e) {
+      console.error("Error loading monitoring status:", e)
+      setMonitoringStatus(null)
+      setMonitoringStatusFetchFailed(true)
+    } finally {
+      setMonitoringStatusLoaded(true)
+    }
+  }, [])
+
+  /** Suffix for plan strip — only when subscription is actually in trial (not monitoring tenure). */
+  const subscriptionTrialStripSuffix = (): string => {
+    const inTrial = isTrialActive || billingCycle === "trial"
+    if (!inTrial) return ""
+    if (typeof trialDaysLeft === "number" && trialDaysLeft >= 0) {
+      return ` · Trial · ${trialDaysLeft}d left`
+    }
+    return " · Trial"
+  }
+
+  const loadSubscription = useCallback(async (token: string, companyId: string) => {
+    setSubscriptionLoading(true)
+    try {
+      const response = await fetch(`${API_URL}/subscription/${companyId}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
         }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        const full = data.has_full_access === true
+        setHasFullAccess(full)
+        setBillingCycle(typeof data.billing_cycle === "string" ? data.billing_cycle : null)
+        setIsTrialActive(data.is_trial_active === true)
+        setTrialDaysLeft(
+          typeof data.trial_days_left === "number" ? data.trial_days_left : null
+        )
+        if (process.env.NODE_ENV === "development") {
+          console.log("[DASHBOARD] Subscription data:", {
+            plan: data.plan,
+            billing_cycle: data.billing_cycle,
+            has_full_access: full,
+          })
+        }
+        // Paid + trial both use Scale feature gates; never rely on plan name alone (can be null).
+        if (full || data.billing_cycle === "trial") {
+          setCurrentPlan("scale")
+        } else {
+          setCurrentPlan(data.plan || null)
+        }
+      } else {
+        setHasFullAccess(false)
+        setBillingCycle(null)
+        setIsTrialActive(false)
+        setTrialDaysLeft(null)
+        console.error("[DASHBOARD] Failed to load subscription:", response.status, response.statusText)
+      }
+    } catch (e) {
+      console.error("Error loading subscription:", e)
+      setBillingCycle(null)
+      setIsTrialActive(false)
+      setTrialDaysLeft(null)
+    } finally {
+      setSubscriptionLoading(false)
+    }
+  }, [])
+
+  const loadAlerts = useCallback(async (token: string, companyId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/monitoring/alerts/${companyId}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setAlerts(data.alerts || [])
+      }
+    } catch (e) {
+      console.error("Error loading alerts:", e)
+    }
+  }, [])
+
+  /** Profile first: canonical company_id (multi-company / stale localStorage) then monitoring + subscription. */
+  useEffect(() => {
+    let cancelled = false
+    const run = async () => {
+      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+      if (!token) {
+        router.push("/login")
+        return
+      }
+
+      try {
+        const params = new URLSearchParams(window.location.search)
+        if (params.get("trial") === "activated") {
+          setCurrentPlan("scale")
+          setHasFullAccess(true)
+        }
+      } catch {
+        /* ignore */
+      }
+
+      const diagnosticData =
+        sessionStorage.getItem("diagnostic_result") || localStorage.getItem("diagnostic_result")
+      if (diagnosticData) {
+        try {
+          const parsed = JSON.parse(diagnosticData)
+          if (process.env.NODE_ENV === "development") {
+            console.log("[DASHBOARD] Loaded diagnostic:", {
+              hasPartial: parsed.is_partial,
+              riskScore: parsed.risk_score,
+            })
+          }
+          setDiagnostic(parsed)
+          setHasDiagnostic(true)
+          if (!parsed.is_partial) {
+            setFreeDiagnosticUsed(true)
+          }
+        } catch (e) {
+          console.error("Error parsing diagnostic data:", e)
+        }
+      } else if (process.env.NODE_ENV === "development") {
+        console.log("[DASHBOARD] No diagnostic data found")
+      }
+
+      let mergedUser: Record<string, unknown> | null = null
+      try {
+        const userData = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+        if (userData) mergedUser = JSON.parse(userData) as Record<string, unknown>
       } catch (e) {
         console.error("Error parsing user data:", e)
       }
-    }
 
-    // Check for diagnostic result from onboarding or scan
-    const diagnosticData = sessionStorage.getItem("diagnostic_result") || localStorage.getItem("diagnostic_result")
-    if (diagnosticData) {
+      let resolvedCompanyId: string | null = null
       try {
-        const parsed = JSON.parse(diagnosticData)
-        if (process.env.NODE_ENV === "development") {
-          console.log("[DASHBOARD] Loaded diagnostic:", {
-            hasPartial: parsed.is_partial,
-            riskScore: parsed.risk_score,
-          })
-        }
-        setDiagnostic(parsed)
-        setHasDiagnostic(true)  // Set to true even for partial diagnostics
-        // Only mark as free diagnostic used if it's a full diagnostic (not partial from scan)
-        if (!parsed.is_partial) {
-          setFreeDiagnosticUsed(true)
+        const pr = await fetch(`${API_URL}/account/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (pr.ok) {
+          const profile = await pr.json()
+          const pcidRaw = profile?.company_id
+          const pcid =
+            pcidRaw != null && String(pcidRaw).trim() !== "" ? String(pcidRaw).trim() : null
+          mergedUser = {
+            user_id: profile?.user_id ?? mergedUser?.user_id ?? null,
+            email: profile?.email ?? mergedUser?.email ?? "",
+            company_name: profile?.company_name ?? mergedUser?.company_name ?? "",
+            company_id: pcid ?? mergedUser?.company_id ?? null,
+          }
+          localStorage.setItem("user_data", JSON.stringify(mergedUser))
+          sessionStorage.setItem("user_data", JSON.stringify(mergedUser))
+          resolvedCompanyId = (mergedUser.company_id as string) || null
         }
       } catch (e) {
-        console.error("Error parsing diagnostic data:", e)
+        console.warn("[DASHBOARD] /account/profile sync failed:", e)
       }
-    } else if (process.env.NODE_ENV === "development") {
-      console.log("[DASHBOARD] No diagnostic data found")
-    }
 
-    // Optimistic trial state to avoid flicker right after activation redirect.
-    try {
-      const params = new URLSearchParams(window.location.search)
-      if (params.get("trial") === "activated") {
-        setCurrentPlan("scale")
-        setHasFullAccess(true)
+      if (!resolvedCompanyId && mergedUser?.company_id) {
+        resolvedCompanyId = String(mergedUser.company_id).trim() || null
       }
-    } catch {}
 
-    // Load monitoring status and subscription if company ID available
-    if (companyId) {
-      setMonitoringStatusLoaded(false)
-      loadMonitoringStatus(token, companyId)
-      loadAlerts(token, companyId)
-      loadSubscription(token, companyId)
-    } else {
-      try {
-        const raw = localStorage.getItem("user_data")
-        if (raw) {
-          const p = JSON.parse(raw)
-          if (!p?.company_id) setMonitoringStatusLoaded(true)
-        } else {
-          setMonitoringStatusLoaded(true)
-        }
-      } catch {
+      if (cancelled) return
+
+      if (mergedUser) setUser(mergedUser as any)
+      if (resolvedCompanyId) setCompanyId(resolvedCompanyId)
+
+      if (resolvedCompanyId) {
+        setMonitoringStatusLoaded(false)
+        setMonitoringStatusFetchFailed(false)
+        await Promise.all([
+          loadMonitoringStatus(token, resolvedCompanyId),
+          loadSubscription(token, resolvedCompanyId),
+          loadAlerts(token, resolvedCompanyId),
+        ])
+      } else {
         setMonitoringStatusLoaded(true)
       }
+
+      if (!cancelled) setLoading(false)
     }
 
-    setLoading(false)
-  }, [companyId, router])
+    void run()
+    return () => {
+      cancelled = true
+    }
+  }, [router, loadMonitoringStatus, loadSubscription, loadAlerts])
 
   // Check for governance activation from URL params
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get("governance") === "activated" && companyId) {
-      // Reload monitoring status and subscription to reflect activation
       const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
       if (token) {
-        // Immediate reload - subscription first to set currentPlan
-        loadSubscription(token, companyId)  // ← Critical: reload subscription FIRST to get trial plan
+        loadSubscription(token, companyId)
         loadMonitoringStatus(token, companyId)
         loadAlerts(token, companyId)
-        
-        // Also reload after delay to ensure backend processed
+
         setTimeout(() => {
-          loadSubscription(token, companyId)  // Reload subscription again to ensure it's set
+          loadSubscription(token, companyId)
           loadMonitoringStatus(token, companyId)
           loadAlerts(token, companyId)
-          // Trigger custom event to update DashboardHeader
           window.dispatchEvent(new CustomEvent("subscription_updated"))
-          // Clean URL
           window.history.replaceState({}, "", "/dashboard")
         }, 1000)
-        
-        // One more reload after 2 seconds to be absolutely sure
+
         setTimeout(() => {
           loadSubscription(token, companyId)
         }, 2000)
       }
     }
-  }, [companyId])
+  }, [companyId, loadSubscription, loadMonitoringStatus, loadAlerts])
 
   // After Stripe Checkout redirect: sync subscription before GET /subscription (webhook can lag).
   useEffect(() => {
@@ -271,101 +396,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true
     }
-  }, [companyId])
-
-  const loadMonitoringStatus = async (token: string, companyId: string) => {
-    try {
-      const response = await fetch(`${API_URL}/monitoring/status/${companyId}`, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        setMonitoringStatus(data)
-      }
-    } catch (e) {
-      console.error("Error loading monitoring status:", e)
-    } finally {
-      setMonitoringStatusLoaded(true)
-    }
-  }
-
-  /** Suffix for plan strip — only when subscription is actually in trial (not monitoring tenure). */
-  const subscriptionTrialStripSuffix = (): string => {
-    const inTrial = isTrialActive || billingCycle === "trial"
-    if (!inTrial) return ""
-    if (typeof trialDaysLeft === "number" && trialDaysLeft >= 0) {
-      return ` · Trial · ${trialDaysLeft}d left`
-    }
-    return " · Trial"
-  }
-
-  const loadSubscription = async (token: string, companyId: string) => {
-    setSubscriptionLoading(true)
-    try {
-      const response = await fetch(`${API_URL}/subscription/${companyId}`, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        const full = data.has_full_access === true
-        setHasFullAccess(full)
-        setBillingCycle(typeof data.billing_cycle === "string" ? data.billing_cycle : null)
-        setIsTrialActive(data.is_trial_active === true)
-        setTrialDaysLeft(
-          typeof data.trial_days_left === "number" ? data.trial_days_left : null
-        )
-        if (process.env.NODE_ENV === "development") {
-          console.log("[DASHBOARD] Subscription data:", {
-            plan: data.plan,
-            billing_cycle: data.billing_cycle,
-            has_full_access: full,
-          })
-        }
-        // Paid + trial both use Scale feature gates; never rely on plan name alone (can be null).
-        if (full || data.billing_cycle === "trial") {
-          setCurrentPlan("scale")
-        } else {
-          setCurrentPlan(data.plan || null)
-        }
-      } else {
-        setHasFullAccess(false)
-        setBillingCycle(null)
-        setIsTrialActive(false)
-        setTrialDaysLeft(null)
-        console.error("[DASHBOARD] Failed to load subscription:", response.status, response.statusText)
-      }
-    } catch (e) {
-      console.error("Error loading subscription:", e)
-      setBillingCycle(null)
-      setIsTrialActive(false)
-      setTrialDaysLeft(null)
-    } finally {
-      setSubscriptionLoading(false)
-    }
-  }
-
-  const loadAlerts = async (token: string, companyId: string) => {
-    try {
-      const response = await fetch(`${API_URL}/monitoring/alerts/${companyId}`, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        setAlerts(data.alerts || [])
-      }
-    } catch (e) {
-      console.error("Error loading alerts:", e)
-    }
-  }
+  }, [companyId, loadSubscription, loadMonitoringStatus])
 
   const markAlertRead = async (alertId: string) => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -468,8 +499,15 @@ export default function DashboardPage() {
         setMonitoringAutoStarting(false)
       }
     })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run when status first shows monitoring off
-  }, [companyId, hasFullAccess, subscriptionLoading, monitoringStatus?.monitoring_active])
+  }, [
+    companyId,
+    hasFullAccess,
+    subscriptionLoading,
+    monitoringStatus?.monitoring_active,
+    loadMonitoringStatus,
+    loadSubscription,
+    loadAlerts,
+  ])
 
   if (loading) {
     return (
@@ -648,6 +686,27 @@ export default function DashboardPage() {
               <p className="text-sm text-gray-400 animate-pulse">
                 Checking monitoring status…
               </p>
+            </div>
+          ) : hasFullAccess && diagnostic && monitoringStatusFetchFailed ? (
+            <div className="p-8 border border-amber-500/25 rounded-lg bg-[#111827] text-center max-w-lg mx-auto">
+              <h2 className="text-lg font-semibold text-white mb-2">Couldn&apos;t load monitoring</h2>
+              <p className="text-sm text-gray-400 mb-6">
+                The server didn&apos;t return monitoring status (network or session issue). Retry before assuming monitoring is off.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  const t =
+                    sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+                  if (t && companyId) {
+                    setMonitoringStatusLoaded(false)
+                    void loadMonitoringStatus(t, companyId)
+                  }
+                }}
+                className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition"
+              >
+                Retry
+              </button>
             </div>
           ) : hasFullAccess && diagnostic ? (
             /* Paid or trial: monitoring off — auto-start once, or manual fallback */
