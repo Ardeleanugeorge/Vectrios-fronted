@@ -1,11 +1,10 @@
 ﻿"use client"
 
-import { API_URL, OWNER_EMAIL } from '@/lib/config'
-import { getCached, setCached, invalidateAllCache, getUserData, setUserData } from "@/lib/cache"
+import { API_URL } from '@/lib/config'
 import { isScanUnlockedWithEmail } from "@/lib/scanResultsRefine"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import Link from "next/link"
 
 const PLAN_COLORS: Record<string, string> = {
@@ -32,41 +31,29 @@ interface SubCache {
   plan: string | null
   billingCycle: string | null
   trialDaysLeft: number | null
+  ts: number
 }
 
 function readSubCache(): SubCache | null {
-  // Încearcă noul format { data, ts } via getCached
-  const cached = getCached<SubCache>(CACHE_KEY, 5)
-  if (cached) return cached
-
-  // Fallback pentru format vechi { plan, billingCycle, trialDaysLeft, ts }
   try {
     const raw = localStorage.getItem(CACHE_KEY)
     if (!raw) return null
-    const old = JSON.parse(raw) as Record<string, unknown>
-    if (old && "plan" in old && "ts" in old) {
-      const legacyTs = old.ts
-      if (typeof legacyTs !== "number" || Date.now() - legacyTs > 5 * 60 * 1000) {
-        localStorage.removeItem(CACHE_KEY)
-        return null
-      }
-      // Migrează la noul format
-      const migrated: SubCache = {
-        plan: (old.plan as string | null) ?? null,
-        billingCycle: (old.billingCycle as string | null) ?? null,
-        trialDaysLeft: typeof old.trialDaysLeft === "number" ? old.trialDaysLeft : null,
-      }
-      setCached(CACHE_KEY, migrated) // rescrie în format nou
-      return migrated
-    }
-  } catch {
-    /* ignore */
-  }
-  return null
+    return JSON.parse(raw) as SubCache
+  } catch { return null }
 }
 
-function writeSubCache(data: SubCache) {
-  setCached(CACHE_KEY, data)
+function writeSubCache(data: Omit<SubCache, "ts">) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ ...data, ts: Date.now() }))
+  } catch {}
+}
+
+/** e.g. vercel.com → Vercel */
+function brandLabelFromMonitoredHost(host: string): string {
+  const h = (host || "").replace(/^www\./i, "").split("/")[0].trim()
+  if (!h) return ""
+  const first = h.split(".")[0] || h
+  return first.charAt(0).toUpperCase() + first.slice(1).replace(/[-_]/g, " ")
 }
 
 function readPreferredScanTokenForApi(): string | null {
@@ -103,29 +90,7 @@ function readPreferredScanTokenForApi(): string | null {
   }
 }
 
-/**
- * Drop garbage / platform apex values so we never show "Monitoring · render.com"
- * when the real customer site is elsewhere.
- */
-function displayableMonitoredHost(host: string | null | undefined): string | null {
-  const raw = (host || "").trim()
-  if (!raw) return null
-  let h = raw.toLowerCase().split(":")[0]
-  if (h.startsWith("www.")) h = h.slice(4)
-  const noise = new Set([
-    "render.com",
-    "onrender.com",
-    "vercel.app",
-    "netlify.app",
-    "github.io",
-    "cloudflare.com",
-    "localhost",
-  ])
-  if (noise.has(h)) return null
-  return raw
-}
-
-/** Dashboard ?token= wins for navigation flows; do not use for header domain label (stale token → wrong host). */
+/** Dashboard ?token= wins so header matches the scan context. */
 function scanTokenForMonitoringFetch(): string | null {
   if (typeof window !== "undefined") {
     try {
@@ -145,12 +110,20 @@ function initFromCache<T>(key: keyof SubCache, fallback: T): T {
 }
 
 export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadge?: boolean }) {
+  const OWNER_EMAIL = "ageorge9625@yahoo.com"
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const scanTokenKey = searchParams.get("token") || ""
 
   // Read user_data synchronously — no flash on client
   const [user, setUser] = useState<any>(() => {
     if (typeof window === "undefined") return null
-    return getUserData(10)
+    try {
+      const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+      if (raw) return JSON.parse(raw)
+    } catch {}
+    return null
   })
 
   const [showMenu, setShowMenu] = useState(false)
@@ -160,7 +133,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const [billingCycle,  setBillingCycle]   = useState<string | null>(() => initFromCache("billingCycle",  null))
   const [trialDaysLeft, setTrialDaysLeft]  = useState<number | null>(() => initFromCache("trialDaysLeft", null))
 
-  const [monitoredDomainHost, setMonitoredDomainHost] = useState<string | null>(null)
+  const [monitoredBrand, setMonitoredBrand] = useState<{ label: string; domain: string } | null>(null)
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -178,32 +151,13 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     // Refresh user data from storage if updated since lazy-init
     const loadUserData = () => {
       try {
-        const u = getUserData(10)
-        if (u) setUser(u)
+        const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+        if (raw) setUser(JSON.parse(raw))
         else if (!user) setUser({ company_name: "Account", email: "" })
-      } catch {
-        if (!user) setUser({ company_name: "Account", email: "" })
-      }
+      } catch { if (!user) setUser({ company_name: "Account", email: "" }) }
     }
 
-    const subDedupe = { companyId: "", t: 0 }
-
-    const loadSubscriptionForCompany = (
-      companyId: string,
-      options?: { force?: boolean }
-    ) => {
-      const force = options?.force === true
-      const now = Date.now()
-      if (
-        !force &&
-        companyId === subDedupe.companyId &&
-        now - subDedupe.t < 2500
-      ) {
-        return
-      }
-      subDedupe.companyId = companyId
-      subDedupe.t = now
-
+    const loadSubscriptionForCompany = (companyId: string) => {
       fetch(`${API_URL}/subscription/${companyId}`, {
         headers: { "Authorization": `Bearer ${token}` }
       })
@@ -213,12 +167,9 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
           let newCycle: string | null = data?.billing_cycle ?? null
           let newDays:  number | null = null
 
-          if (data?.has_full_access === true || data?.billing_cycle === "trial") {
+          if (data?.billing_cycle === "trial") {
             newPlan = "scale"
-            newDays =
-              data?.billing_cycle === "trial" && typeof data?.trial_days_left === "number"
-                ? data.trial_days_left
-                : null
+            newDays = typeof data?.trial_days_left === "number" ? data.trial_days_left : null
           } else if (data?.plan) {
             newPlan = data.plan.toLowerCase()
           }
@@ -236,10 +187,11 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     // Ensure company_id is present even when older flows saved partial user_data.
     const ensureProfileContext = async () => {
       try {
-        const local = (getUserData(10) as Record<string, unknown> | null) ?? {}
+        const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+        const local = raw ? JSON.parse(raw) as any : {}
         const needsProfileRefresh = !local?.company_id
         if (!needsProfileRefresh) {
-          loadSubscriptionForCompany(String(local.company_id), { force: true })
+          loadSubscriptionForCompany(String(local.company_id))
           return
         }
 
@@ -255,9 +207,10 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
           company_id: profile?.company_id || local?.company_id || null,
         }
         setUser(merged)
-        setUserData(merged)
+        localStorage.setItem("user_data", JSON.stringify(merged))
+        sessionStorage.setItem("user_data", JSON.stringify(merged))
         if (merged.company_id) {
-          loadSubscriptionForCompany(String(merged.company_id), { force: true })
+          loadSubscriptionForCompany(String(merged.company_id))
         }
       } catch {
         /* ignore */
@@ -267,20 +220,19 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     loadUserData()
     void ensureProfileContext()
 
-    // Reload subscription function (force=true after explicit account/checkout updates)
-    const reloadSubscription = (force = false) => {
-      try {
-        const userData = getUserData(10) as { company_id?: string } | null
-        if (userData?.company_id) {
-          if (process.env.NODE_ENV === "development") {
-            console.log("[HEADER] Reloading subscription for company_id:", userData.company_id, {
-              force,
-            })
+    // Reload subscription function
+    const reloadSubscription = () => {
+      const storedUser = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser)
+          if (userData.company_id) {
+            console.log("[HEADER] Reloading subscription for company_id:", userData.company_id)
+            loadSubscriptionForCompany(String(userData.company_id))
           }
-          loadSubscriptionForCompany(String(userData.company_id), { force })
+        } catch (e) {
+          console.error("[HEADER] Error parsing user_data:", e)
         }
-      } catch (e) {
-        console.error("[HEADER] Error reading user_data:", e)
       }
     }
 
@@ -288,28 +240,26 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       if (e.key === "user_data") {
         loadUserData()
         // Also reload subscription when user_data changes
-        setTimeout(() => reloadSubscription(true), 500)
+        setTimeout(reloadSubscription, 500)
       }
     }
     
     // Listen for custom subscription update events
     const handleSubscriptionUpdate = () => {
-      reloadSubscription(true)
+      reloadSubscription()
     }
     window.addEventListener("storage", handleStorageChange)
     window.addEventListener("subscription_updated", handleSubscriptionUpdate)
-
-    // Single refresh after trial activation — no aggressive polling
+    
+    // Single refresh after trial activation � no aggressive polling
     const urlParams = new URLSearchParams(window.location.search)
     const isTrialActivated = urlParams.get("trial") === "activated"
-
     let pollTimeout: ReturnType<typeof setTimeout> | null = null
     if (isTrialActivated) {
       pollTimeout = setTimeout(() => {
         reloadSubscription()
       }, 1500)
     }
-
     return () => {
       window.removeEventListener("storage", handleStorageChange)
       window.removeEventListener("subscription_updated", handleSubscriptionUpdate)
@@ -321,28 +271,30 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     const companyId = user?.company_id
     const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!companyId || !auth) {
-      setMonitoredDomainHost(null)
+      setMonitoredBrand(null)
       return
     }
-    // Intentionally NO scan_token: a stale token in localStorage points at the wrong ScanResult.domain
-    // (e.g. render.com) while the company row has the real homepage.
+    const st = scanTokenForMonitoringFetch()
+    const qs = st ? `?scan_token=${encodeURIComponent(st)}` : ""
     let cancelled = false
     const run = () => {
-      fetch(`${API_URL}/monitoring/status/${companyId}`, {
+      fetch(`${API_URL}/monitoring/status/${companyId}${qs}`, {
         headers: { Authorization: `Bearer ${auth}` },
       })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
           if (cancelled) return
           if (data?.monitoring_active && data?.monitored_domain) {
-            const domain = displayableMonitoredHost(String(data.monitored_domain))
-            setMonitoredDomainHost(domain)
+            const domain = String(data.monitored_domain)
+            const label = brandLabelFromMonitoredHost(domain)
+            if (label) setMonitoredBrand({ domain, label })
+            else setMonitoredBrand(null)
           } else {
-            setMonitoredDomainHost(null)
+            setMonitoredBrand(null)
           }
         })
         .catch(() => {
-          if (!cancelled) setMonitoredDomainHost(null)
+          if (!cancelled) setMonitoredBrand(null)
         })
     }
     run()
@@ -352,13 +304,14 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       cancelled = true
       window.removeEventListener("subscription_updated", onRefresh)
     }
-  }, [user?.company_id])
+  }, [user?.company_id, pathname, scanTokenKey])
 
   const handleLogout = () => {
     sessionStorage.removeItem("auth_token")
     localStorage.removeItem("auth_token")
+    localStorage.removeItem("user_data")
     localStorage.removeItem("diagnostic_result")
-    invalidateAllCache()
+    localStorage.removeItem(CACHE_KEY)   // clear plan cache on logout
     sessionStorage.removeItem("diagnostic_result")
     router.push("/login")
   }
@@ -366,17 +319,12 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const planDisplay = getPlanDisplay(currentPlan, billingCycle, trialDaysLeft)
   const planLabel = planDisplay?.label ?? null
   const planColorClass = planDisplay ? (PLAN_COLORS[planDisplay.colorKey] || PLAN_COLORS.starter) : ""
-  const isOwner =
-    Boolean(OWNER_EMAIL) &&
-    (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
+  const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
   const displayCompanyName = isOwner ? "VectriOS" : (user?.company_name || "Account")
-  /** Always show account / company name here — never replace with a guessed "brand" from hostname (e.g. render.com → "Render"). */
-  const headerPrimaryName = displayCompanyName
+  const headerPrimaryName =
+    !isOwner && monitoredBrand ? monitoredBrand.label : displayCompanyName
   const headerPrimaryInitial =
     (headerPrimaryName?.trim()?.[0] || "A").toUpperCase()
-  const accountMenuTitle = monitoredDomainHost
-    ? `${displayCompanyName} — monitoring ${monitoredDomainHost}`
-    : undefined
 
   const readPreferredScanToken = (): string | null => readPreferredScanTokenForApi()
 
@@ -445,22 +393,13 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
               type="button"
               aria-expanded={showMenu}
               aria-haspopup="menu"
-              title={accountMenuTitle}
               onClick={() => setShowMenu(!showMenu)}
               className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition"
             >
-              <div className="text-right min-w-0 max-w-[14rem] sm:max-w-[18rem]">
-                <p className="text-sm font-medium text-white truncate">{headerPrimaryName}</p>
-                {monitoredDomainHost ? (
-                  <p
-                    className="text-[11px] text-cyan-500/80 truncate"
-                    title={monitoredDomainHost}
-                  >
-                    Monitoring · {monitoredDomainHost}
-                  </p>
-                ) : null}
+              <div className="text-right">
+                <p className="text-sm font-medium text-white">{headerPrimaryName}</p>
                 {user?.email && (
-                  <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                  <p className="text-xs text-gray-400">{user.email}</p>
                 )}
               </div>
               <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
