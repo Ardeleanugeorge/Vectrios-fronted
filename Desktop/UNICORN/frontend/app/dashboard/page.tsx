@@ -108,6 +108,8 @@ export default function DashboardPage() {
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const [checkoutSyncing, setCheckoutSyncing] = useState(false)
   const [monitoringAutoStarting, setMonitoringAutoStarting] = useState(false)
+  /** False until first /monitoring/status response for this session (avoids "Turn on monitoring" flash before we know server state). */
+  const [monitoringStatusLoaded, setMonitoringStatusLoaded] = useState(false)
   const autoMonitorAttempted = useRef(false)
 
   useEffect(() => {
@@ -166,9 +168,22 @@ export default function DashboardPage() {
 
     // Load monitoring status and subscription if company ID available
     if (companyId) {
+      setMonitoringStatusLoaded(false)
       loadMonitoringStatus(token, companyId)
       loadAlerts(token, companyId)
       loadSubscription(token, companyId)
+    } else {
+      try {
+        const raw = localStorage.getItem("user_data")
+        if (raw) {
+          const p = JSON.parse(raw)
+          if (!p?.company_id) setMonitoringStatusLoaded(true)
+        } else {
+          setMonitoringStatusLoaded(true)
+        }
+      } catch {
+        setMonitoringStatusLoaded(true)
+      }
     }
 
     setLoading(false)
@@ -269,6 +284,8 @@ export default function DashboardPage() {
       }
     } catch (e) {
       console.error("Error loading monitoring status:", e)
+    } finally {
+      setMonitoringStatusLoaded(true)
     }
   }
 
@@ -618,6 +635,12 @@ export default function DashboardPage() {
               companyId={companyId}
               currentPlan={currentPlan}
             />
+          ) : hasFullAccess && diagnostic && !monitoringStatusLoaded ? (
+            <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
+              <p className="text-sm text-gray-400 animate-pulse">
+                Checking monitoring status…
+              </p>
+            </div>
           ) : hasFullAccess && diagnostic ? (
             /* Paid or trial: monitoring off — auto-start once, or manual fallback */
             <div className="p-10 border border-cyan-500/20 rounded-lg bg-[#111827] text-center max-w-2xl mx-auto">

@@ -364,7 +364,7 @@ export default function MonitoringLayer({
   }, [companyId, diagnostic?.action_layer])
 
   const diagnosticFixCount = diagnostic?.action_layer?.fixes?.length ?? 0
-  const showWhatToChangeFirst =
+  const playbookReady =
     !companyId || diagnosticFixCount > 0 || playbookFetchSettled
 
   return (
@@ -650,7 +650,7 @@ export default function MonitoringLayer({
               (typeof (monitoringStatus.structural_scores as any)?.confidence_score === "number" && (monitoringStatus.structural_scores as any).confidence_score >= 50)
             )
           }
-          showWhatToChangeFirst={showWhatToChangeFirst}
+          playbookReady={playbookReady}
         />
       )}
 
