@@ -31,6 +31,9 @@ const COPY_PLAYBOOK_FROM_SCAN =
 const COPY_PLAYBOOK_SCORE_ONLY =
   "Interim suggestions from structural scores only, until the full playbook response is ready."
 
+const COPY_PLAYBOOK_API_EMPTY =
+  "No page-specific playbook rows were returned for this cycle (API empty or crawl incomplete). Below are score-only suggestions — same model assumptions as the rest of the dashboard, not live excerpts from your site."
+
 const COPY_BEFORE_EMPTY_CRAWL =
   "No live quote is stored for this row. The suggestion still maps to findings from your site crawl and scores; exit/CTR lines (when shown) come from your connected analytics."
 
@@ -241,6 +244,11 @@ interface ActionableInsightsProps {
   useMonitoringSnapshot?: boolean
   /** When false, shows a loading shell instead of the full playbook (avoids score-only placeholder flash). */
   playbookReady?: boolean
+  /**
+   * True after playbook fetch settled with no API fixes and no diagnostic action_layer fixes —
+   * avoids implying we are "still loading" when the backend simply returned [].
+   */
+  playbookApiEmpty?: boolean
 }
 
 function CopyButton({ text, onCopied }: { text: string; onCopied?: () => void }) {
@@ -292,6 +300,14 @@ function CopyButton({ text, onCopied }: { text: string; onCopied?: () => void })
   )
 }
 
+/** Full "+$low – $high/mo" for display; compact.short stays for tight chips elsewhere */
+function formatMonthlyBandLine(m: string | undefined): string {
+  if (!m || m === "—") return ""
+  const t = m.trim()
+  if (/month/i.test(t) || /\/mo/i.test(t)) return t.replace(/\s+/g, " ")
+  return t
+}
+
 function formatCompactMoneyLabel(m: string | undefined, rawHi?: number): { short: string; full: string } {
   if (typeof rawHi === "number" && rawHi > 0 && rawHi < 1000) {
     const s = `$${Math.round(rawHi).toLocaleString()}`
@@ -323,6 +339,8 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
   const hasRealAfter = fix.suggested_change && fix.suggested_change.length > 0
   const monthlyChip = fix.impact_contribution?.monthly_impact || ""
   const compact = formatCompactMoneyLabel(monthlyChip, fix.impact_contribution?.monthly_impact_hi_raw)
+  const monthlyBandLine = formatMonthlyBandLine(monthlyChip)
+  const closeRateLine = (fix.impact_contribution?.close_rate || "").trim()
 
   const openPageHref =
     fix.page_url && isPlaybookCustomerSiteUrl(fix.page_url) ? fix.page_url : null
@@ -351,16 +369,23 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
           Fix #{index} — {fix.title}
         </p>
         {monthlyChip && monthlyChip !== "—" && (
-          <p
-            className="text-[11px] text-emerald-400/80 mt-1"
-            title={`${TOOLTIP_MODELED_MONTHLY} Band shown: ${monthlyChip}.`}
+          <div
+            className="text-[11px] mt-1 space-y-0.5"
+            title={`${TOOLTIP_MODELED_MONTHLY} Raw: ${monthlyChip}.`}
           >
-            <span className="text-gray-500">Modeled band: </span>
-            <span className="font-bold">{compact.short}</span>
-            {!!(fix.impact_contribution?.close_rate && fix.impact_contribution?.close_rate.trim()) && (
-              <span className="text-gray-600 ml-2">({fix.impact_contribution?.close_rate})</span>
+            <p className="text-emerald-400/80">
+              <span className="text-gray-500">Modeled band: </span>
+              <span className="font-semibold text-emerald-300/90">
+                {monthlyBandLine || compact.short}
+              </span>
+            </p>
+            {!!closeRateLine && (
+              <p className="text-gray-600 leading-snug">
+                <span className="text-gray-500">Close-rate (est. share): </span>
+                {closeRateLine}
+              </p>
             )}
-          </p>
+          </div>
         )}
         {/* Provenance */}
         <div className="flex items-center gap-1 mt-1 flex-wrap">
@@ -455,6 +480,7 @@ export default function ActionableInsights({
   monthlyExposureReal = null,
   useMonitoringSnapshot = false,
   playbookReady = true,
+  playbookApiEmpty = false,
 }: ActionableInsightsProps) {
   const tone =
     uiState === "low"
@@ -504,6 +530,12 @@ export default function ActionableInsights({
 
   // Do not mix score-only placeholder fixes with API/playbook fixes (avoids duplicate "Unlike X, we Y" rows)
   const fromApiOrPlaybook = !!(actionLayer?.fixes?.length)
+  const introProvenance =
+    playbookApiEmpty
+      ? COPY_PLAYBOOK_API_EMPTY
+      : fromApiOrPlaybook
+        ? COPY_PLAYBOOK_FROM_SCAN
+        : COPY_PLAYBOOK_SCORE_ONLY
   const existingTitles = new Set(baseLayer.fixes.map(f => f.title.toLowerCase()))
   const additionalFixes = placeholderLayer.fixes.filter(f => !existingTitles.has(f.title.toLowerCase()))
   const combined = fromApiOrPlaybook
@@ -529,7 +561,7 @@ export default function ActionableInsights({
           Revenue playbook
         </h3>
         <p className="text-[11px] text-gray-500 mb-4 leading-relaxed border-b border-gray-800/60 pb-3">
-          {fromApiOrPlaybook ? COPY_PLAYBOOK_FROM_SCAN : COPY_PLAYBOOK_SCORE_ONLY}
+          {introProvenance}
         </p>
 
         {/* Priority strip — visible for all plans */}

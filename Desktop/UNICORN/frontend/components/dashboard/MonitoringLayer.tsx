@@ -302,6 +302,7 @@ export default function MonitoringLayer({
     if (playbookCompanyIdRef.current !== companyId) {
       playbookCompanyIdRef.current = companyId
       setPlaybookFetchSettled(false)
+      setPlaybookActionLayer(null)
     }
     const myGen = ++playbookRequestGenRef.current
     const ac = new AbortController()
@@ -314,10 +315,16 @@ export default function MonitoringLayer({
     const playbookSuffix = playbookQs.toString() ? `?${playbookQs.toString()}` : ""
     fetch(`${API_URL}/playbook/${companyId}${playbookSuffix}`, { headers, signal: ac.signal })
       .then(async (r) => {
-        if (!r.ok) return
+        if (!r.ok) {
+          if (playbookRequestGenRef.current === myGen) setPlaybookActionLayer(null)
+          return
+        }
         const data = await r.json()
         const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 8) : []
-        if (!fixesArr.length) return
+        if (!fixesArr.length) {
+          if (playbookRequestGenRef.current === myGen) setPlaybookActionLayer(null)
+          return
+        }
         const mapFix = (fix: any) => {
           const monthlyLow = typeof fix.estimated_monthly_impact_low === "number" ? fix.estimated_monthly_impact_low : null
           const monthlyHigh = typeof fix.estimated_monthly_impact_high === "number" ? fix.estimated_monthly_impact_high : null
@@ -657,6 +664,11 @@ export default function MonitoringLayer({
             )
           }
           playbookReady={playbookReady}
+          playbookApiEmpty={
+            playbookFetchSettled &&
+            !(playbookActionLayer?.fixes?.length) &&
+            !(diagnostic?.action_layer?.fixes?.length)
+          }
         />
       )}
 
