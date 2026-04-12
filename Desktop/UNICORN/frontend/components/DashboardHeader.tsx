@@ -349,10 +349,9 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const headerPrimaryName = displayCompanyName
   const headerPrimaryInitial =
     (headerPrimaryName?.trim()?.[0] || "A").toUpperCase()
-  const accountMenuTitle =
-    !isOwner && monitoredDomainHost
-      ? `${displayCompanyName} — monitoring ${monitoredDomainHost}`
-      : undefined
+  const accountMenuTitle = monitoredDomainHost
+    ? `${displayCompanyName} — monitoring ${monitoredDomainHost}`
+    : undefined
 
   const readPreferredScanToken = (): string | null => readPreferredScanTokenForApi()
 
@@ -425,10 +424,18 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
               onClick={() => setShowMenu(!showMenu)}
               className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition"
             >
-              <div className="text-right">
-                <p className="text-sm font-medium text-white">{headerPrimaryName}</p>
+              <div className="text-right min-w-0 max-w-[14rem] sm:max-w-[18rem]">
+                <p className="text-sm font-medium text-white truncate">{headerPrimaryName}</p>
+                {monitoredDomainHost ? (
+                  <p
+                    className="text-[11px] text-cyan-500/80 truncate"
+                    title={monitoredDomainHost}
+                  >
+                    Monitoring · {monitoredDomainHost}
+                  </p>
+                ) : null}
                 {user?.email && (
-                  <p className="text-xs text-gray-400">{user.email}</p>
+                  <p className="text-xs text-gray-400 truncate">{user.email}</p>
                 )}
               </div>
               <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
