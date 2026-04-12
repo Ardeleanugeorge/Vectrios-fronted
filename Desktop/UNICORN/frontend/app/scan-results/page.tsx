@@ -14,6 +14,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
 import SiteFooter from "@/components/SiteFooter"
+import { METHODOLOGY_RII_HREF, RII_ABBREV, RII_NAME, RII_TAGLINE } from "@/lib/rii"
 
 interface ScanData {
   scan_token: string
@@ -906,7 +907,27 @@ function ScanResultsContent() {
           )}
 
           <div className={wideLayout ? "lg:col-span-4 lg:row-span-2" : ""}>
-            <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Revenue Impact Index</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-500/80 mb-1">Core metric</p>
+            <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">{RII_NAME}</p>
+            <p
+              className={`text-[11px] text-gray-500 mb-2 ${wideLayout ? "text-left" : "text-center"}`}
+            >
+              <abbr
+                title={RII_TAGLINE}
+                className="cursor-help text-cyan-400/90 border-b border-dotted border-cyan-500/50 font-semibold"
+              >
+                {RII_ABBREV}
+              </abbr>
+              <span className="text-gray-500"> · 0–100 · lower = stronger architecture</span>
+            </p>
+            <div className={`mb-3 ${wideLayout ? "text-left" : "text-center"}`}>
+              <Link
+                href={METHODOLOGY_RII_HREF}
+                className="text-[11px] text-cyan-600 hover:text-cyan-400 hover:underline"
+              >
+                How {RII_ABBREV} is calculated →
+              </Link>
+            </div>
             <p className={`font-bold mb-2 ${riiColor} ${wideLayout ? "text-6xl sm:text-7xl" : "text-7xl"}`}>
               {hasRii && !isBlocked ? Math.round(rii as number) : "—"}
             </p>
@@ -1340,7 +1361,7 @@ function ScanResultsContent() {
                 <ul className="space-y-2 text-sm text-gray-400 mb-5">
                   {[
                     "Revenue playbook updated with page-level fixes",
-                    "RII score and trajectory recalculated",
+                    `${RII_NAME} (${RII_ABBREV}) and trajectory recalculated`,
                     "Benchmark position refreshed",
                     "Continuous monitoring runs after you activate it from the dashboard",
                   ].map((line) => (

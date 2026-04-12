@@ -5,6 +5,7 @@ import { API_URL } from '@/lib/config'
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { METHODOLOGY_RII_HREF, RII_ABBREV, RII_NAME, RII_TAGLINE } from "@/lib/rii";
 
 const API = process.env.NEXT_PUBLIC_API_URL || `${API_URL}`;
 
@@ -238,12 +239,25 @@ export default function CompanyProfilePage() {
           </div>
         </div>
 
-        {/* RII score + delta */}
+        {/* Revenue Impact Index (RII) + delta */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center">
-            <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Current RII</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-cyan-500/80 mb-1">Core metric</p>
+            <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">{RII_NAME}</p>
+            <p className="text-[10px] text-gray-500 mb-2">
+              <abbr title={RII_TAGLINE} className="cursor-help text-cyan-400/90 border-b border-dotted border-cyan-500/50 font-semibold">
+                {RII_ABBREV}
+              </abbr>
+              <span> · current</span>
+            </p>
             <p className={`text-5xl font-bold ${riiColor}`}>{Math.round(rii)}</p>
             <p className={`text-sm mt-1 ${riiColor}`}>{latest.risk_level}</p>
+            <Link
+              href={METHODOLOGY_RII_HREF}
+              className="text-[10px] text-cyan-600 hover:text-cyan-400 hover:underline mt-2 inline-block"
+            >
+              What is {RII_ABBREV}? →
+            </Link>
           </div>
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center">
             <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Trend Change</p>
@@ -263,13 +277,15 @@ export default function CompanyProfilePage() {
         {history.length >= 2 ? (
           <div className="rounded-xl bg-white/[0.03] border border-white/5 p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-xs text-gray-500 uppercase tracking-widest">RII Trend</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest">
+                {RII_NAME} trend <span className="text-gray-600 normal-case">({RII_ABBREV})</span>
+              </p>
               <p className="text-xs text-gray-600">{history.length} data points</p>
             </div>
             <TrendChart history={history} />
             <div className="flex justify-between mt-2 text-xs text-gray-600">
-              <span>Lower RII = stronger architecture</span>
-              <span>Higher RII = higher revenue exposure</span>
+              <span>Lower {RII_ABBREV} = stronger architecture</span>
+              <span>Higher {RII_ABBREV} = higher modeled exposure</span>
             </div>
           </div>
         ) : (
@@ -280,7 +296,13 @@ export default function CompanyProfilePage() {
 
         {/* Structural breakdown */}
         <div className="rounded-xl bg-white/[0.03] border border-white/5 p-6 mb-6">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-5">Structural Breakdown (latest scan)</p>
+          <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Structural Breakdown (latest scan)</p>
+          <p className="text-[11px] text-gray-600 mb-5">
+            Sub-scores feed your headline {RII_ABBREV}.{" "}
+            <Link href={METHODOLOGY_RII_HREF} className="text-cyan-600 hover:text-cyan-400 hover:underline">
+              How they combine →
+            </Link>
+          </p>
           <div className="space-y-5">
             <MetricBar label="Messaging Alignment"   value={latest.alignment} />
             <MetricBar label="ICP Clarity"           value={latest.icp_clarity} />
@@ -299,7 +321,9 @@ export default function CompanyProfilePage() {
               <thead>
                 <tr className="border-b border-white/5 text-xs text-gray-600 uppercase tracking-widest">
                   <th className="px-5 py-3 text-left">Date</th>
-                  <th className="px-5 py-3 text-center">RII</th>
+                  <th className="px-5 py-3 text-center" title={RII_TAGLINE}>
+                    {RII_ABBREV}
+                  </th>
                   <th className="px-5 py-3 text-center">Align</th>
                   <th className="px-5 py-3 text-center">ICP</th>
                   <th className="px-5 py-3 text-center">Anchor</th>
