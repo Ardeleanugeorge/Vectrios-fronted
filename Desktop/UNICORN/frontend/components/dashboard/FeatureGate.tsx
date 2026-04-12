@@ -15,9 +15,5 @@ export default function FeatureGate({
   children,
   currentPlan
 }: FeatureGateProps) {
-  // Debug logging
-  if (process.env.NODE_ENV === "development") {
-    console.log(`[FeatureGate] ${feature}: currentPlan="${currentPlan}", always granting access`)
-  }
   return <>{children}</>
 }

@@ -15,6 +15,28 @@ import {
 } from "@/lib/playbookAnalytics"
 import { isPlaybookCustomerSiteUrl } from "@/lib/playbookUrls"
 
+/** Provenance copy — factual, no subscription pitch */
+const TOOLTIP_MODELED_MONTHLY =
+  "From the same revenue scenario as your optimization model (your scale inputs + structural scores). If two fixes show the same dollar band, they reference that shared ceiling — not separate guarantees."
+
+const TOOLTIP_SOURCE_MODEL =
+  "Structural signals from your crawl and monitoring passes, run through the same engine as the Revenue Optimization Model below."
+
+const TOOLTIP_SOURCE_MONITORING =
+  "Updates when the system re-reads your public pages on its schedule."
+
+const COPY_PLAYBOOK_FROM_SCAN =
+  "Built from your diagnostic and latest monitoring run. Page targets match what we actually crawled; dollar bands use the same assumptions as the model section below — not a separate guess."
+
+const COPY_PLAYBOOK_SCORE_ONLY =
+  "Interim suggestions from structural scores only, until the full playbook response is ready."
+
+const COPY_BEFORE_EMPTY_CRAWL =
+  "No live quote is stored for this row. The suggestion still maps to findings from your site crawl and scores; exit/CTR lines (when shown) come from your connected analytics."
+
+const COPY_BEFORE_EMPTY_MONITORING =
+  "No excerpt stored in this snapshot for this row."
+
 export type FixImpactContribution = {
   close_rate: string
   arr_recovery: string
@@ -329,18 +351,24 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
           Fix #{index} — {fix.title}
         </p>
         {monthlyChip && monthlyChip !== "—" && (
-          <p className="text-[11px] text-emerald-400/80 mt-1" title={compact.full}>
-            Est. recovery: <span className="font-bold">{compact.short}</span>
+          <p
+            className="text-[11px] text-emerald-400/80 mt-1"
+            title={`${TOOLTIP_MODELED_MONTHLY} Band shown: ${monthlyChip}.`}
+          >
+            <span className="text-gray-500">Modeled band: </span>
+            <span className="font-bold">{compact.short}</span>
             {!!(fix.impact_contribution?.close_rate && fix.impact_contribution?.close_rate.trim()) && (
               <span className="text-gray-600 ml-2">({fix.impact_contribution?.close_rate})</span>
             )}
           </p>
         )}
         {/* Provenance */}
-        <div className="flex items-center gap-1 mt-1 whitespace-nowrap">
-          <SourceChip label="Model" title="Estimated recovery modeled from structural scores" />
-          <SourceChip label="Monitoring" tone="cyan" title="Derived from latest monitoring snapshot" />
-          {fix.behavioral_source && <SourceChip label="GA4" tone="emerald" title="Behavioral signal present (e.g., high exit)" />}
+        <div className="flex items-center gap-1 mt-1 flex-wrap">
+          <SourceChip label="Model" title={TOOLTIP_SOURCE_MODEL} />
+          <SourceChip label="Monitoring" tone="cyan" title={TOOLTIP_SOURCE_MONITORING} />
+          {fix.behavioral_source && (
+            <SourceChip label="GA4" tone="emerald" title="Measured on your property: exit or CTR signal tied to this recommendation." />
+          )}
         </div>
         {openPageHref && (
           <a
@@ -366,15 +394,15 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
             {hasRealBefore
               ? `"${fix.current_example}"`
               : useMonitoringSnapshot
-                ? <span className="text-gray-600 not-italic">—</span>
-                : <span className="text-gray-600 not-italic">— run full diagnostic for live copy</span>}
+                ? <span className="text-gray-500 not-italic text-xs leading-relaxed">{COPY_BEFORE_EMPTY_MONITORING}</span>
+                : <span className="text-gray-500 not-italic text-xs leading-relaxed">{COPY_BEFORE_EMPTY_CRAWL}</span>}
           </p>
         </div>
 
         {/* AFTER */}
         <div className="px-4 py-3 space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/70">After (suggested)</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/70">Suggested copy (draft)</p>
             {hasRealAfter && (
               <CopyButton
                 text={fix.suggested_change}
@@ -497,9 +525,12 @@ export default function ActionableInsights({
 
     return (
       <div className={`relative z-10 mb-8 p-6 bg-[#111827] rounded-lg border ${tone}`}>
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-2">
           Revenue playbook
         </h3>
+        <p className="text-[11px] text-gray-500 mb-4 leading-relaxed border-b border-gray-800/60 pb-3">
+          {fromApiOrPlaybook ? COPY_PLAYBOOK_FROM_SCAN : COPY_PLAYBOOK_SCORE_ONLY}
+        </p>
 
         {/* Priority strip — visible for all plans */}
         <div
@@ -510,10 +541,12 @@ export default function ActionableInsights({
           }`}
         >
           <p className={`text-sm font-bold ${isHigh ? "text-orange-400" : "text-gray-300"}`}>
-            {isHigh ? "🔥 HIGH IMPACT (optional)" : "⚡ IMPACT"} — {pri.level}
+            {isHigh ? "Higher structural priority" : "Structural priority"} — {pri.level}
           </p>
           <p className="text-xs text-gray-400 mt-1">{pri.display_line || pri.reason}</p>
-          <p className="text-[11px] text-gray-500 mt-1">Low risk ≠ zero upside at scale — highest ROI comes from targeted fixes.</p>
+          <p className="text-[11px] text-gray-500 mt-1">
+            From your assessment outputs — not a manually assigned label.
+          </p>
         </div>
 
         {/* 1. Primary leak */}
@@ -641,7 +674,7 @@ export default function ActionableInsights({
                     </p>
                   )}
                   <p className="text-[10px] text-gray-600 mt-2">
-                    Per-fix shares are shown on each card. Totals are directional, not a guarantee.
+                    Total uses the same engine assumptions as each card; not additive if bands overlap.
                   </p>
                 </div>
               )}

@@ -155,8 +155,13 @@ export default function FinancialExposureCard({
           >
             See full breakdown in Revenue Optimization Model below
           </a>
-          <span className="text-gray-600"> — directional, not audited revenue.</span>
+          <span className="text-gray-600"> — scenario output, not booked revenue.</span>
         </p>
+        {(forecast.arr_used || forecast.acv_used) && (
+          <p className="text-[10px] text-gray-600 mt-2">
+            Uses the ARR / ACV / pipeline values from your assessment inputs.
+          </p>
+        )}
         {!isLowRisk && (
           <p className="text-[11px] text-gray-500 mt-3 leading-relaxed border-t border-gray-800/80 pt-3">
             {MODELED_EXPOSURE_DISCLAIMER}
