@@ -2,7 +2,7 @@
 
 import { API_URL } from '@/lib/config'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import RevenueSystemStatus from "./RevenueSystemStatus"
 import CumulativeExposureCard from "./CumulativeExposureCard"
 import StructuralRiskOverview from "./StructuralRiskOverview"
@@ -287,66 +287,85 @@ export default function MonitoringLayer({
     ? diagnostic.recommendations[0] 
     : null
   const [playbookActionLayer, setPlaybookActionLayer] = useState<ActionLayerPayload | null>(null)
+  const [playbookFetchSettled, setPlaybookFetchSettled] = useState(false)
+  const playbookCompanyIdRef = useRef<string | number | undefined>(undefined)
+  const playbookRequestGenRef = useRef(0)
 
   useEffect(() => {
-    if (!companyId) return
+    if (!companyId) {
+      setPlaybookFetchSettled(true)
+      playbookCompanyIdRef.current = undefined
+      return
+    }
+    if (playbookCompanyIdRef.current !== companyId) {
+      playbookCompanyIdRef.current = companyId
+      setPlaybookFetchSettled(false)
+    }
+    const myGen = ++playbookRequestGenRef.current
+    const ac = new AbortController()
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     const headers: Record<string, string> = {}
     if (token) headers.Authorization = `Bearer ${token}`
-    fetch(`${API_URL}/playbook/${companyId}`, { headers }).then(async (r) => {
-      if (!r.ok) return
-      const data = await r.json()
-      const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 8) : []
-      if (!fixesArr.length) return
-      const mapFix = (fix: any) => {
-        const monthlyLow = typeof fix.estimated_monthly_impact_low === "number" ? fix.estimated_monthly_impact_low : null
-        const monthlyHigh = typeof fix.estimated_monthly_impact_high === "number" ? fix.estimated_monthly_impact_high : null
-        const monthlyImpact = monthlyLow && monthlyHigh ? `+$${Math.round(monthlyLow).toLocaleString()} – $${Math.round(monthlyHigh).toLocaleString()}/month` : "—"
-        const apiKind = playbookKindFromApi(fix.playbook_kind ?? fix.playbookKind ?? fix.type ?? fix.fix_type)
-        return {
-          ...(typeof fix.id === "string" && fix.id ? { id: fix.id } : {}),
-          title: fix.title,
-          current_example: fix.before || "—",
-          suggested_change: fix.after,
-          reason: fix.why,
-          impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh || undefined, close_rate: "", arr_recovery: "" },
-          page_url: fix.page_url || null,
-          behavioral_source: Array.isArray(fix.badges) && fix.badges.some((b:string)=>["HIGH EXIT","INTENT MISMATCH"].includes((b||"").toUpperCase())),
-          badges: Array.isArray(fix.badges) ? fix.badges : [],
-          ...(apiKind ? { playbookKind: apiKind } : {}),
+    fetch(`${API_URL}/playbook/${companyId}`, { headers, signal: ac.signal })
+      .then(async (r) => {
+        if (!r.ok) return
+        const data = await r.json()
+        const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 8) : []
+        if (!fixesArr.length) return
+        const mapFix = (fix: any) => {
+          const monthlyLow = typeof fix.estimated_monthly_impact_low === "number" ? fix.estimated_monthly_impact_low : null
+          const monthlyHigh = typeof fix.estimated_monthly_impact_high === "number" ? fix.estimated_monthly_impact_high : null
+          const monthlyImpact = monthlyLow && monthlyHigh ? `+$${Math.round(monthlyLow).toLocaleString()} – $${Math.round(monthlyHigh).toLocaleString()}/month` : "—"
+          const apiKind = playbookKindFromApi(fix.playbook_kind ?? fix.playbookKind ?? fix.type ?? fix.fix_type)
+          return {
+            ...(typeof fix.id === "string" && fix.id ? { id: fix.id } : {}),
+            title: fix.title,
+            current_example: fix.before || "—",
+            suggested_change: fix.after,
+            reason: fix.why,
+            impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh || undefined, close_rate: "", arr_recovery: "" },
+            page_url: fix.page_url || null,
+            behavioral_source: Array.isArray(fix.badges) && fix.badges.some((b:string)=>["HIGH EXIT","INTENT MISMATCH"].includes((b||"").toUpperCase())),
+            badges: Array.isArray(fix.badges) ? fix.badges : [],
+            ...(apiKind ? { playbookKind: apiKind } : {}),
+          }
         }
-      }
-      // Existing fixes from diagnostic action layer
-      const existingFixes = diagnostic?.action_layer?.fixes || []
-      console.log('existingFixes', existingFixes)
-      const newFixes = fixesArr.map(mapFix)
-      console.log('newFixes', newFixes)
-      
-      // Merge fixes, deduplicate by title (case-insensitive), preferring new fixes
-      const fixMap = new Map<string, any>()
-      existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
-      newFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
-      const mergedFixes = Array.from(fixMap.values())
-      const refinedFixes = dedupeBuyerHeroPlaybookFixes(mergedFixes)
-      
-      const primary = fixesArr[0]
-      const al: ActionLayerPayload = {
-        issue_type: "general",
-        primary_issue: { title: primary.title, description: primary.why },
-        affected_areas: [
-          "Homepage hero → top section (hero + headline)",
-          "Pricing page → headline + plan cards",
-          "Product page → hero + value props",
-        ],
-        fixes: refinedFixes,
-        expected_impact: { close_rate_improvement: "", arr_recovery: "" },
-        priority: { level: primary.impact_level, reason: primary.badges?.join(" · ") || "", display_line: undefined },
-        top_action: null,
-        behavioral_insight: null,
-      }
-      setPlaybookActionLayer(al)
-    }).catch(() => {})
+        const existingFixes = diagnostic?.action_layer?.fixes || []
+        const newFixes = fixesArr.map(mapFix)
+
+        const fixMap = new Map<string, any>()
+        existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
+        newFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
+        const mergedFixes = Array.from(fixMap.values())
+        const refinedFixes = dedupeBuyerHeroPlaybookFixes(mergedFixes)
+
+        const primary = fixesArr[0]
+        const al: ActionLayerPayload = {
+          issue_type: "general",
+          primary_issue: { title: primary.title, description: primary.why },
+          affected_areas: [
+            "Homepage hero → top section (hero + headline)",
+            "Pricing page → headline + plan cards",
+            "Product page → hero + value props",
+          ],
+          fixes: refinedFixes,
+          expected_impact: { close_rate_improvement: "", arr_recovery: "" },
+          priority: { level: primary.impact_level, reason: primary.badges?.join(" · ") || "", display_line: undefined },
+          top_action: null,
+          behavioral_insight: null,
+        }
+        if (playbookRequestGenRef.current === myGen) setPlaybookActionLayer(al)
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (playbookRequestGenRef.current === myGen) setPlaybookFetchSettled(true)
+      })
+    return () => ac.abort()
   }, [companyId, diagnostic?.action_layer])
+
+  const diagnosticFixCount = diagnostic?.action_layer?.fixes?.length ?? 0
+  const showWhatToChangeFirst =
+    !companyId || diagnosticFixCount > 0 || playbookFetchSettled
 
   return (
     <div className="space-y-6">
@@ -631,6 +650,7 @@ export default function MonitoringLayer({
               (typeof (monitoringStatus.structural_scores as any)?.confidence_score === "number" && (monitoringStatus.structural_scores as any).confidence_score >= 50)
             )
           }
+          showWhatToChangeFirst={showWhatToChangeFirst}
         />
       )}
 

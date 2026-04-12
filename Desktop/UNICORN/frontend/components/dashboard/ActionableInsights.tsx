@@ -216,6 +216,8 @@ interface ActionableInsightsProps {
   currentPlan?: string | null
   monthlyExposureReal?: number | null
   useMonitoringSnapshot?: boolean
+  /** When false, hides "What to change first" until playbook/diagnostic fixes are ready (avoids score-only placeholder flash). */
+  showWhatToChangeFirst?: boolean
 }
 
 function CopyButton({ text, onCopied }: { text: string; onCopied?: () => void }) {
@@ -420,6 +422,7 @@ export default function ActionableInsights({
   currentPlan = null,
   monthlyExposureReal = null,
   useMonitoringSnapshot = false,
+  showWhatToChangeFirst = true,
 }: ActionableInsightsProps) {
   const tone =
     uiState === "low"
@@ -517,72 +520,72 @@ export default function ActionableInsights({
           </ul>
         </div>
 
-        {/* 3. Fix #1 — "Start here" callout + card */}
-        <div className="mb-4">
-          {/* START HERE banner */}
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              What to change first
-            </p>
-            {first.impact_contribution?.monthly_impact && first.impact_contribution.monthly_impact !== "—" && (
-              <span className="text-xs font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1 rounded-full">
-                {first.impact_contribution.monthly_impact}
-              </span>
+        {/* 3. Fix #1 — "Start here" callout + card (hidden until playbook fetch settles or diagnostic has fixes) */}
+        {showWhatToChangeFirst && (
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                What to change first
+              </p>
+              {first.impact_contribution?.monthly_impact && first.impact_contribution.monthly_impact !== "—" && (
+                <span className="text-xs font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1 rounded-full">
+                  {first.impact_contribution.monthly_impact}
+                </span>
+              )}
+            </div>
+
+            {effectiveLayer.behavioral_insight && effectiveLayer.behavioral_insight.exit_pct >= 25 && (
+              <div className="mb-3 px-4 py-3 rounded-lg bg-cyan-950/30 border border-cyan-700/40 flex flex-col gap-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-0.5">
+                  ⚡ Behavioral signal detected — GA4 + GSC
+                </p>
+                <p className="text-sm text-cyan-100 leading-snug">
+                  Page{" "}
+                  <span className="font-mono text-cyan-300 text-xs bg-cyan-950/60 px-1.5 py-0.5 rounded">
+                    {effectiveLayer.behavioral_insight.page}
+                  </span>{" "}
+                  loses{" "}
+                  <span className="font-semibold text-red-300">
+                    {effectiveLayer.behavioral_insight.exit_pct}%
+                  </span>{" "}
+                  of visitors
+                  {effectiveLayer.behavioral_insight.query && effectiveLayer.behavioral_insight.ctr_pct !== null && (
+                    <>
+                      {". Query "}
+                      <span className="italic text-gray-200">
+                        &ldquo;{effectiveLayer.behavioral_insight.query}&rdquo;
+                      </span>
+                      {" has CTR "}
+                      <span className="font-semibold text-red-300">
+                        {effectiveLayer.behavioral_insight.ctr_pct}%
+                      </span>
+                      {" → headline doesn't match search intent"}
+                    </>
+                  )}
+                  .
+                </p>
+              </div>
             )}
-          </div>
 
-          {/* ⚡ Behavioral insight banner — GA4 + GSC (only when real data available) */}
-          {effectiveLayer.behavioral_insight && effectiveLayer.behavioral_insight.exit_pct >= 25 && (
-            <div className="mb-3 px-4 py-3 rounded-lg bg-cyan-950/30 border border-cyan-700/40 flex flex-col gap-1">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-0.5">
-                ⚡ Behavioral signal detected — GA4 + GSC
-              </p>
-              <p className="text-sm text-cyan-100 leading-snug">
-                Page{" "}
-                <span className="font-mono text-cyan-300 text-xs bg-cyan-950/60 px-1.5 py-0.5 rounded">
-                  {effectiveLayer.behavioral_insight.page}
-                </span>{" "}
-                loses{" "}
-                <span className="font-semibold text-red-300">
-                  {effectiveLayer.behavioral_insight.exit_pct}%
-                </span>{" "}
-                of visitors
-                {effectiveLayer.behavioral_insight.query && effectiveLayer.behavioral_insight.ctr_pct !== null && (
-                  <>
-                    {". Query "}
-                    <span className="italic text-gray-200">
-                      &ldquo;{effectiveLayer.behavioral_insight.query}&rdquo;
+            <div className="flex gap-3 items-stretch">
+              <div
+                className="w-0.5 shrink-0 rounded-full bg-gradient-to-b from-red-500 to-orange-500 self-stretch min-h-[3rem]"
+                aria-hidden
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-red-400 mb-1.5">
+                  🔴 Start here
+                  {first.behavioral_source && (
+                    <span className="ml-2 text-cyan-400 normal-case font-normal tracking-normal">
+                      · confirmed by GA4
                     </span>
-                    {" has CTR "}
-                    <span className="font-semibold text-red-300">
-                      {effectiveLayer.behavioral_insight.ctr_pct}%
-                    </span>
-                    {" → headline doesn't match search intent"}
-                  </>
-                )}
-                .
-              </p>
-            </div>
-          )}
-
-          <div className="flex gap-3 items-stretch">
-            <div
-              className="w-0.5 shrink-0 rounded-full bg-gradient-to-b from-red-500 to-orange-500 self-stretch min-h-[3rem]"
-              aria-hidden
-            />
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-red-400 mb-1.5">
-                🔴 Start here
-                {first.behavioral_source && (
-                  <span className="ml-2 text-cyan-400 normal-case font-normal tracking-normal">
-                    · confirmed by GA4
-                  </span>
-                )}
-              </p>
-              <FixCard fix={first} index={1} useMonitoringSnapshot={useMonitoringSnapshot} />
+                  )}
+                </p>
+                <FixCard fix={first} index={1} useMonitoringSnapshot={useMonitoringSnapshot} />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* 4–5. Additional fixes + impact + priority detail — Growth+ */}
         <FeatureGate feature="Full playbook & remaining fixes" planRequired="growth" currentPlan={currentPlan}>
