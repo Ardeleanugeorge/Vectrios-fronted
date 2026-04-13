@@ -609,7 +609,7 @@ export default function MonitoringLayer({
           anchorDensity={anchorDensity}
           positioningScore={positioningScore}
           riskScore={rii}
-          actionLayer={playbookActionLayer ?? diagnostic?.action_layer ?? null}
+          actionLayer={playbookActionLayer ?? null}
           currentPlan={currentPlan}
           monthlyExposureReal={
             // Prefer monitoring status monthly, fall back to forecast monthly
