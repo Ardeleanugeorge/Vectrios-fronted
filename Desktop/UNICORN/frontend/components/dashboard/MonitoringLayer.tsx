@@ -320,18 +320,9 @@ export default function MonitoringLayer({
           ...(apiKind ? { playbookKind: apiKind } : {}),
         }
       }
-      // Existing fixes from diagnostic action layer
-      const existingFixes = diagnostic?.action_layer?.fixes || []
-      console.log('existingFixes', existingFixes)
+      // Faza 3: folosim doar fix-urile din /playbook (backend real), nu merge cu action_layer generic
       const newFixes = fixesArr.map(mapFix)
-      console.log('newFixes', newFixes)
-      
-      // Merge fixes, deduplicate by title (case-insensitive), preferring new fixes
-      const fixMap = new Map<string, any>()
-      existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
-      newFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
-      const mergedFixes = Array.from(fixMap.values())
-      const refinedFixes = dedupeBuyerHeroPlaybookFixes(mergedFixes)
+      const refinedFixes = dedupeBuyerHeroPlaybookFixes(newFixes)
       
       const primary = fixesArr[0]
       const al: ActionLayerPayload = {
@@ -350,7 +341,7 @@ export default function MonitoringLayer({
       }
       setPlaybookActionLayer(al)
     }).catch(() => {})
-  }, [companyId, diagnostic?.action_layer])
+  }, [companyId])
 
   return (
     <div className="space-y-6">
