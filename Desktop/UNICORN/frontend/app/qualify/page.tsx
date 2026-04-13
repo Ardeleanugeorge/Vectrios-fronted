@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 
@@ -36,7 +37,7 @@ export default function QualifyPage() {
     console.log("Making request to qualification-check endpoint...")
 
     try {
-      const response = await fetch(`${API_URL}/qualification-check`, {
+      const response = await apiFetch(`/qualification-check`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(answers)

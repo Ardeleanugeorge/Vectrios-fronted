@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from "@/lib/config"
 
@@ -13,7 +14,7 @@ type LoginPayload = {
   email: string
   company_name?: string
   company_id?: string | null
-  /** From UserProgress.last_route — e.g. /scan-results?token=… after unlock-with-existing-account */
+  /** From UserProgress.last_route � e.g. /scan-results?token=� after unlock-with-existing-account */
   resume_target?: string | null
 }
 
@@ -46,9 +47,9 @@ export default function LoginPage() {
   const infoReason = searchParams.get("reason")
   const infoMessage =
     infoReason === "existing_account"
-      ? "You already have an account — sign in with a code sent to your email."
+      ? "You already have an account � sign in with a code sent to your email."
       : infoReason === "resume_scan"
-        ? "Your scan is saved to this account — sign in with the password you set, or use “Email me a sign-in code” below."
+        ? "Your scan is saved to this account � sign in with the password you set, or use �Email me a sign-in code� below."
         : null
 
   const [submitting, setSubmitting] = useState(false)
@@ -110,7 +111,7 @@ export default function LoginPage() {
       }
       if (authTok && !companyIdForSub) {
         try {
-          const pr = await fetch(`${API_URL}/account/profile`, {
+          const pr = await apiFetch(`/account/profile`, {
             headers: { Authorization: `Bearer ${authTok}` },
           })
           if (pr.ok) {
@@ -139,7 +140,7 @@ export default function LoginPage() {
         }
       }
 
-      // Return here after Stripe (or any flow) sent user to /login?next=/dashboard?checkout_success=…
+      // Return here after Stripe (or any flow) sent user to /login?next=/dashboard?checkout_success=�
       const nextReturn = safeInternalResumePath(searchParams.get("next"))
       if (nextReturn) {
         router.push(nextReturn)
@@ -177,7 +178,7 @@ export default function LoginPage() {
         }
       }
 
-      // Existing paying / trial customer → dashboard first (skip resume scan + scan-results nudge)
+      // Existing paying / trial customer ? dashboard first (skip resume scan + scan-results nudge)
       if (hasActivePlan) {
         router.push("/dashboard")
         return
@@ -196,7 +197,7 @@ export default function LoginPage() {
         const companyId = userData?.company_id || null
 
         if (companyId && token) {
-          const ms = await fetch(`${API_URL}/monitoring/status/${companyId}`, {
+          const ms = await apiFetch(`/monitoring/status/${companyId}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
             .then((r) => (r.ok ? r.json() : null))
@@ -240,7 +241,7 @@ export default function LoginPage() {
     setOtpInfo("")
     setShowCreateAccountCta(false)
     try {
-      const res = await fetch(`${API_URL}/auth/email-otp/send`, {
+      const res = await apiFetch(`/auth/email-otp/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim() }),
@@ -253,7 +254,7 @@ export default function LoginPage() {
       }
       setOtpInfo(
         data.message ||
-          "If this email is registered, we sent a code — check inbox and spam; wait 1–2 minutes."
+          "If this email is registered, we sent a code � check inbox and spam; wait 1�2 minutes."
       )
       setOtpStep("code")
       setOtpCode("")
@@ -274,7 +275,7 @@ export default function LoginPage() {
     setSubmitting(true)
     setError("")
     try {
-      const res = await fetch(`${API_URL}/auth/email-otp/verify`, {
+      const res = await apiFetch(`/auth/email-otp/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), code: otpCode.trim() }),
@@ -310,7 +311,7 @@ export default function LoginPage() {
     setSubmitting(true)
     setError("")
     try {
-      const response = await fetch(`${API_URL}/login`, {
+      const response = await apiFetch(`/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), password }),
@@ -351,7 +352,7 @@ export default function LoginPage() {
     }
     setSendingReset(true)
     try {
-      const res = await fetch(`${API_URL}/set-password-request`, {
+      const res = await apiFetch(`/set-password-request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim() }),
@@ -419,11 +420,11 @@ export default function LoginPage() {
                 disabled={submitting}
                 className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
               >
-                {submitting ? "Sending…" : "Email me a sign-in code"}
+                {submitting ? "Sending�" : "Email me a sign-in code"}
               </button>
               <p className="text-center text-sm text-gray-500">
                 We email a 6-digit code only if this address is already registered. Check Spam/Junk (iCloud/Gmail).
-                Sessions stay signed in for a long time — you won&apos;t need a code every visit.
+                Sessions stay signed in for a long time � you won&apos;t need a code every visit.
               </p>
               <button
                 type="button"
@@ -473,7 +474,7 @@ export default function LoginPage() {
                 disabled={submitting || otpCode.length !== 6}
                 className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
               >
-                {submitting ? "Signing in…" : "Verify & sign in"}
+                {submitting ? "Signing in�" : "Verify & sign in"}
               </button>
               <div className="flex flex-col gap-2 text-sm text-center">
                 <button
@@ -486,7 +487,7 @@ export default function LoginPage() {
                   }}
                   className="text-gray-400 hover:text-cyan-300"
                 >
-                  ← Use a different email
+                  ? Use a different email
                 </button>
                 <button
                   type="button"
@@ -571,7 +572,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-sm text-gray-400 hover:text-cyan-300 transition"
               >
-                ← Sign in with email code instead
+                ? Sign in with email code instead
               </button>
 
               <button

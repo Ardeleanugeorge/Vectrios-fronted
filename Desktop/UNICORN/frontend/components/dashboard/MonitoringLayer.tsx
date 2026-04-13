@@ -1,8 +1,9 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import RevenueSystemStatus from "./RevenueSystemStatus"
 import CumulativeExposureCard from "./CumulativeExposureCard"
 import StructuralRiskOverview from "./StructuralRiskOverview"
@@ -28,8 +29,6 @@ import Link from "next/link"
 
 interface MonitoringStatus {
   monitoring_active: boolean
-  /** Hostname under monitoring — same source as header; pass through to playbook for vendor naming */
-  monitored_domain?: string | null
   created_at?: string
   last_evaluated_at?: string
   data_coverage_pct?: number | null
@@ -123,8 +122,7 @@ interface MonitoringLayerProps {
   diagnostic: DiagnosticResult | null
   alerts: Alert[]
   onMarkAlertRead: (alertId: string) => void
-  /** Only when API reports billing trial — e.g. " · Trial · 12d left". Never derived from scan dates. */
-  subscriptionTrialSuffix?: string
+  trialDays?: number | null
   companyId: string | null
   currentPlan?: string | null
   companyDomain?: string | null
@@ -137,11 +135,14 @@ export default function MonitoringLayer({
   diagnostic, 
   alerts,
   onMarkAlertRead,
-  subscriptionTrialSuffix = "",
+  trialDays,
   companyId,
   currentPlan = null,
   companyDomain = null,
 }: MonitoringLayerProps) {
+  console.log('MonitoringLayer diagnostic:', diagnostic);
+  console.log('MonitoringLayer diagnostic.action_layer:', diagnostic?.action_layer);
+  console.log('MonitoringLayer monitoringStatus.action_layer:', monitoringStatus?.action_layer);
   // Revenue Delta (last scan vs previous)
   const [revenueDelta, setRevenueDelta] = useState<null | {
     has_delta: boolean
@@ -155,7 +156,7 @@ export default function MonitoringLayer({
     if (!companyId) return
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
-    fetch(`${API_URL}/revenue/delta/${companyId}`, {
+    apiFetch(`/revenue/delta/${companyId}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.ok ? r.json() : null)
@@ -168,7 +169,7 @@ export default function MonitoringLayer({
   useEffect(() => {
     if (!companyId) return
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`${API_URL}/revenue-forecast/${companyId}`, {
+    apiFetch(`/revenue-forecast/${companyId}`, {
       headers: { "Authorization": `Bearer ${token || ""}` }
     })
       .then(r => r.ok ? r.json() : null)
@@ -191,7 +192,7 @@ export default function MonitoringLayer({
                         monitoringStatus.drift_status === "degrading" ? "moderate" : "none"
   const annualDelta: number | null = forecast?.annual_revenue_delta ?? null
 
-  // Extract diagnostic metrics — localStorage diagnostic first, then backend structural_scores fallback
+  // Extract diagnostic metrics � localStorage diagnostic first, then backend structural_scores fallback
   const ss = monitoringStatus.structural_scores
   const alignmentScore =
     diagnostic?.alignment_score ??
@@ -217,7 +218,7 @@ export default function MonitoringLayer({
   // Get last scan date from monitoring status
   const lastScan = monitoringStatus.last_evaluated_at || monitoringStatus.created_at || new Date().toISOString()
 
-  // Extract RII for health indicator — diagnostic first, then monitoring structural scores fallback
+  // Extract RII for health indicator � diagnostic first, then monitoring structural scores fallback
   const rii = diagnostic?.risk_score ?? ss?.rii_score ?? monitoringStatus.structural_health?.structural_health_score ?? null
   const riskDelta = monitoringStatus.risk_delta_since_last_scan || null
   const uiState: UiState =
@@ -290,101 +291,71 @@ export default function MonitoringLayer({
     ? diagnostic.recommendations[0] 
     : null
   const [playbookActionLayer, setPlaybookActionLayer] = useState<ActionLayerPayload | null>(null)
-  const [playbookFetchSettled, setPlaybookFetchSettled] = useState(false)
-  const playbookCompanyIdRef = useRef<string | number | undefined>(undefined)
-  const playbookRequestGenRef = useRef(0)
 
   useEffect(() => {
-    if (!companyId) {
-      setPlaybookFetchSettled(true)
-      playbookCompanyIdRef.current = undefined
-      return
-    }
-    if (playbookCompanyIdRef.current !== companyId) {
-      playbookCompanyIdRef.current = companyId
-      setPlaybookFetchSettled(false)
-      setPlaybookActionLayer(null)
-    }
-    const myGen = ++playbookRequestGenRef.current
-    const ac = new AbortController()
+    if (!companyId) return
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     const headers: Record<string, string> = {}
     if (token) headers.Authorization = `Bearer ${token}`
-    const md = (monitoringStatus.monitored_domain || "").trim()
-    const playbookQs = new URLSearchParams()
-    if (md) playbookQs.set("monitored_domain", md)
-    const playbookSuffix = playbookQs.toString() ? `?${playbookQs.toString()}` : ""
-    fetch(`${API_URL}/playbook/${companyId}${playbookSuffix}`, { headers, signal: ac.signal })
-      .then(async (r) => {
-        if (!r.ok) {
-          if (playbookRequestGenRef.current === myGen) setPlaybookActionLayer(null)
-          return
+    apiFetch(`/playbook/${companyId}`, { headers }).then(async (r) => {
+      if (!r.ok) return
+      const data = await r.json()
+      const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 8) : []
+      if (!fixesArr.length) return
+      const mapFix = (fix: any) => {
+        const monthlyLow = typeof fix.estimated_monthly_impact_low === "number" ? fix.estimated_monthly_impact_low : null
+        const monthlyHigh = typeof fix.estimated_monthly_impact_high === "number" ? fix.estimated_monthly_impact_high : null
+        const monthlyImpact = monthlyLow && monthlyHigh ? `+$${Math.round(monthlyLow).toLocaleString()} � $${Math.round(monthlyHigh).toLocaleString()}/month` : "�"
+        const apiKind = playbookKindFromApi(fix.playbook_kind ?? fix.playbookKind ?? fix.type ?? fix.fix_type)
+        return {
+          ...(typeof fix.id === "string" && fix.id ? { id: fix.id } : {}),
+          title: fix.title,
+          current_example: fix.before || "�",
+          suggested_change: fix.after,
+          reason: fix.why,
+          impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh || undefined, close_rate: "", arr_recovery: "" },
+          page_url: fix.page_url || null,
+          behavioral_source: Array.isArray(fix.badges) && fix.badges.some((b:string)=>["HIGH EXIT","INTENT MISMATCH"].includes((b||"").toUpperCase())),
+          badges: Array.isArray(fix.badges) ? fix.badges : [],
+          ...(apiKind ? { playbookKind: apiKind } : {}),
         }
-        const data = await r.json()
-        const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 8) : []
-        if (!fixesArr.length) {
-          if (playbookRequestGenRef.current === myGen) setPlaybookActionLayer(null)
-          return
-        }
-        const mapFix = (fix: any) => {
-          const monthlyLow = typeof fix.estimated_monthly_impact_low === "number" ? fix.estimated_monthly_impact_low : null
-          const monthlyHigh = typeof fix.estimated_monthly_impact_high === "number" ? fix.estimated_monthly_impact_high : null
-          const monthlyImpact = monthlyLow && monthlyHigh ? `+$${Math.round(monthlyLow).toLocaleString()} – $${Math.round(monthlyHigh).toLocaleString()}/month` : "—"
-          const apiKind = playbookKindFromApi(fix.playbook_kind ?? fix.playbookKind ?? fix.type ?? fix.fix_type)
-          return {
-            ...(typeof fix.id === "string" && fix.id ? { id: fix.id } : {}),
-            title: fix.title,
-            current_example: fix.before || "—",
-            suggested_change: fix.after,
-            reason: fix.why,
-            impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh || undefined, close_rate: "", arr_recovery: "" },
-            page_url: fix.page_url || null,
-            behavioral_source: Array.isArray(fix.badges) && fix.badges.some((b:string)=>["HIGH EXIT","INTENT MISMATCH"].includes((b||"").toUpperCase())),
-            badges: Array.isArray(fix.badges) ? fix.badges : [],
-            ...(apiKind ? { playbookKind: apiKind } : {}),
-          }
-        }
-        const existingFixes = diagnostic?.action_layer?.fixes || []
-        const newFixes = fixesArr.map(mapFix)
-
-        const fixMap = new Map<string, any>()
-        existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
-        newFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
-        const mergedFixes = Array.from(fixMap.values())
-        const refinedFixes = dedupeBuyerHeroPlaybookFixes(mergedFixes)
-
-        const primary = fixesArr[0]
-        const al: ActionLayerPayload = {
-          issue_type: "general",
-          primary_issue: { title: primary.title, description: primary.why },
-          affected_areas: [
-            "Homepage hero → top section (hero + headline)",
-            "Pricing page → headline + plan cards",
-            "Product page → hero + value props",
-          ],
-          fixes: refinedFixes,
-          expected_impact: { close_rate_improvement: "", arr_recovery: "" },
-          priority: { level: primary.impact_level, reason: primary.badges?.join(" · ") || "", display_line: undefined },
-          top_action: null,
-          behavioral_insight: null,
-        }
-        if (playbookRequestGenRef.current === myGen) setPlaybookActionLayer(al)
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (playbookRequestGenRef.current === myGen) setPlaybookFetchSettled(true)
-      })
-    return () => ac.abort()
-  }, [companyId, diagnostic?.action_layer, monitoringStatus.monitored_domain])
-
-  const diagnosticFixCount = diagnostic?.action_layer?.fixes?.length ?? 0
-  const playbookReady =
-    !companyId || diagnosticFixCount > 0 || playbookFetchSettled
+      }
+      // Existing fixes from diagnostic action layer
+      const existingFixes = diagnostic?.action_layer?.fixes || []
+      console.log('existingFixes', existingFixes)
+      const newFixes = fixesArr.map(mapFix)
+      console.log('newFixes', newFixes)
+      
+      // Merge fixes, deduplicate by title (case-insensitive), preferring new fixes
+      const fixMap = new Map<string, any>()
+      existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
+      newFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
+      const mergedFixes = Array.from(fixMap.values())
+      const refinedFixes = dedupeBuyerHeroPlaybookFixes(mergedFixes)
+      
+      const primary = fixesArr[0]
+      const al: ActionLayerPayload = {
+        issue_type: "general",
+        primary_issue: { title: primary.title, description: primary.why },
+        affected_areas: [
+          "Homepage hero ? top section (hero + headline)",
+          "Pricing page ? headline + plan cards",
+          "Product page ? hero + value props",
+        ],
+        fixes: refinedFixes,
+        expected_impact: { close_rate_improvement: "", arr_recovery: "" },
+        priority: { level: primary.impact_level, reason: primary.badges?.join(" � ") || "", display_line: undefined },
+        top_action: null,
+        behavioral_insight: null,
+      }
+      setPlaybookActionLayer(al)
+    }).catch(() => {})
+  }, [companyId, diagnostic?.action_layer])
 
   return (
     <div className="space-y-6">
       
-      {/* ALERTS FIRST — Critical alerts at top */}
+      {/* ALERTS FIRST � Critical alerts at top */}
       {hasCriticalAlerts && (() => {
         const moderateBand = rii !== null && rii >= 40 && rii < 70
         const lowRii = rii !== null && rii < 40
@@ -398,7 +369,7 @@ export default function MonitoringLayer({
           </p>
           <p className="text-xs text-gray-400">
             {moderateBand
-              ? `${criticalAlerts.length} open alert${criticalAlerts.length > 1 ? "s" : ""} — monitoring recommended; review below.`
+              ? `${criticalAlerts.length} open alert${criticalAlerts.length > 1 ? "s" : ""} � monitoring recommended; review below.`
               : `${criticalAlerts.length} critical alert${criticalAlerts.length > 1 ? "s" : ""} require immediate attention.`}
           </p>
         </div>
@@ -412,7 +383,7 @@ export default function MonitoringLayer({
         </div>
       )}
 
-      {/* 0. SYSTEM HEALTH INDICATOR — Health score bar */}
+      {/* 0. SYSTEM HEALTH INDICATOR � Health score bar */}
       {rii !== null && (
         <SystemHealthIndicator 
           rii={rii} 
@@ -421,7 +392,7 @@ export default function MonitoringLayer({
         />
       )}
 
-      {/* FULL DIAGNOSTIC NUDGE — shown only when monitoring has NEVER run
+      {/* FULL DIAGNOSTIC NUDGE � shown only when monitoring has NEVER run
            (no last_evaluated_at = no monitoring cycle completed yet).
            Once monitoring runs even once, banner disappears permanently. */}
       {!monitoringStatus.last_evaluated_at && !monitoringStatus.created_at && (
@@ -431,19 +402,19 @@ export default function MonitoringLayer({
               Run your first diagnostic to activate monitoring
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
-              One scan creates your baseline — monitoring then runs automatically every 24h.
+              One scan creates your baseline � monitoring then runs automatically every 24h.
             </p>
           </div>
           <Link
             href={companyDomain ? `/?url=${encodeURIComponent(companyDomain)}` : "/"}
             className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg transition whitespace-nowrap"
           >
-            Run Diagnostic →
+            Run Diagnostic ?
           </Link>
         </div>
       )}
 
-      {/* REVENUE DELTA — +$/-$/stable vs last scan */}
+      {/* REVENUE DELTA � +$/-$/stable vs last scan */}
   {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
         <div className={`rounded-xl border overflow-hidden ${
           revenueDelta.direction === "worse"
@@ -461,8 +432,8 @@ export default function MonitoringLayer({
                 revenueDelta.trend_last_4 === "improving" ? "text-emerald-400 bg-emerald-400/10" :
                 "text-gray-400 bg-gray-800"
               }`}>
-                {revenueDelta.trend_last_4 === "worsening" ? "🔺 Worsening" :
-                 revenueDelta.trend_last_4 === "improving" ? "🔻 Improving" : "→ Stable"}
+                {revenueDelta.trend_last_4 === "worsening" ? "?? Worsening" :
+                 revenueDelta.trend_last_4 === "improving" ? "?? Improving" : "? Stable"}
               </span>
             )}
           </div>
@@ -476,7 +447,7 @@ export default function MonitoringLayer({
               {revenueDelta.delta_monthly_loss > 0
                 ? `+$${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month worse`
                 : revenueDelta.delta_monthly_loss < 0
-                ? `↓ $${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month better`
+                ? `? $${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month better`
                 : "No change vs last scan"}
             </p>
             {typeof revenueDelta.delta_rii === "number" && revenueDelta.delta_rii !== 0 && (
@@ -495,7 +466,7 @@ export default function MonitoringLayer({
                   <ul className="space-y-1">
                     {(revenueDelta.drivers?.positives || []).map((d:any, i:number) => (
                       <li key={`pos-${i}`} className="flex items-start gap-2 text-xs text-gray-300">
-                        <span className="mt-0.5 shrink-0 text-emerald-400">•</span>
+                        <span className="mt-0.5 shrink-0 text-emerald-400">�</span>
                         {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
                       </li>
                     ))}
@@ -508,7 +479,7 @@ export default function MonitoringLayer({
                   <ul className="space-y-1">
                     {(revenueDelta.drivers?.risks || []).map((d:any, i:number) => (
                       <li key={`risk-${i}`} className="flex items-start gap-2 text-xs text-gray-300">
-                        <span className="mt-0.5 shrink-0 text-red-400">•</span>
+                        <span className="mt-0.5 shrink-0 text-red-400">�</span>
                         {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
                       </li>
                     ))}
@@ -518,19 +489,19 @@ export default function MonitoringLayer({
             </div>
           )}
 
-          {/* Fix this first — delta + action combo (killer UX) */}
+          {/* Fix this first � delta + action combo (killer UX) */}
           {revenueDelta.direction === "worse" && diagnostic?.action_layer?.fixes?.[0] && (
             <div className="mx-4 mb-4 px-4 py-3 rounded-lg bg-orange-950/20 border border-orange-500/20">
               <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400 mb-1.5">
-                🔴 Fix this first
+                ?? Fix this first
               </p>
               <p className="text-sm font-semibold text-white">
                 {diagnostic.action_layer.fixes[0].title}
               </p>
               {diagnostic.action_layer.fixes[0].impact_contribution?.monthly_impact &&
-               diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact !== "—" && (
+               diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact !== "�" && (
                 <p className="text-xs text-emerald-400 mt-1">
-                  → expected recovery: <span className="font-bold">{diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact}</span>
+                  ? expected recovery: <span className="font-bold">{diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact}</span>
                 </p>
               )}
             </div>
@@ -565,10 +536,10 @@ export default function MonitoringLayer({
           return `~${m}m`
         }
 
-        const lastScanLabel = lastEval ? formatAgo(lastEval) : "—"
+        const lastScanLabel = lastEval ? formatAgo(lastEval) : "�"
         const nextScanLabel = lastEval ? formatNextIn(lastEval) : "~24h"
         const planLabel = currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)
-        const trialLabel = subscriptionTrialSuffix || ""
+        const trialLabel = trialDays ? ` � Trial day ${trialDays}` : ""
 
         return (
           <div className="flex flex-wrap items-center gap-px rounded-2xl overflow-hidden border border-gray-800 bg-[#0d1117] text-sm">
@@ -633,7 +604,7 @@ export default function MonitoringLayer({
         )
       })()}
 
-      {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action
+      {/* 0.5. ACTIONABLE INSIGHTS � Problem ? Impact ? Action
            Renders when structural scores exist (from diagnostic OR monitoring) */}
       {(alignmentScore > 0 || icpClarity > 0 || anchorDensity > 0 || positioningScore > 0 || rii !== null) && (
         <ActionableInsights
@@ -664,18 +635,12 @@ export default function MonitoringLayer({
               (typeof (monitoringStatus.structural_scores as any)?.confidence_score === "number" && (monitoringStatus.structural_scores as any).confidence_score >= 50)
             )
           }
-          playbookReady={playbookReady}
-          playbookApiEmpty={
-            playbookFetchSettled &&
-            !(playbookActionLayer?.fixes?.length) &&
-            !(diagnostic?.action_layer?.fixes?.length)
-          }
         />
       )}
 
-      {/* AI Playbook block removed — fixes are integrated into ActionableInsights above */}
+      {/* AI Playbook block removed � fixes are integrated into ActionableInsights above */}
 
-      {/* 1. FINANCIAL EXPOSURE — z-0 vs playbook z-10 avoids ARR card painting over fixes */}
+      {/* 1. FINANCIAL EXPOSURE � z-0 vs playbook z-10 avoids ARR card painting over fixes */}
       <div className="relative z-0 mt-2">
         <FinancialExposureCard
           forecast={forecast}
@@ -685,7 +650,7 @@ export default function MonitoringLayer({
         />
       </div>
 
-      {/* 2. SYSTEM STATUS — Heartbeat of the system */}
+      {/* 2. SYSTEM STATUS � Heartbeat of the system */}
       <RevenueSystemStatus
         monthlyExposure={
           monthlyExposure ??
@@ -708,7 +673,7 @@ export default function MonitoringLayer({
         deltaDirection={revenueDelta?.direction}
       />
 
-      {/* Rolling exposure — skip when full forecast exists to avoid repeating the same $ story as Financial + Model */}
+      {/* Rolling exposure � skip when full forecast exists to avoid repeating the same $ story as Financial + Model */}
       {monthlyExposure &&
         monthlyExposure > 0 &&
         !(forecast && typeof forecast.annual_revenue_delta === "number" && forecast.annual_revenue_delta > 0) && (
@@ -719,7 +684,7 @@ export default function MonitoringLayer({
         />
       )}
 
-      {/* 4. EXECUTIVE INTERPRETATION — Max 2 lines */}
+      {/* 4. EXECUTIVE INTERPRETATION � Max 2 lines */}
       <ExecutiveInterpretation
         monthlyExposure={monthlyExposure}
         annualExposure={annualDelta}
@@ -730,10 +695,9 @@ export default function MonitoringLayer({
         anchorDensity={anchorDensity}
         uiState={uiState}
         deltaDirection={revenueDelta?.direction}
-        leadingStructuralSignal={displayRiskDriver}
       />
 
-      {/* 5. REVENUE ALIGNMENT STATUS — System state explanation */}
+      {/* 5. REVENUE ALIGNMENT STATUS � System state explanation */}
       <StructuralRiskOverview
         riskScore={diagnostic?.risk_score || null}
         alignmentScore={alignmentScore}
@@ -745,59 +709,54 @@ export default function MonitoringLayer({
         volatileSignalActive={hasCriticalAlerts || isVolatile}
       />
 
-      {/* 6. REVENUE-STAGE ALIGNMENT MAP — Diagnostic breakdown (with backend structural_scores fallback) */}
+      {/* 6. REVENUE-STAGE ALIGNMENT MAP � Diagnostic breakdown (with backend structural_scores fallback) */}
       <StructuralBreakdownWithDelta 
         diagnostic={diagnostic}
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
         structuralScoresFallback={ss ?? undefined}
       />
 
-      {/* 7. RECENT STRUCTURAL SIGNALS — Growth+ */}
+      {/* 7. RECENT STRUCTURAL SIGNALS � Growth+ */}
       <FeatureGate feature="Revenue Signals" planRequired="growth" currentPlan={currentPlan}>
         <RevenueSignalsPanel companyId={companyId} />
       </FeatureGate>
 
-      {/* 8. ACTIVE ALERTS — Growth+ */}
+      {/* 8. ACTIVE ALERTS � Growth+ */}
       <FeatureGate feature="Revenue Alerts" planRequired="growth" currentPlan={currentPlan}>
         <RevenueAlertsPanel companyId={companyId} />
       </FeatureGate>
 
-      {/* 9. REVENUE INCIDENTS — Growth+ */}
+      {/* 9. REVENUE INCIDENTS � Growth+ */}
       <FeatureGate feature="Revenue Incidents" planRequired="growth" currentPlan={currentPlan}>
         <RevenueIncidentsPanel companyId={companyId} />
       </FeatureGate>
 
-      {/* 10. ACTIVITY — collapsed by default (advanced); Signals + Alerts stay visible above */}
+      {/* 10. ACTIVITY � collapsed by default (advanced); Signals + Alerts stay visible above */}
       <FeatureGate feature="Activity Feed" planRequired="growth" currentPlan={currentPlan}>
         <ActivityFeed companyId={companyId} defaultCollapsed />
       </FeatureGate>
 
-      {/* 11. REVENUE COMPRESSION FORECAST — 30-day prediction (Growth+) */}
+      {/* 11. REVENUE COMPRESSION FORECAST � 30-day prediction (Growth+) */}
       <FeatureGate feature="Forecast Engine" planRequired="growth" currentPlan={currentPlan}>
-        <RevenueForecastPanel
-          companyId={companyId}
-          uiState={uiState}
-          fetchSuppressed
-          sharedForecast={forecast}
-        />
+        <RevenueForecastPanel companyId={companyId} uiState={uiState} />
       </FeatureGate>
 
-      {/* 12. REVENUE TRAJECTORY SIMULATION — 12-month ARR (Scale+) */}
+      {/* 12. REVENUE TRAJECTORY SIMULATION � 12-month ARR (Scale+) */}
       <FeatureGate feature="12-Month ARR Trajectory" planRequired="scale" currentPlan={currentPlan}>
         <RevenueTrajectorySimulation companyId={companyId} currentRii={rii} />
       </FeatureGate>
 
-      {/* 13. REVENUE RISK TRAJECTORY — 30/60/90 day projection (Scale+) */}
+      {/* 13. REVENUE RISK TRAJECTORY � 30/60/90 day projection (Scale+) */}
       <FeatureGate feature="Trajectory Engine" planRequired="scale" currentPlan={currentPlan}>
         <RevenueRiskTrajectoryPanel companyId={companyId} />
       </FeatureGate>
 
-      {/* 14. BENCHMARK INTELLIGENCE — cross-company comparison (Scale+) */}
+      {/* 14. BENCHMARK INTELLIGENCE � cross-company comparison (Scale+) */}
       <FeatureGate feature="Benchmark Intelligence" planRequired="scale" currentPlan={currentPlan}>
         <BenchmarkPanel companyId={companyId} />
       </FeatureGate>
 
-      {/* 13. REVENUE RISK TREND (30 Days) — Historical trend */}
+      {/* 13. REVENUE RISK TREND (30 Days) � Historical trend */}
       <RiiTimelineChart
         companyId={companyId}
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
@@ -813,7 +772,7 @@ export default function MonitoringLayer({
         <div className="p-6 bg-emerald-950/10 border border-emerald-700/30 rounded-lg">
           <p className="text-sm font-semibold text-emerald-200">Summary</p>
           <p className="text-sm text-gray-300 mt-1">
-            Your revenue system is strong. Addressing the 2–3 remaining gaps could unlock ~${Math.round(annualDelta / 1000) * 1000} annually.
+            Your revenue system is strong. Addressing the 2�3 remaining gaps could unlock ~${Math.round(annualDelta / 1000) * 1000} annually.
           </p>
         </div>
       )}

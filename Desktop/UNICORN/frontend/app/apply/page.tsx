@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 
@@ -54,7 +55,7 @@ export default function ApplyPage() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/diagnostic-application`, {
+      const response = await apiFetch(`/diagnostic-application`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -104,7 +105,7 @@ export default function ApplyPage() {
             We've received your diagnostic application.
           </p>
           <p className="text-lg text-gray-400 mb-6">
-            Our team will review your submission and respond within 3–5 business days.
+            Our team will review your submission and respond within 3�5 business days.
           </p>
           <a href="/" className="text-cyan-400 hover:text-cyan-300">
             Return to homepage
@@ -162,7 +163,7 @@ export default function ApplyPage() {
             ))}
           </div>
           <p className="text-sm text-gray-500 text-center">
-            Estimated time: 6–8 minutes
+            Estimated time: 6�8 minutes
           </p>
         </div>
 
@@ -172,17 +173,17 @@ export default function ApplyPage() {
             <div>
               <h2 className="text-2xl font-bold mb-4">What This Diagnostic Is</h2>
               <ul className="space-y-2 text-gray-300">
-                <li>• A structural revenue risk analysis</li>
-                <li>• A close-rate impact assessment</li>
-                <li>• A strategic alignment evaluation</li>
+                <li>� A structural revenue risk analysis</li>
+                <li>� A close-rate impact assessment</li>
+                <li>� A strategic alignment evaluation</li>
               </ul>
             </div>
             <div>
               <h2 className="text-2xl font-bold mb-4">What This Is Not</h2>
               <ul className="space-y-2 text-gray-500">
-                <li>• A content critique</li>
-                <li>• A style review</li>
-                <li>• A marketing audit</li>
+                <li>� A content critique</li>
+                <li>� A style review</li>
+                <li>� A marketing audit</li>
               </ul>
             </div>
             <p className="text-lg text-gray-400 italic">
@@ -199,18 +200,18 @@ export default function ApplyPage() {
               <div>
                 <h3 className="text-lg font-semibold mb-3 text-cyan-400">This is a fit if:</h3>
                 <ul className="space-y-2 text-gray-300 text-sm">
-                  <li>• You are a B2B SaaS company</li>
-                  <li>• You have an active sales motion</li>
-                  <li>• You publish content consistently</li>
-                  <li>• Close rate matters to your growth strategy</li>
+                  <li>� You are a B2B SaaS company</li>
+                  <li>� You have an active sales motion</li>
+                  <li>� You publish content consistently</li>
+                  <li>� Close rate matters to your growth strategy</li>
                 </ul>
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-3 text-gray-500">This is not a fit if:</h3>
                 <ul className="space-y-2 text-gray-500 text-sm">
-                  <li>• You are pre-revenue without sales</li>
-                  <li>• You rely purely on self-serve PLG</li>
-                  <li>• You are an agency offering services</li>
+                  <li>� You are pre-revenue without sales</li>
+                  <li>� You rely purely on self-serve PLG</li>
+                  <li>� You are an agency offering services</li>
                 </ul>
               </div>
             </div>
@@ -261,8 +262,8 @@ export default function ApplyPage() {
                   <option value="">Select ARR range</option>
                   <option value="pre-revenue">Pre-revenue</option>
                   <option value="<500k">&lt; $500k</option>
-                  <option value="500k-2M">$500k–$2M</option>
-                  <option value="2M-10M">$2M–$10M</option>
+                  <option value="500k-2M">$500k�$2M</option>
+                  <option value="2M-10M">$2M�$10M</option>
                   <option value="10M+">$10M+</option>
                 </select>
               </div>
@@ -276,9 +277,9 @@ export default function ApplyPage() {
                   className="input"
                 >
                   <option value="">Select team size</option>
-                  <option value="1-5">1–5</option>
-                  <option value="6-20">6–20</option>
-                  <option value="21-50">21–50</option>
+                  <option value="1-5">1�5</option>
+                  <option value="6-20">6�20</option>
+                  <option value="21-50">21�50</option>
                   <option value="50+">50+</option>
                 </select>
               </div>
@@ -339,7 +340,7 @@ export default function ApplyPage() {
               <h2 className="text-2xl font-bold mb-6">Strategic Alignment</h2>
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Define your ICP in 1–2 sentences *
+                  Define your ICP in 1�2 sentences *
                 </label>
                 <textarea
                   name="icp_description"
@@ -468,13 +469,13 @@ export default function ApplyPage() {
             <div className="mb-8 border-t border-gray-800 pt-8">
               <h2 className="text-2xl font-bold mb-4">What Happens Next</h2>
               <ul className="space-y-3 text-gray-300">
-                <li>• We run a structural scan using our diagnostic engine</li>
-                <li>• Findings are reviewed internally</li>
-                <li>• You receive a preliminary risk assessment</li>
-                <li>• If relevant, we schedule a strategic review call</li>
+                <li>� We run a structural scan using our diagnostic engine</li>
+                <li>� Findings are reviewed internally</li>
+                <li>� You receive a preliminary risk assessment</li>
+                <li>� If relevant, we schedule a strategic review call</li>
               </ul>
               <p className="mt-4 text-gray-400">
-                Turnaround time: 3–5 business days.
+                Turnaround time: 3�5 business days.
               </p>
             </div>
           )}

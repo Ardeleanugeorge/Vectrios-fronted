@@ -1,5 +1,6 @@
 'use client'
 
+import { apiFetch } from "@/lib/api"
 import { API_URL } from '@/lib/config'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -7,25 +8,25 @@ import Link from 'next/link'
 import DashboardHeader from '@/components/DashboardHeader'
 import SiteFooter from '@/components/SiteFooter'
 
-// Plan hierarchy — only Scale
+// Plan hierarchy � only Scale
 const PLAN_RANK: Record<string, number> = { scale: 0 }
 
 const PLAN_FEATURES: Record<string, string[]> = {
   scale: [
-    '📊 Revenue Impact Index (RII) — structural score 0–100',
-    '🔍 Revenue leak detection (page-by-page)',
-    '📋 Full fix playbook — step-by-step with $/month recovery',
-    '💰 ARR at risk + close rate impact modeling',
-    '🔄 24h continuous monitoring',
-    '📊 Revenue Delta Engine — +$X/month vs last scan + WHY drivers',
-    '🔴 Delta + Action combo — "Fix this first" on leak increase',
-    '🎯 Risk trajectory — 30/60/90-day view',
-    '⚡ Revenue incidents (severity-ranked)',
-    '🏆 Benchmark vs 500+ SaaS companies',
-    '📊 12-month ARR simulation',
-    '🔗 GSC + GA4 behavioral modifiers',
-    '📧 Executive risk summaries (weekly)',
-    '👥 Team monitoring — unlimited seats',
+    '?? RII Score � structural risk 0�100',
+    '?? Revenue leak detection (page-by-page)',
+    '?? Full fix playbook � step-by-step with $/month recovery',
+    '?? ARR at risk + close rate impact modeling',
+    '?? 24h continuous monitoring',
+    '?? Revenue Delta Engine � +$X/month vs last scan + WHY drivers',
+    '?? Delta + Action combo � "Fix this first" on leak increase',
+    '?? Risk trajectory � 30/60/90-day view',
+    '? Revenue incidents (severity-ranked)',
+    '?? Benchmark vs 500+ SaaS companies',
+    '?? 12-month ARR simulation',
+    '?? GSC + GA4 behavioral modifiers',
+    '?? Executive risk summaries (weekly)',
+    '?? Team monitoring � unlimited seats',
   ],
 }
 
@@ -59,7 +60,7 @@ export default function UpgradePage() {
 
     // Always use server profile as source of truth (avoids stale/wrong company_id in localStorage).
     setLoadingStatus(true)
-    fetch(`${API_URL}/account/profile`, { headers: { Authorization: `Bearer ${token}` } })
+    apiFetch(`/account/profile`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => (r.ok ? r.json() : null))
       .then(p => {
         const cid = p?.company_id || null
@@ -82,7 +83,7 @@ export default function UpgradePage() {
 
   const loadSub = async (token: string, cid: string) => {
     try {
-      const res = await fetch(`${API_URL}/subscription/${cid}`, {
+      const res = await apiFetch(`/subscription/${cid}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (res.ok) setSubStatus(await res.json())
@@ -90,7 +91,7 @@ export default function UpgradePage() {
     finally { setLoadingStatus(false) }
   }
 
-  // Trial expiry: 0 days left → redirect to pricing page after 3s
+  // Trial expiry: 0 days left ? redirect to pricing page after 3s
   useEffect(() => {
     if (!subStatus) return
     if (subStatus.is_trial_active && subStatus.trial_days_left === 0) {
@@ -111,7 +112,7 @@ export default function UpgradePage() {
     let cid = companyId
     if (!cid) {
       try {
-        const p = await fetch(`${API_URL}/account/profile`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json())
+        const p = await apiFetch(`/account/profile`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json())
         cid = p?.company_id || null
         if (cid) setCompanyId(cid)
       } catch {}
@@ -121,8 +122,8 @@ export default function UpgradePage() {
     setIsActivating(true)
     setActivatingPlan(planName)
     try {
-      // Paid Scale in DB (monthly/annual) — replaces trial; persisted for GET /subscription + header cache.
-      const upRes = await fetch(`${API_URL}/subscription/${cid}/upgrade-scale`, {
+      // Paid Scale in DB (monthly/annual) � replaces trial; persisted for GET /subscription + header cache.
+      const upRes = await apiFetch(`/subscription/${cid}/upgrade-scale`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -163,13 +164,13 @@ export default function UpgradePage() {
       }
 
       // Turn on monitoring / governance; does not downgrade an existing paid sub.
-      await fetch(`${API_URL}/monitoring/activate/${cid}`, {
+      await apiFetch(`/monitoring/activate/${cid}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       }).catch(() => {})
 
       const label = billing === 'annual' ? 'annual' : 'monthly'
-      setSuccessMsg(`Scale activated — ${label} billing`)
+      setSuccessMsg(`Scale activated � ${label} billing`)
       await new Promise((r) => setTimeout(r, 800))
       const scanToken = (() => {
         try {
@@ -193,9 +194,9 @@ export default function UpgradePage() {
 
   // Only Scale plan available
   const availablePlans = (['scale'] as const).filter(p => {
-    // If on Scale (paid) → nothing to upgrade to
+    // If on Scale (paid) ? nothing to upgrade to
     if (isScale) return false
-    // Trial or no plan → allow Scale
+    // Trial or no plan ? allow Scale
     return true
   })
 
@@ -204,7 +205,7 @@ export default function UpgradePage() {
       <div className="page-root flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-400 text-sm">Loading plan status…</p>
+          <p className="text-gray-400 text-sm">Loading plan status�</p>
         </div>
       </div>
     )
@@ -216,34 +217,34 @@ export default function UpgradePage() {
       <main className="pt-20 pb-24">
         <div className="max-w-5xl mx-auto px-6">
           
-          {/* ── Header ─────────────────────────────────────────────────────── */}
+          {/* -- Header ------------------------------------------------------- */}
           <div className="text-center mb-14 pt-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-5 uppercase tracking-widest">
-              Scale — one plan
+              Scale � one plan
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
               {isScale ? 'You\'re on the highest plan' : 'Upgrade your monitoring'}
             </h1>
             <p className="text-gray-400 text-lg max-w-xl mx-auto">
               {isScale
-                ? 'Scale gives you everything — continuous monitoring, delta engine, behavioral modifiers, and executive reporting.'
+                ? 'Scale gives you everything � continuous monitoring, delta engine, behavioral modifiers, and executive reporting.'
                 : 'Move up at any time. Upgrades are instant. No downgrades from Scale.'}
             </p>
           </div>
 
-          {/* ── Trial expiry warning ────────────────────────────────────────── */}
+          {/* -- Trial expiry warning ------------------------------------------ */}
           {isTrial && subStatus?.trial_days_left === 0 && (
             <div className="mb-8 p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-center">
-              <p className="text-red-300 font-semibold">Your trial has expired. Redirecting to pricing in 3 seconds…</p>
+              <p className="text-red-300 font-semibold">Your trial has expired. Redirecting to pricing in 3 seconds�</p>
             </div>
           )}
 
-          {/* ── Current plan banner ────────────────────────────────────────── */}
+          {/* -- Current plan banner ------------------------------------------ */}
           {currentPlanName && (
             <div className="mb-10 p-5 rounded-2xl border border-gray-700/50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-between gap-4 flex-wrap">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
-                  <span className="text-cyan-400 text-lg">✦</span>
+                  <span className="text-cyan-400 text-lg">?</span>
                 </div>
                   <div>
                   <div className="text-xs text-gray-500 uppercase tracking-widest mb-0.5">Current plan</div>
@@ -251,7 +252,7 @@ export default function UpgradePage() {
                     {currentPlanName.charAt(0).toUpperCase() + currentPlanName.slice(1)}
                     {isTrial && (
                       <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/20 border border-amber-500/30 text-amber-300">
-                        Trial · {subStatus?.trial_days_left ?? '?'}d left
+                        Trial � {subStatus?.trial_days_left ?? '?'}d left
                       </span>
                     )}
                     {isScale && (
@@ -264,26 +265,26 @@ export default function UpgradePage() {
               </div>
               {isScale && (
                 <Link href="/dashboard" className="text-sm text-cyan-400 hover:text-cyan-300 transition">
-                  ← Back to dashboard
+                  ? Back to dashboard
                 </Link>
               )}
             </div>
           )}
 
-          {/* ── Success message ─────────────────────────────────────────────── */}
+          {/* -- Success message ----------------------------------------------- */}
           {successMsg && (
             <div className="mb-8 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-center">
               <p className="text-emerald-300 font-semibold">{successMsg}</p>
             </div>
           )}
 
-          {/* ── Scale locked message ─────────────────────────────────────────── */}
+          {/* -- Scale locked message ------------------------------------------- */}
           {isScale ? (
             <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-b from-cyan-500/5 to-transparent p-10 text-center mb-12">
-              <div className="text-5xl mb-4">🔒</div>
-              <h2 className="text-2xl font-bold mb-3 text-white">You're on Scale — the highest plan</h2>
+              <div className="text-5xl mb-4">??</div>
+              <h2 className="text-2xl font-bold mb-3 text-white">You're on Scale � the highest plan</h2>
               <p className="text-gray-400 mb-6 max-w-lg mx-auto">
-                Downgrade is not available. Scale includes continuous monitoring, delta engine, and behavioral intelligence. For billing or account help, use Account → Support.
+                Downgrade is not available. Scale includes continuous monitoring, delta engine, and behavioral intelligence. For billing or account help, use Account ? Support.
               </p>
               <div className="flex items-center justify-center gap-4 flex-wrap">
                 <Link href="/dashboard" className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl transition">
@@ -296,7 +297,7 @@ export default function UpgradePage() {
                 </div>
           ) : (
             <>
-              {/* ── Billing toggle ────────────────────────────────────────────── */}
+              {/* -- Billing toggle ---------------------------------------------- */}
               <div className="flex items-center justify-center gap-3 mb-10">
                 <span className={`text-sm font-medium ${billing === 'monthly' ? 'text-white' : 'text-gray-500'}`}>Monthly</span>
                 <button
@@ -312,7 +313,7 @@ export default function UpgradePage() {
                 </span>
               </div>
 
-              {/* ── Plan card ─────────────────────────────────────────────────── */}
+              {/* -- Plan card --------------------------------------------------- */}
               <div className="max-w-md mx-auto mb-16">
                 {(['scale'] as const).map(planName => {
                   const isCurrent = planName === currentPlanName
@@ -349,7 +350,7 @@ export default function UpgradePage() {
                           <span className="text-gray-500 text-sm mb-1">/mo</span>
                         </div>
                         {billing === 'annual' ? (
-                          <p className="text-xs text-gray-500">Billed annually (${price.annual * 12}/yr) — save ${(price.monthly - price.annual) * 12}/yr</p>
+                          <p className="text-xs text-gray-500">Billed annually (${price.annual * 12}/yr) � save ${(price.monthly - price.annual) * 12}/yr</p>
                         ) : (
                           <p className="text-xs text-gray-500">Switch to annual and save ${(price.monthly - price.annual) * 12}/yr</p>
                         )}
@@ -358,7 +359,7 @@ export default function UpgradePage() {
                       <ul className="space-y-2 mb-6 flex-1">
                         {PLAN_FEATURES[planName].map((f, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm">
-                            <span className="mt-0.5 text-xs text-cyan-400">✓</span>
+                            <span className="mt-0.5 text-xs text-cyan-400">?</span>
                             <span className="text-gray-300">{f}</span>
                           </li>
                         ))}
@@ -375,7 +376,7 @@ export default function UpgradePage() {
                           className="w-full py-3 rounded-xl text-sm font-bold transition bg-cyan-500 hover:bg-cyan-400 text-black disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                           {isActivating && activatingPlan === planName
-                            ? 'Activating…'
+                            ? 'Activating�'
                             : isTrial
                             ? 'Upgrade to Scale'
                             : 'Start Scale'}
@@ -388,7 +389,7 @@ export default function UpgradePage() {
             </>
           )}
 
-          {/* ── Feature list ───────────────────────────────────────────────── */}
+          {/* -- Feature list ------------------------------------------------- */}
           <div className="mb-16">
             <h2 className="text-xl font-semibold text-center text-gray-300 mb-8">Everything in Scale</h2>
             <div className="max-w-lg mx-auto rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
@@ -402,7 +403,7 @@ export default function UpgradePage() {
                 <tbody>
                   {[
                     'Revenue leak detection',
-                    'Revenue Impact Index / RII (0–100)',
+                    'RII score (0�100)',
                     'Close rate modeling',
                     'ARR at risk calculation',
                     'Page-by-page breakdown',
@@ -415,12 +416,12 @@ export default function UpgradePage() {
                     'Risk trajectory (30/60/90-day)',
                     'Revenue incidents',
                     'Executive-grade reporting',
-                    'Team monitoring — unlimited seats',
+                    'Team monitoring � unlimited seats',
                   ].map((label, i) => (
                     <tr key={i} className="border-b border-gray-800/50 hover:bg-gray-800/20 transition">
                       <td className="p-4 text-gray-400">{label}</td>
                       <td className="p-4 text-center">
-                        <span className="text-cyan-400 font-bold">✓</span>
+                        <span className="text-cyan-400 font-bold">?</span>
                       </td>
                     </tr>
                   ))}

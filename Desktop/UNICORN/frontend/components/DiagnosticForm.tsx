@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 
@@ -38,7 +39,7 @@ export default function DiagnosticForm() {
           .filter(sample => sample.trim().length > 0)
       }
 
-      const res = await fetch(`${API_URL}/close-rate-diagnostic`, {
+      const res = await apiFetch(`/close-rate-diagnostic`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -143,7 +144,7 @@ export default function DiagnosticForm() {
         </label>
         <textarea
           name="content_samples"
-          placeholder="Paste 1–3 LinkedIn posts or scripts (separate with blank line)"
+          placeholder="Paste 1�3 LinkedIn posts or scripts (separate with blank line)"
           value={form.content_samples}
           onChange={handleChange}
           required

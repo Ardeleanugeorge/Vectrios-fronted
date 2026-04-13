@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 
@@ -29,7 +30,7 @@ export default function SignUpPage() {
     setError("")
 
     try {
-      const response = await fetch(`${API_URL}/signup`, {
+      const response = await apiFetch(`/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form)
@@ -62,7 +63,7 @@ export default function SignUpPage() {
           const companyId = userData?.company_id || data.company_id || null
 
           if (companyId && token) {
-            const ms = await fetch(`${API_URL}/monitoring/status/${companyId}`, {
+            const ms = await apiFetch(`/monitoring/status/${companyId}`, {
               headers: { Authorization: `Bearer ${token}` }
             }).then(r => r.ok ? r.json() : null).catch(() => null)
 

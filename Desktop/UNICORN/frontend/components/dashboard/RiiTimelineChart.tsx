@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 
@@ -12,7 +13,7 @@ interface TrendEntry {
   volatility: string | null
   drift_detected: boolean
   drift_severity: string | null
-  interpolated?: boolean  // gap-fill day — dimmed on chart
+  interpolated?: boolean  // gap-fill day � dimmed on chart
 }
 
 interface Props {
@@ -29,7 +30,7 @@ function formatDate(iso: string): string {
 function trendColor(trend: string | null): string {
   if (trend === "improving")    return "#34d399"  // green
   if (trend === "escalating")   return "#f87171"  // red
-  return "#94a3b8"                                // gray – stable/unstable
+  return "#94a3b8"                                // gray � stable/unstable
 }
 
 export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medium" }: Props) {
@@ -41,7 +42,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
   useEffect(() => {
     if (!companyId) { setLoading(false); return }
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`${API_URL}/rii-trend/${companyId}`, {
+    apiFetch(`/rii-trend/${companyId}`, {
       headers: { Authorization: `Bearer ${token || ""}` },
     })
       .then(r => r.ok ? r.json() : null)
@@ -50,7 +51,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
       .finally(() => setLoading(false))
   }, [companyId])
 
-  // ── SVG chart dimensions ────────────────────────────────────────────────────
+  // -- SVG chart dimensions ----------------------------------------------------
   const W = 700
   const H = 160
   const PAD = { top: 16, right: 20, bottom: 32, left: 40 }
@@ -88,13 +89,13 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
     Math.round(domainMax),
   ]
 
-  // X-axis labels — show first, last, and every ~7th
+  // X-axis labels � show first, last, and every ~7th
   const xLabels = entries.reduce<number[]>((acc, _, i) => {
     if (i === 0 || i === entries.length - 1 || i % 7 === 0) acc.push(i)
     return acc
   }, [])
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+  // -- Render ------------------------------------------------------------------
   if (loading) {
     return (
       <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
@@ -118,14 +119,14 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
           )}
         </div>
 
-        {/* Empty state — honest message */}
+        {/* Empty state � honest message */}
         <div className="flex flex-col items-center justify-center py-10 text-center">
           {/* Mini baseline indicator */}
           <div className="w-10 h-10 rounded-full border-2 border-cyan-500/40 flex items-center justify-center mb-4">
             <div className="w-2 h-2 rounded-full bg-cyan-400" />
           </div>
           <p className="text-sm text-gray-300 font-medium mb-1">
-            Baseline Recorded — Awaiting Subsequent Structural Delta
+            Baseline Recorded � Awaiting Subsequent Structural Delta
           </p>
           <p className="text-xs text-gray-500 max-w-sm">
             The trend chart populates after the monitoring engine runs at least
@@ -155,7 +156,6 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
   const latest  = entries[entries.length - 1]
   const oldest  = entries[0]
   const totalDelta = latest.rii - oldest.rii
-  const anyDriftFlagged = entries.some(e => e.drift_detected)
 
   return (
     <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
@@ -164,8 +164,8 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
         <div>
           <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Risk Trend (30 Days)</h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            {entries.length} data point{entries.length !== 1 ? "s" : ""} ·{" "}
-            {formatDate(oldest.date)} → {formatDate(latest.date)}
+            {entries.length} data point{entries.length !== 1 ? "s" : ""} �{" "}
+            {formatDate(oldest.date)} ? {formatDate(latest.date)}
           </p>
         </div>
         <div className="text-right">
@@ -186,12 +186,12 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
             </span>
             {hovered.delta_rii !== null && (
               <span className={hovered.delta_rii > 0 ? "text-red-400" : "text-green-400"}>
-                {hovered.delta_rii > 0 ? "+" : ""}{hovered.delta_rii.toFixed(1)} Δ
+                {hovered.delta_rii > 0 ? "+" : ""}{hovered.delta_rii.toFixed(1)} ?
               </span>
             )}
             {hovered.drift_detected && (
               <span className="text-amber-400 text-[10px] uppercase tracking-wide">
-                ⚠ drift {hovered.drift_severity}
+                ? drift {hovered.drift_severity}
               </span>
             )}
           </div>
@@ -243,17 +243,16 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
             </text>
           ))}
 
-          {/* Drift markers — only when ≥2 real points (single-day drift labels confuse) */}
-          {entries.length >= 2 &&
-            entries.map((e, i) =>
-              e.drift_detected ? (
-                <circle
-                  key={`drift-${i}`}
-                  cx={xOf(i)} cy={yOf(e.rii) - 10}
-                  r="3" fill="#f59e0b" opacity="0.8"
-                />
-              ) : null
-            )}
+          {/* Drift markers */}
+          {entries.map((e, i) =>
+            e.drift_detected ? (
+              <circle
+                key={`drift-${i}`}
+                cx={xOf(i)} cy={yOf(e.rii) - 10}
+                r="3" fill="#f59e0b" opacity="0.8"
+              />
+            ) : null
+          )}
 
           {/* Area fill */}
           {areaPath && (
@@ -290,18 +289,16 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
         </svg>
       </div>
 
-      {/* Legend — drift key only when at least one flagged point and multi-day series */}
-      <div className="mt-3 flex flex-wrap items-center gap-5 text-[10px] text-gray-600">
+      {/* Legend */}
+      <div className="mt-3 flex items-center gap-5 text-[10px] text-gray-600">
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-0.5 rounded bg-cyan-500 inline-block"/>
-          Revenue Impact Index (RII)
+          RII score
         </span>
-        {anyDriftFlagged && entries.length >= 2 && (
-          <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-400 inline-block"/>
-            Drift flagged on that scan
-          </span>
-        )}
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-amber-400 inline-block"/>
+          Drift detected
+        </span>
       </div>
     </div>
   )

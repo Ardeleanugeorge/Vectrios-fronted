@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 
@@ -32,7 +33,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
     async function loadAlerts() {
       try {
         const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-        const response = await fetch(`${API_URL}/revenue-alerts/${companyId}?unread_only=true`, {
+        const response = await apiFetch(`/revenue-alerts/${companyId}?unread_only=true`, {
           headers: {
             "Authorization": `Bearer ${token || ""}`
           }
@@ -73,7 +74,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
   useEffect(() => {
     if (!companyId) return
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`${API_URL}/monitoring/status/${companyId}`, { headers: { Authorization: `Bearer ${token || ""}` } })
+    apiFetch(`/monitoring/status/${companyId}`, { headers: { Authorization: `Bearer ${token || ""}` } })
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         const rii = data?.structural_scores?.rii_score
@@ -85,7 +86,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
   const handleMarkRead = async (alertId: string) => {
     try {
       const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-      const response = await fetch(`${API_URL}/revenue-alerts/${alertId}/mark-read`, {
+      const response = await apiFetch(`/revenue-alerts/${alertId}/mark-read`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token || ""}`
@@ -205,7 +206,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
                 className="self-center text-xs text-gray-500 hover:text-gray-300 opacity-0 group-hover:opacity-100 transition"
                 title="Mark as read"
               >
-                ×
+                �
               </button>
             )}
           </div>

@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 
@@ -26,12 +27,6 @@ interface RevenueForecast {
 interface RevenueForecastPanelProps {
   companyId: string | null
   uiState?: "low" | "medium" | "high"
-  /**
-   * Parent (MonitoringLayer) already fetches /revenue-forecast for FinancialExposureCard.
-   * When true, use `sharedForecast` and do not call the API again.
-   */
-  fetchSuppressed?: boolean
-  sharedForecast?: RevenueForecast | null
 }
 
 function formatCurrency(val: number): string {
@@ -40,31 +35,17 @@ function formatCurrency(val: number): string {
   return `$${Math.round(val).toLocaleString()}`
 }
 
-export default function RevenueForecastPanel({
-  companyId,
-  uiState = "medium",
-  fetchSuppressed = false,
-  sharedForecast = null,
-}: RevenueForecastPanelProps) {
+export default function RevenueForecastPanel({ companyId, uiState = "medium" }: RevenueForecastPanelProps) {
   const [forecast, setForecast] = useState<RevenueForecast | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (fetchSuppressed) {
-      setForecast(sharedForecast ?? null)
-      setLoading(false)
-      return
-    }
-
-    if (!companyId) {
-      setLoading(false)
-      return
-    }
+    if (!companyId) { setLoading(false); return }
 
     async function loadForecast() {
       try {
         const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-        const response = await fetch(`${API_URL}/revenue-forecast/${companyId}`, {
+        const response = await apiFetch(`/revenue-forecast/${companyId}`, {
           headers: { "Authorization": `Bearer ${token || ""}` }
         })
         if (response.ok) setForecast(await response.json())
@@ -75,7 +56,7 @@ export default function RevenueForecastPanel({
       }
     }
     loadForecast()
-  }, [companyId, fetchSuppressed, sharedForecast])
+  }, [companyId])
 
   const getConfidenceLabel = (s: number) => s >= 0.7 ? "High" : s >= 0.5 ? "Moderate" : "Low"
   const getConfidenceColor = (s: number) => s >= 0.7 ? "text-green-400" : s >= 0.5 ? "text-amber-400" : "text-gray-400"
@@ -104,7 +85,7 @@ export default function RevenueForecastPanel({
         <p className="text-xs text-gray-500 mt-1 uppercase tracking-wide">Messaging impact on ARR</p>
       </div>
 
-      {/* ── PRIMARY: Annual Revenue at Risk ─────────────────────────── */}
+      {/* -- PRIMARY: Annual Revenue at Risk --------------------------- */}
       {hasRevenueDelta && (
         <div className={`p-5 rounded-lg border ${uiState === "low" ? "bg-emerald-950/20 border-emerald-900/30" : "bg-red-950/30 border-red-900/40"}`}>
           <div className={`text-xs uppercase tracking-wide mb-2 font-medium ${uiState === "low" ? "text-emerald-300/80" : "text-red-400/80"}`}>
@@ -124,24 +105,24 @@ export default function RevenueForecastPanel({
             <div className="mt-1 text-xs text-gray-500">
               {uiState === "low" ? "Performance improvement available: " : "Modeled close-rate impact: "}
               <span className={uiState === "low" ? "text-emerald-300" : "text-red-400"}>
-                {uiState === "low" ? "+" : "−"}{Math.abs(forecast.close_rate_compression).toFixed(1)}%
+                {uiState === "low" ? "+" : "-"}{Math.abs(forecast.close_rate_compression).toFixed(1)}%
               </span>
               {forecast.lost_deals_annual !== undefined && forecast.lost_deals_annual > 0 && (
                 <span className="ml-2">
-                  · ~{Math.round(forecast.lost_deals_annual)} deals/yr {uiState === "low" ? "additional potential" : "at risk"}
+                  � ~{Math.round(forecast.lost_deals_annual)} deals/yr {uiState === "low" ? "additional potential" : "at risk"}
                 </span>
               )}
             </div>
           )}
           {uiState !== "low" && (
             <p className="text-[11px] text-gray-500 mt-3 pt-3 border-t border-gray-800/80">
-              Driven by scale — not high structural risk. Represents modeled exposure, not immediate loss.
+              Driven by scale � not high structural risk. Represents modeled exposure, not immediate loss.
             </p>
           )}
         </div>
       )}
 
-      {/* ── RECOVERY POTENTIAL ──────────────────────────────────────── */}
+      {/* -- RECOVERY POTENTIAL ---------------------------------------- */}
       {hasRecovery && (
         <div className="p-5 bg-green-950/20 border border-green-900/30 rounded-lg">
           <div className="text-xs text-green-400/80 uppercase tracking-wide mb-2 font-medium">
@@ -157,7 +138,7 @@ export default function RevenueForecastPanel({
         </div>
       )}
 
-      {/* ── SECONDARY METRICS ───────────────────────────────────────── */}
+      {/* -- SECONDARY METRICS ----------------------------------------- */}
       <div className="grid grid-cols-2 gap-4 pt-2">
         <div>
           <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Monthly Exposure</div>
@@ -184,7 +165,7 @@ export default function RevenueForecastPanel({
         </div>
       </div>
 
-      {/* ── MODEL INPUTS (transparency) ─────────────────────────────── */}
+      {/* -- MODEL INPUTS (transparency) ------------------------------- */}
       {(forecast.arr_used || forecast.acv_used || forecast.pipeline_deals) && (
         <div className="pt-4 border-t border-gray-800">
           <div className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Model Inputs</div>
@@ -196,7 +177,7 @@ export default function RevenueForecastPanel({
         </div>
       )}
 
-      {/* ── CONFIDENCE ──────────────────────────────────────────────── */}
+      {/* -- CONFIDENCE ------------------------------------------------ */}
       <div className="pt-4 border-t border-gray-800 flex items-center justify-between">
         <div>
           <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Forecast Confidence</div>
@@ -209,7 +190,7 @@ export default function RevenueForecastPanel({
             <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Drivers</div>
             <ul className="space-y-0.5">
               {forecast.drivers.slice(0, 2).map((d, i) => (
-                <li key={i} className="text-xs text-gray-400">• {d}</li>
+                <li key={i} className="text-xs text-gray-400">� {d}</li>
               ))}
             </ul>
           </div>

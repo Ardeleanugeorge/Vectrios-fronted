@@ -1,4 +1,5 @@
-﻿"use client"
+"use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 import { isScanUnlockedWithEmail } from "@/lib/scanResultsRefine"
@@ -17,13 +18,13 @@ const PLAN_COLORS: Record<string, string> = {
 const getPlanDisplay = (plan: string | null, billingCycle?: string | null, trialDaysLeft?: number | null) => {
   if (!plan) return null
   if (billingCycle === "trial") {
-    const trialSuffix = typeof trialDaysLeft === "number" ? ` · ${trialDaysLeft}d left` : ""
+    const trialSuffix = typeof trialDaysLeft === "number" ? ` � ${trialDaysLeft}d left` : ""
     return { label: `Scale Trial${trialSuffix}`, colorKey: "trial" }
   }
   return { label: `Scale`, colorKey: "scale" }
 }
 
-// ── Subscription cache helpers ────────────────────────────────────────────────
+// -- Subscription cache helpers ------------------------------------------------
 // Stale-while-revalidate: show cached plan instantly, refresh in background.
 const CACHE_KEY = "subscription_cache"
 
@@ -48,7 +49,7 @@ function writeSubCache(data: Omit<SubCache, "ts">) {
   } catch {}
 }
 
-/** e.g. vercel.com → Vercel */
+/** e.g. vercel.com ? Vercel */
 function brandLabelFromMonitoredHost(host: string): string {
   const h = (host || "").replace(/^www\./i, "").split("/")[0].trim()
   if (!h) return ""
@@ -103,7 +104,7 @@ function scanTokenForMonitoringFetch(): string | null {
   return readPreferredScanTokenForApi()
 }
 
-// ── Lazy initializer — runs synchronously client-side before first paint ──────
+// -- Lazy initializer � runs synchronously client-side before first paint ------
 function initFromCache<T>(key: keyof SubCache, fallback: T): T {
   if (typeof window === "undefined") return fallback
   return (readSubCache()?.[key] as T) ?? fallback
@@ -116,7 +117,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const searchParams = useSearchParams()
   const scanTokenKey = searchParams.get("token") || ""
 
-  // Read user_data synchronously — no flash on client
+  // Read user_data synchronously � no flash on client
   const [user, setUser] = useState<any>(() => {
     if (typeof window === "undefined") return null
     try {
@@ -128,7 +129,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
 
   const [showMenu, setShowMenu] = useState(false)
 
-  // Read subscription from cache synchronously — badge appears on first render
+  // Read subscription from cache synchronously � badge appears on first render
   const [currentPlan,   setCurrentPlan]   = useState<string | null>(() => initFromCache("plan",          null))
   const [billingCycle,  setBillingCycle]   = useState<string | null>(() => initFromCache("billingCycle",  null))
   const [trialDaysLeft, setTrialDaysLeft]  = useState<number | null>(() => initFromCache("trialDaysLeft", null))
@@ -158,7 +159,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     }
 
     const loadSubscriptionForCompany = (companyId: string) => {
-      fetch(`${API_URL}/subscription/${companyId}`, {
+      apiFetch(`/subscription/${companyId}`, {
         headers: { "Authorization": `Bearer ${token}` }
       })
         .then(r => r.ok ? r.json() : null)
@@ -195,7 +196,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
           return
         }
 
-        const res = await fetch(`${API_URL}/account/profile`, {
+        const res = await apiFetch(`/account/profile`, {
           headers: { "Authorization": `Bearer ${token}` },
         })
         if (!res.ok) return
@@ -251,7 +252,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     window.addEventListener("storage", handleStorageChange)
     window.addEventListener("subscription_updated", handleSubscriptionUpdate)
     
-    // Single refresh after trial activation � no aggressive polling
+    // Single refresh after trial activation ? no aggressive polling
     const urlParams = new URLSearchParams(window.location.search)
     const isTrialActivated = urlParams.get("trial") === "activated"
     let pollTimeout: ReturnType<typeof setTimeout> | null = null
@@ -278,7 +279,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     const qs = st ? `?scan_token=${encodeURIComponent(st)}` : ""
     let cancelled = false
     const run = () => {
-      fetch(`${API_URL}/monitoring/status/${companyId}${qs}`, {
+      apiFetch(`/monitoring/status/${companyId}${qs}`, {
         headers: { Authorization: `Bearer ${auth}` },
       })
         .then((r) => (r.ok ? r.json() : null))
@@ -339,7 +340,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
     try {
       if (companyId) {
         const qs = activeToken ? `?scan_token=${encodeURIComponent(activeToken)}` : ""
-        const res = await fetch(`${API_URL}/monitoring/status/${companyId}${qs}`, {
+        const res = await apiFetch(`/monitoring/status/${companyId}${qs}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (res.ok) {

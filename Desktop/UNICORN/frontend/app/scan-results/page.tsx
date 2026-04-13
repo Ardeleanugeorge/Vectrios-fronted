@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 import { buildScanPrefillPayload, persistScanDataForPrefill } from '@/lib/scanPrefill'
@@ -14,7 +15,6 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
 import SiteFooter from "@/components/SiteFooter"
-import { METHODOLOGY_RII_HREF, RII_ABBREV, RII_NAME, RII_TAGLINE } from "@/lib/rii"
 
 interface ScanData {
   scan_token: string
@@ -81,7 +81,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20">
         <p className="text-red-400 font-semibold text-sm mb-1">
-          {isRateLimited ? "⏳ Scan rate-limited by the site" : "🔒 Blocked by site protection"}
+          {isRateLimited ? "? Scan rate-limited by the site" : "?? Blocked by site protection"}
         </p>
         <p className="text-xs text-gray-400">
           {isRateLimited
@@ -102,10 +102,10 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
         <p className="text-yellow-400 font-semibold text-sm mb-1">
-          ⚠️ Partial scan
+          ?? Partial scan
         </p>
         <p className="text-xs text-gray-400">
-          Site may use dynamic rendering (React / SPA). Limited content detected — score confidence reduced.
+          Site may use dynamic rendering (React / SPA). Limited content detected � score confidence reduced.
         </p>
       </div>
     )
@@ -116,7 +116,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20">
         <p className="text-red-400 font-semibold text-sm mb-1">
-          ❌ Scan failed
+          ? Scan failed
         </p>
         <p className="text-xs text-gray-400">
           Unable to analyze this website. {reason ? `Reason: ${reason}` : "Please try again later."}
@@ -130,10 +130,10 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
         <p className="text-yellow-400 font-semibold text-sm mb-1">
-          ⚠️ Low confidence (limited content)
+          ?? Low confidence (limited content)
         </p>
         <p className="text-xs text-gray-400">
-          Limited content detected — site may use dynamic rendering. Score confidence reduced.
+          Limited content detected � site may use dynamic rendering. Score confidence reduced.
         </p>
       </div>
     )
@@ -143,7 +143,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   if (status === "success") {
     return (
       <div className="mt-3 text-xs text-green-400 text-center">
-        ✓ Full analysis completed
+        ? Full analysis completed
       </div>
     )
   }
@@ -153,10 +153,10 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
         <p className="text-yellow-400 font-semibold text-sm mb-1">
-          ⚠️ Low confidence (limited content)
+          ?? Low confidence (limited content)
         </p>
         <p className="text-xs text-gray-400">
-          Limited content detected — site may use dynamic rendering. Score confidence reduced.
+          Limited content detected � site may use dynamic rendering. Score confidence reduced.
         </p>
       </div>
     )
@@ -165,7 +165,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   return null
 }
 
-// ── Business-language metric copy (no framework jargon) ─────────────────────
+// -- Business-language metric copy (no framework jargon) ---------------------
 const METRIC_ROWS: { label: string; hint: string }[] = [
   {
     label: "Your pages don't consistently convert",
@@ -173,7 +173,7 @@ const METRIC_ROWS: { label: string; hint: string }[] = [
   },
   {
     label: "You're attracting low-fit visitors",
-    hint: "ICP signals are weak — wrong people enter the funnel.",
+    hint: "ICP signals are weak � wrong people enter the funnel.",
   },
   {
     label: "Proof and numbers are too thin to justify the next step",
@@ -181,11 +181,11 @@ const METRIC_ROWS: { label: string; hint: string }[] = [
   },
   {
     label: "Your category story is inconsistent across pages",
-    hint: "Positioning shifts — buyers can't compare you with confidence.",
+    hint: "Positioning shifts � buyers can't compare you with confidence.",
   },
 ]
 
-/** 0–100 score → plain-English impact tier (matches example bands: ~20 / ~38 / ~59) */
+/** 0�100 score ? plain-English impact tier (matches example bands: ~20 / ~38 / ~59) */
 function metricImpactLabel(v: number): string {
   if (v >= 59) return "High impact"
   if (v >= 34) return "Moderate impact"
@@ -202,7 +202,7 @@ function ScoreBar({ label, hint, value }: { label: string; hint: string; value: 
       <div className="flex justify-between mb-1.5 gap-3">
         <span className="text-sm text-gray-200 font-medium leading-snug">{label}</span>
         <div className="flex flex-col items-end shrink-0">
-          <span className="text-sm font-bold text-white tabular-nums">{value !== null ? Math.round(v) : "—"}</span>
+          <span className="text-sm font-bold text-white tabular-nums">{value !== null ? Math.round(v) : "�"}</span>
           {value !== null && (
             <span className="text-[10px] font-medium text-gray-500 mt-0.5">{metricImpactLabel(v)}</span>
           )}
@@ -224,28 +224,28 @@ function primarySignalDisplay(signal: string): { headline: string } {
   const s = (signal || "").toLowerCase()
   if (s.includes("positioning") || s.includes("coherence")) {
     return {
-      headline: "Your positioning is inconsistent — buyers don't clearly understand why to choose you",
+      headline: "Your positioning is inconsistent � buyers don't clearly understand why to choose you",
     }
   }
   if (s.includes("icp") || s.includes("clarity")) {
     return {
-      headline: "Your ICP is too broad — you're attracting visitors who will never convert",
+      headline: "Your ICP is too broad � you're attracting visitors who will never convert",
     }
   }
   if (s.includes("alignment") || s.includes("messaging")) {
     return {
-      headline: "Your messaging doesn't match your revenue objective — conversion breaks early",
+      headline: "Your messaging doesn't match your revenue objective � conversion breaks early",
     }
   }
   if (s.includes("anchor")) {
     return {
-      headline: "Proof and conversion anchors are too thin — buyers stall before they act",
+      headline: "Proof and conversion anchors are too thin � buyers stall before they act",
     }
   }
   return {
     headline:
       signal ||
-      "Your growth is being limited by subtle messaging gaps — you're still leaving revenue on the table",
+      "Your growth is being limited by subtle messaging gaps � you're still leaving revenue on the table",
   }
 }
 
@@ -255,7 +255,7 @@ function buildStructureInsightBullets(data: ScanData, closeLow: number, closeHig
   const bullets: string[] = []
   if (closeRateDeltaBase(data) > 0) {
     bullets.push(
-      `Modeled close-rate gap vs. structural potential: ~${closeLow.toFixed(1)}–${closeHigh.toFixed(1)} percentage points from this scan’s signals.`
+      `Modeled close-rate gap vs. structural potential: ~${closeLow.toFixed(1)}�${closeHigh.toFixed(1)} percentage points from this scan�s signals.`
     )
   }
   const icp = data.icp_clarity ?? 0
@@ -264,26 +264,26 @@ function buildStructureInsightBullets(data: ScanData, closeLow: number, closeHig
   const pos = data.positioning ?? 0
   if (icp < 45) {
     bullets.push(
-      `ICP clarity scores ${Math.round(icp)}/100 on analyzed pages — targeting reads broad, which drags deal quality.`
+      `ICP clarity scores ${Math.round(icp)}/100 on analyzed pages � targeting reads broad, which drags deal quality.`
     )
   }
   if (anch < 45) {
     bullets.push(
-      `Proof / anchor density is ${Math.round(anch)}/100 — fewer quantified triggers for buyers to justify the next step.`
+      `Proof / anchor density is ${Math.round(anch)}/100 � fewer quantified triggers for buyers to justify the next step.`
     )
   }
   if (aln < 45) {
     bullets.push(
-      `Messaging alignment is ${Math.round(aln)}/100 — the revenue story is inconsistent across key pages.`
+      `Messaging alignment is ${Math.round(aln)}/100 � the revenue story is inconsistent across key pages.`
     )
   }
   if (pos < 45 && bullets.length < 4) {
     bullets.push(
-      `Positioning coherence is ${Math.round(pos)}/100 — category and “why us” language shifts between pages.`
+      `Positioning coherence is ${Math.round(pos)}/100 � category and �why us� language shifts between pages.`
     )
   }
   if (data.inferred_icp && bullets.length < 4) {
-    bullets.push(`Detected audience focus: ${data.inferred_icp} — check that hero and pricing match that buyer.`)
+    bullets.push(`Detected audience focus: ${data.inferred_icp} � check that hero and pricing match that buyer.`)
   }
   return bullets.slice(0, 4)
 }
@@ -296,7 +296,7 @@ function closeRateDeltaBase(data: ScanData): number {
   return b
 }
 
-// Driver impacts are provided by backend (`driver_impacts`) — no frontend allocation.
+// Driver impacts are provided by backend (`driver_impacts`) � no frontend allocation.
 
 function LockedInsight({ label }: { label: string }) {
   return (
@@ -329,13 +329,13 @@ function ScanResultsContent() {
   const [unlocked, setUnlocked] = useState(false)
   const [showFinancialImpact, setShowFinancialImpact] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  /** true = has active trial or paid plan → full paywall bypass */
+  /** true = has active trial or paid plan ? full paywall bypass */
   const [hasActivePlan, setHasActivePlan] = useState(false)
   /** true = billing_cycle === 'trial' */
   const [isTrialPlan, setIsTrialPlan] = useState(false)
   const [unlockTransitioning, setUnlockTransitioning] = useState(false)
   const [previousSnapshot, setPreviousSnapshot] = useState<ScanSnapshot | null>(null)
-  /** True when this browser already has scan unlock and/or saved email — do not push user through email-capture again. */
+  /** True when this browser already has scan unlock and/or saved email � do not push user through email-capture again. */
   const [returningAccountHint, setReturningAccountHint] = useState(false)
   const [savedWorkEmail, setSavedWorkEmail] = useState("")
 
@@ -356,7 +356,7 @@ function ScanResultsContent() {
 
   useEffect(() => {
     if (!token) { setError("No scan token found."); setLoading(false); return }
-    fetch(`${API_URL}/scan/${token}`)
+    apiFetch(`/scan/${token}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(d => {
         setData(d)
@@ -381,7 +381,7 @@ function ScanResultsContent() {
   }, [token])
 
   useEffect(() => {
-    fetch(`${API_URL}/scan-stats`)
+    apiFetch(`/scan-stats`)
       .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
       .then(d => setScanCount(d.total ?? 0))
       .catch(() => setScanCount(0))
@@ -389,7 +389,7 @@ function ScanResultsContent() {
 
   /** Restore wide view after email unlock for this scan token.
    *  If the user is already authenticated, skip the email gate entirely.
-   *  hasActivePlan must reflect real subscription — default false, then cache + API. */
+   *  hasActivePlan must reflect real subscription � default false, then cache + API. */
   useEffect(() => {
     if (!token || typeof window === "undefined") return
     let cancelled = false
@@ -570,7 +570,7 @@ function ScanResultsContent() {
     setCaptureError("")
     
     try {
-      const res = await fetch(`${API_URL}/email-capture`, {
+      const res = await apiFetch(`/email-capture`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -588,7 +588,7 @@ function ScanResultsContent() {
       
       const result = await res.json()
 
-      // ── Account already complete (e.g. password set) → login, not another email gate ──
+      // -- Account already complete (e.g. password set) ? login, not another email gate --
       if (result.requires_login || result.status === "login_required") {
         const em = String(result.email || email.trim() || "").trim()
         const loginUrl = `/login?email=${encodeURIComponent(em)}&reason=resume_scan`
@@ -627,7 +627,7 @@ function ScanResultsContent() {
       console.log("[EMAIL-CAPTURE] Saved user_data:", userData)
       // Fetch subscription to determine plan/trial state (authoritative)
       try {
-        const subRes = await fetch(`${API_URL}/subscription/${encodeURIComponent(String(result.company_id))}`, {
+        const subRes = await apiFetch(`/subscription/${encodeURIComponent(String(result.company_id))}`, {
           headers: { Authorization: `Bearer ${result.token}` },
         })
         if (subRes.ok) {
@@ -750,7 +750,7 @@ function ScanResultsContent() {
 
     const loadHistory = async () => {
       try {
-        const res = await fetch(`${API_URL}/company/${encodeURIComponent(data.domain)}/history`)
+        const res = await apiFetch(`/company/${encodeURIComponent(data.domain)}/history`)
         if (!res.ok) {
           setPreviousSnapshot(null)
           return
@@ -790,7 +790,7 @@ function ScanResultsContent() {
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
         </svg>
-        <p className="text-gray-400">Loading scan results…</p>
+        <p className="text-gray-400">Loading scan results�</p>
       </div>
     </div>
   )
@@ -799,7 +799,7 @@ function ScanResultsContent() {
     <div className="page-root flex items-center justify-center">
       <div className="text-center max-w-md">
         <p className="text-red-400 mb-4">{error}</p>
-        <Link href="/" className="text-cyan-400 hover:text-cyan-300">← Run a new scan</Link>
+        <Link href="/" className="text-cyan-400 hover:text-cyan-300">? Run a new scan</Link>
       </div>
     </div>
   )
@@ -824,17 +824,17 @@ function ScanResultsContent() {
 
   const modeledMonthlyLossLabel = (() => {
     if (!financialImpact) return null
-    return `${formatCurrency(financialImpact.monthly_loss_low)}–${formatCurrency(financialImpact.monthly_loss_high)}/month`
+    return `${formatCurrency(financialImpact.monthly_loss_low)}�${formatCurrency(financialImpact.monthly_loss_high)}/month`
   })()
 
   const modeledAnnualLossLabel = (() => {
     if (!financialImpact) return null
-    return `${formatCurrency(financialImpact.arr_at_risk_low)}–${formatCurrency(financialImpact.arr_at_risk_high)}/year`
+    return `${formatCurrency(financialImpact.arr_at_risk_low)}�${formatCurrency(financialImpact.arr_at_risk_high)}/year`
   })()
 
   const modeledRecoverableLabel = (() => {
     if (!financialImpact) return null
-    return `${formatCurrency(financialImpact.recovery_low)}–${formatCurrency(financialImpact.recovery_high)}/year`
+    return `${formatCurrency(financialImpact.recovery_low)}�${formatCurrency(financialImpact.recovery_high)}/year`
   })()
 
   const modeledCloseRateGapLabel = (() => {
@@ -848,7 +848,7 @@ function ScanResultsContent() {
 
   return (
     <div className="page-root">
-      {/* Înainte de email: același header îngust ca landing-ul de rezultate. După email: lățime dashboard. */}
+      {/* �nainte de email: acela?i header �ngust ca landing-ul de rezultate. Dupa email: la?ime dashboard. */}
       {wideLayout ? (
         <Header />
       ) : (
@@ -881,7 +881,7 @@ function ScanResultsContent() {
           </div>
         </div>
 
-        {/* RII: coloană îngustă + centrat înainte de email; grid lat după email */}
+        {/* RII: coloana �ngusta + centrat �nainte de email; grid lat dupa email */}
         <div
           className={`bg-[#111827] rounded-xl border border-gray-800 mb-6 ${
             wideLayout ? "p-6 lg:p-8 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start text-left" : "p-8 text-center"
@@ -902,34 +902,14 @@ function ScanResultsContent() {
               <p className="text-lg font-semibold text-white leading-snug">
                 Your website is silently losing revenue right now
               </p>
-              <p className="text-sm text-gray-400 mt-1">Loading model from your scan…</p>
+              <p className="text-sm text-gray-400 mt-1">Loading model from your scan�</p>
             </div>
           )}
 
           <div className={wideLayout ? "lg:col-span-4 lg:row-span-2" : ""}>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-500/80 mb-1">Core metric</p>
-            <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">{RII_NAME}</p>
-            <p
-              className={`text-[11px] text-gray-500 mb-2 ${wideLayout ? "text-left" : "text-center"}`}
-            >
-              <abbr
-                title={RII_TAGLINE}
-                className="cursor-help text-cyan-400/90 border-b border-dotted border-cyan-500/50 font-semibold"
-              >
-                {RII_ABBREV}
-              </abbr>
-              <span className="text-gray-500"> · 0–100 · lower = stronger architecture</span>
-            </p>
-            <div className={`mb-3 ${wideLayout ? "text-left" : "text-center"}`}>
-              <Link
-                href={METHODOLOGY_RII_HREF}
-                className="text-[11px] text-cyan-600 hover:text-cyan-400 hover:underline"
-              >
-                How {RII_ABBREV} is calculated →
-              </Link>
-            </div>
+            <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Revenue Impact Index</p>
             <p className={`font-bold mb-2 ${riiColor} ${wideLayout ? "text-6xl sm:text-7xl" : "text-7xl"}`}>
-              {hasRii && !isBlocked ? Math.round(rii as number) : "—"}
+              {hasRii && !isBlocked ? Math.round(rii as number) : "�"}
             </p>
             <p className={`text-lg font-semibold mb-3 ${riiColor}`}>{data.risk_level}</p>
           </div>
@@ -937,12 +917,12 @@ function ScanResultsContent() {
           <div className={wideLayout ? "lg:col-span-8 space-y-4" : "contents"}>
             {data.status !== "blocked" && (
               <p className={`text-sm text-gray-400 ${wideLayout ? "mb-2" : "mb-4"}`}>
-                Structural misalignment in revenue-stage messaging — see breakdown below.
+                Structural misalignment in revenue-stage messaging � see breakdown below.
               </p>
             )}
             {data.status === "blocked" && (
               <p className="text-sm text-gray-400 mb-4">
-                Unable to analyze — site blocked automated access.
+                Unable to analyze � site blocked automated access.
               </p>
             )}
 
@@ -954,7 +934,7 @@ function ScanResultsContent() {
               <div className={`${wideLayout ? "text-left" : "text-center"}`}>
                 <p className="text-sm text-gray-300 font-medium">
                   {!unlocked
-                    ? "Revenue impact detected — full breakdown after unlock"
+                    ? "Revenue impact detected � full breakdown after unlock"
                     : financialImpact
                       ? `Modeled impact: ~${modeledMonthlyLossLabel}`
                       : "Revenue impact detected"}
@@ -962,8 +942,8 @@ function ScanResultsContent() {
                 {typeof data.percentile === "number" && (
                   <p className="text-xs text-gray-500 mt-1">
                     {data.percentile >= 50
-                      ? `Better than ${Math.round(data.percentile)}% of SaaS — but still leaving significant revenue on the table`
-                      : `You’re performing worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of similar SaaS companies`}
+                      ? `Better than ${Math.round(data.percentile)}% of SaaS � but still leaving significant revenue on the table`
+                      : `You�re performing worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of similar SaaS companies`}
                   </p>
                 )}
               </div>
@@ -998,21 +978,21 @@ function ScanResultsContent() {
               >
                 <span>
                   {(data.percentile ?? 0) < 50
-                    ? "You're underperforming — this is actively leaking revenue"
-                    : "You're performing above average — but still leaving revenue on the table"}
+                    ? "You're underperforming � this is actively leaking revenue"
+                    : "You're performing above average � but still leaving revenue on the table"}
                 </span>
                 {(data.percentile ?? 0) >= 50 ? (
                   <span className="text-xs opacity-80">
                     You're still missing{" "}
                     {financialImpact
-                      ? `~${formatCurrency(financialImpact.recovery_low)}–${formatCurrency(financialImpact.recovery_high)}/year`
+                      ? `~${formatCurrency(financialImpact.recovery_low)}�${formatCurrency(financialImpact.recovery_high)}/year`
                       : "a modeled recovery range"}
                   </span>
                 ) : (
                   <span className="text-xs opacity-80">
                     Estimated preventable loss:{" "}
                     {financialImpact
-                      ? `${formatCurrency(financialImpact.arr_at_risk_low)}–${formatCurrency(financialImpact.arr_at_risk_high)}/year`
+                      ? `${formatCurrency(financialImpact.arr_at_risk_low)}�${formatCurrency(financialImpact.arr_at_risk_high)}/year`
                       : "modeled range loading"}
                   </span>
                 )}
@@ -1042,7 +1022,7 @@ function ScanResultsContent() {
                 Benchmarked against 500+ SaaS companies
               </span>
               <span className="text-cyan-500 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                View index →
+                View index ?
               </span>
             </Link>
           </div>
@@ -1081,7 +1061,7 @@ function ScanResultsContent() {
               {primarySignalDisplay(data.primary_signal).headline}
             </p>
             <p className="text-sm text-gray-400">
-              → This directly reduces conversion rates
+              ? This directly reduces conversion rates
             </p>
             {data.inferred_icp && (
               <p className="text-xs text-gray-600 mt-3">Detected audience: {data.inferred_icp}</p>
@@ -1089,7 +1069,7 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* Locked insights — hide after unlock (full numbers shown below, no fake “locked” tease) */}
+        {/* Locked insights � hide after unlock (full numbers shown below, no fake �locked� tease) */}
         {!unlocked && (
           <div className="p-6 bg-[#111827] rounded-xl border border-gray-800 mb-6">
             <div className="flex items-center gap-2 mb-4">
@@ -1112,7 +1092,7 @@ function ScanResultsContent() {
           <div className="text-center p-8 bg-gradient-to-br from-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/20 mb-6">
             <div className="mb-4">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium">
-                🔒 Full Diagnostic
+                ?? Full Diagnostic
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold mb-2 text-white max-w-xl mx-auto leading-snug">
@@ -1165,7 +1145,7 @@ function ScanResultsContent() {
               onClick={handleUnlock}
               className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
             >
-              See exactly what&apos;s costing you revenue →
+              See exactly what&apos;s costing you revenue ?
             </button>
             <p className="text-xs text-gray-500 mt-3 max-w-md mx-auto text-center leading-relaxed">
               Takes 30 seconds - Instant access - No spam
@@ -1173,7 +1153,7 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {/* Back to Dashboard strip — only for authenticated users WITH active plan */}
+        {/* Back to Dashboard strip � only for authenticated users WITH active plan */}
         {unlocked && (() => {
           const isAuth = typeof window !== "undefined" &&
             !!(sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token"))
@@ -1188,13 +1168,13 @@ function ScanResultsContent() {
                 href={token ? `/dashboard?token=${encodeURIComponent(token)}` : "/dashboard"}
                 className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg transition whitespace-nowrap"
               >
-                ← Back to Dashboard
+                ? Back to Dashboard
               </Link>
             </div>
           )
         })()}
 
-        {/* După email: single Page 4 experience (uses backend numbers when available, safe fallbacks otherwise). */}
+        {/* Dupa email: single Page 4 experience (uses backend numbers when available, safe fallbacks otherwise). */}
         {unlocked && showFinancialImpact && !isBlocked && (
           <div
             id="financial-impact-instant"
@@ -1212,12 +1192,12 @@ function ScanResultsContent() {
                 <>
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight mb-3 text-center lg:text-left max-w-4xl">
                     {impact && mLow !== null && mHigh !== null
-                      ? `You’re losing ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}/month`
-                      : "You’re already losing revenue every month"}
+                      ? `You�re losing ~${formatCurrency(mLow)}�${formatCurrency(mHigh)}/month`
+                      : "You�re already losing revenue every month"}
                   </h3>
                   <p className="text-base font-semibold text-orange-300 mb-2 text-center lg:text-left">
                     {impact
-                      ? `Modeled annual impact: ~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year`
+                      ? `Modeled annual impact: ~${formatCurrency(impact.arr_at_risk_low)}�${formatCurrency(impact.arr_at_risk_high)}/year`
                       : "Modeled annual impact based on structural analysis"}
                   </p>
                   <p className="text-sm text-gray-400 mb-6 max-w-3xl text-center lg:text-left">
@@ -1235,7 +1215,7 @@ function ScanResultsContent() {
                   <div className="max-w-3xl mb-6">
                     <p className="text-sm font-semibold text-red-300">
                       {impact && mLow !== null && mHigh !== null
-                        ? `Every month this goes unfixed, you’re losing another ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}.`
+                        ? `Every month this goes unfixed, you�re losing another ~${formatCurrency(mLow)}�${formatCurrency(mHigh)}.`
                         : "Every month this goes unfixed, revenue leakage continues to compound."}
                     </p>
                     <p className="text-sm text-gray-400 mt-1">
@@ -1249,14 +1229,14 @@ function ScanResultsContent() {
                       <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
                         <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Annual loss</p>
                         <p className="text-xl font-bold text-red-300">
-                          {impact ? `~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year` : "🔒 Full modeled loss available after unlock"}
+                          {impact ? `~${formatCurrency(impact.arr_at_risk_low)}�${formatCurrency(impact.arr_at_risk_high)}/year` : "?? Full modeled loss available after unlock"}
                         </p>
                         <p className="text-[11px] text-gray-400">{impact ? "Modeled annual downside" : "Modeled from full dataset"}</p>
                       </div>
                       <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
                         <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Recoverable</p>
                         <p className="text-xl font-bold text-emerald-300">
-                          {impact ? `~${formatCurrency(impact.recovery_low)}–${formatCurrency(impact.recovery_high)}/year` : "🔒 Recovery range calculated (unlock to view)"}
+                          {impact ? `~${formatCurrency(impact.recovery_low)}�${formatCurrency(impact.recovery_high)}/year` : "?? Recovery range calculated (unlock to view)"}
                         </p>
                         <p className="text-[11px] text-gray-400">{impact ? "If messaging is aligned" : "Modeled from full dataset"}</p>
                       </div>
@@ -1268,7 +1248,7 @@ function ScanResultsContent() {
                     </div>
                     {!isAuthenticated && (
                       <div className="pointer-events-none absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/40 border border-white/15 text-[10px] text-gray-300">
-                        <span>🔒</span>
+                        <span>??</span>
                         <span>Unlock full model</span>
                       </div>
                     )}
@@ -1304,7 +1284,7 @@ function ScanResultsContent() {
                               </div>
                               <div className="text-right shrink-0">
                                 <p className="text-sm font-bold text-orange-200 tabular-nums">
-                                  ~{formatCurrency(Number(d.monthly_low || 0))}–{formatCurrency(Number(d.monthly_high || 0))}/mo
+                                  ~{formatCurrency(Number(d.monthly_low || 0))}�{formatCurrency(Number(d.monthly_high || 0))}/mo
                                 </p>
                                 <p className="text-[11px] text-gray-500 mt-0.5">estimated impact</p>
                               </div>
@@ -1324,17 +1304,17 @@ function ScanResultsContent() {
                             Highest impact fix path: <span className="text-white font-semibold">{drivers[0]?.title || "Primary structural gap"}</span>
                           </p>
                           <p className="text-xs text-gray-400 mb-3">
-                            Start with this first — it drives the largest share of your modeled monthly loss.
+                            Start with this first � it drives the largest share of your modeled monthly loss.
                           </p>
                           <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
                             <p className="text-xs uppercase tracking-wider text-emerald-300/90 mb-1">Estimated recoverable from #1</p>
                             <p className="text-sm font-semibold text-emerald-200">
-                              ~{formatCurrency(Number(drivers[0]?.monthly_low || 0))}–{formatCurrency(Number(drivers[0]?.monthly_high || 0))}/month
+                              ~{formatCurrency(Number(drivers[0]?.monthly_low || 0))}�{formatCurrency(Number(drivers[0]?.monthly_high || 0))}/month
                             </p>
                           </div>
                           <p className="text-xs text-gray-500 mt-3">
                             {impact
-                              ? `Companies at your level typically recover ~${formatCurrency(impact.recovery_low)}–${formatCurrency(impact.recovery_high)}/year.`
+                              ? `Companies at your level typically recover ~${formatCurrency(impact.recovery_low)}�${formatCurrency(impact.recovery_high)}/year.`
                               : "Recovery range unlocks after a full crawl model pass."}
                           </p>
                         </>
@@ -1350,7 +1330,7 @@ function ScanResultsContent() {
             })()}
 
             {isAuthenticated && hasActivePlan ? (
-              /* ── STATE A: Authenticated + active plan → full bypass ── */
+              /* -- STATE A: Authenticated + active plan ? full bypass -- */
               <div className="p-5 sm:p-6 rounded-xl bg-[#111827] border border-emerald-800/40">
                 <p className="text-xs font-semibold text-emerald-400/90 uppercase tracking-wider mb-2">
                   Diagnostic complete
@@ -1361,12 +1341,12 @@ function ScanResultsContent() {
                 <ul className="space-y-2 text-sm text-gray-400 mb-5">
                   {[
                     "Revenue playbook updated with page-level fixes",
-                    `${RII_NAME} (${RII_ABBREV}) and trajectory recalculated`,
+                    "RII score and trajectory recalculated",
                     "Benchmark position refreshed",
                     "Continuous monitoring runs after you activate it from the dashboard",
                   ].map((line) => (
                     <li key={line} className="flex items-start gap-2">
-                      <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
+                      <span className="text-emerald-400 mt-0.5 shrink-0">?</span>
                       <span>{line}</span>
                     </li>
                   ))}
@@ -1375,11 +1355,11 @@ function ScanResultsContent() {
                   href={token ? `/dashboard?token=${encodeURIComponent(token)}` : "/dashboard"}
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
-                  ← Back to Dashboard
+                  ? Back to Dashboard
                 </Link>
               </div>
             ) : isAuthenticated && !hasActivePlan ? (
-              /* ── STATE B: Authenticated but no active plan → upgrade CTA ── */
+              /* -- STATE B: Authenticated but no active plan ? upgrade CTA -- */
               <div className="p-5 sm:p-6 rounded-xl bg-[#111827] border border-amber-800/40">
                 <p className="text-xs font-semibold text-amber-400/90 uppercase tracking-wider mb-2">
                   Activate monitoring to unlock the full model
@@ -1395,7 +1375,7 @@ function ScanResultsContent() {
                     "24h automated monitoring",
                   ].map((line) => (
                     <li key={line} className="flex items-start gap-2">
-                      <span className="text-amber-400 mt-0.5 shrink-0">✓</span>
+                      <span className="text-amber-400 mt-0.5 shrink-0">?</span>
                       <span>{line}</span>
                     </li>
                   ))}
@@ -1404,11 +1384,11 @@ function ScanResultsContent() {
                 href="/pricing?from=scan&focus=recovery"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
-                  Activate monitoring →
+                  Activate monitoring ?
                 </Link>
               </div>
             ) : (
-              /* ── STATE C: Unauthenticated → continue to login/plans (not a second signup) ── */
+              /* -- STATE C: Unauthenticated ? continue to login/plans (not a second signup) -- */
               <div className="p-5 sm:p-6 rounded-xl bg-[#111827] border border-gray-800/80">
                 <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
                   {returningAccountHint ? "Next step" : "Full recovery plan locked"}
@@ -1426,7 +1406,7 @@ function ScanResultsContent() {
                     "Modeled recovery by priority and timeline",
                   ].map((line) => (
                     <li key={line} className="flex items-start gap-2">
-                      <span className="text-emerald-400 mt-0.5 shrink-0">✓</span>
+                      <span className="text-emerald-400 mt-0.5 shrink-0">?</span>
                       <span>{line}</span>
                     </li>
                   ))}
@@ -1437,7 +1417,7 @@ function ScanResultsContent() {
                       href="/pricing?from=scan&focus=recovery"
                       className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto text-center"
                     >
-                      View plans →
+                      View plans ?
                     </Link>
                     <Link
                       href={
@@ -1457,10 +1437,10 @@ function ScanResultsContent() {
                       onClick={handleUnlock}
                       className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                     >
-                      See exactly what&apos;s costing you revenue →
+                      See exactly what&apos;s costing you revenue ?
                     </button>
                     <p className="text-xs text-gray-500 mt-3">
-                      Takes 30 seconds · Instant access · No spam
+                      Takes 30 seconds � Instant access � No spam
                     </p>
                   </>
                 )}
@@ -1478,7 +1458,7 @@ function ScanResultsContent() {
                       >
                         Sign in
                       </Link>
-                      {" · "}
+                      {" � "}
                       <Link
                         href="/pricing?from=scan&focus=recovery"
                         className="text-gray-400 hover:text-cyan-300 underline-offset-2 hover:underline"
@@ -1492,7 +1472,7 @@ function ScanResultsContent() {
                       <Link href="/login" className="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline">
                         Sign in
                       </Link>
-                      {" · "}
+                      {" � "}
                       <Link href="/pricing?from=scan&focus=recovery" className="text-gray-400 hover:text-cyan-300 underline-offset-2 hover:underline">
                         View plans
                       </Link>
@@ -1512,7 +1492,7 @@ function ScanResultsContent() {
                 href="/upgrade"
                 className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition shadow-cyan-500/15"
               >
-                Upgrade to Scale →
+                Upgrade to Scale ?
               </Link>
             </div>
           </div>
@@ -1551,20 +1531,20 @@ function ScanResultsContent() {
                     className="order-2 sm:order-1 self-start text-sm text-gray-500 hover:text-gray-400 px-1 py-2 bg-transparent border-0 transition disabled:opacity-40"
                     disabled={capturing}
                   >
-                    ← Back
+                    ? Back
                   </button>
                   <button
                     type="submit"
                     disabled={capturing || !email.trim()}
                     className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
                   >
-                    {capturing ? "Unlocking…" : "See full analysis →"}
+                    {capturing ? "Unlocking�" : "See full analysis ?"}
                   </button>
                 </div>
               </form>
               
               <p className="text-xs text-gray-500 mt-4 text-center leading-relaxed">
-                Instant access • No spam • Used to save your model
+                Instant access � No spam � Used to save your model
               </p>
             </div>
           </div>
@@ -1580,7 +1560,7 @@ function ScanResultsContent() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            <p className="text-sm text-gray-300">Unlocking your full results…</p>
+            <p className="text-sm text-gray-300">Unlocking your full results�</p>
           </div>
         </div>
       )}

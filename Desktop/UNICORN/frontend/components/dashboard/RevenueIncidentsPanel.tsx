@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 
@@ -83,7 +84,7 @@ function IncidentCard({ inc }: { inc: RevenueIncident }) {
           <span className="text-sm font-semibold text-gray-200 leading-tight">{inc.title}</span>
           {inc.is_persistent && (
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded border bg-purple-500/15 text-purple-400 border-purple-500/30 flex-shrink-0">
-              PERSISTENT · {inc.days_detected}d
+              PERSISTENT � {inc.days_detected}d
             </span>
           )}
         </div>
@@ -100,7 +101,7 @@ function IncidentCard({ inc }: { inc: RevenueIncident }) {
         {inc.close_rate_impact != null && (
           <div>
             <span className="text-[10px] text-gray-600 uppercase tracking-wide">Close-rate impact</span>
-            <p className="text-sm font-bold text-red-400">−{inc.close_rate_impact.toFixed(1)}%</p>
+            <p className="text-sm font-bold text-red-400">-{inc.close_rate_impact.toFixed(1)}%</p>
           </div>
         )}
         {inc.arr_exposure != null && inc.arr_exposure > 0 && (
@@ -132,7 +133,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
   useEffect(() => {
     if (!companyId) { setLoading(false); return }
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`${API_URL}/revenue-incidents/${companyId}`, {
+    apiFetch(`/revenue-incidents/${companyId}`, {
       headers: { "Authorization": `Bearer ${token || ""}` }
     })
       .then(r => r.ok ? r.json() : [])

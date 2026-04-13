@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from "@/lib/config"
 import { useEffect, useState } from "react"
@@ -42,7 +43,7 @@ export default function SetPasswordPage() {
     }
     setLoading(true)
     try {
-      const res = await fetch(`${API_URL}/set-password-confirm`, {
+      const res = await apiFetch(`/set-password-confirm`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, new_password: password }),
@@ -77,7 +78,7 @@ export default function SetPasswordPage() {
         sessionStorage.setItem("dashboard_needs_refresh", "1")
         if (coId) {
           try {
-            const subRes = await fetch(`${API_URL}/subscription/${encodeURIComponent(String(coId))}`, {
+            const subRes = await apiFetch(`/subscription/${encodeURIComponent(String(coId))}`, {
               headers: { Authorization: `Bearer ${tok}` },
             })
             if (subRes.ok) {
@@ -116,12 +117,12 @@ export default function SetPasswordPage() {
             Set your Vectri<span className="text-cyan-400">OS</span> password
           </h1>
           <p className="text-sm text-gray-400 mb-6">
-            Secure your account. After this step you&apos;ll continue to plans — no extra sign-in if you open the link in the same browser.
+            Secure your account. After this step you&apos;ll continue to plans � no extra sign-in if you open the link in the same browser.
           </p>
 
           {done ? (
             <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm">
-              Password set. Redirecting to plans…
+              Password set. Redirecting to plans�
             </div>
           ) : (
             <form onSubmit={onSubmit} className="space-y-4">

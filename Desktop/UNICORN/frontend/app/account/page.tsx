@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 import { useEffect, useState } from "react"
@@ -160,7 +161,7 @@ export default function AccountPage() {
   const [selectedTicket, setSelectedTicket] = useState<SupportTicketDetail | null>(null)
   const [supportThreadLoading, setSupportThreadLoading] = useState(false)
   const [supportFollowupMessage, setSupportFollowupMessage] = useState("")
-  /** Same flow as /pricing#contact — general questions (not a tracked ticket). */
+  /** Same flow as /pricing#contact � general questions (not a tracked ticket). */
   const [generalContactName, setGeneralContactName] = useState("")
   const [generalContactMessage, setGeneralContactMessage] = useState("")
   const [generalContactLoading, setGeneralContactLoading] = useState(false)
@@ -179,9 +180,9 @@ export default function AccountPage() {
   const [adminCoverage, setAdminCoverage] = useState<AdminMonitoringCoverage | null>(null)
   const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
 
-  // (Each account has exactly one company — kept simple by design)
+  // (Each account has exactly one company � kept simple by design)
 
-  // ── System / Auto-Calibration (owner-only) ─────────────────────────────────
+  // -- System / Auto-Calibration (owner-only) ---------------------------------
   const [calibStatus, setCalibStatus] = useState<{
     state: string; message: string; calibrated_at?: string; n_scans?: number;
     mae?: number; violations?: number; label_distribution?: Record<string,number>;
@@ -195,7 +196,7 @@ export default function AccountPage() {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
     try {
-      const res = await fetch(`${API_URL}/admin/calibration/status`, {
+      const res = await apiFetch(`/admin/calibration/status`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (res.ok) {
@@ -213,9 +214,9 @@ export default function AccountPage() {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
     setCalibRunning(true)
-    setCalibMsg("Starting calibration…")
+    setCalibMsg("Starting calibration�")
     try {
-      const res = await fetch(`${API_URL}/admin/calibrate`, {
+      const res = await apiFetch(`/admin/calibrate`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       })
@@ -225,7 +226,7 @@ export default function AccountPage() {
         setCalibRunning(false)
         return
       }
-      setCalibMsg("Running… this takes 30–90 seconds. Checking status…")
+      setCalibMsg("Running� this takes 30�90 seconds. Checking status�")
       // Poll every 3s for up to 2 minutes
       let attempts = 0
       const poll = setInterval(async () => {
@@ -234,7 +235,7 @@ export default function AccountPage() {
         const token2 = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
         if (!token2) { clearInterval(poll); setCalibRunning(false); return }
         try {
-          const r = await fetch(`${API_URL}/admin/calibration/status`, {
+          const r = await apiFetch(`/admin/calibration/status`, {
             headers: { Authorization: `Bearer ${token2}` }
           })
           if (r.ok) {
@@ -242,16 +243,16 @@ export default function AccountPage() {
             setCalibStatus(s)
             if (s.state === "done" || s.state === "done_candidate") {
               if (s.state === "done_candidate") {
-                setCalibMsg(`✅ Candidate ready — MAE=${s.candidate?.mae?.toFixed?.(1) ?? s.mae?.toFixed?.(1)} pts on ${s.candidate?.n_scans ?? s.n_scans} scans. Review and Accept to activate.`)
+                setCalibMsg(`? Candidate ready � MAE=${s.candidate?.mae?.toFixed?.(1) ?? s.mae?.toFixed?.(1)} pts on ${s.candidate?.n_scans ?? s.n_scans} scans. Review and Accept to activate.`)
               } else {
-                setCalibMsg(`✅ Done! MAE=${s.mae?.toFixed(1)} pts on ${s.n_scans} scans. Weights reloaded.`)
+                setCalibMsg(`? Done! MAE=${s.mae?.toFixed(1)} pts on ${s.n_scans} scans. Weights reloaded.`)
               }
               clearInterval(poll); setCalibRunning(false)
             } else if (s.state === "error") {
-              setCalibMsg("❌ Error: " + s.message)
+              setCalibMsg("? Error: " + s.message)
               clearInterval(poll); setCalibRunning(false)
             } else {
-              setCalibMsg(s.message || "Running…")
+              setCalibMsg(s.message || "Running�")
             }
           }
         } catch {}
@@ -266,56 +267,56 @@ export default function AccountPage() {
   const handleAcceptCandidate = async () => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
-    setCalibMsg("Promoting candidate…")
+    setCalibMsg("Promoting candidate�")
     try {
-      const res = await fetch(`${API_URL}/admin/calibration/accept`, {
+      const res = await apiFetch(`/admin/calibration/accept`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       })
       const d = await res.json().catch(() => ({}))
-      if (!res.ok) { setCalibMsg("❌ " + (d?.detail || "Accept failed")); return }
-      setCalibMsg("✅ Candidate accepted — weights activated.")
+      if (!res.ok) { setCalibMsg("? " + (d?.detail || "Accept failed")); return }
+      setCalibMsg("? Candidate accepted � weights activated.")
       await loadCalibStatus()
-    } catch { setCalibMsg("❌ Network error on accept") }
+    } catch { setCalibMsg("? Network error on accept") }
   }
 
   const handleRejectCandidate = async () => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
-    setCalibMsg("Discarding candidate…")
+    setCalibMsg("Discarding candidate�")
     try {
-      const res = await fetch(`${API_URL}/admin/calibration/reject`, {
+      const res = await apiFetch(`/admin/calibration/reject`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       })
       const d = await res.json().catch(() => ({}))
-      if (!res.ok) { setCalibMsg("❌ " + (d?.detail || "Reject failed")); return }
-      setCalibMsg("✅ Candidate discarded. Active weights unchanged.")
+      if (!res.ok) { setCalibMsg("? " + (d?.detail || "Reject failed")); return }
+      setCalibMsg("? Candidate discarded. Active weights unchanged.")
       await loadCalibStatus()
-    } catch { setCalibMsg("❌ Network error on reject") }
+    } catch { setCalibMsg("? Network error on reject") }
   }
 
   const handleRollback = async () => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
-    setCalibMsg("Rolling back to previous weights…")
+    setCalibMsg("Rolling back to previous weights�")
     try {
-      const res = await fetch(`${API_URL}/admin/calibration/rollback`, {
+      const res = await apiFetch(`/admin/calibration/rollback`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       })
       const d = await res.json().catch(() => ({}))
-      if (!res.ok) { setCalibMsg("❌ " + (d?.detail || "Rollback failed")); return }
-      setCalibMsg("✅ Rolled back to previous active weights.")
+      if (!res.ok) { setCalibMsg("? " + (d?.detail || "Rollback failed")); return }
+      setCalibMsg("? Rolled back to previous active weights.")
       await loadCalibStatus()
-    } catch { setCalibMsg("❌ Network error on rollback") }
+    } catch { setCalibMsg("? Network error on rollback") }
   }
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) { router.push("/login"); return }
 
-    // ── Step 1: show page INSTANTLY from localStorage (zero latency) ──────────
+    // -- Step 1: show page INSTANTLY from localStorage (zero latency) ----------
     const ud = localStorage.getItem("user_data")
     if (ud) {
       try {
@@ -333,10 +334,10 @@ export default function AccountPage() {
     }
     setLoading(false) // page is visible immediately
 
-    // ── Step 2: refresh from API in background (silent update) ────────────────
+    // -- Step 2: refresh from API in background (silent update) ----------------
     ;(async () => {
       try {
-        const profileRes = await fetch(`${API_URL}/account/profile`, {
+        const profileRes = await apiFetch(`/account/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!profileRes.ok) return
@@ -351,7 +352,7 @@ export default function AccountPage() {
         setProfileCompanyName(prev => prev || nextUser.company_name)
           localStorage.setItem("user_data", JSON.stringify(nextUser))
         if (nextUser.company_id && nextUser.company_id !== (ud ? JSON.parse(ud)?.company_id : null)) {
-          // company_id changed → reload subscription + calibration for new id
+          // company_id changed ? reload subscription + calibration for new id
             setCompanyId(nextUser.company_id)
             loadSubscription(token, nextUser.company_id)
             loadCalibration(token, nextUser.company_id)
@@ -396,7 +397,7 @@ export default function AccountPage() {
 
   const loadSubscription = async (token: string, cid: string) => {
     try {
-      const res = await fetch(`${API_URL}/subscription/${cid}`, {
+      const res = await apiFetch(`/subscription/${cid}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (res.ok) setSubscription(await res.json())
@@ -405,7 +406,7 @@ export default function AccountPage() {
 
   const loadCalibration = async (token: string, cid: string) => {
     try {
-      const res = await fetch(`${API_URL}/calibration/${cid}`, {
+      const res = await apiFetch(`/calibration/${cid}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (!res.ok) return
@@ -428,7 +429,7 @@ export default function AccountPage() {
         current_close_rate: calibrationCurrentCloseRate.trim() ? Number(calibrationCurrentCloseRate) : null,
         target_close_rate: calibrationTargetCloseRate.trim() ? Number(calibrationTargetCloseRate) : null,
       }
-      const res = await fetch(`${API_URL}/calibration/${companyId}`, {
+      const res = await apiFetch(`/calibration/${companyId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
@@ -459,7 +460,7 @@ export default function AccountPage() {
       const emailChanged = !!trimmedEmail && trimmedEmail !== currentEmail
 
       if (emailChanged) {
-        const emailRes = await fetch(`${API_URL}/account/email-change-request`, {
+        const emailRes = await apiFetch(`/account/email-change-request`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ new_email: trimmedEmail }),
@@ -469,7 +470,7 @@ export default function AccountPage() {
         setProfileSuccess("Verification email sent. Confirm it to complete the change.")
       }
 
-      const companyRes = await fetch(`${API_URL}/account/profile`, {
+      const companyRes = await apiFetch(`/account/profile`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ company_name: profileCompanyName.trim() }),
@@ -501,7 +502,7 @@ export default function AccountPage() {
     if (!token) { router.push("/login"); return }
     setPasswordLoading(true)
     try {
-      const res = await fetch(`${API_URL}/set-password`, {
+      const res = await apiFetch(`/set-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ new_password: newPassword }),
@@ -526,7 +527,7 @@ export default function AccountPage() {
     }
     setSupportLoading(true)
     try {
-      const res = await fetch(`${API_URL}/support/tickets`, {
+      const res = await apiFetch(`/support/tickets`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -583,14 +584,14 @@ export default function AccountPage() {
       const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
       const headers: Record<string, string> = { "Content-Type": "application/json" }
       if (token) headers.Authorization = `Bearer ${token}`
-      const res = await fetch(`${API_URL}/contact`, {
+      const res = await apiFetch(`/contact`, {
         method: "POST",
         headers,
         body: JSON.stringify({
           name: name.slice(0, 120),
           email,
           company: profileCompanyName.trim() || null,
-          message: `[Account → Support / general question]\n\n${msg}`.slice(0, 4000),
+          message: `[Account ? Support / general question]\n\n${msg}`.slice(0, 4000),
         }),
       })
       const data = await res.json().catch(() => ({}))
@@ -598,7 +599,7 @@ export default function AccountPage() {
         setGeneralContactError(typeof data.detail === "string" ? data.detail : "Could not send message.")
         return
       }
-      setGeneralContactSuccess(data.message || "Message sent — we'll reply by email.")
+      setGeneralContactSuccess(data.message || "Message sent � we'll reply by email.")
       setGeneralContactMessage("")
     } catch {
       setGeneralContactError("Network error. Please try again.")
@@ -609,7 +610,7 @@ export default function AccountPage() {
 
   const loadSupportTickets = async (token: string) => {
     try {
-      const res = await fetch(`${API_URL}/support/tickets`, {
+      const res = await apiFetch(`/support/tickets`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) return
@@ -628,7 +629,7 @@ export default function AccountPage() {
   const loadSupportTicket = async (token: string, ticketId: string) => {
     setSupportThreadLoading(true)
     try {
-      const res = await fetch(`${API_URL}/support/tickets/${encodeURIComponent(ticketId)}`, {
+      const res = await apiFetch(`/support/tickets/${encodeURIComponent(ticketId)}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) return
@@ -653,7 +654,7 @@ export default function AccountPage() {
     }
     setSupportThreadLoading(true)
     try {
-      const res = await fetch(`${API_URL}/support/tickets/${encodeURIComponent(selectedTicketId)}/messages`, {
+      const res = await apiFetch(`/support/tickets/${encodeURIComponent(selectedTicketId)}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -679,7 +680,7 @@ export default function AccountPage() {
 
   const loadAdminFeatureFlags = async (token: string) => {
     try {
-      const res = await fetch(`${API_URL}/admin/feature-flags`, {
+      const res = await apiFetch(`/admin/feature-flags`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) return
@@ -692,7 +693,7 @@ export default function AccountPage() {
 
   const loadAdminSupportTickets = async (token: string) => {
     try {
-      const res = await fetch(`${API_URL}/admin/support/tickets?limit=100`, {
+      const res = await apiFetch(`/admin/support/tickets?limit=100`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) return
@@ -720,7 +721,7 @@ export default function AccountPage() {
   const loadAdminSupportTicket = async (token: string, ticketId: string) => {
     setAdminSupportLoading(true)
     try {
-      const res = await fetch(`${API_URL}/admin/support/tickets/${encodeURIComponent(ticketId)}`, {
+      const res = await apiFetch(`/admin/support/tickets/${encodeURIComponent(ticketId)}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) return
@@ -737,7 +738,7 @@ export default function AccountPage() {
   const loadAdminAuditPreview = async (companyId: string) => {
     try {
       const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-      const res = await fetch(`${API_URL}/audit-logs/${companyId}?limit=20`, {
+      const res = await apiFetch(`/audit-logs/${companyId}?limit=20`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       })
       if (!res.ok) return
@@ -756,7 +757,7 @@ export default function AccountPage() {
     if (!token) return
     setAdminSupportLoading(true)
     try {
-      const res = await fetch(`${API_URL}/admin/support/tickets/${encodeURIComponent(adminSelectedTicketId)}/reply`, {
+      const res = await apiFetch(`/admin/support/tickets/${encodeURIComponent(adminSelectedTicketId)}/reply`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -777,7 +778,7 @@ export default function AccountPage() {
 
   const loadAdminSystemHealth = async (token: string) => {
     try {
-      const res = await fetch(`${API_URL}/admin/ops/system-health`, {
+      const res = await apiFetch(`/admin/ops/system-health`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) return
@@ -789,7 +790,7 @@ export default function AccountPage() {
 
   const loadAdminPipelineMetrics = async (token: string) => {
     try {
-      const res = await fetch(`${API_URL}/admin/ops/pipeline-metrics`, {
+      const res = await apiFetch(`/admin/ops/pipeline-metrics`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) return
@@ -801,7 +802,7 @@ export default function AccountPage() {
 
   const loadAdminRiiConsistency = async (token: string) => {
     try {
-      const res = await fetch(`${API_URL}/admin/ops/rii-consistency?limit=20`, {
+      const res = await apiFetch(`/admin/ops/rii-consistency?limit=20`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) return
@@ -813,7 +814,7 @@ export default function AccountPage() {
 
   const loadAdminCoverage = async (token: string) => {
     try {
-      const res = await fetch(`${API_URL}/admin/ops/monitoring-coverage?window_hours=24&limit=100`, {
+      const res = await apiFetch(`/admin/ops/monitoring-coverage?window_hours=24&limit=100`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) return
@@ -827,37 +828,37 @@ export default function AccountPage() {
   const isTrial = subscription?.is_trial_active === true || subscription?.billing_cycle === "trial"
   const planName = subscription?.plan?.toLowerCase() || null
   const planLabel = isTrial
-    ? `Scale Trial${typeof subscription?.trial_days_left === "number" ? ` · ${subscription.trial_days_left}d left` : ""}`
+    ? `Scale Trial${typeof subscription?.trial_days_left === "number" ? ` � ${subscription.trial_days_left}d left` : ""}`
     : planName ? planName.charAt(0).toUpperCase() + planName.slice(1) : null
 
   const trialExpired = isTrial && subscription?.trial_days_left === 0
 
-  // ── Plan feature map (static, always shown) ──────────────────────────
+  // -- Plan feature map (static, always shown) --------------------------
   const ALL_FEATURES: Array<{
     icon: string; key: string; label: string; desc: string
     minPlan: "scale"
   }> = [
-    { icon: "📊", key: "rii",          label: "RII Score",                 desc: "Revenue Impact Index — structural risk on a 0–100 scale",            minPlan: "scale" },
-    { icon: "🔍", key: "leak",         label: "Revenue Leak Detection",    desc: "Identify primary messaging gaps costing pipeline",                   minPlan: "scale" },
-    { icon: "📝", key: "breakdown",    label: "Messaging Breakdown",       desc: "Page-by-page structural analysis from live crawl",                   minPlan: "scale" },
-    { icon: "🎯", key: "action",       label: "Action Engine",             desc: "Top fix with priority, $/month impact estimate and 🔴 Start here",   minPlan: "scale" },
-    { icon: "✂️", key: "autofix",      label: "Auto-Fix Engine",           desc: "Before/After copy per fix — copy-ready text with 📋 Copy button",   minPlan: "scale" },
-    { icon: "📋", key: "playbook",     label: "Full Fix Playbook",         desc: "3-fix step-by-step plan, each with page target + $/month recovery",  minPlan: "scale" },
-    { icon: "💰", key: "arr_risk",     label: "ARR at Risk Calculation",   desc: "Dollar-level exposure tied to your actual ARR + calibration",        minPlan: "scale" },
-    { icon: "📉", key: "close_rate",   label: "Close Rate Impact Model",   desc: "How messaging gaps compress your current close rate",                minPlan: "scale" },
-    { icon: "📡", key: "signals",      label: "Revenue Signals",           desc: "Granular structural change signals after each scan",                 minPlan: "scale" },
-    { icon: "🚨", key: "alerts",       label: "Revenue Alerts",            desc: "Real-time drift alerts when structural risk changes",                minPlan: "scale" },
-    { icon: "📈", key: "forecast",     label: "Forecast Engine",           desc: "30-day revenue compression prediction",                              minPlan: "scale" },
-    { icon: "🔄", key: "monitoring",   label: "24h Continuous Monitoring", desc: "Daily automatic re-scan — always-fresh RII and signals",             minPlan: "scale" },
-    { icon: "📊", key: "delta",        label: "Revenue Delta Engine",      desc: "+$X/month worse vs last scan — with WHY drivers (ICP, alignment…)",  minPlan: "scale" },
-    { icon: "🔴", key: "delta_action", label: "Delta + Action Combo",      desc: "'Fix this first' shown instantly when revenue leak increases",       minPlan: "scale" },
-    { icon: "🎯", key: "trajectory",   label: "Risk Trajectory",           desc: "30/60/90-day forward-looking risk projections",                      minPlan: "scale" },
-    { icon: "⚡", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale" },
-    { icon: "🏆", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Compare vs 500+ SaaS companies in your revenue tier",               minPlan: "scale" },
-    { icon: "📊", key: "arr_sim",      label: "12-Month ARR Simulation",   desc: "Model revenue trajectory with vs without fixes applied",             minPlan: "scale" },
-    { icon: "🔗", key: "apis",         label: "GSC + GA4 Modifiers",       desc: "Real search + behavior data applied to revenue model",               minPlan: "scale" },
-    { icon: "📧", key: "executive",    label: "Executive Risk Summaries",  desc: "Weekly board-ready summaries of structural drift",                   minPlan: "scale" },
-    { icon: "👥", key: "team",         label: "Team Monitoring",           desc: "Unlimited seats with shared dashboard access",                       minPlan: "scale" },
+    { icon: "??", key: "rii",          label: "RII Score",                 desc: "Revenue Impact Index � structural risk on a 0�100 scale",            minPlan: "scale" },
+    { icon: "??", key: "leak",         label: "Revenue Leak Detection",    desc: "Identify primary messaging gaps costing pipeline",                   minPlan: "scale" },
+    { icon: "??", key: "breakdown",    label: "Messaging Breakdown",       desc: "Page-by-page structural analysis from live crawl",                   minPlan: "scale" },
+    { icon: "??", key: "action",       label: "Action Engine",             desc: "Top fix with priority, $/month impact estimate and ?? Start here",   minPlan: "scale" },
+    { icon: "??", key: "autofix",      label: "Auto-Fix Engine",           desc: "Before/After copy per fix � copy-ready text with ?? Copy button",   minPlan: "scale" },
+    { icon: "??", key: "playbook",     label: "Full Fix Playbook",         desc: "3-fix step-by-step plan, each with page target + $/month recovery",  minPlan: "scale" },
+    { icon: "??", key: "arr_risk",     label: "ARR at Risk Calculation",   desc: "Dollar-level exposure tied to your actual ARR + calibration",        minPlan: "scale" },
+    { icon: "??", key: "close_rate",   label: "Close Rate Impact Model",   desc: "How messaging gaps compress your current close rate",                minPlan: "scale" },
+    { icon: "??", key: "signals",      label: "Revenue Signals",           desc: "Granular structural change signals after each scan",                 minPlan: "scale" },
+    { icon: "??", key: "alerts",       label: "Revenue Alerts",            desc: "Real-time drift alerts when structural risk changes",                minPlan: "scale" },
+    { icon: "??", key: "forecast",     label: "Forecast Engine",           desc: "30-day revenue compression prediction",                              minPlan: "scale" },
+    { icon: "??", key: "monitoring",   label: "24h Continuous Monitoring", desc: "Daily automatic re-scan � always-fresh RII and signals",             minPlan: "scale" },
+    { icon: "??", key: "delta",        label: "Revenue Delta Engine",      desc: "+$X/month worse vs last scan � with WHY drivers (ICP, alignment�)",  minPlan: "scale" },
+    { icon: "??", key: "delta_action", label: "Delta + Action Combo",      desc: "'Fix this first' shown instantly when revenue leak increases",       minPlan: "scale" },
+    { icon: "??", key: "trajectory",   label: "Risk Trajectory",           desc: "30/60/90-day forward-looking risk projections",                      minPlan: "scale" },
+    { icon: "?", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale" },
+    { icon: "??", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Compare vs 500+ SaaS companies in your revenue tier",               minPlan: "scale" },
+    { icon: "??", key: "arr_sim",      label: "12-Month ARR Simulation",   desc: "Model revenue trajectory with vs without fixes applied",             minPlan: "scale" },
+    { icon: "??", key: "apis",         label: "GSC + GA4 Modifiers",       desc: "Real search + behavior data applied to revenue model",               minPlan: "scale" },
+    { icon: "??", key: "executive",    label: "Executive Risk Summaries",  desc: "Weekly board-ready summaries of structural drift",                   minPlan: "scale" },
+    { icon: "??", key: "team",         label: "Team Monitoring",           desc: "Unlimited seats with shared dashboard access",                       minPlan: "scale" },
   ]
 
   const userTier = (isTrial || (planName === "scale")) ? 0 : -1 // scale or trial = full access
@@ -885,16 +886,16 @@ export default function AccountPage() {
   }
 
   const TABS = isOwner
-    ? [{ id: 'system' as const, label: 'Manager Console', icon: '⚙️' }]
+    ? [{ id: 'system' as const, label: 'Manager Console', icon: '??' }]
     : [
-        { id: 'profile' as const,  label: 'Profile',        icon: '👤' },
-        { id: 'plan' as const,     label: 'Plan & Billing', icon: '💳' },
-        { id: 'revenue' as const,  label: 'Revenue Model',  icon: '📊' },
-        { id: 'support' as const,  label: 'Support',        icon: '🎫' },
-        { id: 'security' as const, label: 'Security',       icon: '🔒' },
+        { id: 'profile' as const,  label: 'Profile',        icon: '??' },
+        { id: 'plan' as const,     label: 'Plan & Billing', icon: '??' },
+        { id: 'revenue' as const,  label: 'Revenue Model',  icon: '??' },
+        { id: 'support' as const,  label: 'Support',        icon: '??' },
+        { id: 'security' as const, label: 'Security',       icon: '??' },
       ]
 
-  // ── Manager health thresholds (quick visual ops state) ────────────────────
+  // -- Manager health thresholds (quick visual ops state) --------------------
   const coveragePct = Number(adminCoverage?.coverage_pct ?? 0)
   const noEvidencePct = Number(adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? 0)
   const mismatchRatePct = Number(adminRiiConsistency?.mismatch_rate_pct ?? 0)
@@ -918,7 +919,7 @@ export default function AccountPage() {
       <div className="page-root flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-400 text-sm">Loading account…</p>
+          <p className="text-gray-400 text-sm">Loading account�</p>
         </div>
       </div>
     )
@@ -930,7 +931,7 @@ export default function AccountPage() {
       <main className="pt-24 pb-24">
         <div className="max-w-4xl mx-auto px-6">
 
-          {/* ── Page header ──────────────────────────────────────────────────── */}
+          {/* -- Page header ---------------------------------------------------- */}
           <div className="flex items-start justify-between mb-10 gap-4 flex-wrap">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-200 border border-slate-300 text-slate-600 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 text-xs font-medium mb-3 uppercase tracking-widest">
@@ -946,7 +947,7 @@ export default function AccountPage() {
                 href={getDashboardUrl()}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm transition"
               >
-                {isOwner ? "⚙️ Manager Console" : "← Dashboard"}
+                {isOwner ? "?? Manager Console" : "? Dashboard"}
               </Link>
               <button
                 onClick={handleSignOut}
@@ -957,7 +958,7 @@ export default function AccountPage() {
             </div>
           </div>
 
-          {/* ── Trial expiry banner ────────────────────────────────────────── */}
+          {/* -- Trial expiry banner ------------------------------------------ */}
           {!isOwner && trialExpired && (
             <div className="mb-6 p-4 rounded-2xl border border-red-500/30 bg-red-500/10 flex items-center justify-between gap-4 flex-wrap">
               <div>
@@ -965,12 +966,12 @@ export default function AccountPage() {
                 <p className="text-red-400/70 text-sm">Upgrade to keep your monitoring active.</p>
               </div>
               <Link href="/upgrade" className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-400 text-white font-bold text-sm transition">
-                Upgrade now →
+                Upgrade now ?
               </Link>
             </div>
           )}
 
-          {/* ── Trial warning (3 days left) ────────────────────────────────── */}
+          {/* -- Trial warning (3 days left) ---------------------------------- */}
           {!isOwner && isTrial && !trialExpired && typeof subscription?.trial_days_left === "number" && subscription.trial_days_left <= 3 && (
             <div className="mb-6 p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 flex items-center justify-between gap-4 flex-wrap">
                 <div>
@@ -978,12 +979,12 @@ export default function AccountPage() {
                 <p className="text-amber-400/70 text-sm">Subscribe to Scale ($99/mo) to keep all features.</p>
               </div>
               <Link href="/upgrade" className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-sm transition">
-                Upgrade →
+                Upgrade ?
               </Link>
             </div>
           )}
 
-          {/* ── Tabs ──────────────────────────────────────────────────────── */}
+          {/* -- Tabs -------------------------------------------------------- */}
           <div className="flex gap-1 mb-8 p-1 bg-slate-200/90 border border-slate-300 rounded-2xl w-fit dark:bg-gray-900/60 dark:border-gray-800">
             {TABS.map(tab => (
               <button
@@ -1001,7 +1002,7 @@ export default function AccountPage() {
             ))}
                 </div>
                 
-          {/* ── PROFILE TAB ───────────────────────────────────────────────── */}
+          {/* -- PROFILE TAB ------------------------------------------------- */}
           {activeTab === 'profile' && (
             <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/40 dark:shadow-none overflow-hidden">
               <div className="p-6 border-b border-slate-200 dark:border-gray-800">
@@ -1045,13 +1046,13 @@ export default function AccountPage() {
                   disabled={profileLoading}
                   className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
-                  {profileLoading ? "Saving…" : "Save changes"}
+                  {profileLoading ? "Saving�" : "Save changes"}
                 </button>
               </form>
                   </div>
                 )}
 
-          {/* ── PLAN & BILLING TAB ────────────────────────────────────────── */}
+          {/* -- PLAN & BILLING TAB ------------------------------------------ */}
           {activeTab === 'plan' && (
             <div className="space-y-5">
               {/* Current plan card */}
@@ -1064,7 +1065,7 @@ export default function AccountPage() {
                     <div className="flex items-center justify-between flex-wrap gap-4">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-2xl">
-                          {isTrial ? '⚡' : '✦'}
+                          {isTrial ? '?' : '?'}
                         </div>
                         <div>
                           <div className="flex items-center gap-2 mb-1">
@@ -1098,7 +1099,7 @@ export default function AccountPage() {
                         href="/upgrade"
                         className="px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium text-sm transition border border-gray-700"
                       >
-                        {isTrial ? 'Upgrade plan →' : 'View plans →'}
+                        {isTrial ? 'Upgrade plan ?' : 'View plans ?'}
                       </Link>
               </div>
             ) : (
@@ -1111,14 +1112,14 @@ export default function AccountPage() {
                         href="/upgrade"
                         className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm transition"
                 >
-                        Start free trial →
+                        Start free trial ?
                 </Link>
               </div>
             )}
                 </div>
           </div>
 
-              {/* Included features — always visible, grouped by plan tier */}
+              {/* Included features � always visible, grouped by plan tier */}
               <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
                 <div className="px-6 py-5 border-b border-slate-200 dark:border-gray-800 flex items-center justify-between">
                   <div>
@@ -1129,7 +1130,7 @@ export default function AccountPage() {
                   </div>
                   {userTier < 0 && (
                     <Link href="/pricing" className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition">
-                      Start Scale →
+                      Start Scale ?
                     </Link>
                   )}
                 </div>
@@ -1155,7 +1156,7 @@ export default function AccountPage() {
                               href="/upgrade"
                               className="ml-auto text-[10px] font-bold text-gray-500 bg-gray-800 border border-gray-700 px-2 py-0.5 rounded-full hover:text-gray-300 transition"
                             >
-                              Upgrade →
+                              Upgrade ?
                             </Link>
                           )}
                         </div>
@@ -1177,7 +1178,7 @@ export default function AccountPage() {
                                     {feat.label}
                                   </span>
                                   {groupEnabled && (
-                                    <span className="text-[10px] font-bold text-cyan-400">✓</span>
+                                    <span className="text-[10px] font-bold text-cyan-400">?</span>
                                   )}
                                 </div>
                                 <p className={`text-xs mt-0.5 leading-relaxed ${groupEnabled ? "text-gray-500" : "text-gray-700"}`}>
@@ -1198,7 +1199,7 @@ export default function AccountPage() {
                     <div className="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 flex items-center justify-between gap-4 flex-wrap">
                       <div>
                         <p className="text-sm font-semibold text-cyan-300">
-                          Activate Scale — $99/month
+                          Activate Scale � $99/month
                         </p>
                         <p className="text-xs text-gray-500 mt-0.5">
                           Unlock 24h monitoring, full playbook, ARR at risk, incidents, benchmark, and team access.
@@ -1208,7 +1209,7 @@ export default function AccountPage() {
                         href="/pricing"
                         className="shrink-0 px-4 py-2 rounded-xl font-bold text-xs transition bg-cyan-500 hover:bg-cyan-400 text-black"
                       >
-                        Start Scale →
+                        Start Scale ?
                       </Link>
                     </div>
                   </div>
@@ -1222,7 +1223,7 @@ export default function AccountPage() {
                 </div>
                 <div className="p-6 flex items-center justify-between flex-wrap gap-4">
                   <div>
-                    <p className="text-gray-400 text-sm">Stripe billing portal — update card, view invoices, cancel.</p>
+                    <p className="text-gray-400 text-sm">Stripe billing portal � update card, view invoices, cancel.</p>
                   </div>
                   <button
                     disabled
@@ -1236,14 +1237,14 @@ export default function AccountPage() {
             </div>
           )}
 
-          {/* ── REVENUE MODEL TAB ─────────────────────────────────────────── */}
+          {/* -- REVENUE MODEL TAB ------------------------------------------- */}
           {activeTab === 'revenue' && (
             <div className="space-y-5">
               <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/40 dark:shadow-none overflow-hidden">
                 <div className="p-6 border-b border-slate-200 dark:border-gray-800">
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Financial calibration</h2>
                   <p className="text-gray-500 text-sm mt-0.5">
-                    Set your real business numbers to improve financial impact estimates. Structural risk is derived from website scan signals — these values calibrate the dollar output.
+                    Set your real business numbers to improve financial impact estimates. Structural risk is derived from website scan signals � these values calibrate the dollar output.
                   </p>
                 </div>
                 <form onSubmit={handleCalibrationSave} className="p-6 space-y-6">
@@ -1314,7 +1315,7 @@ export default function AccountPage() {
                         <span className="text-slate-900 dark:text-white font-semibold">
                           +{(Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)).toFixed(1)}pp
                         </span>
-                        {" "}on ${(Number(calibrationArr) / 1_000_000).toFixed(1)}M ARR →{" "}
+                        {" "}on ${(Number(calibrationArr) / 1_000_000).toFixed(1)}M ARR ?{" "}
                         <span className="text-cyan-300 font-bold">
                           ~${Math.round(Number(calibrationArr) * (Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)) / 100 / 1000)}K recoverable
                         </span>
@@ -1333,7 +1334,7 @@ export default function AccountPage() {
                     disabled={calibrationLoading || !companyId}
                     className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                   >
-                    {calibrationLoading ? "Saving…" : "Save calibration"}
+                    {calibrationLoading ? "Saving�" : "Save calibration"}
                   </button>
                 </form>
               </div>
@@ -1343,9 +1344,9 @@ export default function AccountPage() {
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">How it works</p>
                 <div className="grid sm:grid-cols-3 gap-4">
                   {[
-                    { icon: "🔍", title: "Structural scan", desc: "RII and risk drivers come from crawling your site — always accurate." },
-                    { icon: "📐", title: "Financial model", desc: "ARR + close rates calibrate the $ impact numbers shown in the dashboard." },
-                    { icon: "🔄", title: "Auto-updated", desc: "Next monitoring run picks up new calibration values automatically." },
+                    { icon: "??", title: "Structural scan", desc: "RII and risk drivers come from crawling your site � always accurate." },
+                    { icon: "??", title: "Financial model", desc: "ARR + close rates calibrate the $ impact numbers shown in the dashboard." },
+                    { icon: "??", title: "Auto-updated", desc: "Next monitoring run picks up new calibration values automatically." },
                   ].map(item => (
                     <div key={item.title} className="flex gap-3">
                       <span className="text-xl mt-0.5">{item.icon}</span>
@@ -1360,7 +1361,7 @@ export default function AccountPage() {
             </div>
           )}
 
-          {/* ── SECURITY TAB ──────────────────────────────────────────────── */}
+          {/* -- SECURITY TAB ------------------------------------------------ */}
           {activeTab === 'security' && (
             <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
               <div className="p-6 border-b border-slate-200 dark:border-gray-800">
@@ -1405,7 +1406,7 @@ export default function AccountPage() {
                   disabled={passwordLoading}
                   className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
-                  {passwordLoading ? "Updating…" : "Change password"}
+                  {passwordLoading ? "Updating�" : "Change password"}
                 </button>
               </form>
 
@@ -1422,14 +1423,14 @@ export default function AccountPage() {
             </div>
           )}
 
-          {/* ── SUPPORT TAB ───────────────────────────────────────────────── */}
+          {/* -- SUPPORT TAB ------------------------------------------------- */}
           {activeTab === 'support' && (
             <div className="space-y-8">
             <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
               <div className="p-6 border-b border-slate-200 dark:border-gray-800">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Ask a question</h2>
                 <p className="text-gray-500 text-sm mt-0.5">
-                  Billing, trial, Scale features, or how something works — same as the form on the pricing page. We&apos;ll email you back.
+                  Billing, trial, Scale features, or how something works � same as the form on the pricing page. We&apos;ll email you back.
                 </p>
               </div>
               <form onSubmit={handleGeneralContactSubmit} className="p-6 space-y-5">
@@ -1478,7 +1479,7 @@ export default function AccountPage() {
                   disabled={generalContactLoading || !(profileEmail || user?.email)}
                   className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
-                  {generalContactLoading ? "Sending…" : "Send message"}
+                  {generalContactLoading ? "Sending�" : "Send message"}
                 </button>
               </form>
             </div>
@@ -1487,7 +1488,7 @@ export default function AccountPage() {
               <div className="p-6 border-b border-slate-200 dark:border-gray-800">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Technical support ticket</h2>
                 <p className="text-gray-500 text-sm mt-0.5">
-                  For bugs or product issues — opens a tracked thread with technical context attached automatically.
+                  For bugs or product issues � opens a tracked thread with technical context attached automatically.
                 </p>
               </div>
               <form onSubmit={handleSupportSubmit} className="p-6 space-y-5">
@@ -1578,7 +1579,7 @@ export default function AccountPage() {
                         >
                           <p className="text-sm font-medium text-gray-200 truncate">{t.subject}</p>
                           <p className="text-xs text-gray-500 mt-0.5">
-                            {t.ticket_id} • {t.priority}
+                            {t.ticket_id} � {t.priority}
                           </p>
                         </button>
                       ))}
@@ -1598,7 +1599,7 @@ export default function AccountPage() {
                         <div className="pb-2 border-b border-slate-200 dark:border-gray-800">
                           <p className="text-sm font-semibold text-gray-200">{selectedTicket.subject}</p>
                           <p className="text-xs text-gray-500 mt-0.5">
-                            {selectedTicket.ticket_id} • {selectedTicket.priority} • {selectedTicket.status}
+                            {selectedTicket.ticket_id} � {selectedTicket.priority} � {selectedTicket.status}
                           </p>
                         </div>
                         <div className="space-y-2 max-h-64 overflow-auto pr-1">
@@ -1646,20 +1647,20 @@ export default function AccountPage() {
             </div>
           )}
 
-          {/* ── SYSTEM TAB (owner-only) ────────────────────────────────────── */}
+          {/* -- SYSTEM TAB (owner-only) -------------------------------------- */}
           {activeTab === 'system' && isOwner && (
             <div className="space-y-6">
 
               {/* Header */}
               <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-6">
                 <div className="flex items-center gap-3 mb-1">
-                  <span className="text-2xl">⚙️</span>
+                  <span className="text-2xl">??</span>
                   <h2 className="text-lg font-bold text-cyan-300">RII Auto-Calibration</h2>
                   <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest">Owner only</span>
                 </div>
                 <p className="text-gray-400 text-sm mt-1">
                   Re-calibrates the RII scoring model using all scan results in the database.
-                  No terminal, no Excel — one click.
+                  No terminal, no Excel � one click.
                 </p>
               </div>
 
@@ -1669,19 +1670,19 @@ export default function AccountPage() {
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">System Health</h3>
                   <div className="space-y-2 text-sm">
                     <p className="text-gray-300">DB: <span className={adminSystemHealth?.db_connected ? "text-emerald-300" : "text-red-300"}>{adminSystemHealth?.db_connected ? "Connected" : "Down"}</span></p>
-                    <p className="text-gray-300">Companies: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.companies_total ?? "—"}</span></p>
-                    <p className="text-gray-300">Monitoring active: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.monitoring_active ?? "—"}</span></p>
-                    <p className="text-gray-500 text-xs">Last monitoring: {adminSystemHealth?.minutes_since_last_monitoring != null ? `${adminSystemHealth.minutes_since_last_monitoring} min ago` : "—"}</p>
+                    <p className="text-gray-300">Companies: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.companies_total ?? "�"}</span></p>
+                    <p className="text-gray-300">Monitoring active: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.monitoring_active ?? "�"}</span></p>
+                    <p className="text-gray-500 text-xs">Last monitoring: {adminSystemHealth?.minutes_since_last_monitoring != null ? `${adminSystemHealth.minutes_since_last_monitoring} min ago` : "�"}</p>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pipeline Metrics</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">Scans 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "—"}</span></p>
-                    <p className="text-gray-300">Success 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "—"}%</span></p>
-                    <p className="text-gray-300">Scans 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "—"}</span></p>
-                    <p className="text-gray-300">No-evidence 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "—"}%</span></p>
+                    <p className="text-gray-300">Scans 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "�"}</span></p>
+                    <p className="text-gray-300">Success 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "�"}%</span></p>
+                    <p className="text-gray-300">Scans 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "�"}</span></p>
+                    <p className="text-gray-300">No-evidence 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "�"}%</span></p>
                     <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(noEvidenceStatus)}`}>
                       No-evidence status: {noEvidenceStatus === "good" ? "healthy" : noEvidenceStatus === "warn" ? "watch" : "critical"}
                     </span>
@@ -1691,9 +1692,9 @@ export default function AccountPage() {
                 <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">RII Consistency Guard</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">Checked: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.checked_companies ?? "—"}</span></p>
-                    <p className="text-gray-300">Mismatches: <span className={`${(adminRiiConsistency?.mismatch_count || 0) > 0 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{adminRiiConsistency?.mismatch_count ?? "—"}</span></p>
-                    <p className="text-gray-300">Mismatch rate: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "—"}%</span></p>
+                    <p className="text-gray-300">Checked: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.checked_companies ?? "�"}</span></p>
+                    <p className="text-gray-300">Mismatches: <span className={`${(adminRiiConsistency?.mismatch_count || 0) > 0 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{adminRiiConsistency?.mismatch_count ?? "�"}</span></p>
+                    <p className="text-gray-300">Mismatch rate: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "�"}%</span></p>
                     <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(mismatchStatus)}`}>
                       Consistency status: {mismatchStatus === "good" ? "healthy" : mismatchStatus === "warn" ? "watch" : "critical"}
                     </span>
@@ -1738,36 +1739,36 @@ export default function AccountPage() {
                 <div className="grid md:grid-cols-4 gap-3 mb-4">
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Active companies</p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.active_companies ?? "—"}</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.active_companies ?? "�"}</p>
                   </div>
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Scanned in 24h</p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.companies_scanned_in_window ?? "—"}</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.companies_scanned_in_window ?? "�"}</p>
                   </div>
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Coverage</p>
                     <p className={`text-lg font-semibold ${coverageStatus === "good" ? "text-emerald-300" : coverageStatus === "warn" ? "text-amber-300" : "text-red-300"}`}>
-                      {adminCoverage?.coverage_pct ?? "—"}%
+                      {adminCoverage?.coverage_pct ?? "�"}%
                     </p>
                   </div>
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Cycles</p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.total_cycles ?? "—"}</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.total_cycles ?? "�"}</p>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-3 mb-4">
                   <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3">
                     <p className="text-xs text-emerald-300">Success cycles</p>
-                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.success_cycles ?? "—"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.success_cycles ?? "�"}</p>
                   </div>
                   <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
                     <p className="text-xs text-amber-300">No-evidence cycles</p>
-                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.no_evidence_cycles ?? "—"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.no_evidence_cycles ?? "�"}</p>
                   </div>
                   <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
                     <p className="text-xs text-red-300">Failed-like cycles</p>
-                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.failed_like_cycles ?? "—"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.failed_like_cycles ?? "�"}</p>
                   </div>
                 </div>
 
@@ -1811,27 +1812,27 @@ export default function AccountPage() {
                 {calibStatus ? (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.total_scans_in_db ?? "—"}</div>
+                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.total_scans_in_db ?? "�"}</div>
                       <div className="text-xs text-gray-500 mt-1">Total scans in DB</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">incl. monitoring cycles</div>
                     </div>
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.n_scans || "—"}</div>
+                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.n_scans || "�"}</div>
                       <div className="text-xs text-gray-500 mt-1">Last calibration scans</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">unique companies used</div>
                     </div>
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
                       <div className={`text-2xl font-bold ${calibStatus.mae && calibStatus.mae < 6 ? "text-emerald-400" : "text-amber-400"}`}>
-                        {calibStatus.mae ? `${calibStatus.mae.toFixed(1)} pts` : "—"}
+                        {calibStatus.mae ? `${calibStatus.mae.toFixed(1)} pts` : "�"}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">MAE (lower = better)</div>
                     </div>
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
                       <div className={`text-2xl font-bold ${calibStatus.state === "done" ? "text-emerald-400" : calibStatus.state === "running" ? "text-cyan-400" : calibStatus.state === "error" ? "text-red-400" : "text-amber-400"}`}>
-                        {calibStatus.state === "done" ? "✅" : calibStatus.state === "running" ? "⏳" : calibStatus.state === "error" ? "❌" : "⚡"}
+                        {calibStatus.state === "done" ? "?" : calibStatus.state === "running" ? "?" : calibStatus.state === "error" ? "?" : "?"}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
-                        {calibStatus.state === "done" ? "Done" : calibStatus.state === "running" ? "Running…" : calibStatus.state === "error" ? "Error" : "Ready"}
+                        {calibStatus.state === "done" ? "Done" : calibStatus.state === "running" ? "Running�" : calibStatus.state === "error" ? "Error" : "Ready"}
                       </div>
                     </div>
                   </div>
@@ -1857,7 +1858,7 @@ export default function AccountPage() {
                     {(calibStatus.label_distribution.anchors ?? 0) > 0 && (
                       <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
                         <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                        <span className="text-xs text-cyan-300 font-medium">⚓ Anchors: {calibStatus.label_distribution.anchors} (locked)</span>
+                        <span className="text-xs text-cyan-300 font-medium">? Anchors: {calibStatus.label_distribution.anchors} (locked)</span>
                       </div>
                     )}
                   </div>
@@ -1882,9 +1883,9 @@ export default function AccountPage() {
                   <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-5">
                     <p className="text-xs text-amber-300 uppercase tracking-wider mb-2">Candidate Calibration (pending review)</p>
                     <div className="text-sm text-gray-300 mb-3">
-                      <span className="mr-4">MAE: <span className="font-semibold">{calibStatus.candidate?.mae?.toFixed?.(1) ?? "—"} pts</span></span>
-                      <span className="mr-4">Scans: <span className="font-semibold">{calibStatus.candidate?.n_scans ?? "—"}</span></span>
-                      <span>Calibrated at: <span className="font-semibold">{calibStatus.candidate?.calibrated_at ? new Date(calibStatus.candidate.calibrated_at).toLocaleString() : "—"}</span></span>
+                      <span className="mr-4">MAE: <span className="font-semibold">{calibStatus.candidate?.mae?.toFixed?.(1) ?? "�"} pts</span></span>
+                      <span className="mr-4">Scans: <span className="font-semibold">{calibStatus.candidate?.n_scans ?? "�"}</span></span>
+                      <span>Calibrated at: <span className="font-semibold">{calibStatus.candidate?.calibrated_at ? new Date(calibStatus.candidate.calibrated_at).toLocaleString() : "�"}</span></span>
                     </div>
                     {calibStatus.candidate?.weights && (
                       <div className="flex flex-wrap gap-3 mb-3">
@@ -1897,7 +1898,7 @@ export default function AccountPage() {
                     )}
                     <div className="flex items-center gap-3">
                       <button onClick={handleAcceptCandidate} className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition">
-                        Accept → Activate
+                        Accept ? Activate
                       </button>
                       <button onClick={handleRejectCandidate} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium text-sm transition">
                         Reject
@@ -1926,10 +1927,10 @@ export default function AccountPage() {
                     {calibRunning ? (
                       <>
                         <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                        Calibrating…
+                        Calibrating�
                       </>
                     ) : (
-                      <>⚡ Run Auto-Calibration</>
+                      <>? Run Auto-Calibration</>
                     )}
                   </button>
                   <button
@@ -1937,15 +1938,15 @@ export default function AccountPage() {
                     disabled={calibRunning}
                     className="px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium transition disabled:opacity-50"
                   >
-                    ↻ Refresh status
+                    ? Refresh status
                   </button>
                 </div>
 
                 {/* Progress message */}
                 {calibMsg && (
                   <div className={`mt-4 p-3 rounded-xl text-sm border ${
-                    calibMsg.startsWith("✅") ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
-                    : calibMsg.startsWith("❌") ? "bg-red-500/10 border-red-500/20 text-red-300"
+                    calibMsg.startsWith("?") ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
+                    : calibMsg.startsWith("?") ? "bg-red-500/10 border-red-500/20 text-red-300"
                     : "bg-cyan-500/10 border-cyan-500/20 text-cyan-300"
                   }`}>
                     {calibMsg}
@@ -1962,7 +1963,7 @@ export default function AccountPage() {
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">4.</span> Runs per-segment (Developer, Marketing, Product, Support)</li>
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">5.</span> Saves candidate to <code className="text-cyan-400">calibration_results_candidate.json</code></li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">6.</span> Click <strong>Accept → Activate</strong> to promote candidate to active weights</li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">6.</span> Click <strong>Accept ? Activate</strong> to promote candidate to active weights</li>
                 </ol>
               </div>
 
@@ -1993,8 +1994,8 @@ export default function AccountPage() {
                           <p className="text-sm text-gray-200 truncate">{t.subject}</p>
                           <p className="text-xs text-gray-500 mt-0.5 truncate">{t.company_name || t.owner_email || "unknown"}</p>
                           <p className="text-[11px] text-gray-600 mt-1">
-                            {t.ticket_id} • {t.priority} • {t.status}
-                            {adminSelectedTicketId === t.ticket_id ? " • selected" : ""}
+                            {t.ticket_id} � {t.priority} � {t.status}
+                            {adminSelectedTicketId === t.ticket_id ? " � selected" : ""}
                           </p>
                         </button>
                       ))}
@@ -2012,7 +2013,7 @@ export default function AccountPage() {
                         <div className="pb-2 border-b border-slate-200 dark:border-gray-800">
                           <p className="text-sm font-semibold text-gray-200">{adminSelectedTicket.subject}</p>
                           <p className="text-xs text-gray-500 mt-0.5">
-                            {adminSelectedTicket.ticket_id} • {adminSelectedTicket.company_name || "Unknown company"} • {adminSelectedTicket.status}
+                            {adminSelectedTicket.ticket_id} � {adminSelectedTicket.company_name || "Unknown company"} � {adminSelectedTicket.status}
                           </p>
                         </div>
                         <div className="space-y-2 max-h-52 overflow-auto pr-1">
@@ -2072,7 +2073,7 @@ export default function AccountPage() {
                   {adminAuditPreview.map((log, i) => (
                     <div key={`${log.created_at || i}-${i}`} className="p-2 rounded-lg border border-gray-800 bg-gray-950/40 text-xs text-gray-300 flex items-center justify-between">
                       <span>{log.action_type}</span>
-                      <span className="text-gray-500">{log.created_at ? new Date(log.created_at).toLocaleString() : "—"}</span>
+                      <span className="text-gray-500">{log.created_at ? new Date(log.created_at).toLocaleString() : "�"}</span>
                     </div>
                   ))}
                 </div>
