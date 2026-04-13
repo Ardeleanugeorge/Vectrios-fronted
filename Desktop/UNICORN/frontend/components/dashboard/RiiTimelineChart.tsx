@@ -165,7 +165,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
           <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Risk Trend (30 Days)</h2>
           <p className="text-xs text-gray-500 mt-0.5">
             {entries.length} data point{entries.length !== 1 ? "s" : ""} —{" "}
-            {formatDate(oldest.date)} ? {formatDate(latest.date)}
+            {formatDate(oldest.date)} – {formatDate(latest.date)}
           </p>
         </div>
         <div className="text-right">
@@ -186,12 +186,12 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
             </span>
             {hovered.delta_rii !== null && (
               <span className={hovered.delta_rii > 0 ? "text-red-400" : "text-green-400"}>
-                {hovered.delta_rii > 0 ? "+" : ""}{hovered.delta_rii.toFixed(1)} ?
+                {hovered.delta_rii > 0 ? "+" : ""}{hovered.delta_rii.toFixed(1)} pts
               </span>
             )}
             {hovered.drift_detected && (
               <span className="text-amber-400 text-[10px] uppercase tracking-wide">
-                ? drift {hovered.drift_severity}
+                · drift {hovered.drift_severity}
               </span>
             )}
           </div>
