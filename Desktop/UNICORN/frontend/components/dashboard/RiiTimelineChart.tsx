@@ -13,7 +13,7 @@ interface TrendEntry {
   volatility: string | null
   drift_detected: boolean
   drift_severity: string | null
-  interpolated?: boolean  // gap-fill day � dimmed on chart
+  interpolated?: boolean  // gap-fill day — dimmed on chart
 }
 
 interface Props {
@@ -30,7 +30,7 @@ function formatDate(iso: string): string {
 function trendColor(trend: string | null): string {
   if (trend === "improving")    return "#34d399"  // green
   if (trend === "escalating")   return "#f87171"  // red
-  return "#94a3b8"                                // gray � stable/unstable
+  return "#94a3b8"                                // gray — stable/unstable
 }
 
 export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medium" }: Props) {
@@ -89,7 +89,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
     Math.round(domainMax),
   ]
 
-  // X-axis labels � show first, last, and every ~7th
+  // X-axis labels — show first, last, and every ~7th
   const xLabels = entries.reduce<number[]>((acc, _, i) => {
     if (i === 0 || i === entries.length - 1 || i % 7 === 0) acc.push(i)
     return acc
@@ -119,14 +119,14 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
           )}
         </div>
 
-        {/* Empty state � honest message */}
+        {/* Empty state — honest message */}
         <div className="flex flex-col items-center justify-center py-10 text-center">
           {/* Mini baseline indicator */}
           <div className="w-10 h-10 rounded-full border-2 border-cyan-500/40 flex items-center justify-center mb-4">
             <div className="w-2 h-2 rounded-full bg-cyan-400" />
           </div>
           <p className="text-sm text-gray-300 font-medium mb-1">
-            Baseline Recorded � Awaiting Subsequent Structural Delta
+            Baseline Recorded — Awaiting Subsequent Structural Delta
           </p>
           <p className="text-xs text-gray-500 max-w-sm">
             The trend chart populates after the monitoring engine runs at least
@@ -164,7 +164,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
         <div>
           <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Risk Trend (30 Days)</h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            {entries.length} data point{entries.length !== 1 ? "s" : ""} �{" "}
+            {entries.length} data point{entries.length !== 1 ? "s" : ""} —{" "}
             {formatDate(oldest.date)} ? {formatDate(latest.date)}
           </p>
         </div>
