@@ -140,9 +140,6 @@ export default function MonitoringLayer({
   currentPlan = null,
   companyDomain = null,
 }: MonitoringLayerProps) {
-  console.log('MonitoringLayer diagnostic:', diagnostic);
-  console.log('MonitoringLayer diagnostic.action_layer:', diagnostic?.action_layer);
-  console.log('MonitoringLayer monitoringStatus.action_layer:', monitoringStatus?.action_layer);
   // Revenue Delta (last scan vs previous)
   const [revenueDelta, setRevenueDelta] = useState<null | {
     has_delta: boolean
@@ -340,11 +337,28 @@ export default function MonitoringLayer({
       const al: ActionLayerPayload = {
         issue_type: "general",
         primary_issue: { title: primary.title, description: primary.why },
-        affected_areas: [
-          "Homepage hero ? top section (hero + headline)",
-          "Pricing page ? headline + plan cards",
-          "Product page ? hero + value props",
-        ],
+        affected_areas: refinedFixes
+          .map((f) => {
+            const href = (f.page_url ?? "").trim()
+            if (!href) return null
+            try {
+              const u = new URL(href)
+              const path = u.pathname.replace(/\/$/, "") || "/"
+              const label =
+                path === "/"
+                  ? "Homepage"
+                  : path
+                      .split("/")
+                      .filter(Boolean)
+                      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+                      .join(" / ")
+              return `${label} — ${u.hostname}`
+            } catch {
+              return href
+            }
+          })
+          .filter((v): v is string => v !== null)
+          .filter((v, i, arr) => arr.indexOf(v) === i),
         fixes: refinedFixes,
         expected_impact: { close_rate_improvement: "", arr_recovery: "" },
         priority: { level: primary.impact_level, reason: primary.badges?.join(" � ") || "", display_line: undefined },
