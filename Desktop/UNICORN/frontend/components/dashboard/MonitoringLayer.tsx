@@ -291,17 +291,29 @@ export default function MonitoringLayer({
     ? diagnostic.recommendations[0] 
     : null
   const [playbookActionLayer, setPlaybookActionLayer] = useState<ActionLayerPayload | null>(null)
+  const [playbookLoading, setPlaybookLoading] = useState(true)
 
   useEffect(() => {
-    if (!companyId) return
+    if (!companyId) {
+      setPlaybookLoading(false)
+      return
+    }
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     const headers: Record<string, string> = {}
     if (token) headers.Authorization = `Bearer ${token}`
+    setPlaybookLoading(true)
+    setPlaybookActionLayer(null)
     apiFetch(`/playbook/${companyId}`, { headers }).then(async (r) => {
-      if (!r.ok) return
+      if (!r.ok) {
+        setPlaybookLoading(false)
+        return
+      }
       const data = await r.json()
       const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 8) : []
-      if (!fixesArr.length) return
+      if (!fixesArr.length) {
+        setPlaybookLoading(false)
+        return
+      }
       const mapFix = (fix: any) => {
         const monthlyLow = typeof fix.estimated_monthly_impact_low === "number" ? fix.estimated_monthly_impact_low : null
         const monthlyHigh = typeof fix.estimated_monthly_impact_high === "number" ? fix.estimated_monthly_impact_high : null
@@ -340,7 +352,10 @@ export default function MonitoringLayer({
         behavioral_insight: null,
       }
       setPlaybookActionLayer(al)
-    }).catch(() => {})
+      setPlaybookLoading(false)
+    }).catch(() => {
+      setPlaybookLoading(false)
+    })
   }, [companyId])
 
   return (
@@ -610,6 +625,7 @@ export default function MonitoringLayer({
           positioningScore={positioningScore}
           riskScore={rii}
           actionLayer={playbookActionLayer ?? null}
+          playbookLoading={playbookLoading}
           currentPlan={currentPlan}
           monthlyExposureReal={
             // Prefer monitoring status monthly, fall back to forecast monthly

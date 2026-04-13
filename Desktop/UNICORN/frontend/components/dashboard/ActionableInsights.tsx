@@ -13,32 +13,6 @@ import {
   trackPlaybookFixCopy,
   trackPlaybookFixPageClick,
 } from "@/lib/playbookAnalytics"
-import { isPlaybookCustomerSiteUrl } from "@/lib/playbookUrls"
-
-/** Provenance copy — factual, no subscription pitch */
-const TOOLTIP_MODELED_MONTHLY =
-  "From the same revenue scenario as your optimization model (your scale inputs + structural scores). If two fixes show the same dollar band, they reference that shared ceiling — not separate guarantees."
-
-const TOOLTIP_SOURCE_MODEL =
-  "Structural signals from your crawl and monitoring passes, run through the same engine as the Revenue Optimization Model below."
-
-const TOOLTIP_SOURCE_MONITORING =
-  "Updates when the system re-reads your public pages on its schedule."
-
-const COPY_PLAYBOOK_FROM_SCAN =
-  "Built from your diagnostic and latest monitoring run. Page targets match what we actually crawled; dollar bands use the same assumptions as the model section below — not a separate guess."
-
-const COPY_PLAYBOOK_SCORE_ONLY =
-  "Interim suggestions from structural scores only, until the full playbook response is ready."
-
-const COPY_PLAYBOOK_API_EMPTY =
-  "No page-specific playbook rows were returned for this cycle (API empty or crawl incomplete). Below are score-only suggestions — same model assumptions as the rest of the dashboard, not live excerpts from your site."
-
-const COPY_BEFORE_EMPTY_CRAWL =
-  "No live quote is stored for this row. The suggestion still maps to findings from your site crawl and scores; exit/CTR lines (when shown) come from your connected analytics."
-
-const COPY_BEFORE_EMPTY_MONITORING =
-  "No excerpt stored in this snapshot for this row."
 
 export type FixImpactContribution = {
   close_rate: string
@@ -239,16 +213,11 @@ interface ActionableInsightsProps {
   positioningScore?: number
   riskScore?: number | null
   actionLayer?: ActionLayerPayload | null
+  /** When true and playbook fixes not yet loaded, show loading instead of generic placeholders */
+  playbookLoading?: boolean
   currentPlan?: string | null
   monthlyExposureReal?: number | null
   useMonitoringSnapshot?: boolean
-  /** When false, shows a loading shell instead of the full playbook (avoids score-only placeholder flash). */
-  playbookReady?: boolean
-  /**
-   * True after playbook fetch settled with no API fixes and no diagnostic action_layer fixes —
-   * avoids implying we are "still loading" when the backend simply returned [].
-   */
-  playbookApiEmpty?: boolean
 }
 
 function CopyButton({ text, onCopied }: { text: string; onCopied?: () => void }) {
@@ -300,14 +269,6 @@ function CopyButton({ text, onCopied }: { text: string; onCopied?: () => void })
   )
 }
 
-/** Full "+$low – $high/mo" for display; compact.short stays for tight chips elsewhere */
-function formatMonthlyBandLine(m: string | undefined): string {
-  if (!m || m === "—") return ""
-  const t = m.trim()
-  if (/month/i.test(t) || /\/mo/i.test(t)) return t.replace(/\s+/g, " ")
-  return t
-}
-
 function formatCompactMoneyLabel(m: string | undefined, rawHi?: number): { short: string; full: string } {
   if (typeof rawHi === "number" && rawHi > 0 && rawHi < 1000) {
     const s = `$${Math.round(rawHi).toLocaleString()}`
@@ -339,17 +300,12 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
   const hasRealAfter = fix.suggested_change && fix.suggested_change.length > 0
   const monthlyChip = fix.impact_contribution?.monthly_impact || ""
   const compact = formatCompactMoneyLabel(monthlyChip, fix.impact_contribution?.monthly_impact_hi_raw)
-  const monthlyBandLine = formatMonthlyBandLine(monthlyChip)
-  const closeRateLine = (fix.impact_contribution?.close_rate || "").trim()
-
-  const openPageHref =
-    fix.page_url && isPlaybookCustomerSiteUrl(fix.page_url) ? fix.page_url : null
 
   const analyticsPayload = {
     fix_index: index,
     fix_title: fix.title,
     playbook_kind: fix.playbookKind ?? null,
-    page_url: openPageHref,
+    page_url: fix.page_url ?? null,
   }
 
   return (
@@ -369,35 +325,22 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
           Fix #{index} — {fix.title}
         </p>
         {monthlyChip && monthlyChip !== "—" && (
-          <div
-            className="text-[11px] mt-1 space-y-0.5"
-            title={`${TOOLTIP_MODELED_MONTHLY} Raw: ${monthlyChip}.`}
-          >
-            <p className="text-emerald-400/80">
-              <span className="text-gray-500">Modeled band: </span>
-              <span className="font-semibold text-emerald-300/90">
-                {monthlyBandLine || compact.short}
-              </span>
-            </p>
-            {!!closeRateLine && (
-              <p className="text-gray-600 leading-snug">
-                <span className="text-gray-500">Close-rate (est. share): </span>
-                {closeRateLine}
-              </p>
+          <p className="text-[11px] text-emerald-400/80 mt-1" title={compact.full}>
+            Est. recovery: <span className="font-bold">{compact.short}</span>
+            {!!(fix.impact_contribution?.close_rate && fix.impact_contribution?.close_rate.trim()) && (
+              <span className="text-gray-600 ml-2">({fix.impact_contribution?.close_rate})</span>
             )}
-          </div>
+          </p>
         )}
         {/* Provenance */}
-        <div className="flex items-center gap-1 mt-1 flex-wrap">
-          <SourceChip label="Model" title={TOOLTIP_SOURCE_MODEL} />
-          <SourceChip label="Monitoring" tone="cyan" title={TOOLTIP_SOURCE_MONITORING} />
-          {fix.behavioral_source && (
-            <SourceChip label="GA4" tone="emerald" title="Measured on your property: exit or CTR signal tied to this recommendation." />
-          )}
+        <div className="flex items-center gap-1 mt-1 whitespace-nowrap">
+          <SourceChip label="Model" title="Estimated recovery modeled from structural scores" />
+          <SourceChip label="Monitoring" tone="cyan" title="Derived from latest monitoring snapshot" />
+          {fix.behavioral_source && <SourceChip label="GA4" tone="emerald" title="Behavioral signal present (e.g., high exit)" />}
         </div>
-        {openPageHref && (
+        {fix.page_url && (
           <a
-            href={openPageHref}
+            href={fix.page_url}
             target="_blank"
             rel="noreferrer"
             className="block text-[11px] text-cyan-300 hover:text-cyan-200 mt-1.5"
@@ -419,15 +362,15 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
             {hasRealBefore
               ? `"${fix.current_example}"`
               : useMonitoringSnapshot
-                ? <span className="text-gray-500 not-italic text-xs leading-relaxed">{COPY_BEFORE_EMPTY_MONITORING}</span>
-                : <span className="text-gray-500 not-italic text-xs leading-relaxed">{COPY_BEFORE_EMPTY_CRAWL}</span>}
+                ? <span className="text-gray-600 not-italic">—</span>
+                : <span className="text-gray-600 not-italic">— run full diagnostic for live copy</span>}
           </p>
         </div>
 
         {/* AFTER */}
         <div className="px-4 py-3 space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/70">Suggested copy (draft)</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/70">After (suggested)</p>
             {hasRealAfter && (
               <CopyButton
                 text={fix.suggested_change}
@@ -476,11 +419,10 @@ export default function ActionableInsights({
   positioningScore = 0,
   riskScore = null,
   actionLayer,
+  playbookLoading = false,
   currentPlan = null,
   monthlyExposureReal = null,
   useMonitoringSnapshot = false,
-  playbookReady = true,
-  playbookApiEmpty = false,
 }: ActionableInsightsProps) {
   const tone =
     uiState === "low"
@@ -489,18 +431,13 @@ export default function ActionableInsights({
         ? "border-amber-800/40"
         : "border-red-800/40"
 
-  if (!playbookReady) {
+  if (playbookLoading && !actionLayer?.fixes?.length) {
     return (
       <div className={`relative z-10 mb-8 p-6 bg-[#111827] rounded-lg border ${tone}`}>
         <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-4">
           Revenue playbook
         </h3>
-        <div className="animate-pulse space-y-4" aria-busy="true" aria-label="Loading playbook">
-          <div className="h-10 bg-gray-800/80 rounded-lg w-full max-w-xl" />
-          <div className="h-24 bg-gray-800/60 rounded-lg" />
-          <div className="h-16 bg-gray-800/50 rounded-lg w-3/4" />
-        </div>
-        <p className="text-xs text-gray-500 mt-4">Personalizing your playbook…</p>
+        <p className="text-sm text-gray-500 animate-pulse">Loading playbook…</p>
       </div>
     )
   }
@@ -530,12 +467,6 @@ export default function ActionableInsights({
 
   // Do not mix score-only placeholder fixes with API/playbook fixes (avoids duplicate "Unlike X, we Y" rows)
   const fromApiOrPlaybook = !!(actionLayer?.fixes?.length)
-  const introProvenance =
-    playbookApiEmpty
-      ? COPY_PLAYBOOK_API_EMPTY
-      : fromApiOrPlaybook
-        ? COPY_PLAYBOOK_FROM_SCAN
-        : COPY_PLAYBOOK_SCORE_ONLY
   const existingTitles = new Set(baseLayer.fixes.map(f => f.title.toLowerCase()))
   const additionalFixes = placeholderLayer.fixes.filter(f => !existingTitles.has(f.title.toLowerCase()))
   const combined = fromApiOrPlaybook
@@ -557,12 +488,9 @@ export default function ActionableInsights({
 
     return (
       <div className={`relative z-10 mb-8 p-6 bg-[#111827] rounded-lg border ${tone}`}>
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-2">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-4">
           Revenue playbook
         </h3>
-        <p className="text-[11px] text-gray-500 mb-4 leading-relaxed border-b border-gray-800/60 pb-3">
-          {introProvenance}
-        </p>
 
         {/* Priority strip — visible for all plans */}
         <div
@@ -573,12 +501,10 @@ export default function ActionableInsights({
           }`}
         >
           <p className={`text-sm font-bold ${isHigh ? "text-orange-400" : "text-gray-300"}`}>
-            {isHigh ? "Higher structural priority" : "Structural priority"} — {pri.level}
+            {isHigh ? "🔥 HIGH IMPACT (optional)" : "⚡ IMPACT"} — {pri.level}
           </p>
           <p className="text-xs text-gray-400 mt-1">{pri.display_line || pri.reason}</p>
-          <p className="text-[11px] text-gray-500 mt-1">
-            From your assessment outputs — not a manually assigned label.
-          </p>
+          <p className="text-[11px] text-gray-500 mt-1">Low risk ≠ zero upside at scale — highest ROI comes from targeted fixes.</p>
         </div>
 
         {/* 1. Primary leak */}
@@ -607,6 +533,7 @@ export default function ActionableInsights({
 
         {/* 3. Fix #1 — "Start here" callout + card */}
         <div className="mb-4">
+          {/* START HERE banner */}
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
               What to change first
@@ -618,6 +545,7 @@ export default function ActionableInsights({
             )}
           </div>
 
+          {/* ⚡ Behavioral insight banner — GA4 + GSC (only when real data available) */}
           {effectiveLayer.behavioral_insight && effectiveLayer.behavioral_insight.exit_pct >= 25 && (
             <div className="mb-3 px-4 py-3 rounded-lg bg-cyan-950/30 border border-cyan-700/40 flex flex-col gap-1">
               <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-0.5">
@@ -706,7 +634,7 @@ export default function ActionableInsights({
                     </p>
                   )}
                   <p className="text-[10px] text-gray-600 mt-2">
-                    Total uses the same engine assumptions as each card; not additive if bands overlap.
+                    Per-fix shares are shown on each card. Totals are directional, not a guarantee.
                   </p>
                 </div>
               )}
