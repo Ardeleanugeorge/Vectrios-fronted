@@ -1,7 +1,7 @@
 "use client"
-import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
+import { apiFetch } from "@/lib/api"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -129,7 +129,7 @@ export default function DashboardPage() {
   const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const [monitoringLoading, setMonitoringLoading] = useState(true)
-  // Company domain � used for "Run Full Diagnostic" link pre-fill
+  // Company domain — used for "Run Full Diagnostic" link pre-fill
   const [companyDomain, setCompanyDomain] = useState<string | null>(() => {
     if (typeof window === "undefined") return null
     try {
@@ -235,7 +235,44 @@ export default function DashboardPage() {
         console.error("Error parsing diagnostic data:", e)
       }
     } else {
-      console.log("[DASHBOARD] No diagnostic data found")
+      void (async () => {
+        const cid =
+          companyId ||
+          (() => {
+            try {
+              const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+              if (!raw) return null
+              const u = JSON.parse(raw) as { company_id?: string; data?: { company_id?: string } }
+              return u?.company_id || u?.data?.company_id || null
+            } catch {
+              return null
+            }
+          })()
+        if (cid && token) {
+          try {
+            const res = await apiFetch(`/assessment/latest/${cid}`)
+            if (res.ok) {
+              const data = (await res.json()) as {
+                status?: string
+                diagnostic?: DiagnosticResult
+              }
+              if (data?.status === "ok" && data?.diagnostic) {
+                console.log("[DASHBOARD] Loaded diagnostic from backend:", data.diagnostic)
+                setDiagnostic(data.diagnostic)
+                setHasDiagnostic(true)
+              } else {
+                console.log("[DASHBOARD] No diagnostic data found")
+              }
+            } else {
+              console.log("[DASHBOARD] No diagnostic data found")
+            }
+          } catch {
+            console.log("[DASHBOARD] No diagnostic data found")
+          }
+        } else {
+          console.log("[DASHBOARD] No diagnostic data found")
+        }
+      })()
     }
 
     // Optimistic trial state to avoid flicker right after activation redirect.
@@ -252,7 +289,7 @@ export default function DashboardPage() {
         loadAlerts(token, companyId)
         loadSubscription(token, companyId)
       } else {
-        // No company ID yet � don't keep spinner spinning
+        // No company ID yet — don't keep spinner spinning
         setMonitoringLoading(false)
         setSubscriptionLoading(false)
       }
@@ -261,14 +298,14 @@ export default function DashboardPage() {
     }
   }, [companyId, router])
 
-  // Server is source of truth for company_id (avoids stale localStorage / wrong workspace ? stuck spinners).
+  // Server is source of truth for company_id (avoids stale localStorage / wrong workspace → stuck spinners).
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
     let cancelled = false
     void (async () => {
       try {
-        const pr = await apiFetch(`/account/profile`, {
+        const pr = await fetch(`${API_URL}/account/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!pr.ok || cancelled) return
@@ -371,7 +408,7 @@ export default function DashboardPage() {
       if (token) {
         const activeScanToken = params.get("token")
         // Immediate reload - subscription first to set currentPlan
-        loadSubscription(token, companyId, true)  // ? Critical: force reload subscription FIRST
+        loadSubscription(token, companyId, true)  // ← Critical: force reload subscription FIRST
         loadMonitoringStatus(token, companyId, activeScanToken)
         loadAlerts(token, companyId)
         
@@ -430,7 +467,7 @@ export default function DashboardPage() {
 
     setSubscriptionLoading(true)
     try {
-      const response = await apiFetch(`/subscription/${companyId}`, {
+      const response = await fetch(`${API_URL}/subscription/${companyId}`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -495,7 +532,7 @@ export default function DashboardPage() {
     let cancelled = false
     void (async () => {
       try {
-        const res = await apiFetch(`/billing/confirm-checkout`, {
+        const res = await fetch(`${API_URL}/billing/confirm-checkout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -517,7 +554,7 @@ export default function DashboardPage() {
 
           let resolvedCompanyId: string | null = null
           try {
-            const pr = await apiFetch(`/account/profile`, {
+            const pr = await fetch(`${API_URL}/account/profile`, {
               headers: { Authorization: `Bearer ${token}` },
             })
             if (pr.ok && !cancelled) {
@@ -584,7 +621,7 @@ export default function DashboardPage() {
 
   const loadAlerts = async (token: string, companyId: string) => {
     try {
-      const response = await apiFetch(`/monitoring/alerts/${companyId}`, {
+      const response = await fetch(`${API_URL}/monitoring/alerts/${companyId}`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -604,7 +641,7 @@ export default function DashboardPage() {
     if (!token) return
 
     try {
-      const response = await apiFetch(`/monitoring/alerts/${alertId}/mark-read`, {
+      const response = await fetch(`${API_URL}/monitoring/alerts/${alertId}/mark-read`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -684,12 +721,12 @@ export default function DashboardPage() {
   const driftStatus = monitoringStatus?.drift_status || "stable"
 
   // Calculate derived metrics from diagnostic
-  // Suporta at�t c�mpurile noi (din engine actual) c�t ?i cele vechi (legacy)
+  // Suportă atât câmpurile noi (din engine actual) cât și cele vechi (legacy)
   const riskLevel = diagnostic?.risk_level || "MODERATE"
   // Confidence priority:
-  // 1. monitoring structural_scores.confidence_score (most up-to-date � refreshed on every rescan)
+  // 1. monitoring structural_scores.confidence_score (most up-to-date — refreshed on every rescan)
   // 2. diagnostic.confidence (from original scan stored in localStorage)
-  // 3. 0 � genuinely no data, show Low honestly
+  // 3. 0 — genuinely no data, show Low honestly
   const confidence =
     (monitoringStatus?.structural_scores?.confidence_score ?? null) ??
     (diagnostic?.confidence && diagnostic.confidence > 0 ? diagnostic.confidence : null) ??
@@ -802,10 +839,10 @@ export default function DashboardPage() {
           {/* While monitoring status is loading from API, show spinner */}
           {monitoringLoading && companyId ? (
             <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
-              <p className="text-sm text-gray-400 animate-pulse">Loading revenue monitoring status�</p>
+              <p className="text-sm text-gray-400 animate-pulse">Loading revenue monitoring status…</p>
             </div>
           ) : isMonitoringActive && monitoringStatus ? (
-            /* STATE 3 � CONTINUOUS MONITORING ACTIVE */
+            /* STATE 3 — CONTINUOUS MONITORING ACTIVE */
             <MonitoringLayer 
               monitoringStatus={monitoringStatus}
               diagnostic={
@@ -838,7 +875,7 @@ export default function DashboardPage() {
               companyDomain={companyDomain}
             />
           ) : !hasDiagnostic && !monitoringLoading ? (
-            /* STATE 1 � NO DIAGNOSTIC & monitoring confirmed off */
+            /* STATE 1 — NO DIAGNOSTIC & monitoring confirmed off */
             <div className="p-12 border border-gray-800 rounded-lg bg-[#111827] text-center">
               <h2 className="text-2xl font-bold mb-4 text-gray-300">Revenue Monitoring Not Yet Active</h2>
               <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
@@ -853,13 +890,13 @@ export default function DashboardPage() {
             </div>
           ) : subscriptionLoading ? (
             <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
-              <p className="text-sm text-gray-400 animate-pulse">Loading subscription status�</p>
+              <p className="text-sm text-gray-400 animate-pulse">Loading subscription status…</p>
             </div>
           ) : diagnostic?.is_partial ? (
-            /* STATE 2 � PARTIAL DIAGNOSTIC (from scan), monitoring not active */
+            /* STATE 2 — PARTIAL DIAGNOSTIC (from scan), monitoring not active */
             <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
           ) : (
-            /* STATE 2 � FREE SNAPSHOT (full diagnostic, no monitoring) */
+            /* STATE 2 — FREE SNAPSHOT (full diagnostic, no monitoring) */
             diagnostic && (
               <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
             )
