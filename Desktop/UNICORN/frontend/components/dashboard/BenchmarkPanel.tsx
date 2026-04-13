@@ -216,7 +216,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-4 h-2 rounded bg-gray-700/50 inline-block" />
-          IQ range (25th�75th pct)
+          IQ range (25th–75th pct)
         </div>
       </div>
 

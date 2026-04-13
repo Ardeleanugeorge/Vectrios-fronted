@@ -109,14 +109,14 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
               </span>
               {forecast.lost_deals_annual !== undefined && forecast.lost_deals_annual > 0 && (
                 <span className="ml-2">
-                  � ~{Math.round(forecast.lost_deals_annual)} deals/yr {uiState === "low" ? "additional potential" : "at risk"}
+                  · ~{Math.round(forecast.lost_deals_annual)} deals/yr {uiState === "low" ? "additional potential" : "at risk"}
                 </span>
               )}
             </div>
           )}
           {uiState !== "low" && (
             <p className="text-[11px] text-gray-500 mt-3 pt-3 border-t border-gray-800/80">
-              Driven by scale � not high structural risk. Represents modeled exposure, not immediate loss.
+              Driven by scale — not high structural risk. Represents modeled exposure, not immediate loss.
             </p>
           )}
         </div>
@@ -190,7 +190,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
             <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Drivers</div>
             <ul className="space-y-0.5">
               {forecast.drivers.slice(0, 2).map((d, i) => (
-                <li key={i} className="text-xs text-gray-400">� {d}</li>
+                <li key={i} className="text-xs text-gray-400">· {d}</li>
               ))}
             </ul>
           </div>
