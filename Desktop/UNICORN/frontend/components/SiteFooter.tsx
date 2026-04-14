@@ -17,9 +17,6 @@ export default function SiteFooter() {
           <Link href="/security" className="text-slate-600 hover:text-slate-900 dark:text-gray-500 dark:hover:text-gray-300">
             Security
           </Link>
-          <Link href="/methodology#revenue-impact-index" className="text-slate-600 hover:text-slate-900 dark:text-gray-500 dark:hover:text-gray-300">
-            Methodology &amp; RII
-          </Link>
           <Link href="/privacy" className="text-slate-600 hover:text-slate-900 dark:text-gray-500 dark:hover:text-gray-300">
             Privacy
           </Link>
