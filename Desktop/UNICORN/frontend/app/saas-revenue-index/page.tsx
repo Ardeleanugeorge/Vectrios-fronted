@@ -1,11 +1,11 @@
 "use client";
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { METHODOLOGY_RII_HREF, RII_ABBREV, RII_NAME, RII_TAGLINE } from "@/lib/rii";
 
 interface CompanyRow {
   rank: number;
@@ -46,7 +46,7 @@ function getRiskColor(risk: string | null) {
 }
 
 function RiiBar({ value }: { value: number | null }) {
-  if (value === null) return <span className="text-gray-600">—</span>;
+  if (value === null) return <span className="text-gray-600">�</span>;
   const pct = Math.min(value, 100);
   const color =
     value >= 70 ? "from-red-500 to-orange-500" :
@@ -68,7 +68,7 @@ function RiiBar({ value }: { value: number | null }) {
 }
 
 function ScoreCell({ value }: { value: number | null }) {
-  if (value === null) return <span className="text-gray-700">—</span>;
+  if (value === null) return <span className="text-gray-700">�</span>;
   const color =
     value >= 65 ? "text-green-400" :
     value >= 40 ? "text-yellow-400" :
@@ -92,7 +92,7 @@ export default function SaaSRevenueIndex() {
   };
 
   useEffect(() => {
-    fetch(`${API_URL}/saas-revenue-index`)
+    apiFetch(`/saas-revenue-index`)
       .then(r => {
         if (!r.ok) {
           throw new Error(`HTTP ${r.status}`);
@@ -139,7 +139,7 @@ export default function SaaSRevenueIndex() {
             onClick={handleBack}
             className="text-xs text-gray-400 hover:text-white transition-colors"
           >
-            ← Back
+            ? Back
           </button>
           <Link
             href="/"
@@ -158,19 +158,10 @@ export default function SaaSRevenueIndex() {
             SaaS Revenue Architecture Index
           </h1>
           <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-2">
-            Most SaaS companies are losing $120K–$300K/year from messaging gaps they don&apos;t see.
+            Most SaaS companies are losing $120K�$300K/year from messaging gaps they don&apos;t see.
           </p>
           <p className="text-gray-500 text-sm max-w-2xl mx-auto">
-            This index shows how clearly each company&apos;s story supports revenue — so you can see where you stand.
-          </p>
-          <p className="text-xs text-gray-600 max-w-2xl mx-auto mt-4 leading-relaxed">
-            Rankings use the same{" "}
-            <Link href={METHODOLOGY_RII_HREF} className="text-cyan-500 hover:text-cyan-400 hover:underline">
-              {RII_NAME}
-            </Link>{" "}
-            (<abbr title={RII_TAGLINE} className="cursor-help border-b border-dotted border-gray-600">{RII_ABBREV}</abbr>
-            ) as the Vectrios diagnostic:{" "}
-            <span className="text-gray-500">0–100, lower = stronger revenue-stage messaging architecture.</span>
+            This index shows how clearly each company&apos;s story supports revenue � so you can see where you stand.
           </p>
         </div>
 
@@ -180,44 +171,32 @@ export default function SaaSRevenueIndex() {
             <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
               {[
                 { label: "Companies Analyzed", value: s.total_companies, color: "text-white" },
-                {
-                  label: `Avg. ${RII_ABBREV} (lower = better)`,
-                  value: s.average_rii !== null ? s.average_rii.toFixed(1) : "—",
-                  color: "text-yellow-400",
-                  hint: RII_TAGLINE,
-                },
+                { label: "Average RII (lower = better)", value: s.average_rii !== null ? s.average_rii.toFixed(1) : "�", color: "text-yellow-400" },
               ].map(stat => (
                 <div key={stat.label} className="rounded-xl bg-white/[0.03] border border-white/5 p-5 text-center">
                   <div className={`text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
-                  <div
-                    className="text-xs text-gray-500"
-                    title={"hint" in stat ? (stat as { hint: string }).hint : undefined}
-                  >
-                    {stat.label}
-                  </div>
+                  <div className="text-xs text-gray-500">{stat.label}</div>
                 </div>
               ))}
             </div>
             <p className="text-xs sm:text-sm text-gray-500 mb-10 max-w-3xl mx-auto text-center">
               Companies in this dataset quietly lose an estimated
-              <span className="text-amber-300 font-semibold"> $8K–$25K/month</span>{" "}
+              <span className="text-amber-300 font-semibold"> $8K�$25K/month</span>{" "}
               from messaging gaps that never show up in dashboards.
-              Use this benchmark to understand how risky your own revenue architecture might be — then run your scan to see your exact exposure.
+              Use this benchmark to understand how risky your own revenue architecture might be � then run your scan to see your exact exposure.
             </p>
           </>
         )}
 
-        {/* ── Top 10 / Worst 10 ── */}
+        {/* -- Top 10 / Worst 10 -- */}
         {data && (data.top10.length > 0 || data.worst10.length > 0) && (
           <div className="grid md:grid-cols-2 gap-6 mb-12">
 
-            {/* Top 10 — best architecture */}
+            {/* Top 10 � best architecture */}
             <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] overflow-hidden">
               <div className="px-5 py-4 border-b border-emerald-500/20 flex items-center gap-2">
-                <span className="text-emerald-400 text-sm font-semibold">🏆 Best Revenue Architecture</span>
-                <span className="ml-auto text-xs text-gray-600" title={RII_TAGLINE}>
-                  lowest {RII_ABBREV}
-                </span>
+                <span className="text-emerald-400 text-sm font-semibold">?? Best Revenue Architecture</span>
+                <span className="ml-auto text-xs text-gray-600">lowest RII</span>
               </div>
               <div>
                 {data.top10.map((c, i) => (
@@ -243,20 +222,18 @@ export default function SaaSRevenueIndex() {
                       {c.domain}
                     </Link>
                     <span className="text-emerald-400 font-mono text-sm font-bold">
-                      {c.rii !== null ? Math.round(c.rii) : "—"}
+                      {c.rii !== null ? Math.round(c.rii) : "�"}
                     </span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Worst 10 — highest exposure */}
+            {/* Worst 10 � highest exposure */}
             <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.03] overflow-hidden">
               <div className="px-5 py-4 border-b border-red-500/20 flex items-center gap-2">
-                <span className="text-red-400 text-sm font-semibold">🔴 Highest Revenue Exposure</span>
-                <span className="ml-auto text-xs text-gray-600" title={RII_TAGLINE}>
-                  highest {RII_ABBREV}
-                </span>
+                <span className="text-red-400 text-sm font-semibold">?? Highest Revenue Exposure</span>
+                <span className="ml-auto text-xs text-gray-600">highest RII</span>
               </div>
               <div>
                 {data.worst10.map((c, i) => (
@@ -281,7 +258,7 @@ export default function SaaSRevenueIndex() {
                       {c.domain}
                     </Link>
                     <span className="text-red-400 font-mono text-sm font-bold">
-                      {c.rii !== null ? Math.round(c.rii) : "—"}
+                      {c.rii !== null ? Math.round(c.rii) : "�"}
                     </span>
                   </div>
                 ))}
@@ -312,9 +289,9 @@ export default function SaaSRevenueIndex() {
                 }`}
               >
                 {f === "all" ? "All Companies" :
-                 f === "low" ? "✅ Low Exposure" :
-                 f === "moderate" ? "⚠️ Moderate" :
-                 "🔴 High Exposure"}
+                 f === "low" ? "? Low Exposure" :
+                 f === "moderate" ? "?? Moderate" :
+                 "?? High Exposure"}
               </button>
             ))}
           </div>
@@ -332,12 +309,7 @@ export default function SaaSRevenueIndex() {
           <div className="grid grid-cols-[2.5rem_1fr_7rem_5rem_5rem_5rem_5rem_6rem] gap-2 px-5 py-3 bg-white/[0.02] border-b border-white/5 text-xs text-gray-500 font-medium uppercase tracking-widest">
             <span>#</span>
             <span>Company</span>
-            <span className="text-center leading-tight" title={RII_TAGLINE}>
-              <span className="block">{RII_ABBREV}</span>
-              <span className="block text-[9px] normal-case font-normal tracking-normal text-gray-600">
-                {RII_NAME.split(" ").slice(-1)[0]}
-              </span>
-            </span>
+            <span className="text-center">RII Score</span>
             <span className="text-center">Align</span>
             <span className="text-center">ICP</span>
             <span className="text-center">Anchor</span>
@@ -356,7 +328,7 @@ export default function SaaSRevenueIndex() {
             <div className="py-20 text-center">
               <p className="text-gray-600 text-sm">No companies scanned yet.</p>
               <Link href="/" className="mt-3 inline-block text-cyan-400 text-sm hover:underline">
-                Run the first scan →
+                Run the first scan ?
               </Link>
             </div>
           )}
@@ -417,7 +389,7 @@ export default function SaaSRevenueIndex() {
                 <div className="flex justify-center">
                   <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${risk.bg} ${risk.text}`}>
                     <span className={`w-1 h-1 rounded-full ${risk.dot}`} />
-                    {c.risk_level?.replace(" Exposure", "") ?? "—"}
+                    {c.risk_level?.replace(" Exposure", "") ?? "�"}
                   </span>
                 </div>
               </div>
@@ -427,19 +399,9 @@ export default function SaaSRevenueIndex() {
 
         {/* Legend */}
         <div className="mt-8 flex flex-wrap gap-6 justify-center text-xs text-gray-600">
-          <span>
-            <span className="text-green-400 font-semibold">Low {RII_ABBREV}</span> — strong architecture (same{" "}
-            <Link href={METHODOLOGY_RII_HREF} className="text-cyan-600 hover:underline">
-              {RII_NAME}
-            </Link>
-            )
-          </span>
-          <span>
-            <span className="text-yellow-400 font-semibold">Moderate {RII_ABBREV}</span> — structural misalignment signals
-          </span>
-          <span>
-            <span className="text-red-400 font-semibold">High {RII_ABBREV}</span> — higher modeled revenue exposure
-          </span>
+          <span><span className="text-green-400 font-semibold">Low RII</span> = strong revenue architecture</span>
+          <span><span className="text-yellow-400 font-semibold">Moderate RII</span> = structural misalignment signals</span>
+          <span><span className="text-red-400 font-semibold">High RII</span> = significant revenue exposure</span>
         </div>
 
         {/* Bottom CTA */}
@@ -452,15 +414,15 @@ export default function SaaSRevenueIndex() {
             href="/"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition-colors"
           >
-            ⚡ Run Free Revenue Scan
+            ? Run Free Revenue Scan
           </Link>
-          <p className="text-gray-600 text-xs mt-3">Instant scan · No signup required</p>
+          <p className="text-gray-600 text-xs mt-3">Instant scan � No signup required</p>
         </div>
       </main>
 
       {/* Footer */}
       <footer className="border-t border-white/5 px-6 py-6 text-center text-gray-600 text-xs">
-        Vectri<span className="text-cyan-400">OS</span> Revenue Architecture Index — data sourced from anonymous public website scans.
+        Vectri<span className="text-cyan-400">OS</span> Revenue Architecture Index � data sourced from anonymous public website scans.
         All scores based on structural messaging analysis only.
       </footer>
     </div>

@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from "@/lib/config"
 import Link from "next/link"
@@ -20,7 +21,7 @@ export default function ConfirmEmailChangePage() {
 
     ;(async () => {
       try {
-        const res = await fetch(`${API_URL}/account/email-change-confirm`, {
+        const res = await apiFetch(`/account/email-change-confirm`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token }),

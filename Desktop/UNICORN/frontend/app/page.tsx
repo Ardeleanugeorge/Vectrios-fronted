@@ -1,4 +1,5 @@
 "use client"
+import { apiFetch } from "@/lib/api"
 
 import { API_URL } from '@/lib/config'
 import { buildScanPrefillPayload, persistScanDataForPrefill } from '@/lib/scanPrefill'
@@ -39,10 +40,10 @@ export default function Home() {
 
   // Fake scan phases for perceived progress
   const scanPhases = useRef([
-    "Crawling your pages…",
-    "Analyzing messaging structure…",
-    "Detecting ICP & value signals…",
-    "Estimating Revenue Impact Index…"
+    "Crawling your pages�",
+    "Analyzing messaging structure�",
+    "Detecting ICP & value signals�",
+    "Estimating Revenue Impact Index�"
   ])
   const [scanPhase, setScanPhase] = useState(0)
   const [showCookieBanner, setShowCookieBanner] = useState(false)
@@ -53,7 +54,7 @@ export default function Home() {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     setIsLoggedIn(!!token)
 
-    // Pre-fill URL from query param (e.g. "Run Full Diagnostic →" from dashboard)
+    // Pre-fill URL from query param (e.g. "Run Full Diagnostic ?" from dashboard)
     try {
       const params = new URLSearchParams(window.location.search)
       const urlParam = params.get("url")
@@ -61,7 +62,7 @@ export default function Home() {
     } catch {}
 
     // Fetch real scan count
-    fetch(`${API_URL}/scan-stats`)
+    apiFetch(`/scan-stats`)
       .then(r => {
         if (!r.ok) {
           throw new Error(`HTTP ${r.status}`);
@@ -127,7 +128,7 @@ export default function Home() {
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
     
     try {
-      const res = await fetch(`${API_URL}/scan`, {
+      const res = await apiFetch(`/scan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: scanUrl.trim() }),
@@ -223,7 +224,7 @@ export default function Home() {
       <Header />
       <main>
 
-      {/* ── 1. HERO ─────────────────────────────────────────────────────── */}
+      {/* -- 1. HERO ------------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 pt-12 pb-16 md:pt-16 md:pb-20">
         <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-8 uppercase tracking-wider">
@@ -236,16 +237,16 @@ export default function Home() {
           </h1>
           <p className="text-lg md:text-xl text-slate-600 dark:text-gray-300 mb-4 leading-relaxed max-w-2xl mx-auto">
             Your messaging is already costing you deals.
-            We show you where — before pipeline drops.
+            We show you where � before pipeline drops.
           </p>
           <p className="text-sm md:text-base text-amber-200/90 font-medium mb-6 max-w-2xl mx-auto">
-            Most teams don&apos;t realize they&apos;re losing $20K–$200K/year from messaging gaps until pipeline slows.
+            Most teams don&apos;t realize they&apos;re losing $20K�$200K/year from messaging gaps until pipeline slows.
           </p>
           <p className="text-xs text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
             Analyzing revenue-stage messaging across B2B SaaS companies to surface hidden revenue loss before it hits pipeline.
           </p>
 
-          {/* ── SCAN BOX ── */}
+          {/* -- SCAN BOX -- */}
           <form onSubmit={handleScan} className="max-w-xl mx-auto mb-3">
             <div className="flex flex-col sm:flex-row items-stretch bg-[#111827] border border-gray-700 rounded-xl overflow-hidden focus-within:border-cyan-500 transition">
               <div className="flex items-center flex-1">
@@ -270,9 +271,9 @@ export default function Home() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                       <path className="opacity-75" fill="currentColor" d="M4 12a 8 8 0 018-8v8H4z"/>
                     </svg>
-                    Scanning…
+                    Scanning�
                   </span>
-                ) : "Scan my site → detect revenue risk"}
+                ) : "Scan my site ? detect revenue risk"}
               </button>
             </div>
             {scanError && (
@@ -295,14 +296,14 @@ export default function Home() {
           )}
           <div className="text-xs sm:text-sm text-gray-400 mb-8 space-y-3 max-w-lg mx-auto">
             <p className="font-medium">
-              Takes 30 seconds · No signup · Instant baseline
+              Takes 30 seconds � No signup � Instant baseline
             </p>
             <p className="text-gray-500 leading-relaxed border-t border-slate-200 dark:border-gray-800/80 pt-3">
               Get your baseline risk score, see where revenue leaks, then track drift weekly.
             </p>
           </div>
 
-          {/* ── Companies scanned counter (clickable → leaderboard) ── */}
+          {/* -- Companies scanned counter (clickable ? leaderboard) -- */}
           {scanCount !== null && scanCount > 0 && (
             <div className="flex items-center justify-center">
               <Link
@@ -315,7 +316,7 @@ export default function Home() {
                 </span>
                 <span className="text-gray-500">revenue architectures analyzed</span>
                 <span className="text-cyan-500 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                  View index →
+                  View index ?
                 </span>
               </Link>
             </div>
@@ -323,7 +324,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 2. PROBLEM ──────────────────────────────────────────────────── */}
+      {/* -- 2. PROBLEM ---------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -355,28 +356,28 @@ export default function Home() {
             None of this triggers alerts. It quietly reduces conversion every week.
           </p>
           <p className="text-lg text-cyan-400 font-semibold mt-4">
-            We detect it early — before it compounds.
+            We detect it early � before it compounds.
           </p>
         </div>
       </section>
 
-      {/* ── 3. PRODUCT VISUALIZATION ────────────────────────────────────── */}
+      {/* -- 3. PRODUCT VISUALIZATION -------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">Example Revenue Architecture Scan</p>
           <p className="text-center text-base md:text-lg font-semibold text-slate-900 dark:text-white mb-6 max-w-xl mx-auto leading-snug">
             Example:{" "}
-            <span className="text-red-400">$287K</span> lost potential —{" "}
+            <span className="text-red-400">$287K</span> lost potential �{" "}
             <span className="text-gray-300 font-medium">
               caused by messaging misalignment across pages
             </span>{" "}
             and <span className="text-gray-300 font-medium">weak proof delaying decisions</span>
           </p>
           <p className="text-center text-sm md:text-base text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">
-            → pipeline slowed without being noticed.
+            ? pipeline slowed without being noticed.
           </p>
 
-          {/* Mock Dashboard — ARR anchor overlay for “wow” */}
+          {/* Mock Dashboard � ARR anchor overlay for �wow� */}
           <div className="relative rounded-xl border border-gray-700 bg-[#111827] overflow-hidden shadow-2xl">
             <div className="absolute top-[48px] right-3 sm:right-5 z-20 px-3 py-2 rounded-lg bg-[#1a0505]/95 border border-red-500/50 shadow-lg shadow-red-950/50 backdrop-blur-sm pointer-events-none text-right min-w-[7rem]">
               <p className="text-[10px] uppercase tracking-wider text-red-300/85 font-semibold">ARR at risk</p>
@@ -443,14 +444,14 @@ export default function Home() {
           </div>
 
           <p className="text-center text-xs text-gray-600 mt-4">
-            Sample output — your actual scan will reflect your live messaging data
+            Sample output � your actual scan will reflect your live messaging data
           </p>
 
-          {/* Financial proof — hook */}
+          {/* Financial proof � hook */}
           <div className="mt-10 p-6 rounded-2xl border border-amber-200/80 bg-amber-50/90 text-center dark:border-amber-500/25 dark:bg-gradient-to-br dark:from-amber-950/30 dark:to-[#111827]">
             <p className="text-lg md:text-xl font-semibold text-slate-900 dark:text-white">
               Companies we analyze typically uncover{" "}
-              <span className="text-amber-300">$20K–$200K</span> in hidden revenue loss.
+              <span className="text-amber-300">$20K�$200K</span> in hidden revenue loss.
             </p>
             <p className="text-sm text-gray-400 mt-2">
               Financial exposure estimates, not vanity content metrics.
@@ -459,7 +460,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 4. WHAT IT DOES ─────────────────────────────────────────────── */}
+      {/* -- 4. WHAT IT DOES ----------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Why deals slow down (without you noticing)</h2>
@@ -487,12 +488,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 5. FINANCIAL FRAMING ────────────────────────────────────────── */}
+      {/* -- 5. FINANCIAL FRAMING ------------------------------------------ */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">How messaging gaps turn into lost revenue</h2>
           <p className="text-lg text-gray-300 mb-8">
-            Even small drops in clarity can quietly cost $3K–$10K/month.
+            Even small drops in clarity can quietly cost $3K�$10K/month.
             Most teams don&apos;t notice until pipeline slows.
           </p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
@@ -510,7 +511,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 6. MONITORING LAYER ─────────────────────────────────────────── */}
+      {/* -- 6. MONITORING LAYER ------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Continuous revenue monitoring</h2>
@@ -539,7 +540,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 7. BUILT FOR ────────────────────────────────────────────────── */}
+      {/* -- 7. BUILT FOR -------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-8">Built For</h2>
@@ -549,7 +550,7 @@ export default function Home() {
               <ul className="space-y-3 text-lg text-gray-300">
                 {["B2B SaaS companies", "CROs responsible for pipeline performance", "Revenue teams protecting conversion quality", "Operators tracking consistency week over week"].map(r => (
                   <li key={r} className="flex items-center gap-3">
-                    <span className="text-cyan-400">✓</span>
+                    <span className="text-cyan-400">?</span>
                     {r}
                   </li>
                 ))}
@@ -559,17 +560,17 @@ export default function Home() {
 
           <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
             <p className="text-lg text-gray-300">
-              Vectri<span className="text-cyan-400">OS</span> is a revenue-stage monitoring layer — not a content tool.
+              Vectri<span className="text-cyan-400">OS</span> is a revenue-stage monitoring layer � not a content tool.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── 8. FINAL CTA ────────────────────────────────────────────────── */}
+      {/* -- 8. FINAL CTA -------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-200 dark:border-gray-800">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Find what&apos;s already costing you revenue — before it compounds
+            Find what&apos;s already costing you revenue � before it compounds
           </h2>
           <p className="text-lg text-gray-300 mb-8">
             Scan your site to create a baseline in 30 seconds.
@@ -579,7 +580,7 @@ export default function Home() {
             href="/signup"
             className="inline-block px-12 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-lg"
           >
-            Scan my site → detect revenue risk
+            Scan my site ? detect revenue risk
           </Link>
           <div className="mt-4">
             <p className="text-sm text-gray-500">
@@ -597,7 +598,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FOOTER ──────────────────────────────────────────────────────── */}
+      {/* -- FOOTER -------------------------------------------------------- */}
       <footer className="max-w-6xl mx-auto px-6 py-12 border-t border-slate-200 dark:border-gray-800">
         <div className="text-center">
           <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Vectri<span className="text-cyan-500 dark:text-cyan-400">OS</span></h3>
@@ -610,7 +611,7 @@ export default function Home() {
             <Link href="/data-retention" className="text-gray-500 hover:text-gray-400">Data Retention</Link>
           </div>
           <p className="text-sm text-gray-600">
-            © 2026 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
+            � 2025 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
           </p>
         </div>
       </footer>
