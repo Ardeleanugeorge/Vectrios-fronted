@@ -341,22 +341,22 @@ export default function MonitoringLayer({
       setPlaybookFetchDone(true)
       return
     }
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) {
-      setPlaybookFetchDone(true)
-      return
-    }
-    const diagFixesLen = diagnostic?.action_layer?.fixes?.length ?? 0
-    if (diagFixesLen > 0) {
-      setPlaybookFetchDone(true)
-    } else {
-      setPlaybookFetchDone(false)
-    }
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token") || ""
+    setPlaybookFetchDone(false)
     let cancelled = false
+
+
+
+
+
+
+
+
+
     fetch(`${API_URL}/playbook/${companyId}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     }).then(async (r) => {
-      if (!r.ok || cancelled) return
       const data = await r.json()
       const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 3) : []
       if (!fixesArr.length) return
