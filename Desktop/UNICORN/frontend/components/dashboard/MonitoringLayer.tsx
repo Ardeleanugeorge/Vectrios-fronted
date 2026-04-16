@@ -389,11 +389,11 @@ export default function MonitoringLayer({
       const al: ActionLayerPayload = {
         issue_type: "general",
         primary_issue: { title: primary.title, description: primary.why },
-        affected_areas: [
-          "Homepage hero → top section (hero + headline)",
-          "Pricing page → headline + plan cards",
-          "Product page → hero + value props",
-        ],
+        affected_areas: newFixes.map((f: any) => { try { const u = new URL(f.page_url || "/"); return u.pathname.replace(/^\//, "") || "homepage" } catch { return f.page_url || "homepage" } }),
+
+
+
+
         fixes: mergedFixes,
         expected_impact: { close_rate_improvement: "", arr_recovery: "" },
         priority: { level: primary.impact_level, reason: primary.badges?.join(" · ") || "", display_line: undefined },
