@@ -1,6 +1,6 @@
 "use client";
 
-import { API_URL } from '@/lib/config'
+import { API_URL, PUBLIC_HOME_URL } from '@/lib/config'
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -200,7 +200,7 @@ export default function CompanyProfilePage() {
 
       {/* Header */}
       <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href={PUBLIC_HOME_URL} className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
           <span className="text-sm font-semibold text-white tracking-wide">
             Vectri<span className="text-cyan-400">OS</span>
@@ -374,7 +374,7 @@ export default function CompanyProfilePage() {
           <h3 className="text-xl font-bold text-white mb-5">Get the full revenue diagnostic</h3>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/"
+              href={PUBLIC_HOME_URL}
               className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition-colors"
             >
               ⚡ Scan your website

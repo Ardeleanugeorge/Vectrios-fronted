@@ -9,6 +9,8 @@ export type ScanPrefillPayload = {
   pages_scanned: number
   prefill_created_at: number
   scan_token: string
+  /** After email-capture: workspace row for this scan; pricing uses this before /account/profile */
+  unlock_company_id?: string
 }
 
 function normalizeDomainKey(domain: string): string {
@@ -59,8 +61,10 @@ export function buildScanPrefillPayload(input: {
   inferred_icp?: string | null
   pages_scanned?: number | null
   scan_token: string
+  unlock_company_id?: string | null
 }): ScanPrefillPayload {
   const domain = (input.domain || "").trim()
+  const unlock = input.unlock_company_id != null ? String(input.unlock_company_id).trim() : ""
   return {
     domain,
     website_url: domain.match(/^https?:\/\//i) ? domain : `https://${domain}`,
@@ -68,5 +72,6 @@ export function buildScanPrefillPayload(input: {
     pages_scanned: input.pages_scanned ?? 0,
     prefill_created_at: Date.now(),
     scan_token: input.scan_token,
+    ...(unlock ? { unlock_company_id: unlock } : {}),
   }
 }

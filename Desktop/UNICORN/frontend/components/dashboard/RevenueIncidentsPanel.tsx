@@ -84,7 +84,7 @@ function IncidentCard({ inc }: { inc: RevenueIncident }) {
           <span className="text-sm font-semibold text-gray-200 leading-tight">{inc.title}</span>
           {inc.is_persistent && (
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded border bg-purple-500/15 text-purple-400 border-purple-500/30 flex-shrink-0">
-              PERSISTENT � {inc.days_detected}d
+              PERSISTENT — {inc.days_detected}d
             </span>
           )}
         </div>

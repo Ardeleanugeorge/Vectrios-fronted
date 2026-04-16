@@ -206,7 +206,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
                 className="self-center text-xs text-gray-500 hover:text-gray-300 opacity-0 group-hover:opacity-100 transition"
                 title="Mark as read"
               >
-                �
+                –
               </button>
             )}
           </div>

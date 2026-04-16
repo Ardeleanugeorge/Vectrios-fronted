@@ -89,7 +89,7 @@ function MetricRow({ label, data, higherIsBetter }: {
         </div>
       </div>
 
-      {/* Track � full width wrapper so dot can overflow */}
+      {/* Track — full width wrapper so dot can overflow */}
       <div className="relative w-full" style={{ paddingTop: "2px", paddingBottom: "2px" }}>
         {/* Track background */}
         <div className="relative w-full h-3 bg-gray-800 rounded-full border border-gray-700/50">
@@ -105,7 +105,7 @@ function MetricRow({ label, data, higherIsBetter }: {
           />
         </div>
 
-        {/* Your score dot � outside track so it's never clipped */}
+        {/* Your score dot — outside track so it's never clipped */}
         <div
           className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-[#111827] bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.6)] z-10 pointer-events-none"
           style={{ left: `clamp(0px, calc(${yourPos}% - 7px), calc(100% - 14px))` }}

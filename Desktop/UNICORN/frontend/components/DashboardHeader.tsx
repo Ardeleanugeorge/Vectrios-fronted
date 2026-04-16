@@ -18,7 +18,7 @@ const PLAN_COLORS: Record<string, string> = {
 const getPlanDisplay = (plan: string | null, billingCycle?: string | null, trialDaysLeft?: number | null) => {
   if (!plan) return null
   if (billingCycle === "trial") {
-    const trialSuffix = typeof trialDaysLeft === "number" ? ` � ${trialDaysLeft}d left` : ""
+    const trialSuffix = typeof trialDaysLeft === "number" ? ` — ${trialDaysLeft}d left` : ""
     return { label: `Scale Trial${trialSuffix}`, colorKey: "trial" }
   }
   return { label: `Scale`, colorKey: "scale" }
@@ -91,7 +91,7 @@ function readPreferredScanTokenForApi(): string | null {
   }
 }
 
-/** Dashboard ?token= wins so header matches the scan context. */
+/** URL ?token= wins so header matches the scan context. */
 function scanTokenForMonitoringFetch(): string | null {
   if (typeof window !== "undefined") {
     try {
@@ -104,7 +104,20 @@ function scanTokenForMonitoringFetch(): string | null {
   return readPreferredScanTokenForApi()
 }
 
-// -- Lazy initializer � runs synchronously client-side before first paint ------
+/** Stripe success URL on app host — session may be cookie-only (no Bearer in storage on this origin). */
+function isStripeCheckoutSuccessReturn(): boolean {
+  if (typeof window === "undefined") return false
+  try {
+    const p = new URLSearchParams(window.location.search)
+    if (p.get("checkout_success") !== "1") return false
+    const sid = (p.get("session_id") || "").trim()
+    return sid.startsWith("cs_")
+  } catch {
+    return false
+  }
+}
+
+// -- Lazy initializer — runs synchronously client-side before first paint ------
 function initFromCache<T>(key: keyof SubCache, fallback: T): T {
   if (typeof window === "undefined") return fallback
   return (readSubCache()?.[key] as T) ?? fallback
@@ -117,7 +130,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const searchParams = useSearchParams()
   const scanTokenKey = searchParams.get("token") || ""
 
-  // Read user_data synchronously � no flash on client
+  // Read user_data synchronously — no flash on client
   const [user, setUser] = useState<any>(() => {
     if (typeof window === "undefined") return null
     try {
@@ -129,7 +142,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
 
   const [showMenu, setShowMenu] = useState(false)
 
-  // Read subscription from cache synchronously � badge appears on first render
+  // Read subscription from cache synchronously — badge appears on first render
   const [currentPlan,   setCurrentPlan]   = useState<string | null>(() => initFromCache("plan",          null))
   const [billingCycle,  setBillingCycle]   = useState<string | null>(() => initFromCache("billingCycle",  null))
   const [trialDaysLeft, setTrialDaysLeft]  = useState<number | null>(() => initFromCache("trialDaysLeft", null))
@@ -137,31 +150,26 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const [monitoredBrand, setMonitoredBrand] = useState<{ label: string; domain: string } | null>(null)
 
   useEffect(() => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) { router.push("/login"); return }
+    let cancelled = false
+    let pollTimeout: ReturnType<typeof setTimeout> | null = null
+    const stripeCheckout = isStripeCheckoutSuccessReturn()
+    const token = (sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token") || "").trim()
+    const authHeaders = (): Record<string, string> =>
+      token ? { Authorization: `Bearer ${token}` } : {}
 
-    // Optimistic state to avoid "no trial" flicker immediately after activation redirect.
-    try {
-      const params = new URLSearchParams(window.location.search)
-      if (params.get("trial") === "activated") {
-        setCurrentPlan("scale")
-        setBillingCycle("trial")
-      }
-    } catch {}
-
-    // Refresh user data from storage if updated since lazy-init
     const loadUserData = () => {
       try {
         const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
         if (raw) setUser(JSON.parse(raw))
-        else if (!user) setUser({ company_name: "Account", email: "" })
-      } catch { if (!user) setUser({ company_name: "Account", email: "" }) }
+        else setUser((prev: any) => (prev && typeof prev === "object" ? prev : { company_name: "Account", email: "" }))
+      } catch {
+        setUser((prev: any) => (prev && typeof prev === "object" ? prev : { company_name: "Account", email: "" }))
+      }
     }
 
     const loadSubscriptionForCompany = (companyId: string) => {
-      apiFetch(`/subscription/${companyId}`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      })
+      const h = authHeaders()
+      apiFetch(`/subscription/${companyId}`, Object.keys(h).length ? { headers: h } : {})
         .then(r => r.ok ? r.json() : null)
         .then(data => {
           let newPlan: string | null = null
@@ -185,7 +193,6 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
         .catch(() => {})
     }
 
-    // Ensure company_id is present even when older flows saved partial user_data.
     const ensureProfileContext = async () => {
       try {
         const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
@@ -197,7 +204,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
         }
 
         const res = await apiFetch(`/account/profile`, {
-          headers: { "Authorization": `Bearer ${token}` },
+          headers: authHeaders(),
         })
         if (!res.ok) return
         const profile = await res.json()
@@ -218,69 +225,107 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       }
     }
 
-    loadUserData()
-    void ensureProfileContext()
-
-    // Reload subscription function
-    const reloadSubscription = () => {
-      const storedUser = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
-      if (storedUser) {
-        try {
-          const userData = JSON.parse(storedUser)
-          if (userData.company_id) {
-            console.log("[HEADER] Reloading subscription for company_id:", userData.company_id)
-            loadSubscriptionForCompany(String(userData.company_id))
+    const runListeners = () => {
+      const reloadSubscription = () => {
+        const storedUser = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser)
+            if (userData.company_id) {
+              console.log("[HEADER] Reloading subscription for company_id:", userData.company_id)
+              loadSubscriptionForCompany(String(userData.company_id))
+            }
+          } catch (e) {
+            console.error("[HEADER] Error parsing user_data:", e)
           }
-        } catch (e) {
-          console.error("[HEADER] Error parsing user_data:", e)
         }
       }
-    }
 
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "user_data") {
-        loadUserData()
-        // Also reload subscription when user_data changes
-        setTimeout(reloadSubscription, 500)
+      const handleStorageChange = (e: StorageEvent) => {
+        if (e.key === "user_data") {
+          loadUserData()
+          setTimeout(reloadSubscription, 500)
+        }
+      }
+
+      const handleSubscriptionUpdate = () => {
+        reloadSubscription()
+      }
+      window.addEventListener("storage", handleStorageChange)
+      window.addEventListener("subscription_updated", handleSubscriptionUpdate)
+
+      const urlParams = new URLSearchParams(window.location.search)
+      const isTrialActivated = urlParams.get("trial") === "activated"
+      if (isTrialActivated) {
+        pollTimeout = setTimeout(() => {
+          reloadSubscription()
+        }, 1500)
+      }
+
+      return () => {
+        window.removeEventListener("storage", handleStorageChange)
+        window.removeEventListener("subscription_updated", handleSubscriptionUpdate)
+        if (pollTimeout) clearTimeout(pollTimeout)
       }
     }
-    
-    // Listen for custom subscription update events
-    const handleSubscriptionUpdate = () => {
-      reloadSubscription()
-    }
-    window.addEventListener("storage", handleStorageChange)
-    window.addEventListener("subscription_updated", handleSubscriptionUpdate)
-    
-    // Single refresh after trial activation ? no aggressive polling
-    const urlParams = new URLSearchParams(window.location.search)
-    const isTrialActivated = urlParams.get("trial") === "activated"
-    let pollTimeout: ReturnType<typeof setTimeout> | null = null
-    if (isTrialActivated) {
-      pollTimeout = setTimeout(() => {
-        reloadSubscription()
-      }, 1500)
-    }
+
+    let detachListeners: (() => void) | null = null
+
+    void (async () => {
+      if (!token) {
+        if (!stripeCheckout) {
+          try {
+            const pr = await apiFetch("/account/profile")
+            if (cancelled) return
+            if (!pr.ok) {
+              router.push("/login")
+              return
+            }
+          } catch {
+            if (!cancelled) router.push("/login")
+            return
+          }
+        }
+      }
+
+      if (cancelled) return
+
+      try {
+        const params = new URLSearchParams(window.location.search)
+        if (params.get("trial") === "activated") {
+          setCurrentPlan("scale")
+          setBillingCycle("trial")
+        }
+      } catch {}
+
+      loadUserData()
+      void ensureProfileContext()
+
+      if (cancelled) return
+      detachListeners = runListeners()
+    })()
+
     return () => {
-      window.removeEventListener("storage", handleStorageChange)
-      window.removeEventListener("subscription_updated", handleSubscriptionUpdate)
+      cancelled = true
+      detachListeners?.()
       if (pollTimeout) clearTimeout(pollTimeout)
     }
   }, [router])
 
   useEffect(() => {
     const companyId = user?.company_id
-    const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!companyId || !auth) {
+    if (!companyId) {
       setMonitoredBrand(null)
       return
     }
+    const auth = (sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token") || "").trim()
+    const headers: Record<string, string> = auth ? { Authorization: `Bearer ${auth}` } : {}
     const st = scanTokenForMonitoringFetch()
     const qs = st ? `?scan_token=${encodeURIComponent(st)}` : ""
     let cancelled = false
     const run = () => {
       apiFetch(`/monitoring/status/${companyId}${qs}`, {
-        headers: { Authorization: `Bearer ${auth}` },
+        headers,
       })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
@@ -330,18 +375,15 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   const readPreferredScanToken = (): string | null => readPreferredScanTokenForApi()
 
   const handleSmartDashboard = async () => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) {
-      router.push("/login")
-      return
-    }
+    const token = (sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token") || "").trim()
+    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {}
     const activeToken = scanTokenForMonitoringFetch()
     const companyId = user?.company_id || null
     try {
       if (companyId) {
         const qs = activeToken ? `?scan_token=${encodeURIComponent(activeToken)}` : ""
         const res = await apiFetch(`/monitoring/status/${companyId}${qs}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers,
         })
         if (res.ok) {
           const status = await res.json()

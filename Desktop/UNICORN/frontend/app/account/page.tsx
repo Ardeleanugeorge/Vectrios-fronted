@@ -161,7 +161,7 @@ export default function AccountPage() {
   const [selectedTicket, setSelectedTicket] = useState<SupportTicketDetail | null>(null)
   const [supportThreadLoading, setSupportThreadLoading] = useState(false)
   const [supportFollowupMessage, setSupportFollowupMessage] = useState("")
-  /** Same flow as /pricing#contact � general questions (not a tracked ticket). */
+  /** Same flow as /pricing#contact — general questions (not a tracked ticket). */
   const [generalContactName, setGeneralContactName] = useState("")
   const [generalContactMessage, setGeneralContactMessage] = useState("")
   const [generalContactLoading, setGeneralContactLoading] = useState(false)
@@ -180,7 +180,7 @@ export default function AccountPage() {
   const [adminCoverage, setAdminCoverage] = useState<AdminMonitoringCoverage | null>(null)
   const isOwner = (user?.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()
 
-  // (Each account has exactly one company � kept simple by design)
+  // (Each account has exactly one company — kept simple by design)
 
   // -- System / Auto-Calibration (owner-only) ---------------------------------
   const [calibStatus, setCalibStatus] = useState<{
@@ -214,7 +214,7 @@ export default function AccountPage() {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
     setCalibRunning(true)
-    setCalibMsg("Starting calibration�")
+    setCalibMsg("Starting calibration…")
     try {
       const res = await apiFetch(`/admin/calibrate`, {
         method: "POST",
@@ -226,7 +226,7 @@ export default function AccountPage() {
         setCalibRunning(false)
         return
       }
-      setCalibMsg("Running� this takes 30�90 seconds. Checking status�")
+      setCalibMsg("Running — this takes 30–90 seconds. Checking status…")
       // Poll every 3s for up to 2 minutes
       let attempts = 0
       const poll = setInterval(async () => {
@@ -243,16 +243,16 @@ export default function AccountPage() {
             setCalibStatus(s)
             if (s.state === "done" || s.state === "done_candidate") {
               if (s.state === "done_candidate") {
-                setCalibMsg(`? Candidate ready � MAE=${s.candidate?.mae?.toFixed?.(1) ?? s.mae?.toFixed?.(1)} pts on ${s.candidate?.n_scans ?? s.n_scans} scans. Review and Accept to activate.`)
+                setCalibMsg(`Candidate ready — MAE=${s.candidate?.mae?.toFixed?.(1) ?? s.mae?.toFixed?.(1)} pts on ${s.candidate?.n_scans ?? s.n_scans} scans. Review and Accept to activate.`)
               } else {
-                setCalibMsg(`? Done! MAE=${s.mae?.toFixed(1)} pts on ${s.n_scans} scans. Weights reloaded.`)
+                setCalibMsg(`Done! MAE=${s.mae?.toFixed(1)} pts on ${s.n_scans} scans. Weights reloaded.`)
               }
               clearInterval(poll); setCalibRunning(false)
             } else if (s.state === "error") {
-              setCalibMsg("? Error: " + s.message)
+              setCalibMsg("Error: " + s.message)
               clearInterval(poll); setCalibRunning(false)
             } else {
-              setCalibMsg(s.message || "Running�")
+              setCalibMsg(s.message || "Running…")
             }
           }
         } catch {}
@@ -267,49 +267,49 @@ export default function AccountPage() {
   const handleAcceptCandidate = async () => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
-    setCalibMsg("Promoting candidate�")
+    setCalibMsg("Promoting candidate…")
     try {
       const res = await apiFetch(`/admin/calibration/accept`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       })
       const d = await res.json().catch(() => ({}))
-      if (!res.ok) { setCalibMsg("? " + (d?.detail || "Accept failed")); return }
-      setCalibMsg("? Candidate accepted � weights activated.")
+      if (!res.ok) { setCalibMsg(String(d?.detail || "Accept failed")); return }
+      setCalibMsg("Candidate accepted — weights activated.")
       await loadCalibStatus()
-    } catch { setCalibMsg("? Network error on accept") }
+    } catch { setCalibMsg("Network error on accept") }
   }
 
   const handleRejectCandidate = async () => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
-    setCalibMsg("Discarding candidate�")
+    setCalibMsg("Discarding candidate…")
     try {
       const res = await apiFetch(`/admin/calibration/reject`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       })
       const d = await res.json().catch(() => ({}))
-      if (!res.ok) { setCalibMsg("? " + (d?.detail || "Reject failed")); return }
-      setCalibMsg("? Candidate discarded. Active weights unchanged.")
+      if (!res.ok) { setCalibMsg(String(d?.detail || "Reject failed")); return }
+      setCalibMsg("Candidate discarded. Active weights unchanged.")
       await loadCalibStatus()
-    } catch { setCalibMsg("? Network error on reject") }
+    } catch { setCalibMsg("Network error on reject") }
   }
 
   const handleRollback = async () => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     if (!token) return
-    setCalibMsg("Rolling back to previous weights�")
+    setCalibMsg("Rolling back to previous weights…")
     try {
       const res = await apiFetch(`/admin/calibration/rollback`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       })
       const d = await res.json().catch(() => ({}))
-      if (!res.ok) { setCalibMsg("? " + (d?.detail || "Rollback failed")); return }
-      setCalibMsg("? Rolled back to previous active weights.")
+      if (!res.ok) { setCalibMsg(String(d?.detail || "Rollback failed")); return }
+      setCalibMsg("Rolled back to previous active weights.")
       await loadCalibStatus()
-    } catch { setCalibMsg("? Network error on rollback") }
+    } catch { setCalibMsg("Network error on rollback") }
   }
 
   useEffect(() => {
@@ -591,7 +591,7 @@ export default function AccountPage() {
           name: name.slice(0, 120),
           email,
           company: profileCompanyName.trim() || null,
-          message: `[Account ? Support / general question]\n\n${msg}`.slice(0, 4000),
+          message: `[Account / Support — general question]\n\n${msg}`.slice(0, 4000),
         }),
       })
       const data = await res.json().catch(() => ({}))
@@ -599,7 +599,7 @@ export default function AccountPage() {
         setGeneralContactError(typeof data.detail === "string" ? data.detail : "Could not send message.")
         return
       }
-      setGeneralContactSuccess(data.message || "Message sent � we'll reply by email.")
+      setGeneralContactSuccess(data.message || "Message sent — we'll reply by email.")
       setGeneralContactMessage("")
     } catch {
       setGeneralContactError("Network error. Please try again.")
@@ -828,7 +828,7 @@ export default function AccountPage() {
   const isTrial = subscription?.is_trial_active === true || subscription?.billing_cycle === "trial"
   const planName = subscription?.plan?.toLowerCase() || null
   const planLabel = isTrial
-    ? `Scale Trial${typeof subscription?.trial_days_left === "number" ? ` � ${subscription.trial_days_left}d left` : ""}`
+    ? `Scale Trial${typeof subscription?.trial_days_left === "number" ? ` — ${subscription.trial_days_left}d left` : ""}`
     : planName ? planName.charAt(0).toUpperCase() + planName.slice(1) : null
 
   const trialExpired = isTrial && subscription?.trial_days_left === 0
@@ -838,27 +838,27 @@ export default function AccountPage() {
     icon: string; key: string; label: string; desc: string
     minPlan: "scale"
   }> = [
-    { icon: "??", key: "rii",          label: "RII Score",                 desc: "Revenue Impact Index � structural risk on a 0�100 scale",            minPlan: "scale" },
-    { icon: "??", key: "leak",         label: "Revenue Leak Detection",    desc: "Identify primary messaging gaps costing pipeline",                   minPlan: "scale" },
-    { icon: "??", key: "breakdown",    label: "Messaging Breakdown",       desc: "Page-by-page structural analysis from live crawl",                   minPlan: "scale" },
-    { icon: "??", key: "action",       label: "Action Engine",             desc: "Top fix with priority, $/month impact estimate and ?? Start here",   minPlan: "scale" },
-    { icon: "??", key: "autofix",      label: "Auto-Fix Engine",           desc: "Before/After copy per fix � copy-ready text with ?? Copy button",   minPlan: "scale" },
-    { icon: "??", key: "playbook",     label: "Full Fix Playbook",         desc: "3-fix step-by-step plan, each with page target + $/month recovery",  minPlan: "scale" },
-    { icon: "??", key: "arr_risk",     label: "ARR at Risk Calculation",   desc: "Dollar-level exposure tied to your actual ARR + calibration",        minPlan: "scale" },
-    { icon: "??", key: "close_rate",   label: "Close Rate Impact Model",   desc: "How messaging gaps compress your current close rate",                minPlan: "scale" },
-    { icon: "??", key: "signals",      label: "Revenue Signals",           desc: "Granular structural change signals after each scan",                 minPlan: "scale" },
-    { icon: "??", key: "alerts",       label: "Revenue Alerts",            desc: "Real-time drift alerts when structural risk changes",                minPlan: "scale" },
-    { icon: "??", key: "forecast",     label: "Forecast Engine",           desc: "30-day revenue compression prediction",                              minPlan: "scale" },
-    { icon: "??", key: "monitoring",   label: "24h Continuous Monitoring", desc: "Daily automatic re-scan � always-fresh RII and signals",             minPlan: "scale" },
-    { icon: "??", key: "delta",        label: "Revenue Delta Engine",      desc: "+$X/month worse vs last scan � with WHY drivers (ICP, alignment�)",  minPlan: "scale" },
-    { icon: "??", key: "delta_action", label: "Delta + Action Combo",      desc: "'Fix this first' shown instantly when revenue leak increases",       minPlan: "scale" },
-    { icon: "??", key: "trajectory",   label: "Risk Trajectory",           desc: "30/60/90-day forward-looking risk projections",                      minPlan: "scale" },
+    { icon: "•", key: "rii",          label: "RII Score",                 desc: "Revenue Impact Index — structural risk on a 0–100 scale",            minPlan: "scale" },
+    { icon: "•", key: "leak",         label: "Revenue Leak Detection",    desc: "Identify primary messaging gaps costing pipeline",                   minPlan: "scale" },
+    { icon: "•", key: "breakdown",    label: "Messaging Breakdown",       desc: "Page-by-page structural analysis from live crawl",                   minPlan: "scale" },
+    { icon: "•", key: "action",       label: "Action Engine",             desc: "Top fix with priority, $/month impact estimate and Start here",   minPlan: "scale" },
+    { icon: "•", key: "autofix",      label: "Auto-Fix Engine",           desc: "Before/After copy per fix — copy-ready text with Copy button",   minPlan: "scale" },
+    { icon: "•", key: "playbook",     label: "Full Fix Playbook",         desc: "3-fix step-by-step plan, each with page target + $/month recovery",  minPlan: "scale" },
+    { icon: "•", key: "arr_risk",     label: "ARR at Risk Calculation",   desc: "Dollar-level exposure tied to your actual ARR + calibration",        minPlan: "scale" },
+    { icon: "•", key: "close_rate",   label: "Close Rate Impact Model",   desc: "How messaging gaps compress your current close rate",                minPlan: "scale" },
+    { icon: "•", key: "signals",      label: "Revenue Signals",           desc: "Granular structural change signals after each scan",                 minPlan: "scale" },
+    { icon: "•", key: "alerts",       label: "Revenue Alerts",            desc: "Real-time drift alerts when structural risk changes",                minPlan: "scale" },
+    { icon: "•", key: "forecast",     label: "Forecast Engine",           desc: "30-day revenue compression prediction",                              minPlan: "scale" },
+    { icon: "•", key: "monitoring",   label: "24h Continuous Monitoring", desc: "Daily automatic re-scan — always-fresh RII and signals",             minPlan: "scale" },
+    { icon: "•", key: "delta",        label: "Revenue Delta Engine",      desc: "+$X/month worse vs last scan — with WHY drivers (ICP, alignment–)",  minPlan: "scale" },
+    { icon: "•", key: "delta_action", label: "Delta + Action Combo",      desc: "'Fix this first' shown instantly when revenue leak increases",       minPlan: "scale" },
+    { icon: "•", key: "trajectory",   label: "Risk Trajectory",           desc: "30/60/90-day forward-looking risk projections",                      minPlan: "scale" },
     { icon: "?", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale" },
-    { icon: "??", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Compare vs 500+ SaaS companies in your revenue tier",               minPlan: "scale" },
-    { icon: "??", key: "arr_sim",      label: "12-Month ARR Simulation",   desc: "Model revenue trajectory with vs without fixes applied",             minPlan: "scale" },
-    { icon: "??", key: "apis",         label: "GSC + GA4 Modifiers",       desc: "Real search + behavior data applied to revenue model",               minPlan: "scale" },
-    { icon: "??", key: "executive",    label: "Executive Risk Summaries",  desc: "Weekly board-ready summaries of structural drift",                   minPlan: "scale" },
-    { icon: "??", key: "team",         label: "Team Monitoring",           desc: "Unlimited seats with shared dashboard access",                       minPlan: "scale" },
+    { icon: "•", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Compare vs 500+ SaaS companies in your revenue tier",               minPlan: "scale" },
+    { icon: "•", key: "arr_sim",      label: "12-Month ARR Simulation",   desc: "Model revenue trajectory with vs without fixes applied",             minPlan: "scale" },
+    { icon: "•", key: "apis",         label: "GSC + GA4 Modifiers",       desc: "Real search + behavior data applied to revenue model",               minPlan: "scale" },
+    { icon: "•", key: "executive",    label: "Executive Risk Summaries",  desc: "Weekly board-ready summaries of structural drift",                   minPlan: "scale" },
+    { icon: "•", key: "team",         label: "Team Monitoring",           desc: "Unlimited seats with shared dashboard access",                       minPlan: "scale" },
   ]
 
   const userTier = (isTrial || (planName === "scale")) ? 0 : -1 // scale or trial = full access
@@ -886,13 +886,13 @@ export default function AccountPage() {
   }
 
   const TABS = isOwner
-    ? [{ id: 'system' as const, label: 'Manager Console', icon: '??' }]
+    ? [{ id: 'system' as const, label: 'Manager Console', icon: '•' }]
     : [
-        { id: 'profile' as const,  label: 'Profile',        icon: '??' },
-        { id: 'plan' as const,     label: 'Plan & Billing', icon: '??' },
-        { id: 'revenue' as const,  label: 'Revenue Model',  icon: '??' },
-        { id: 'support' as const,  label: 'Support',        icon: '??' },
-        { id: 'security' as const, label: 'Security',       icon: '??' },
+        { id: 'profile' as const,  label: 'Profile',        icon: '•' },
+        { id: 'plan' as const,     label: 'Plan & Billing', icon: '•' },
+        { id: 'revenue' as const,  label: 'Revenue Model',  icon: '•' },
+        { id: 'support' as const,  label: 'Support',        icon: '•' },
+        { id: 'security' as const, label: 'Security',       icon: '•' },
       ]
 
   // -- Manager health thresholds (quick visual ops state) --------------------
@@ -919,7 +919,7 @@ export default function AccountPage() {
       <div className="page-root flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-400 text-sm">Loading account�</p>
+          <p className="text-gray-400 text-sm">Loading account…</p>
         </div>
       </div>
     )
@@ -947,7 +947,7 @@ export default function AccountPage() {
                 href={getDashboardUrl()}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm transition"
               >
-                {isOwner ? "?? Manager Console" : "? Dashboard"}
+                {isOwner ? "Manager Console" : "Dashboard"}
               </Link>
               <button
                 onClick={handleSignOut}
@@ -1046,7 +1046,7 @@ export default function AccountPage() {
                   disabled={profileLoading}
                   className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
-                  {profileLoading ? "Saving�" : "Save changes"}
+                  {profileLoading ? "Saving…" : "Save changes"}
                 </button>
               </form>
                   </div>
@@ -1119,7 +1119,7 @@ export default function AccountPage() {
                 </div>
           </div>
 
-              {/* Included features � always visible, grouped by plan tier */}
+              {/* Included features — always visible, grouped by plan tier */}
               <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
                 <div className="px-6 py-5 border-b border-slate-200 dark:border-gray-800 flex items-center justify-between">
                   <div>
@@ -1178,7 +1178,7 @@ export default function AccountPage() {
                                     {feat.label}
                                   </span>
                                   {groupEnabled && (
-                                    <span className="text-[10px] font-bold text-cyan-400">?</span>
+                                    <span className="text-[10px] font-bold text-cyan-400" aria-hidden>✓</span>
                                   )}
                                 </div>
                                 <p className={`text-xs mt-0.5 leading-relaxed ${groupEnabled ? "text-gray-500" : "text-gray-700"}`}>
@@ -1199,7 +1199,7 @@ export default function AccountPage() {
                     <div className="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 flex items-center justify-between gap-4 flex-wrap">
                       <div>
                         <p className="text-sm font-semibold text-cyan-300">
-                          Activate Scale � $99/month
+                          Activate Scale — $99/month
                         </p>
                         <p className="text-xs text-gray-500 mt-0.5">
                           Unlock 24h monitoring, full playbook, ARR at risk, incidents, benchmark, and team access.
@@ -1223,7 +1223,7 @@ export default function AccountPage() {
                 </div>
                 <div className="p-6 flex items-center justify-between flex-wrap gap-4">
                   <div>
-                    <p className="text-gray-400 text-sm">Stripe billing portal � update card, view invoices, cancel.</p>
+                    <p className="text-gray-400 text-sm">Stripe billing portal — update card, view invoices, cancel.</p>
                   </div>
                   <button
                     disabled
@@ -1244,7 +1244,7 @@ export default function AccountPage() {
                 <div className="p-6 border-b border-slate-200 dark:border-gray-800">
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Financial calibration</h2>
                   <p className="text-gray-500 text-sm mt-0.5">
-                    Set your real business numbers to improve financial impact estimates. Structural risk is derived from website scan signals � these values calibrate the dollar output.
+                    Set your real business numbers to improve financial impact estimates. Structural risk is derived from website scan signals — these values calibrate the dollar output.
                   </p>
                 </div>
                 <form onSubmit={handleCalibrationSave} className="p-6 space-y-6">
@@ -1334,7 +1334,7 @@ export default function AccountPage() {
                     disabled={calibrationLoading || !companyId}
                     className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                   >
-                    {calibrationLoading ? "Saving�" : "Save calibration"}
+                    {calibrationLoading ? "Saving…" : "Save calibration"}
                   </button>
                 </form>
               </div>
@@ -1344,9 +1344,9 @@ export default function AccountPage() {
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">How it works</p>
                 <div className="grid sm:grid-cols-3 gap-4">
                   {[
-                    { icon: "??", title: "Structural scan", desc: "RII and risk drivers come from crawling your site � always accurate." },
-                    { icon: "??", title: "Financial model", desc: "ARR + close rates calibrate the $ impact numbers shown in the dashboard." },
-                    { icon: "??", title: "Auto-updated", desc: "Next monitoring run picks up new calibration values automatically." },
+                    { icon: "•", title: "Structural scan", desc: "RII and risk drivers come from crawling your site — always accurate." },
+                    { icon: "•", title: "Financial model", desc: "ARR + close rates calibrate the $ impact numbers shown in the dashboard." },
+                    { icon: "•", title: "Auto-updated", desc: "Next monitoring run picks up new calibration values automatically." },
                   ].map(item => (
                     <div key={item.title} className="flex gap-3">
                       <span className="text-xl mt-0.5">{item.icon}</span>
@@ -1406,7 +1406,7 @@ export default function AccountPage() {
                   disabled={passwordLoading}
                   className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
-                  {passwordLoading ? "Updating�" : "Change password"}
+                  {passwordLoading ? "Updating…" : "Change password"}
                 </button>
               </form>
 
@@ -1430,7 +1430,7 @@ export default function AccountPage() {
               <div className="p-6 border-b border-slate-200 dark:border-gray-800">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Ask a question</h2>
                 <p className="text-gray-500 text-sm mt-0.5">
-                  Billing, trial, Scale features, or how something works � same as the form on the pricing page. We&apos;ll email you back.
+                  Billing, trial, Scale features, or how something works — same as the form on the pricing page. We&apos;ll email you back.
                 </p>
               </div>
               <form onSubmit={handleGeneralContactSubmit} className="p-6 space-y-5">
@@ -1479,7 +1479,7 @@ export default function AccountPage() {
                   disabled={generalContactLoading || !(profileEmail || user?.email)}
                   className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
-                  {generalContactLoading ? "Sending�" : "Send message"}
+                  {generalContactLoading ? "Sending…" : "Send message"}
                 </button>
               </form>
             </div>
@@ -1488,7 +1488,7 @@ export default function AccountPage() {
               <div className="p-6 border-b border-slate-200 dark:border-gray-800">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Technical support ticket</h2>
                 <p className="text-gray-500 text-sm mt-0.5">
-                  For bugs or product issues � opens a tracked thread with technical context attached automatically.
+                  For bugs or product issues — opens a tracked thread with technical context attached automatically.
                 </p>
               </div>
               <form onSubmit={handleSupportSubmit} className="p-6 space-y-5">
@@ -1579,7 +1579,7 @@ export default function AccountPage() {
                         >
                           <p className="text-sm font-medium text-gray-200 truncate">{t.subject}</p>
                           <p className="text-xs text-gray-500 mt-0.5">
-                            {t.ticket_id} � {t.priority}
+                            {t.ticket_id} — {t.priority}
                           </p>
                         </button>
                       ))}
@@ -1599,7 +1599,7 @@ export default function AccountPage() {
                         <div className="pb-2 border-b border-slate-200 dark:border-gray-800">
                           <p className="text-sm font-semibold text-gray-200">{selectedTicket.subject}</p>
                           <p className="text-xs text-gray-500 mt-0.5">
-                            {selectedTicket.ticket_id} � {selectedTicket.priority} � {selectedTicket.status}
+                            {selectedTicket.ticket_id} — {selectedTicket.priority} — {selectedTicket.status}
                           </p>
                         </div>
                         <div className="space-y-2 max-h-64 overflow-auto pr-1">
@@ -1660,7 +1660,7 @@ export default function AccountPage() {
                 </div>
                 <p className="text-gray-400 text-sm mt-1">
                   Re-calibrates the RII scoring model using all scan results in the database.
-                  No terminal, no Excel � one click.
+                  No terminal, no Excel — one click.
                 </p>
               </div>
 
@@ -1670,19 +1670,19 @@ export default function AccountPage() {
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">System Health</h3>
                   <div className="space-y-2 text-sm">
                     <p className="text-gray-300">DB: <span className={adminSystemHealth?.db_connected ? "text-emerald-300" : "text-red-300"}>{adminSystemHealth?.db_connected ? "Connected" : "Down"}</span></p>
-                    <p className="text-gray-300">Companies: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.companies_total ?? "�"}</span></p>
-                    <p className="text-gray-300">Monitoring active: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.monitoring_active ?? "�"}</span></p>
-                    <p className="text-gray-500 text-xs">Last monitoring: {adminSystemHealth?.minutes_since_last_monitoring != null ? `${adminSystemHealth.minutes_since_last_monitoring} min ago` : "�"}</p>
+                    <p className="text-gray-300">Companies: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.companies_total ?? "–"}</span></p>
+                    <p className="text-gray-300">Monitoring active: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.monitoring_active ?? "–"}</span></p>
+                    <p className="text-gray-500 text-xs">Last monitoring: {adminSystemHealth?.minutes_since_last_monitoring != null ? `${adminSystemHealth.minutes_since_last_monitoring} min ago` : "—"}</p>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pipeline Metrics</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">Scans 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "�"}</span></p>
-                    <p className="text-gray-300">Success 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "�"}%</span></p>
-                    <p className="text-gray-300">Scans 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "�"}</span></p>
-                    <p className="text-gray-300">No-evidence 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "�"}%</span></p>
+                    <p className="text-gray-300">Scans 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "–"}</span></p>
+                    <p className="text-gray-300">Success 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "–"}%</span></p>
+                    <p className="text-gray-300">Scans 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "–"}</span></p>
+                    <p className="text-gray-300">No-evidence 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "–"}%</span></p>
                     <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(noEvidenceStatus)}`}>
                       No-evidence status: {noEvidenceStatus === "good" ? "healthy" : noEvidenceStatus === "warn" ? "watch" : "critical"}
                     </span>
@@ -1692,9 +1692,9 @@ export default function AccountPage() {
                 <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">RII Consistency Guard</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">Checked: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.checked_companies ?? "�"}</span></p>
-                    <p className="text-gray-300">Mismatches: <span className={`${(adminRiiConsistency?.mismatch_count || 0) > 0 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{adminRiiConsistency?.mismatch_count ?? "�"}</span></p>
-                    <p className="text-gray-300">Mismatch rate: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "�"}%</span></p>
+                    <p className="text-gray-300">Checked: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.checked_companies ?? "–"}</span></p>
+                    <p className="text-gray-300">Mismatches: <span className={`${(adminRiiConsistency?.mismatch_count || 0) > 0 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{adminRiiConsistency?.mismatch_count ?? "–"}</span></p>
+                    <p className="text-gray-300">Mismatch rate: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "–"}%</span></p>
                     <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(mismatchStatus)}`}>
                       Consistency status: {mismatchStatus === "good" ? "healthy" : mismatchStatus === "warn" ? "watch" : "critical"}
                     </span>
@@ -1739,36 +1739,36 @@ export default function AccountPage() {
                 <div className="grid md:grid-cols-4 gap-3 mb-4">
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Active companies</p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.active_companies ?? "�"}</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.active_companies ?? "–"}</p>
                   </div>
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Scanned in 24h</p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.companies_scanned_in_window ?? "�"}</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.companies_scanned_in_window ?? "–"}</p>
                   </div>
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Coverage</p>
                     <p className={`text-lg font-semibold ${coverageStatus === "good" ? "text-emerald-300" : coverageStatus === "warn" ? "text-amber-300" : "text-red-300"}`}>
-                      {adminCoverage?.coverage_pct ?? "�"}%
+                      {adminCoverage?.coverage_pct ?? "–"}%
                     </p>
                   </div>
                   <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
                     <p className="text-xs text-gray-500">Cycles</p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.total_cycles ?? "�"}</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.total_cycles ?? "–"}</p>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-3 mb-4">
                   <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3">
                     <p className="text-xs text-emerald-300">Success cycles</p>
-                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.success_cycles ?? "�"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.success_cycles ?? "–"}</p>
                   </div>
                   <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
                     <p className="text-xs text-amber-300">No-evidence cycles</p>
-                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.no_evidence_cycles ?? "�"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.no_evidence_cycles ?? "–"}</p>
                   </div>
                   <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
                     <p className="text-xs text-red-300">Failed-like cycles</p>
-                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.failed_like_cycles ?? "�"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.failed_like_cycles ?? "–"}</p>
                   </div>
                 </div>
 
@@ -1812,18 +1812,18 @@ export default function AccountPage() {
                 {calibStatus ? (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.total_scans_in_db ?? "�"}</div>
+                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.total_scans_in_db ?? "–"}</div>
                       <div className="text-xs text-gray-500 mt-1">Total scans in DB</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">incl. monitoring cycles</div>
                     </div>
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.n_scans || "�"}</div>
+                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.n_scans || "–"}</div>
                       <div className="text-xs text-gray-500 mt-1">Last calibration scans</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">unique companies used</div>
                     </div>
                     <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
                       <div className={`text-2xl font-bold ${calibStatus.mae && calibStatus.mae < 6 ? "text-emerald-400" : "text-amber-400"}`}>
-                        {calibStatus.mae ? `${calibStatus.mae.toFixed(1)} pts` : "�"}
+                        {calibStatus.mae ? `${calibStatus.mae.toFixed(1)} pts` : "—"}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">MAE (lower = better)</div>
                     </div>
@@ -1832,7 +1832,7 @@ export default function AccountPage() {
                         {calibStatus.state === "done" ? "?" : calibStatus.state === "running" ? "?" : calibStatus.state === "error" ? "?" : "?"}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
-                        {calibStatus.state === "done" ? "Done" : calibStatus.state === "running" ? "Running�" : calibStatus.state === "error" ? "Error" : "Ready"}
+                        {calibStatus.state === "done" ? "Done" : calibStatus.state === "running" ? "Running…" : calibStatus.state === "error" ? "Error" : "Ready"}
                       </div>
                     </div>
                   </div>
@@ -1858,7 +1858,7 @@ export default function AccountPage() {
                     {(calibStatus.label_distribution.anchors ?? 0) > 0 && (
                       <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
                         <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                        <span className="text-xs text-cyan-300 font-medium">? Anchors: {calibStatus.label_distribution.anchors} (locked)</span>
+                        <span className="text-xs text-cyan-300 font-medium">Anchors: {calibStatus.label_distribution.anchors} (locked)</span>
                       </div>
                     )}
                   </div>
@@ -1883,9 +1883,9 @@ export default function AccountPage() {
                   <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-5">
                     <p className="text-xs text-amber-300 uppercase tracking-wider mb-2">Candidate Calibration (pending review)</p>
                     <div className="text-sm text-gray-300 mb-3">
-                      <span className="mr-4">MAE: <span className="font-semibold">{calibStatus.candidate?.mae?.toFixed?.(1) ?? "�"} pts</span></span>
-                      <span className="mr-4">Scans: <span className="font-semibold">{calibStatus.candidate?.n_scans ?? "�"}</span></span>
-                      <span>Calibrated at: <span className="font-semibold">{calibStatus.candidate?.calibrated_at ? new Date(calibStatus.candidate.calibrated_at).toLocaleString() : "�"}</span></span>
+                      <span className="mr-4">MAE: <span className="font-semibold">{calibStatus.candidate?.mae?.toFixed?.(1) ?? "–"} pts</span></span>
+                      <span className="mr-4">Scans: <span className="font-semibold">{calibStatus.candidate?.n_scans ?? "–"}</span></span>
+                      <span>Calibrated at: <span className="font-semibold">{calibStatus.candidate?.calibrated_at ? new Date(calibStatus.candidate.calibrated_at).toLocaleString() : "—"}</span></span>
                     </div>
                     {calibStatus.candidate?.weights && (
                       <div className="flex flex-wrap gap-3 mb-3">
@@ -1898,7 +1898,7 @@ export default function AccountPage() {
                     )}
                     <div className="flex items-center gap-3">
                       <button onClick={handleAcceptCandidate} className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition">
-                        Accept ? Activate
+                        Accept and activate
                       </button>
                       <button onClick={handleRejectCandidate} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium text-sm transition">
                         Reject
@@ -1927,10 +1927,10 @@ export default function AccountPage() {
                     {calibRunning ? (
                       <>
                         <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                        Calibrating�
+                        Calibrating…
                       </>
                     ) : (
-                      <>? Run Auto-Calibration</>
+                      <>Run Auto-Calibration</>
                     )}
                   </button>
                   <button
@@ -1938,16 +1938,18 @@ export default function AccountPage() {
                     disabled={calibRunning}
                     className="px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium transition disabled:opacity-50"
                   >
-                    ? Refresh status
+                    Refresh status
                   </button>
                 </div>
 
                 {/* Progress message */}
                 {calibMsg && (
                   <div className={`mt-4 p-3 rounded-xl text-sm border ${
-                    calibMsg.startsWith("?") ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
-                    : calibMsg.startsWith("?") ? "bg-red-500/10 border-red-500/20 text-red-300"
-                    : "bg-cyan-500/10 border-cyan-500/20 text-cyan-300"
+                    calibMsg.startsWith("Error:") || calibMsg.startsWith("Network error")
+                      ? "bg-red-500/10 border-red-500/20 text-red-300"
+                      : /^(Done!|Candidate ready|Candidate accepted|Rolled back|Candidate discarded)/.test(calibMsg)
+                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
+                        : "bg-cyan-500/10 border-cyan-500/20 text-cyan-300"
                   }`}>
                     {calibMsg}
                   </div>
@@ -1963,7 +1965,7 @@ export default function AccountPage() {
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">4.</span> Runs per-segment (Developer, Marketing, Product, Support)</li>
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">5.</span> Saves candidate to <code className="text-cyan-400">calibration_results_candidate.json</code></li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">6.</span> Click <strong>Accept ? Activate</strong> to promote candidate to active weights</li>
+                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">6.</span> Click <strong>Accept and activate</strong> to promote candidate to active weights</li>
                 </ol>
               </div>
 
@@ -1994,8 +1996,8 @@ export default function AccountPage() {
                           <p className="text-sm text-gray-200 truncate">{t.subject}</p>
                           <p className="text-xs text-gray-500 mt-0.5 truncate">{t.company_name || t.owner_email || "unknown"}</p>
                           <p className="text-[11px] text-gray-600 mt-1">
-                            {t.ticket_id} � {t.priority} � {t.status}
-                            {adminSelectedTicketId === t.ticket_id ? " � selected" : ""}
+                            {t.ticket_id} — {t.priority} — {t.status}
+                            {adminSelectedTicketId === t.ticket_id ? " — selected" : ""}
                           </p>
                         </button>
                       ))}
@@ -2013,7 +2015,7 @@ export default function AccountPage() {
                         <div className="pb-2 border-b border-slate-200 dark:border-gray-800">
                           <p className="text-sm font-semibold text-gray-200">{adminSelectedTicket.subject}</p>
                           <p className="text-xs text-gray-500 mt-0.5">
-                            {adminSelectedTicket.ticket_id} � {adminSelectedTicket.company_name || "Unknown company"} � {adminSelectedTicket.status}
+                            {adminSelectedTicket.ticket_id} — {adminSelectedTicket.company_name || "Unknown company"} — {adminSelectedTicket.status}
                           </p>
                         </div>
                         <div className="space-y-2 max-h-52 overflow-auto pr-1">
@@ -2073,7 +2075,7 @@ export default function AccountPage() {
                   {adminAuditPreview.map((log, i) => (
                     <div key={`${log.created_at || i}-${i}`} className="p-2 rounded-lg border border-gray-800 bg-gray-950/40 text-xs text-gray-300 flex items-center justify-between">
                       <span>{log.action_type}</span>
-                      <span className="text-gray-500">{log.created_at ? new Date(log.created_at).toLocaleString() : "�"}</span>
+                      <span className="text-gray-500">{log.created_at ? new Date(log.created_at).toLocaleString() : "—"}</span>
                     </div>
                   ))}
                 </div>

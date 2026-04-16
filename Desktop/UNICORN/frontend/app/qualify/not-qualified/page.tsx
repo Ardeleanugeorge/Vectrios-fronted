@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { PUBLIC_HOME_URL } from "@/lib/config"
 
 export default function NotQualifiedPage() {
   return (
@@ -14,7 +15,7 @@ export default function NotQualifiedPage() {
         </p>
         <div className="space-y-4">
           <Link
-            href="/"
+            href={PUBLIC_HOME_URL}
             className="inline-block px-8 py-3 border border-gray-700 hover:border-gray-600 text-gray-300 font-medium rounded-lg transition"
           >
             Return to Homepage

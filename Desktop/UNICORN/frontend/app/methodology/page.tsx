@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Header from "@/components/Header"
+import { PUBLIC_HOME_URL } from "@/lib/config"
 
 export default function MethodologyPage() {
   return (
@@ -9,7 +10,7 @@ export default function MethodologyPage() {
         <div className="max-w-5xl mx-auto px-6">
           {/* HEADER */}
           <div className="text-center mb-16">
-            <Link href="/" className="text-cyan-400 hover:text-cyan-300 text-sm mb-4 inline-block">
+            <Link href={PUBLIC_HOME_URL} className="text-cyan-400 hover:text-cyan-300 text-sm mb-4 inline-block">
               ← Back to Home
             </Link>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">

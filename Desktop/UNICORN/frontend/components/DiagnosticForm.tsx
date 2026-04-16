@@ -144,7 +144,7 @@ export default function DiagnosticForm() {
         </label>
         <textarea
           name="content_samples"
-          placeholder="Paste 1�3 LinkedIn posts or scripts (separate with blank line)"
+          placeholder="Paste 1–3 LinkedIn posts or scripts (separate with blank line)"
           value={form.content_samples}
           onChange={handleChange}
           required

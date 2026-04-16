@@ -1,7 +1,8 @@
 "use client"
 
-import { API_URL } from '@/lib/config'
 import { apiFetch } from "@/lib/api"
+import { setAppAuthCookieFromToken } from "@/lib/setAppAuthCookie"
+import { PUBLIC_HOME_URL } from "@/lib/config"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -166,11 +167,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     try {
-      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-      if (!token) {
-        router.push("/login")
-        return
-      }
+      // Auth: httpOnly session cookie (see middleware.ts); Bearer in storage is optional fallback for apiFetch.
 
       // Get company ID from user data
       const userData = localStorage.getItem("user_data")
@@ -248,7 +245,7 @@ export default function DashboardPage() {
               return null
             }
           })()
-        if (cid && token) {
+        if (cid) {
           try {
             const res = await apiFetch(`/assessment/latest/${cid}`)
             if (res.ok) {
@@ -285,9 +282,9 @@ export default function DashboardPage() {
 
     // Load monitoring status and subscription if company ID available
       if (companyId) {
-        loadMonitoringStatus(token, companyId, readActiveScanToken())
-        loadAlerts(token, companyId)
-        loadSubscription(token, companyId)
+        loadMonitoringStatus(companyId, readActiveScanToken())
+        loadAlerts(companyId)
+        loadSubscription(companyId)
       } else {
         // No company ID yet — don't keep spinner spinning
         setMonitoringLoading(false)
@@ -300,14 +297,10 @@ export default function DashboardPage() {
 
   // Server is source of truth for company_id (avoids stale localStorage / wrong workspace → stuck spinners).
   useEffect(() => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) return
     let cancelled = false
     void (async () => {
       try {
-        const pr = await fetch(`${API_URL}/account/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const pr = await apiFetch("/account/profile")
         if (!pr.ok || cancelled) return
         const p = await pr.json()
         const cid = p?.company_id != null ? String(p.company_id).trim() : ""
@@ -356,6 +349,44 @@ export default function DashboardPage() {
     }
   }, [])
 
+  // Rehydrate metrics on app host / post-Stripe: instant scan lives in scan_results + API,
+  // not in this origin's localStorage. When company_id exists but no stored diagnostic, fetch latest.
+  useEffect(() => {
+    if (!companyId) return
+    let cancelled = false
+    const hasStoredDiagnostic =
+      typeof window !== "undefined" &&
+      !!(
+        sessionStorage.getItem("diagnostic_result_full") ||
+        localStorage.getItem("diagnostic_result_full") ||
+        sessionStorage.getItem("diagnostic_result") ||
+        localStorage.getItem("diagnostic_result") ||
+        sessionStorage.getItem("diagnostic_result_partial") ||
+        localStorage.getItem("diagnostic_result_partial")
+      )
+    if (hasStoredDiagnostic) return
+
+    void (async () => {
+      try {
+        const res = await apiFetch(`/assessment/latest/${companyId}`)
+        if (!res.ok || cancelled) return
+        const data = (await res.json()) as {
+          status?: string
+          diagnostic?: DiagnosticResult
+        }
+        if (data?.status === "ok" && data?.diagnostic) {
+          setDiagnostic(data.diagnostic)
+          setHasDiagnostic(true)
+        }
+      } catch {
+        /* ignore */
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [companyId])
+
   // After returning from a scan (scan-results sets this flag), re-fetch monitoring status
   // so the new RII and structural scores are visible immediately.
   useEffect(() => {
@@ -363,15 +394,12 @@ export default function DashboardPage() {
     const needsRefresh = sessionStorage.getItem("dashboard_needs_refresh")
     if (needsRefresh) {
       sessionStorage.removeItem("dashboard_needs_refresh")
-      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-      if (token) {
-        // Small delay to let backend finish writing the new scan result
-        setTimeout(() => {
-          loadMonitoringStatus(token, companyId, null)
-          loadSubscription(token, companyId)
-          loadAlerts(token, companyId)
-        }, 800)
-      }
+      // Small delay to let backend finish writing the new scan result
+      setTimeout(() => {
+        loadMonitoringStatus(companyId, null)
+        loadSubscription(companyId)
+        loadAlerts(companyId)
+      }, 800)
     }
   }, [companyId])
 
@@ -404,44 +432,37 @@ export default function DashboardPage() {
       }
 
       // Reload monitoring status and subscription to reflect activation
-      const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-      if (token) {
-        const activeScanToken = params.get("token")
-        // Immediate reload - subscription first to set currentPlan
-        loadSubscription(token, companyId, true)  // ← Critical: force reload subscription FIRST
-        loadMonitoringStatus(token, companyId, activeScanToken)
-        loadAlerts(token, companyId)
-        
-        // Also reload after delay to ensure backend processed
-        setTimeout(() => {
-          loadSubscription(token, companyId, true)  // Force reload again to ensure it's set
-          loadMonitoringStatus(token, companyId, activeScanToken)
-          loadAlerts(token, companyId)
-          // Trigger custom event to update DashboardHeader
-          window.dispatchEvent(new CustomEvent("subscription_updated"))
-          // Clean URL
-          window.history.replaceState({}, "", "/dashboard")
-        }, 1000)
-        
-        // One more reload after 2 seconds to be absolutely sure
-        setTimeout(() => {
-          loadSubscription(token, companyId, true)
-        }, 2000)
-      }
+      const activeScanToken = params.get("token")
+      // Immediate reload - subscription first to set currentPlan
+      loadSubscription(companyId, true)  // ← Critical: force reload subscription FIRST
+      loadMonitoringStatus(companyId, activeScanToken)
+      loadAlerts(companyId)
+
+      // Also reload after delay to ensure backend processed
+      setTimeout(() => {
+        loadSubscription(companyId, true)  // Force reload again to ensure it's set
+        loadMonitoringStatus(companyId, activeScanToken)
+        loadAlerts(companyId)
+        // Trigger custom event to update DashboardHeader
+        window.dispatchEvent(new CustomEvent("subscription_updated"))
+        // Clean URL
+        window.history.replaceState({}, "", "/dashboard")
+      }, 1000)
+
+      // One more reload after 2 seconds to be absolutely sure
+      setTimeout(() => {
+        loadSubscription(companyId, true)
+      }, 2000)
     }
   }, [companyId])
 
-  const loadMonitoringStatus = async (token: string, companyId: string, scanToken?: string | null) => {
+  const loadMonitoringStatus = async (companyId: string, scanToken?: string | null) => {
     setMonitoringLoading(true)
     try {
-      const statusUrl = scanToken
-        ? `${API_URL}/monitoring/status/${companyId}?scan_token=${encodeURIComponent(scanToken)}`
-        : `${API_URL}/monitoring/status/${companyId}`
-      const response = await fetch(statusUrl, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      })
+      const path = scanToken
+        ? `/monitoring/status/${companyId}?scan_token=${encodeURIComponent(scanToken)}`
+        : `/monitoring/status/${companyId}`
+      const response = await apiFetch(path)
       
       if (response.ok) {
         const data = await response.json()
@@ -454,7 +475,7 @@ export default function DashboardPage() {
     }
   }
 
-  const loadSubscription = async (token: string, companyId: string, force = false) => {
+  const loadSubscription = async (companyId: string, force = false) => {
     // Debounce: skip if called within 10 seconds of the last fetch (avoid the ~30 calls in logs)
     const cacheKey = `sub_fetched_at_${companyId}`
     const lastFetch = parseInt(sessionStorage.getItem(cacheKey) || "0", 10)
@@ -467,11 +488,7 @@ export default function DashboardPage() {
 
     setSubscriptionLoading(true)
     try {
-      const response = await fetch(`${API_URL}/subscription/${companyId}`, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      })
+      const response = await apiFetch(`/subscription/${companyId}`)
       
       if (response.ok) {
         const data = await response.json()
@@ -504,14 +521,6 @@ export default function DashboardPage() {
     const sessionId = params.get("session_id")
     if (!sessionId) return
 
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) {
-      const fullPath =
-        window.location.pathname + window.location.search + (window.location.hash || "")
-      router.replace(`/login?next=${encodeURIComponent(fullPath)}`)
-      return
-    }
-
     const dedupeKey = `stripe_checkout_confirmed_${sessionId}`
     if (sessionStorage.getItem(dedupeKey)) {
       router.replace("/dashboard")
@@ -520,8 +529,8 @@ export default function DashboardPage() {
         const u = raw ? JSON.parse(raw) : {}
         const cid = u?.company_id ? String(u.company_id) : ""
         if (cid) {
-          loadSubscription(token, cid, true)
-          loadMonitoringStatus(token, cid, readActiveScanToken())
+          loadSubscription(cid, true)
+          loadMonitoringStatus(cid, readActiveScanToken())
         }
       } catch {
         /* ignore */
@@ -532,21 +541,28 @@ export default function DashboardPage() {
     let cancelled = false
     void (async () => {
       try {
-        const res = await fetch(`${API_URL}/billing/confirm-checkout`, {
+        const stored =
+          typeof window !== "undefined"
+            ? sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+            : null
+        if (stored) {
+          await setAppAuthCookieFromToken(stored)
+        }
+        const res = await apiFetch("/billing/confirm-checkout", {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({ session_id: sessionId }),
         })
         if (cancelled) return
 
         if (res.ok) {
+          let checkoutAccess: { plan?: string; has_full_access?: boolean } | null = null
           try {
-            const access = await res.json()
-            if (access?.plan) {
-              setCurrentPlan(String(access.plan).toLowerCase())
+            checkoutAccess = (await res.json()) as {
+              plan?: string
+              has_full_access?: boolean
+            }
+            if (checkoutAccess?.plan) {
+              setCurrentPlan(String(checkoutAccess.plan).toLowerCase())
             }
           } catch {
             /* non-JSON body */
@@ -554,9 +570,7 @@ export default function DashboardPage() {
 
           let resolvedCompanyId: string | null = null
           try {
-            const pr = await fetch(`${API_URL}/account/profile`, {
-              headers: { Authorization: `Bearer ${token}` },
-            })
+            const pr = await apiFetch("/account/profile")
             if (pr.ok && !cancelled) {
               const p = await pr.json()
               if (p?.company_id) {
@@ -598,9 +612,22 @@ export default function DashboardPage() {
                 }
               })()
             if (cid) {
-              loadSubscription(token, cid, true)
-              loadMonitoringStatus(token, cid, readActiveScanToken())
-              loadAlerts(token, cid)
+              loadSubscription(cid, true)
+              loadMonitoringStatus(cid, readActiveScanToken())
+              loadAlerts(cid)
+              // Auto-activate monitoring after successful payment when access is active
+              if (checkoutAccess?.has_full_access !== false) {
+                try {
+                  const activeScanToken = readActiveScanToken()
+                  const activatePath = activeScanToken
+                    ? `/monitoring/activate/${cid}?scan_token=${encodeURIComponent(activeScanToken)}`
+                    : `/monitoring/activate/${cid}`
+                  await apiFetch(activatePath, { method: "POST" })
+                  loadMonitoringStatus(cid, readActiveScanToken())
+                } catch (e) {
+                  console.error("[DASHBOARD] auto-activate monitoring:", e)
+                }
+              }
             }
           }
         } else {
@@ -619,13 +646,9 @@ export default function DashboardPage() {
     }
   }, [router])
 
-  const loadAlerts = async (token: string, companyId: string) => {
+  const loadAlerts = async (companyId: string) => {
     try {
-      const response = await fetch(`${API_URL}/monitoring/alerts/${companyId}`, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      })
+      const response = await apiFetch(`/monitoring/alerts/${companyId}`)
       
       if (response.ok) {
         const data = await response.json()
@@ -637,21 +660,15 @@ export default function DashboardPage() {
   }
 
   const markAlertRead = async (alertId: string) => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) return
-
     try {
-      const response = await fetch(`${API_URL}/monitoring/alerts/${alertId}/mark-read`, {
+      const response = await apiFetch(`/monitoring/alerts/${alertId}/mark-read`, {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
       })
-      
+
       if (response.ok) {
         // Reload alerts
         if (companyId) {
-          loadAlerts(token, companyId)
+          loadAlerts(companyId)
         }
       }
     } catch (e) {
@@ -661,27 +678,21 @@ export default function DashboardPage() {
 
   const activateMonitoring = async () => {
     if (!companyId) return
-    
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) return
 
     try {
       const activeScanToken = readActiveScanToken()
-      const activateUrl = activeScanToken
-        ? `${API_URL}/monitoring/activate/${companyId}?scan_token=${encodeURIComponent(activeScanToken)}`
-        : `${API_URL}/monitoring/activate/${companyId}`
-      const response = await fetch(activateUrl, {
+      const activatePath = activeScanToken
+        ? `/monitoring/activate/${companyId}?scan_token=${encodeURIComponent(activeScanToken)}`
+        : `/monitoring/activate/${companyId}`
+      const response = await apiFetch(activatePath, {
         method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
       })
-      
+
       if (response.ok) {
         // Reload monitoring status and subscription (trial is auto-assigned on activation)
-        loadMonitoringStatus(token, companyId, readActiveScanToken())
-        loadAlerts(token, companyId)
-        loadSubscription(token, companyId)
+        loadMonitoringStatus(companyId, readActiveScanToken())
+        loadAlerts(companyId)
+        loadSubscription(companyId)
       } else {
         const error = await response.json()
         alert(error.detail || "Failed to activate monitoring")
@@ -882,7 +893,7 @@ export default function DashboardPage() {
                 Run a scan first to quantify your revenue-stage exposure and identify compression risk.
               </p>
               <Link
-                href="/"
+                href={PUBLIC_HOME_URL}
                 className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition"
               >
                 Run a Scan

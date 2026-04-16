@@ -1,5 +1,6 @@
 "use client"
 import { apiFetch } from "@/lib/api"
+import { setAppAuthCookieFromToken } from "@/lib/setAppAuthCookie"
 
 import { API_URL } from "@/lib/config"
 
@@ -14,7 +15,7 @@ type LoginPayload = {
   email: string
   company_name?: string
   company_id?: string | null
-  /** From UserProgress.last_route � e.g. /scan-results?token=� after unlock-with-existing-account */
+  /** From UserProgress.last_route — e.g. /scan-results?token=... after unlock-with-existing-account */
   resume_target?: string | null
 }
 
@@ -47,9 +48,9 @@ export default function LoginPage() {
   const infoReason = searchParams.get("reason")
   const infoMessage =
     infoReason === "existing_account"
-      ? "You already have an account � sign in with a code sent to your email."
+      ? "You already have an account — sign in with a code sent to your email."
       : infoReason === "resume_scan"
-        ? "Your scan is saved to this account � sign in with the password you set, or use �Email me a sign-in code� below."
+        ? "Your scan is saved to this account — sign in with the password you set, or use \"Email me a sign-in code\" below."
         : null
 
   const [submitting, setSubmitting] = useState(false)
@@ -61,6 +62,7 @@ export default function LoginPage() {
   const completeLogin = useCallback(
     async (data: LoginPayload, resolvedEmail: string) => {
       if (data.token) {
+        await setAppAuthCookieFromToken(data.token)
         sessionStorage.setItem("auth_token", data.token)
         localStorage.setItem("auth_token", data.token)
       }
@@ -140,7 +142,21 @@ export default function LoginPage() {
         }
       }
 
-      // Return here after Stripe (or any flow) sent user to /login?next=/dashboard?checkout_success=�
+      try {
+        const raw = localStorage.getItem("user_data")
+        if (raw) {
+          const u = JSON.parse(raw) as { company_id?: string | null }
+          const cid = u?.company_id != null ? String(u.company_id).trim() : ""
+          if (cid) {
+            localStorage.setItem("company_id", cid)
+            sessionStorage.setItem("company_id", cid)
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+
+      // Return here after Stripe (or any flow) sent user to /login?next=/dashboard?checkout_success=1
       const nextReturn = safeInternalResumePath(searchParams.get("next"))
       if (nextReturn) {
         router.push(nextReturn)
@@ -254,7 +270,7 @@ export default function LoginPage() {
       }
       setOtpInfo(
         data.message ||
-          "If this email is registered, we sent a code � check inbox and spam; wait 1�2 minutes."
+          "If this email is registered, we sent a code — check inbox and spam; wait 1–2 minutes."
       )
       setOtpStep("code")
       setOtpCode("")
@@ -420,11 +436,11 @@ export default function LoginPage() {
                 disabled={submitting}
                 className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
               >
-                {submitting ? "Sending�" : "Email me a sign-in code"}
+                {submitting ? "Sending…" : "Email me a sign-in code"}
               </button>
               <p className="text-center text-sm text-gray-500">
                 We email a 6-digit code only if this address is already registered. Check Spam/Junk (iCloud/Gmail).
-                Sessions stay signed in for a long time � you won&apos;t need a code every visit.
+                Sessions stay signed in for a long time — you won&apos;t need a code every visit.
               </p>
               <button
                 type="button"
@@ -474,7 +490,7 @@ export default function LoginPage() {
                 disabled={submitting || otpCode.length !== 6}
                 className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
               >
-                {submitting ? "Signing in�" : "Verify & sign in"}
+                {submitting ? "Signing in…" : "Verify & sign in"}
               </button>
               <div className="flex flex-col gap-2 text-sm text-center">
                 <button
@@ -487,7 +503,7 @@ export default function LoginPage() {
                   }}
                   className="text-gray-400 hover:text-cyan-300"
                 >
-                  ? Use a different email
+                  Use a different email
                 </button>
                 <button
                   type="button"
@@ -572,7 +588,7 @@ export default function LoginPage() {
                 }}
                 className="w-full text-sm text-gray-400 hover:text-cyan-300 transition"
               >
-                ? Sign in with email code instead
+                Sign in with email code instead
               </button>
 
               <button

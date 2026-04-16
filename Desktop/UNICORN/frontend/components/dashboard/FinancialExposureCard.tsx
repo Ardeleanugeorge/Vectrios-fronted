@@ -20,6 +20,8 @@ interface FinancialExposureCardProps {
   rolling30DayExposure?: number | null
   annualizedProjection?: number | null
   forecast?: ForecastData | null
+  /** True while revenue-forecast request is in flight (avoid "not available" flash) */
+  forecastLoading?: boolean
   riskScore?: number | null
   riskLevel?: string | null
   uiState?: "low" | "medium" | "high"
@@ -77,6 +79,7 @@ function CompressionGauge({ raw, isLowRisk }: { raw: number; isLowRisk: boolean 
 export default function FinancialExposureCard({
   monthlyExposure,
   forecast,
+  forecastLoading = false,
   riskScore,
   riskLevel,
   uiState,
@@ -89,6 +92,17 @@ export default function FinancialExposureCard({
   const sectionTitle = isLowRisk ? "Residual Optimization Potential" : "Estimated Revenue Impact"
   const mainLabel = isLowRisk ? "Additional Revenue Available" : "Estimated ARR Impact"
   const stageLabel = isLowRisk ? "Primary Optimization Gap" : "Where it breaks"
+
+  // ── Forecast still loading (same request as dashboard) ──
+  if (!forecast && forecastLoading) {
+    return (
+      <div className="relative z-0 p-8 bg-[#111827] rounded-lg border border-gray-800">
+        <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">{sectionTitle}</p>
+        <p className="text-sm text-gray-400 animate-pulse">Loading forecast…</p>
+        <p className="text-xs text-gray-600 mt-1">Pulling modeled exposure from your workspace.</p>
+      </div>
+    )
+  }
 
   // ── Fallback: forecast not yet available ──
   if (!forecast) {

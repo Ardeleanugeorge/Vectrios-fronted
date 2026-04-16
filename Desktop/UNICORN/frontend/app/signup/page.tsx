@@ -1,5 +1,6 @@
 "use client"
 import { apiFetch } from "@/lib/api"
+import { setAppAuthCookieFromToken } from "@/lib/setAppAuthCookie"
 
 import { API_URL } from '@/lib/config'
 
@@ -40,6 +41,7 @@ export default function SignUpPage() {
         const data = await response.json()
         // Store auth token if provided
         if (data.token) {
+          await setAppAuthCookieFromToken(data.token)
           sessionStorage.setItem("auth_token", data.token)
           // Also store in localStorage for persistence
           localStorage.setItem("auth_token", data.token)

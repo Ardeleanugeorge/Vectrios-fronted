@@ -1,5 +1,6 @@
 "use client"
 
+import { PUBLIC_HOME_URL } from "@/lib/config"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import ResultCard from "@/components/ResultCard"
@@ -140,7 +141,7 @@ export default function ResultsPage() {
             Run Another Diagnostic
           </a>
           <a
-            href="/"
+            href={PUBLIC_HOME_URL}
             className="px-6 py-3 border border-gray-700 hover:border-gray-600 text-white font-medium rounded-lg transition"
           >
             Back to Home

@@ -117,12 +117,12 @@ export default function SetPasswordPage() {
             Set your Vectri<span className="text-cyan-400">OS</span> password
           </h1>
           <p className="text-sm text-gray-400 mb-6">
-            Secure your account. After this step you&apos;ll continue to plans � no extra sign-in if you open the link in the same browser.
+            Secure your account. After this step you&apos;ll continue to plans — no extra sign-in if you open the link in the same browser.
           </p>
 
           {done ? (
             <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm">
-              Password set. Redirecting to plans�
+              Password set. Redirecting to plans–
             </div>
           ) : (
             <form onSubmit={onSubmit} className="space-y-4">

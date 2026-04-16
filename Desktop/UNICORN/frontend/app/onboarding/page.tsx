@@ -14,8 +14,8 @@ import DashboardHeader from "@/components/DashboardHeader"
 import SiteFooter from "@/components/SiteFooter"
 
 // --- QuestionBlock definit AFARA componentului principal --------------------
-// Daca ar fi definit �nauntru, React �l trateaza ca tip nou la fiecare render
-// ? unmount + remount ? scroll reset la top la fiecare click.
+// Dacă ar fi definit înăuntru, React îl tratează ca tip nou la fiecare render
+// (remount + reset scroll la fiecare click).
 
 // Normalize URLs - add https:// if protocol is missing
 const normalizeUrl = (url: string): string => {
@@ -165,7 +165,7 @@ export default function OnboardingPage() {
   if (shouldSuppressUi) {
     return (
       <div className="page-root flex items-center justify-center">
-        <span className="text-gray-400">Redirecting�</span>
+        <span className="text-gray-400">Redirecting…</span>
       </div>
     )
   }
@@ -263,7 +263,7 @@ export default function OnboardingPage() {
   })
 
   // Hydrate form once: draft first, then instant-scan prefill wins on URL / ARR / ICP
-  // (draft can carry icp_description from another company � drop it when host ? current scan)
+  // (draft can carry icp_description from another company — drop it when host differs from current scan)
   useEffect(() => {
     const patch = getScanPrefillPatch()
     setCameFromInstantScan(!!patch.website_url?.trim())
@@ -632,14 +632,14 @@ export default function OnboardingPage() {
               </div>
               <h2 className="text-3xl font-bold mb-4">Want a precise model for your business?</h2>
               <p className="text-gray-400 mb-2">
-                Takes ~2 minutes � Used by revenue teams to model ARR risk
+                Takes ~2 minutes — Used by revenue teams to model ARR risk
               </p>
               <p className="text-sm text-gray-500">
                 We'll calculate exact ARR at risk, close rate impact, and recovery potential
               </p>
               {cameFromInstantScan && (
                 <p className="text-sm text-cyan-500/90 mt-4 max-w-lg mx-auto">
-                  Website and ARR band below are carried from your instant scan (and unlock flow). Confirm or tweak �{" "}
+                  Website and ARR band below are carried from your instant scan (and unlock flow). Confirm or tweak –{" "}
                   <span className="text-gray-400">Step 2 only asks for current vs. target close rates.</span>
                 </p>
               )}
@@ -680,8 +680,8 @@ export default function OnboardingPage() {
               >
                 <option value="">Select ARR range</option>
                 <option value="<1M">&lt; $1M</option>
-                <option value="1M-5M">$1M�$5M</option>
-                <option value="5M-20M">$5M�$20M</option>
+                <option value="1M-5M">$1M–$5M</option>
+                <option value="5M-20M">$5M–$20M</option>
                 <option value="20M+">$20M+</option>
               </select>
               <p className="text-xs text-gray-500 mt-1 italic">
@@ -751,9 +751,9 @@ export default function OnboardingPage() {
                 <div className="text-xs text-gray-600 bg-gray-800/50 p-2 rounded border border-gray-700">
                   <p className="font-medium mb-1">Typical SaaS close rates:</p>
                   <ul className="space-y-0.5 text-gray-500">
-                    <li>SMB: 15�25%</li>
-                    <li>Mid-market: 20�35%</li>
-                    <li>Enterprise: 10�20%</li>
+                    <li>SMB: 15–25%</li>
+                    <li>Mid-market: 20–35%</li>
+                    <li>Enterprise: 10–20%</li>
                   </ul>
                 </div>
               </div>
@@ -794,8 +794,8 @@ export default function OnboardingPage() {
                   >
                     <option value="">Select sales cycle (optional)</option>
                     <option value="<14">&lt; 14 days</option>
-                    <option value="14-30">14�30 days</option>
-                    <option value="30-60">30�60 days</option>
+                    <option value="14-30">14–30 days</option>
+                    <option value="30-60">30–60 days</option>
                     <option value="60+">60+ days</option>
                   </select>
                 </div>
@@ -837,10 +837,10 @@ export default function OnboardingPage() {
                   className="input"
                 >
                   <option value="">Select clarity level (optional)</option>
-                  <option value="very-clearly">Very clearly � quantified ROI or measurable outcomes</option>
-                  <option value="moderately-clear">Moderately clear � benefits explained but not quantified</option>
-                  <option value="somewhat-unclear">Somewhat unclear � benefits mentioned but vague</option>
-                  <option value="unclear">Unclear � mostly feature-focused messaging</option>
+                  <option value="very-clearly">Very clearly — quantified ROI or measurable outcomes</option>
+                  <option value="moderately-clear">Moderately clear — benefits explained but not quantified</option>
+                  <option value="somewhat-unclear">Somewhat unclear — benefits mentioned but vague</option>
+                  <option value="unclear">Unclear — mostly feature-focused messaging</option>
                 </select>
               </div>
 
@@ -855,10 +855,10 @@ export default function OnboardingPage() {
                   className="input"
                 >
                   <option value="">Select clarity level (optional)</option>
-                  <option value="very-clear">Very clear � pricing transparent and easy to estimate</option>
-                  <option value="mostly-clear">Mostly clear � pricing understandable with explanation</option>
-                  <option value="some-friction">Some friction � prospects often ask for clarification</option>
-                  <option value="high-friction">High friction � pricing often delays or blocks deals</option>
+                  <option value="very-clear">Very clear — pricing transparent and easy to estimate</option>
+                  <option value="mostly-clear">Mostly clear — pricing understandable with explanation</option>
+                  <option value="some-friction">Some friction — prospects often ask for clarification</option>
+                  <option value="high-friction">High friction — pricing often delays or blocks deals</option>
                 </select>
               </div>
 
@@ -972,7 +972,7 @@ export default function OnboardingPage() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            <p className="text-sm text-gray-300">Building your results�</p>
+            <p className="text-sm text-gray-300">Building your results…</p>
           </div>
         </div>
       )}

@@ -77,16 +77,20 @@ export default function PricingPage() {
   }, [contactName, contactEmail, contactMessage])
 
   const resolveCompanyIdFromStorage = (): string | null => {
-    const direct = localStorage.getItem("company_id") || sessionStorage.getItem("company_id")
-    if (direct) return direct
-
+    // Prefer user_data (updated by login / email-capture) over the orphan `company_id` key,
+    // which can stay stale across sessions and cause 403 on subscription/monitoring POST.
     try {
-      const userData = localStorage.getItem("user_data")
+      const userData =
+        localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
       if (userData) {
-        const parsed = JSON.parse(userData)
-        if (parsed.company_id) return parsed.company_id
+        const parsed = JSON.parse(userData) as { company_id?: string }
+        const fromUd = parsed?.company_id != null ? String(parsed.company_id).trim() : ""
+        if (fromUd) return fromUd
       }
     } catch {}
+
+    const direct = localStorage.getItem("company_id") || sessionStorage.getItem("company_id")
+    if (direct) return String(direct).trim() || null
 
     try {
       const onboarding = localStorage.getItem("onboarding_response")
@@ -118,8 +122,36 @@ export default function PricingPage() {
     sessionStorage.setItem("company_id", companyId)
   }
 
-  /** Server profile first � localStorage company_id can be stale (wrong workspace ? 403). */
+  /** After email-capture, scan_data.unlock_company_id is the workspace for this scan (before /account/profile). */
+  const resolveUnlockCompanyIdFromScanData = (): string | null => {
+    try {
+      const raw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+      if (!raw) return null
+      const o = JSON.parse(raw) as { scan_token?: string; unlock_company_id?: string }
+      const cid = o?.unlock_company_id != null ? String(o.unlock_company_id).trim() : ""
+      if (!cid || !o.scan_token) return null
+      return cid
+    } catch {
+      return null
+    }
+  }
+
   const resolveCompanyId = async (token: string): Promise<string | null> => {
+    const fromUnlock = resolveUnlockCompanyIdFromScanData()
+    if (fromUnlock) {
+      try {
+        const ud = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+        const parsed = ud ? (JSON.parse(ud) as { user_id?: string; email?: string }) : {}
+        persistCompanyId(fromUnlock, {
+          user_id: parsed.user_id,
+          email: parsed.email,
+        })
+      } catch {
+        persistCompanyId(fromUnlock)
+      }
+      return fromUnlock
+    }
+
     try {
       const pr = await apiFetch(`/account/profile`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -278,6 +310,29 @@ export default function PricingPage() {
       return undefined
     }
   }
+
+  /** Legacy sessions: scan_data without unlock_company_id — copy from user_data before profile overwrites. */
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    try {
+      if (new URLSearchParams(window.location.search).get("from") !== "scan") return
+      const raw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+      if (!raw) return
+      const o = JSON.parse(raw) as { scan_token?: string; unlock_company_id?: string }
+      if (o.unlock_company_id) return
+      const ud = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
+      if (!ud) return
+      const p = JSON.parse(ud) as { company_id?: string }
+      const cid = p?.company_id != null ? String(p.company_id).trim() : ""
+      if (!cid) return
+      o.unlock_company_id = cid
+      const s = JSON.stringify(o)
+      sessionStorage.setItem("scan_data", s)
+      localStorage.setItem("scan_data", s)
+    } catch {
+      /* ignore */
+    }
+  }, [])
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -477,7 +532,7 @@ export default function PricingPage() {
       })
       const data = await res.json().catch(() => ({}))
       if (res.ok) {
-        setContactSuccess(data.message || "Message sent � we'll get back to you soon.")
+        setContactSuccess(data.message || "Message sent — we'll get back to you soon.")
         setContactName("")
         setContactEmail("")
         setContactCompany("")
@@ -541,7 +596,7 @@ export default function PricingPage() {
           <div className="mb-6 p-4 rounded-lg bg-amber-950/40 border border-amber-500/40 text-amber-200 text-sm text-center">
             Based on your scan, you&apos;re losing approximately{" "}
             <span className="font-semibold text-amber-300">
-              {formatCurrency(scanMonthlyLoss.low)}�{formatCurrency(scanMonthlyLoss.high)}/month
+              {formatCurrency(scanMonthlyLoss.low)}–{formatCurrency(scanMonthlyLoss.high)}/month
             </span>
           </div>
         )}
@@ -557,31 +612,31 @@ export default function PricingPage() {
         )}
 
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold mb-3">Recover revenue�not features</h1>
+          <h1 className="text-4xl font-bold mb-3">Recover revenue'not features</h1>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            One plan � Scale: find what&apos;s leaking, fix it, and quantify what you get back. Start with a 14-day full-access trial.
+            One plan — Scale: find what&apos;s leaking, fix it, and quantify what you get back. Start with a 14-day full-access trial.
           </p>
         </div>
 
-        {/* ROI anchor � makes dollar price feel small vs. problem size */}
+        {/* ROI anchor — makes dollar price feel small vs. problem size */}
         <div className="max-w-3xl mx-auto mb-10 p-6 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/25 to-[#111827]">
           <p className="text-center text-lg sm:text-xl font-semibold text-white mb-2">
             Companies like yours typically lose{" "}
-            <span className="text-amber-300">$120K�$300K/year</span>
+            <span className="text-amber-300">$120K–$300K/year</span>
           </p>
           <p className="text-center text-sm text-gray-400">
-            Vectri<span className="text-cyan-400">OS</span> helps recover a significant portion of that�before you spend more on traffic or headcount.
+            Vectri<span className="text-cyan-400">OS</span> helps recover a significant portion of that'before you spend more on traffic or headcount.
           </p>
         </div>
 
         <div className="max-w-2xl mx-auto mb-12">
           <div className="p-7 bg-gradient-to-br from-cyan-950/40 to-[#111827] rounded-2xl border border-cyan-500/40 text-center">
             <p className="text-cyan-200/90 font-semibold mb-2 text-lg">
-              Try risk-free � recover your first $50K in lost revenue
+              Try risk-free — recover your first $50K in lost revenue
             </p>
-            <h2 className="text-2xl font-bold mb-2">14-day trial � full Scale access</h2>
+            <h2 className="text-2xl font-bold mb-2">14-day trial — full Scale access</h2>
             <p className="text-gray-400 text-sm mb-6">
-              Every trial includes the full Scale playbook so you can see the complete recovery path�not a watered-down demo.
+              Every trial includes the full Scale playbook so you can see the complete recovery path'not a watered-down demo.
             </p>
             <button
               onClick={handleTrial}
@@ -590,7 +645,7 @@ export default function PricingPage() {
                 isProcessing ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
               }`}
             >
-              Start 14-day trial � full access
+              Start 14-day trial — full access
             </button>
           </div>
         </div>
@@ -643,7 +698,7 @@ export default function PricingPage() {
                   <span className="text-gray-400">/month</span>
                   {billingCycle === "annual" ? (
                     <p className="text-xs text-gray-500 mt-1">
-                      Billed annually (${plan.priceAnnual * 12}/year) � save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year
+                      Billed annually (${plan.priceAnnual * 12}/year) — save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year
                     </p>
                   ) : (
                     <p className="text-xs text-gray-500 mt-1">Switch to annual and save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year</p>
@@ -652,7 +707,7 @@ export default function PricingPage() {
                 <ul className="space-y-2 mb-7 text-sm text-gray-300 flex-1">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex gap-2">
-                      <span className="text-cyan-400 shrink-0">?</span>
+                      <span className="text-cyan-400 shrink-0" aria-hidden>✓</span>
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -679,7 +734,7 @@ export default function PricingPage() {
           <div className="text-center mb-8 max-w-xl mx-auto">
             <h2 className="text-2xl font-bold mb-2">Questions?</h2>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Ask anything about Scale, the trial, or how monitoring works � we&apos;ll reply by email.
+              Ask anything about Scale, the trial, or how monitoring works — we&apos;ll reply by email.
             </p>
           </div>
 
@@ -762,7 +817,7 @@ export default function PricingPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                       </svg>
-                      Sending�
+                      Sending…
                     </>
                   ) : (
                     "Send message"
@@ -786,7 +841,7 @@ export default function PricingPage() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            <p className="text-sm text-gray-300">Continuing�</p>
+            <p className="text-sm text-gray-300">Continuing…</p>
             {(selectedPlanName || pendingActivationLabel) && (
               <p className="text-xs text-cyan-300 mt-2">
                 Activating {selectedPlanName || pendingActivationLabel}...

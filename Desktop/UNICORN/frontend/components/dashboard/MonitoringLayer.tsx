@@ -157,9 +157,6 @@ export default function MonitoringLayer({
   currentPlan = null,
   companyDomain = null,
 }: MonitoringLayerProps) {
-  console.log('MonitoringLayer diagnostic:', diagnostic);
-  console.log('MonitoringLayer diagnostic.action_layer:', diagnostic?.action_layer);
-  console.log('MonitoringLayer monitoringStatus.action_layer:', monitoringStatus?.action_layer);
   // Revenue Delta (last scan vs previous)
   const [revenueDelta, setRevenueDelta] = useState<null | {
     has_delta: boolean
@@ -183,8 +180,13 @@ export default function MonitoringLayer({
 
   // Fetch forecast data for FinancialExposureCard
   const [forecast, setForecast] = useState<any>(null)
+  const [forecastFetchDone, setForecastFetchDone] = useState(false)
   useEffect(() => {
-    if (!companyId) return
+    if (!companyId) {
+      setForecastFetchDone(true)
+      return
+    }
+    setForecastFetchDone(false)
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
     fetch(`${API_URL}/revenue-forecast/${companyId}`, {
       headers: { "Authorization": `Bearer ${token || ""}` }
@@ -192,19 +194,7 @@ export default function MonitoringLayer({
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data) setForecast(data) })
       .catch(() => {})
-  }, [companyId])
-
-  // Fetch AI playbook (top 3 fixes)
-  const [playbook, setPlaybook] = useState<PlaybookResponse | null>(null)
-  useEffect(() => {
-    if (!companyId) return
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`${API_URL}/playbook/${companyId}`, {
-      headers: { "Authorization": `Bearer ${token || ""}` }
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then((data: PlaybookResponse | null) => { if (data && Array.isArray(data.fixes)) setPlaybook(data) })
-      .catch(() => {})
+      .finally(() => setForecastFetchDone(true))
   }, [companyId])
 
   // Check for critical alerts to show banner
@@ -343,15 +333,30 @@ export default function MonitoringLayer({
     ? diagnostic.recommendations[0] 
     : null
   const [playbookActionLayer, setPlaybookActionLayer] = useState<ActionLayerPayload | null>(null)
+  const [playbookFetchDone, setPlaybookFetchDone] = useState(false)
 
   useEffect(() => {
-    if (!companyId) return
+    if (!companyId) {
+      setPlaybookActionLayer(null)
+      setPlaybookFetchDone(true)
+      return
+    }
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) return
+    if (!token) {
+      setPlaybookFetchDone(true)
+      return
+    }
+    const diagFixesLen = diagnostic?.action_layer?.fixes?.length ?? 0
+    if (diagFixesLen > 0) {
+      setPlaybookFetchDone(true)
+    } else {
+      setPlaybookFetchDone(false)
+    }
+    let cancelled = false
     fetch(`${API_URL}/playbook/${companyId}`, {
       headers: { Authorization: `Bearer ${token}` },
     }).then(async (r) => {
-      if (!r.ok) return
+      if (!r.ok || cancelled) return
       const data = await r.json()
       const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 3) : []
       if (!fixesArr.length) return
@@ -372,10 +377,8 @@ export default function MonitoringLayer({
       }
       // Existing fixes from diagnostic action layer
       const existingFixes = diagnostic?.action_layer?.fixes || []
-      console.log('existingFixes', existingFixes)
       const newFixes = fixesArr.map(mapFix)
-      console.log('newFixes', newFixes)
-      
+
       // Merge fixes, deduplicate by title (case-insensitive), preferring new fixes
       const fixMap = new Map<string, any>()
       existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
@@ -397,9 +400,21 @@ export default function MonitoringLayer({
         top_action: null,
         behavioral_insight: null,
       }
-      setPlaybookActionLayer(al)
-    }).catch(() => {})
+      if (!cancelled) setPlaybookActionLayer(al)
+    })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setPlaybookFetchDone(true)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [companyId, diagnostic?.action_layer])
+
+  const hasPlaybookOrDiagnosticFixes =
+    !!(playbookActionLayer?.fixes?.length) || !!(diagnostic?.action_layer?.fixes?.length)
+  const playbookLoading =
+    !!companyId && !hasPlaybookOrDiagnosticFixes && !playbookFetchDone
 
   // Build Revenue Truth Layer (frontend interim until backend supplies it)
   const alertsLite: AlertLite[] = (monitoringStatus.recent_drift_events || []).map(e => ({
@@ -703,6 +718,7 @@ export default function MonitoringLayer({
           positioningScore={positioningScore}
           riskScore={rii}
           actionLayer={playbookActionLayer ?? diagnostic?.action_layer ?? null}
+          playbookLoading={playbookLoading}
           currentPlan={currentPlan}
           monthlyExposureReal={
             // Prefer monitoring status monthly, fall back to forecast monthly
@@ -727,6 +743,7 @@ export default function MonitoringLayer({
       {/* 1. FINANCIAL EXPOSURE — ARR at risk, recovery potential, compression gauge */}
       <FinancialExposureCard
         forecast={forecast}
+        forecastLoading={!!companyId && !forecast && !forecastFetchDone}
         riskScore={diagnostic?.risk_score || null}
         riskLevel={diagnostic?.risk_level || null}
         uiState={uiState}
