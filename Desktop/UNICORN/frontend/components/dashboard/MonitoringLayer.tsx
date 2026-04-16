@@ -1,6 +1,6 @@
 "use client"
 import { computeRevenueTruth, type AlertLite } from "./RevenueTruth"
-
+import { apiFetch } from "@/lib/api"
 import { API_URL } from '@/lib/config'
 
 import { useState, useEffect } from "react"
@@ -353,9 +353,9 @@ export default function MonitoringLayer({
 
 
 
-    fetch(`${API_URL}/playbook/${companyId}`, {
-      credentials: "include",
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    apiFetch(`/playbook/${companyId}`, {
+
+
     }).then(async (r) => {
       const data = await r.json()
       const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 3) : []
