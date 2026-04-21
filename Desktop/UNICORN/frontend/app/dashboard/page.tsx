@@ -130,7 +130,7 @@ export default function DashboardPage() {
   const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const [monitoringLoading, setMonitoringLoading] = useState(true)
-  // Company domain — used for "Run Full Diagnostic" link pre-fill
+  // Company domain ΓÇö used for "Run Full Diagnostic" link pre-fill
   const [companyDomain, setCompanyDomain] = useState<string | null>(() => {
     if (typeof window === "undefined") return null
     try {
@@ -180,7 +180,7 @@ export default function DashboardPage() {
           }
           setUser(parsed)
           if (parsed.company_id) {
-            setCompanyId(parsed.company_id)
+            // setCompanyId(parsed.company_id) -- loaded from server profile below
           }
         } catch (e) {
           console.error("Error parsing user data:", e)
@@ -286,7 +286,7 @@ export default function DashboardPage() {
         loadAlerts(companyId)
         loadSubscription(companyId)
       } else {
-        // No company ID yet — don't keep spinner spinning
+        // No company ID yet ΓÇö don't keep spinner spinning
         setMonitoringLoading(false)
         setSubscriptionLoading(false)
       }
@@ -295,7 +295,7 @@ export default function DashboardPage() {
     }
   }, [companyId, router])
 
-  // Server is source of truth for company_id (avoids stale localStorage / wrong workspace → stuck spinners).
+  // Server is source of truth for company_id (avoids stale localStorage / wrong workspace ΓåÆ stuck spinners).
   useEffect(() => {
     let cancelled = false
     void (async () => {
@@ -434,7 +434,7 @@ export default function DashboardPage() {
       // Reload monitoring status and subscription to reflect activation
       const activeScanToken = params.get("token")
       // Immediate reload - subscription first to set currentPlan
-      loadSubscription(companyId, true)  // ← Critical: force reload subscription FIRST
+      loadSubscription(companyId, true)  // ΓåÉ Critical: force reload subscription FIRST
       loadMonitoringStatus(companyId, activeScanToken)
       loadAlerts(companyId)
 
@@ -732,12 +732,12 @@ export default function DashboardPage() {
   const driftStatus = monitoringStatus?.drift_status || "stable"
 
   // Calculate derived metrics from diagnostic
-  // Suportă atât câmpurile noi (din engine actual) cât și cele vechi (legacy)
+  // Suport─â at├ót c├ómpurile noi (din engine actual) c├ót ╚Öi cele vechi (legacy)
   const riskLevel = diagnostic?.risk_level || "MODERATE"
   // Confidence priority:
-  // 1. monitoring structural_scores.confidence_score (most up-to-date — refreshed on every rescan)
+  // 1. monitoring structural_scores.confidence_score (most up-to-date ΓÇö refreshed on every rescan)
   // 2. diagnostic.confidence (from original scan stored in localStorage)
-  // 3. 0 — genuinely no data, show Low honestly
+  // 3. 0 ΓÇö genuinely no data, show Low honestly
   const confidence =
     (monitoringStatus?.structural_scores?.confidence_score ?? null) ??
     (diagnostic?.confidence && diagnostic.confidence > 0 ? diagnostic.confidence : null) ??
@@ -850,10 +850,10 @@ export default function DashboardPage() {
           {/* While monitoring status is loading from API, show spinner */}
           {monitoringLoading && companyId ? (
             <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
-              <p className="text-sm text-gray-400 animate-pulse">Loading revenue monitoring status…</p>
+              <p className="text-sm text-gray-400 animate-pulse">Loading revenue monitoring statusΓÇª</p>
             </div>
           ) : isMonitoringActive && monitoringStatus ? (
-            /* STATE 3 — CONTINUOUS MONITORING ACTIVE */
+            /* STATE 3 ΓÇö CONTINUOUS MONITORING ACTIVE */
             <MonitoringLayer 
               monitoringStatus={monitoringStatus}
               diagnostic={
@@ -886,7 +886,7 @@ export default function DashboardPage() {
               companyDomain={companyDomain}
             />
           ) : !hasDiagnostic && !monitoringLoading ? (
-            /* STATE 1 — NO DIAGNOSTIC & monitoring confirmed off */
+            /* STATE 1 ΓÇö NO DIAGNOSTIC & monitoring confirmed off */
             <div className="p-12 border border-gray-800 rounded-lg bg-[#111827] text-center">
               <h2 className="text-2xl font-bold mb-4 text-gray-300">Revenue Monitoring Not Yet Active</h2>
               <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
@@ -901,13 +901,13 @@ export default function DashboardPage() {
             </div>
           ) : subscriptionLoading ? (
             <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
-              <p className="text-sm text-gray-400 animate-pulse">Loading subscription status…</p>
+              <p className="text-sm text-gray-400 animate-pulse">Loading subscription statusΓÇª</p>
             </div>
           ) : diagnostic?.is_partial ? (
-            /* STATE 2 — PARTIAL DIAGNOSTIC (from scan), monitoring not active */
+            /* STATE 2 ΓÇö PARTIAL DIAGNOSTIC (from scan), monitoring not active */
             <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
           ) : (
-            /* STATE 2 — FREE SNAPSHOT (full diagnostic, no monitoring) */
+            /* STATE 2 ΓÇö FREE SNAPSHOT (full diagnostic, no monitoring) */
             diagnostic && (
               <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
             )
