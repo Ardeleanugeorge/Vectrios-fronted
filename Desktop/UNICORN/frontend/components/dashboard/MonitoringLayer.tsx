@@ -353,7 +353,7 @@ export default function MonitoringLayer({
 
 
 
-    apiFetch(`/playbook/${companyId}`, {
+    apiFetch(`/playbook/${companyId}?refresh=1`, {
 
 
     }).then(async (r) => {

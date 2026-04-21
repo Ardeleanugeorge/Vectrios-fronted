@@ -363,7 +363,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
               ? `"${fix.current_example}"`
               : useMonitoringSnapshot
                 ? <span className="text-gray-600 not-italic">—</span>
-                : <span className="text-gray-600 not-italic">— run full diagnostic for live copy</span>}
+                : <span className="text-gray-600 not-italic">Crawl data pending next monitoring cycle</span>}
           </p>
         </div>
 
