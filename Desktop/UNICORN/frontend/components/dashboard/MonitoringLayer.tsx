@@ -497,7 +497,7 @@ export default function MonitoringLayer({
   {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
         <div className={`rounded-xl border overflow-hidden ${
           revenueDelta.direction === "worse"
-            ? "border-red-700/40 bg-red-950/10"
+            ? "border-red-700/40 bg-red-50"
             : revenueDelta.direction === "better"
             ? "border-emerald-700/40 bg-emerald-950/10"
             : "border-gray-200/40 bg-white"
@@ -570,7 +570,7 @@ export default function MonitoringLayer({
 
           {/* Fix this first — delta + action combo (killer UX) */}
           {revenueDelta.direction === "worse" && diagnostic?.action_layer?.fixes?.[0] && (
-            <div className="mx-4 mb-4 px-4 py-3 rounded-lg bg-orange-950/20 border border-orange-500/20">
+            <div className="mx-4 mb-4 px-4 py-3 rounded-lg bg-orange-50">
               <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400 mb-1.5">
                 🔴 Fix this first
               </p>
@@ -591,7 +591,7 @@ export default function MonitoringLayer({
       <div className={`p-5 lg:p-6 rounded-lg border ${
         uiState === "low" ? "border-emerald-700/40 bg-emerald-950/10"
         : uiState === "medium" ? "border-amber-700/40 bg-amber-950/10"
-        : "border-red-700/40 bg-red-950/10"
+        : "border-red-700/40 bg-red-50"
       }`}>
         <p className="text-lg font-semibold text-gray-900">{headline}</p>
         <p className="text-sm text-gray-300 mt-1">{subtext}</p>

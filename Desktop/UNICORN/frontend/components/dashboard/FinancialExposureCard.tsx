@@ -189,7 +189,7 @@ export default function FinancialExposureCard({
     <div className="relative z-0 bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
 
       {/* ── 1️⃣  ARR AT RISK ─────────────────────────────────────────── */}
-      <div className={`p-8 border-b border-gray-200 ${isLowRisk ? "bg-emerald-950/15" : isMediumRisk ? "bg-amber-950/15" : "bg-red-950/20"}`}>
+      <div className={`p-8 border-b border-gray-200 ${isLowRisk ? "bg-emerald-950/15" : isMediumRisk ? "bg-amber-950/15" : "bg-red-50"}`}>
         <p className={`text-xs uppercase tracking-wide mb-2 font-medium ${isLowRisk ? "text-emerald-300/80" : isMediumRisk ? "text-amber-300/80" : "text-red-400/80"}`}>
           {mainLabel}
         </p>
@@ -232,7 +232,7 @@ export default function FinancialExposureCard({
 
       {/* ── 2️⃣  RECOVERY POTENTIAL ──────────────────────────────────── */}
       {recovery !== undefined && recovery > 0 && (
-        <div className="px-8 py-5 border-b border-gray-200 bg-green-950/10">
+        <div className="px-8 py-5 border-b border-gray-200 bg-green-50">
           <p className="text-xs text-green-400/70 uppercase tracking-wide mb-1 font-medium">
             Recovery Potential
           </p>
@@ -247,7 +247,7 @@ export default function FinancialExposureCard({
       {stage && (
         <div className="px-8 py-5 border-b border-gray-200">
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">{stageLabel}</p>
-          <p className={`text-base font-semibold ${isLowRisk ? "text-emerald-300" : "text-red-300"}`}>{stage}</p>
+          <p className={`text-base font-semibold ${isLowRisk ? "text-emerald-300" : "text-red-700"}`}>{stage}</p>
         </div>
       )}
 

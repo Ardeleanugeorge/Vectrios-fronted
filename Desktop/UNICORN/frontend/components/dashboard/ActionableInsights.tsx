@@ -429,7 +429,7 @@ export default function ActionableInsights({
       ? "border-emerald-800/40"
       : uiState === "medium"
         ? "border-amber-800/40"
-        : "border-red-800/40"
+        : "border-red-200"
 
   if (playbookLoading && !actionLayer?.fixes?.length) {
     return (
@@ -496,7 +496,7 @@ export default function ActionableInsights({
         <div
           className={`mb-4 px-4 py-3 rounded-lg border ${
             isHigh
-              ? "bg-orange-950/40 border-orange-500/40"
+              ? "bg-orange-50"
               : "bg-gray-100 border-gray-200"
           }`}
         >

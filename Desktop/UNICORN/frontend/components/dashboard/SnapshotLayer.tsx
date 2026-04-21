@@ -84,8 +84,8 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
   const riskLevel = normalizeLevel(diagnostic?.risk_level)
 
   const riskColor =
-    riskLevel === "HIGH" ? "text-red-400 border-red-900/40 bg-red-950/10" :
-    riskLevel === "MODERATE" ? "text-orange-400 border-orange-900/40 bg-orange-950/10" :
+    riskLevel === "HIGH" ? "text-red-400 border-red-900/40 bg-red-50" :
+    riskLevel === "MODERATE" ? "text-orange-400 border-orange-900/40 bg-orange-50" :
     "text-yellow-400 border-yellow-900/40 bg-yellow-950/10"
 
   const riskLabel =
@@ -186,7 +186,7 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
           </Link>
           <Link
             href="/upgrade"
-            className="inline-block px-6 py-3 bg-transparent hover:bg-gray-800 text-cyan-400 font-medium rounded-lg border border-cyan-700 transition text-sm text-center"
+            className="inline-block px-6 py-3 bg-transparent hover:bg-gray-100"
           >
             Try risk-free — 14-day full access
           </Link>

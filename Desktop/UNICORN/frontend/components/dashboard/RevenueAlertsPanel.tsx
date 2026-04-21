@@ -185,7 +185,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
           return (
           <div 
             key={alert.id || index}
-            className="flex items-start md:items-center gap-4 py-3 px-0 border-b border-gray-200 last:border-b-0 group hover:bg-gray-800/30 transition"
+            className="flex items-start md:items-center gap-4 py-3 px-0 border-b border-gray-200 last:border-b-0 group hover:bg-gray-100"
           >
             <span className={`h-5 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded border flex-shrink-0 ${getSeverityColor(alert.severity, isHistorical)}`}>
               {isHistorical ? "HISTORICAL" : getSeverityLabel(alert.severity)}

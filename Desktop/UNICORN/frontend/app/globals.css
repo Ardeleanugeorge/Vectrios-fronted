@@ -13,6 +13,9 @@
   .page-root {
     @apply min-h-screen;
   }
+  .card-light {
+    @apply bg-white border border-gray-200 rounded-xl shadow-sm;
+  }
 
   .input {
     @apply w-full p-4 rounded-lg border bg-[#111827] border-gray-700 text-white placeholder-gray-500;
