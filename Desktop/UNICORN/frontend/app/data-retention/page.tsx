@@ -17,7 +17,7 @@ export default function DataRetentionPage() {
         </div>
 
         {/* Overview */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Overview</h2>
           <p className="text-gray-400 leading-relaxed">
             This policy defines how Vectri<span className="text-cyan-400">OS</span> retains and deletes data. Retention periods are designed to balance service functionality, compliance requirements, and user privacy.
@@ -25,7 +25,7 @@ export default function DataRetentionPage() {
         </section>
 
         {/* Retention Periods */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Retention Periods</h2>
           <div className="space-y-6 text-gray-300">
             <div>
@@ -68,7 +68,7 @@ export default function DataRetentionPage() {
         </section>
 
         {/* Account Deletion Flow */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Account Deletion Flow</h2>
           <div className="space-y-4 text-gray-300">
             <div>
@@ -105,7 +105,7 @@ export default function DataRetentionPage() {
         </section>
 
         {/* Data Export Before Deletion */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Data Export Before Deletion</h2>
           <div className="space-y-4 text-gray-300">
             <p className="text-gray-400">
@@ -125,7 +125,7 @@ export default function DataRetentionPage() {
         </section>
 
         {/* Legal Retention Requirements */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Legal Retention Requirements</h2>
           <div className="space-y-4 text-gray-300">
             <p className="text-gray-400">
@@ -174,7 +174,7 @@ export default function DataRetentionPage() {
         </section>
 
         {/* Links */}
-        <div className="pt-8 border-t border-gray-800">
+        <div className="pt-8 border-t border-gray-200">
           <div className="flex flex-wrap gap-6 text-sm">
             <Link href="/security" className="text-cyan-400 hover:text-cyan-300">
               Security & Data Handling →

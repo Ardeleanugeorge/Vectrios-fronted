@@ -66,15 +66,15 @@ export default function RevenueRiskIndex({
         : "Large dollar exposure can reflect scale as much as urgency — use model inputs below for context."
 
   return (
-    <div className="p-10 bg-[#111827] rounded-lg border-2 border-cyan-900/40 mb-8 shadow-[0_0_40px_rgba(34,211,238,0.06)]">
+    <div className="p-10 bg-gray-50 rounded-lg border-2 border-cyan-900/40 mb-8 shadow-[0_0_40px_rgba(34,211,238,0.06)]">
       <div className="text-center">
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-500/90 mb-2">
           Core metric
         </p>
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-1 tracking-tight">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 tracking-tight">
           {RII_NAME}
         </h2>
-        <p className="text-sm text-gray-400 mb-3">
+        <p className="text-sm text-gray-500 mb-3">
           <abbr title={RII_TAGLINE} className="cursor-help font-semibold text-cyan-400/90 border-b border-dotted border-cyan-500/50">
             {RII_ABBREV}
           </abbr>
@@ -150,7 +150,7 @@ export default function RevenueRiskIndex({
         )}
         <div className="flex items-center justify-center gap-6 text-sm flex-wrap">
           <div>
-            <span className="text-gray-400">Data Coverage: </span>
+            <span className="text-gray-500">Data Coverage: </span>
             <span className="font-semibold text-gray-300">
               {(() => {
                 const cov = typeof coveragePct === "number" ? coveragePct : confidence
@@ -161,11 +161,11 @@ export default function RevenueRiskIndex({
             </span>
           </div>
           <div>
-            <span className="text-gray-400">Monitoring Coverage: </span>
+            <span className="text-gray-500">Monitoring Coverage: </span>
             <span className="font-semibold text-gray-300">Revenue-Stage Messaging</span>
           </div>
           <div>
-            <span className="text-gray-400">Assessment Date: </span>
+            <span className="text-gray-500">Assessment Date: </span>
             <span className="font-semibold text-gray-300">
               {assessmentDate
                 ? new Date(assessmentDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })

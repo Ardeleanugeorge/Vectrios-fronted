@@ -310,7 +310,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
 
   return (
     <div
-      className="rounded-lg bg-[#0B0F19] border border-gray-800 overflow-hidden"
+      className="rounded-lg bg-white border border-gray-200 overflow-hidden"
       style={{ display: "block", opacity: 1 }}
       data-playbook-fix-index={index}
       onClick={(e) => {
@@ -320,7 +320,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
       }}
     >
       {/* Header */}
-      <div className="px-4 pt-4 pb-3 border-b border-gray-800/60">
+      <div className="px-4 pt-4 pb-3 border-b border-gray-200/60">
         <p className="text-xs font-semibold uppercase tracking-wide text-cyan-500/90">
           Fix #{index} — {fix.title}
         </p>
@@ -358,7 +358,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
             {useMonitoringSnapshot ? "Before (from latest monitoring snapshot)" : "Before (from crawl)"}
           </p>
-          <p className="text-sm text-gray-400 italic leading-relaxed">
+          <p className="text-sm text-gray-500 italic leading-relaxed">
             {hasRealBefore
               ? `"${fix.current_example}"`
               : useMonitoringSnapshot
@@ -378,7 +378,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
               />
             )}
           </div>
-          <p className="text-sm text-white leading-relaxed">{fix.suggested_change}</p>
+          <p className="text-sm text-gray-900 leading-relaxed">{fix.suggested_change}</p>
           {/* Evidence bullets from badges / behavioral signals */}
           {Array.isArray(fix.badges) && fix.badges.length > 0 && (
             <ul className="mt-2 ml-4 list-disc space-y-0.5">
@@ -389,7 +389,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
                   t === "INTENT MISMATCH" ? "Low CTR vs position on priority queries (GSC)" :
                   b
                 return (
-                  <li key={i} className="text-[11px] text-gray-400">{label}</li>
+                  <li key={i} className="text-[11px] text-gray-500">{label}</li>
                 )
               })}
             </ul>
@@ -398,7 +398,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
       </div>
 
       {/* Why */}
-      <div className="px-4 py-2.5 border-t border-gray-800/60 bg-gray-900/30">
+      <div className="px-4 py-2.5 border-t border-gray-200/60 bg-gray-900/30">
         <p className="text-[11px] text-gray-500">
           <span className="text-gray-600 font-semibold">Why: </span>{fix.reason}
         </p>
@@ -433,8 +433,8 @@ export default function ActionableInsights({
 
   if (playbookLoading && !actionLayer?.fixes?.length) {
     return (
-      <div className={`relative z-10 mb-8 p-6 bg-[#111827] rounded-lg border ${tone}`}>
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-4">
+      <div className={`relative z-10 mb-8 p-6 bg-gray-50 rounded-lg border ${tone}`}>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-4">
           Revenue playbook
         </h3>
         <p className="text-sm text-gray-500 animate-pulse">Loading playbook…</p>
@@ -487,8 +487,8 @@ export default function ActionableInsights({
     const isHigh = (pri.level || "").toLowerCase() === "high"
 
     return (
-      <div className={`relative z-10 mb-8 p-6 bg-[#111827] rounded-lg border ${tone}`}>
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-4">
+      <div className={`relative z-10 mb-8 p-6 bg-gray-50 rounded-lg border ${tone}`}>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-4">
           Revenue playbook
         </h3>
 
@@ -497,13 +497,13 @@ export default function ActionableInsights({
           className={`mb-4 px-4 py-3 rounded-lg border ${
             isHigh
               ? "bg-orange-950/40 border-orange-500/40"
-              : "bg-gray-900/60 border-gray-700"
+              : "bg-gray-900/60 border-gray-200"
           }`}
         >
           <p className={`text-sm font-bold ${isHigh ? "text-orange-400" : "text-gray-300"}`}>
             {isHigh ? "🔥 HIGH IMPACT (optional)" : "⚡ IMPACT"} — {pri.level}
           </p>
-          <p className="text-xs text-gray-400 mt-1">{pri.display_line || pri.reason}</p>
+          <p className="text-xs text-gray-500 mt-1">{pri.display_line || pri.reason}</p>
           <p className="text-[11px] text-gray-500 mt-1">Low risk ≠ zero upside at scale — highest ROI comes from targeted fixes.</p>
         </div>
 
@@ -512,7 +512,7 @@ export default function ActionableInsights({
           <p className="text-xs font-semibold uppercase tracking-wider text-orange-400 mb-2">
             Primary revenue leak
           </p>
-          <h4 className="text-lg font-bold text-white mb-2">{effectiveLayer.primary_issue.title}</h4>
+          <h4 className="text-lg font-bold text-gray-900 mb-2">{effectiveLayer.primary_issue.title}</h4>
           <p className="text-sm text-gray-300 leading-relaxed">{effectiveLayer.primary_issue.description}</p>
         </div>
 
@@ -640,9 +640,9 @@ export default function ActionableInsights({
               )}
 
               {(pri?.reason && String(pri.reason).trim()) && (
-                <div className="p-4 rounded-lg bg-[#0B0F19] border border-gray-800">
+                <div className="p-4 rounded-lg bg-white border border-gray-200">
                   <p className="text-xs font-semibold uppercase text-gray-500 mb-2">Why this priority</p>
-                  <p className="text-xs text-gray-400">{pri.reason}</p>
+                  <p className="text-xs text-gray-500">{pri.reason}</p>
                 </div>
               )}
             </div>

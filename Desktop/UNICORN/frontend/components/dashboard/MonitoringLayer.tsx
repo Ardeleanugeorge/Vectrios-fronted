@@ -442,7 +442,7 @@ export default function MonitoringLayer({
       {hasCriticalAlerts && (
         <div className={`p-4 rounded border-l-4 ${ (rii !== null && rii < 40) ? "bg-amber-500/10 border-amber-500" : "bg-red-500/10 border-red-500" }`}>
           <p className={`text-sm font-semibold mb-1 ${ (rii !== null && rii < 40) ? "text-amber-400" : "text-red-400" }`}>Recent critical structural events detected</p>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             {criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? 's' : ''} require immediate attention.
           </p>
         </div>
@@ -500,7 +500,7 @@ export default function MonitoringLayer({
             ? "border-red-700/40 bg-red-950/10"
             : revenueDelta.direction === "better"
             ? "border-emerald-700/40 bg-emerald-950/10"
-            : "border-gray-700/40 bg-[#0B0F19]"
+            : "border-gray-200/40 bg-white"
         }`}>
           {/* Header row */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
@@ -509,7 +509,7 @@ export default function MonitoringLayer({
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                 revenueDelta.trend_last_4 === "worsening" ? "text-red-400 bg-red-400/10" :
                 revenueDelta.trend_last_4 === "improving" ? "text-emerald-400 bg-emerald-400/10" :
-                "text-gray-400 bg-gray-800"
+                "text-gray-500 bg-gray-800"
               }`}>
                 {revenueDelta.trend_last_4 === "worsening" ? "🔺 Worsening" :
                  revenueDelta.trend_last_4 === "improving" ? "🔻 Improving" : "→ Stable"}
@@ -574,7 +574,7 @@ export default function MonitoringLayer({
               <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400 mb-1.5">
                 🔴 Fix this first
               </p>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-gray-900">
                 {diagnostic.action_layer.fixes[0].title}
               </p>
               {diagnostic.action_layer.fixes[0].impact_contribution?.monthly_impact &&
@@ -593,7 +593,7 @@ export default function MonitoringLayer({
         : uiState === "medium" ? "border-amber-700/40 bg-amber-950/10"
         : "border-red-700/40 bg-red-950/10"
       }`}>
-        <p className="text-lg font-semibold text-white">{headline}</p>
+        <p className="text-lg font-semibold text-gray-900">{headline}</p>
         <p className="text-sm text-gray-300 mt-1">{subtext}</p>
         {uiState === "low" && (
           <p className="text-xs text-emerald-300/80 mt-2">
@@ -641,9 +641,9 @@ export default function MonitoringLayer({
         const trialLabel = trialDays ? ` · Trial day ${trialDays}` : ""
 
         return (
-          <div className="flex flex-wrap items-center gap-px rounded-2xl overflow-hidden border border-gray-800 bg-[#0d1117] text-sm">
+          <div className="flex flex-wrap items-center gap-px rounded-2xl overflow-hidden border border-gray-200 bg-white text-sm">
             {/* Status dot */}
-            <div className="flex items-center gap-2.5 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+            <div className="flex items-center gap-2.5 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
@@ -652,25 +652,25 @@ export default function MonitoringLayer({
             </div>
 
             {/* Last scan */}
-            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               <span className="text-gray-600 text-xs">Last scan</span>
-              <span className="text-white font-semibold text-xs">{lastScanLabel}</span>
+              <span className="text-gray-900 font-semibold text-xs">{lastScanLabel}</span>
             </div>
 
             {/* Next scan */}
-            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               <span className="text-gray-600 text-xs">Next</span>
               <span className="text-cyan-400 font-semibold text-xs">{nextScanLabel}</span>
             </div>
 
             {/* Cadence */}
-            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               <span className="text-gray-600 text-xs">Cadence</span>
               <span className="text-gray-300 font-medium text-xs">24h auto</span>
             </div>
 
             {/* SLA band */}
-            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               {(() => {
                 const band = (() => {
                   if (!lastEval) return "unknown"
@@ -694,7 +694,7 @@ export default function MonitoringLayer({
             </div>
 
             {/* Plan */}
-            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] ml-auto">
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 ml-auto">
               <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-semibold text-xs tracking-wide">
                 {planLabel}{trialLabel}
               </span>

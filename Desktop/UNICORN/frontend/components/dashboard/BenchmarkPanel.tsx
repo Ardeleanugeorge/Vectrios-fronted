@@ -77,7 +77,7 @@ function MetricRow({ label, data, higherIsBetter }: {
   const bandWidth = `${topPos - botPos}%`
 
   return (
-    <div className="py-5 border-b border-gray-800/60 last:border-b-0">
+    <div className="py-5 border-b border-gray-200/60 last:border-b-0">
       {/* Label + rank */}
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm text-gray-200 font-medium">{label}</span>
@@ -92,7 +92,7 @@ function MetricRow({ label, data, higherIsBetter }: {
       {/* Track — full width wrapper so dot can overflow */}
       <div className="relative w-full" style={{ paddingTop: "2px", paddingBottom: "2px" }}>
         {/* Track background */}
-        <div className="relative w-full h-3 bg-gray-800 rounded-full border border-gray-700/50">
+        <div className="relative w-full h-3 bg-gray-800 rounded-full border border-gray-200/50">
           {/* IQ range band */}
           <div
             className="absolute top-0 h-full bg-gray-600/40 rounded-full"
@@ -145,14 +145,14 @@ export default function BenchmarkPanel({ companyId }: Props) {
   }, [companyId])
 
   if (loading) return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Benchmark Intelligence</h2>
       <p className="text-sm text-gray-500">Loading benchmarks...</p>
     </div>
   )
 
   if (!data) return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Benchmark Intelligence</h2>
       <p className="text-sm text-gray-500">Run an assessment to unlock benchmarks.</p>
     </div>
@@ -161,9 +161,9 @@ export default function BenchmarkPanel({ companyId }: Props) {
   const riiRank = data.rii?.percentile_rank ?? null
 
   return (
-    <div className="bg-[#111827] rounded-lg border border-gray-800 overflow-hidden">
+    <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="px-8 pt-7 pb-4 border-b border-gray-800">
+      <div className="px-8 pt-7 pb-4 border-b border-gray-200">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold uppercase tracking-wide">Benchmark Intelligence</h2>
@@ -191,21 +191,21 @@ export default function BenchmarkPanel({ companyId }: Props) {
         {/* Context pills */}
         <div className="flex gap-2 mt-3 flex-wrap">
           {data.context.arr_range && (
-            <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-400 rounded border border-gray-700">
+            <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-500 rounded border border-gray-200">
               ARR: {data.context.arr_range}
             </span>
           )}
-          <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-400 rounded border border-gray-700">
+          <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-500 rounded border border-gray-200">
             {data.context.industry}
           </span>
-          <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-400 rounded border border-gray-700">
+          <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-500 rounded border border-gray-200">
             n={data.context.total_companies} companies
           </span>
         </div>
       </div>
 
       {/* Legend */}
-      <div className="px-8 py-3 bg-[#0d1117] border-b border-gray-800 flex items-center gap-5 text-[10px] text-gray-600">
+      <div className="px-8 py-3 bg-white border-b border-gray-200 flex items-center gap-5 text-[10px] text-gray-600">
         <div className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-cyan-400 border-2 border-white inline-block" />
           Your score
@@ -237,7 +237,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
       </div>
 
       {/* Footer */}
-      <div className="px-8 pb-5 pt-2 text-[10px] text-gray-700 border-t border-gray-800">
+      <div className="px-8 pb-5 pt-2 text-[10px] text-gray-700 border-t border-gray-200">
         Benchmarks are computed from anonymized assessments across the Vectri<span className="text-cyan-400">OS</span> dataset.
         Updated after each assessment run.
       </div>

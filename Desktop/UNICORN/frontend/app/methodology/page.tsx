@@ -69,7 +69,7 @@ export default function MethodologyPage() {
           </section>
 
           {/* WHAT VECTRIOS DOES NOT DO */}
-          <section className="mb-16 border-t border-gray-800 pt-12">
+          <section className="mb-16 border-t border-gray-200 pt-12">
             <h2 className="text-3xl font-bold mb-6">What Vectri<span className="text-cyan-400">OS</span> Does Not Do</h2>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">
               Vectri<span className="text-cyan-400">OS</span> does not optimize:
@@ -86,7 +86,7 @@ export default function MethodologyPage() {
           </section>
 
           {/* RISK ENGINE — RII definition (anchor for in-app links) */}
-          <section id="revenue-impact-index" className="mb-16 border-t border-gray-800 pt-12 scroll-mt-24">
+          <section id="revenue-impact-index" className="mb-16 border-t border-gray-200 pt-12 scroll-mt-24">
             <h2 className="text-3xl font-bold mb-6">1. Risk Engine</h2>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">
               Risk is evaluated across four layers:
@@ -127,7 +127,7 @@ export default function MethodologyPage() {
           </section>
 
           {/* DOMINANCE & OVERRIDE LOGIC */}
-          <section className="mb-16 border-t border-gray-800 pt-12">
+          <section className="mb-16 border-t border-gray-200 pt-12">
             <h2 className="text-3xl font-bold mb-6">2. Dominance & Override Logic</h2>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">
               Traditional systems average signals.
@@ -147,7 +147,7 @@ export default function MethodologyPage() {
           </section>
 
           {/* CONFIDENCE LAYER */}
-          <section className="mb-16 border-t border-gray-800 pt-12">
+          <section className="mb-16 border-t border-gray-200 pt-12">
             <h2 className="text-3xl font-bold mb-6">3. Confidence Layer</h2>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">
               Every classification includes a <span className="font-semibold text-cyan-400">Revenue Leak Confidence Score</span>.
@@ -170,7 +170,7 @@ export default function MethodologyPage() {
           </section>
 
           {/* DIAGNOSTIC OUTPUT */}
-          <section className="mb-16 border-t border-gray-800 pt-12">
+          <section className="mb-16 border-t border-gray-200 pt-12">
             <h2 className="text-3xl font-bold mb-6">4. Diagnostic Output</h2>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">
               Each evaluation delivers:
@@ -182,7 +182,7 @@ export default function MethodologyPage() {
               <li className="list-disc">Confidence Score</li>
               <li className="list-disc">Targeted Corrective Direction</li>
             </ul>
-            <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
+            <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-lg text-gray-300">
                 This is not advisory commentary.
               </p>
@@ -193,7 +193,7 @@ export default function MethodologyPage() {
           </section>
 
           {/* MONITORING & TREND MODELING */}
-          <section className="mb-16 border-t border-gray-800 pt-12">
+          <section className="mb-16 border-t border-gray-200 pt-12">
             <h2 className="text-3xl font-bold mb-6">5. Monitoring & Trend Modeling</h2>
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">
               Risk is longitudinal.
@@ -218,7 +218,7 @@ export default function MethodologyPage() {
           </section>
 
           {/* MONITORING INFRASTRUCTURE */}
-          <section className="mb-16 border-t border-gray-800 pt-12">
+          <section className="mb-16 border-t border-gray-200 pt-12">
             <h2 className="text-3xl font-bold mb-6">Monitoring Infrastructure</h2>
             <p className="text-lg text-gray-300 mb-4 leading-relaxed">
               Analytics detect decline.
@@ -232,7 +232,7 @@ export default function MethodologyPage() {
           </section>
 
           {/* FINAL CTA */}
-          <section className="mb-16 border-t border-gray-800 pt-12 text-center">
+          <section className="mb-16 border-t border-gray-200 pt-12 text-center">
             <Link
               href="/signup"
               className="inline-block px-10 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-lg mb-4"
@@ -245,7 +245,7 @@ export default function MethodologyPage() {
           </section>
 
           {/* FOOTER */}
-          <footer className="mt-16 pt-8 border-t border-gray-800 text-center">
+          <footer className="mt-16 pt-8 border-t border-gray-200 text-center">
             <h3 className="text-2xl font-bold mb-2">Vectri<span className="text-cyan-400">OS</span></h3>
             <p className="text-gray-500 mb-4">
               Structural Revenue Risk Modeling Infrastructure for B2B SaaS

@@ -18,7 +18,7 @@ export default function SecurityPage() {
         </div>
 
         {/* Infrastructure Security */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Infrastructure Security</h2>
           <div className="space-y-4 text-gray-300">
             <div>
@@ -55,7 +55,7 @@ export default function SecurityPage() {
         </section>
 
         {/* Data Handling */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Data Handling</h2>
           <div className="space-y-4 text-gray-300">
             <div>
@@ -96,7 +96,7 @@ export default function SecurityPage() {
         </section>
 
         {/* GDPR / EU Compliance */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">GDPR / EU Compliance</h2>
           <div className="space-y-4 text-gray-300">
             <div>
@@ -131,7 +131,7 @@ export default function SecurityPage() {
         </section>
 
         {/* Data Export */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Data Export</h2>
           <div className="space-y-4 text-gray-300">
             <p className="text-gray-400">
@@ -164,7 +164,7 @@ export default function SecurityPage() {
         </section>
 
         {/* Links */}
-        <div className="pt-8 border-t border-gray-800">
+        <div className="pt-8 border-t border-gray-200">
           <div className="flex flex-wrap gap-6 text-sm">
             <Link href="/privacy" className="text-cyan-400 hover:text-cyan-300">
               Privacy Policy →

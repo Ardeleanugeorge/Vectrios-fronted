@@ -71,7 +71,7 @@ export default function StructuralBreakdownWithDelta({
     Math.min((alignmentMean as number) + 10, 100)
 
   return (
-    <div id="revenue-alignment-map" className="p-8 bg-[#111827] rounded-lg border border-gray-800 scroll-mt-24">
+    <div id="revenue-alignment-map" className="p-8 bg-gray-50 rounded-lg border border-gray-200 scroll-mt-24">
       <h2 className="text-xl font-bold mb-2 uppercase tracking-wide">Revenue-Stage Alignment Map</h2>
       <p className="text-xs text-gray-500 mb-2 leading-relaxed">
         These four dimensions feed your headline {RII_NAME} ({RII_ABBREV}). They explain <em>where</em> structural risk concentrates — not dollar impact (see model below).
@@ -136,7 +136,7 @@ export default function StructuralBreakdownWithDelta({
       </div>
       
       {/* Primary Risk Driver */}
-      <div className="mt-8 pt-6 border-t border-gray-800">
+      <div className="mt-8 pt-6 border-t border-gray-200">
         <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide">Primary Risk Driver</p>
         <p className="text-base font-semibold text-gray-300">
           {diagnostic?.primary_risk_driver || diagnostic?.primary_fault || sf?.primary_risk_driver || "Messaging Architecture Misalignment"}
@@ -145,11 +145,11 @@ export default function StructuralBreakdownWithDelta({
 
       {/* Detected Signals */}
       {diagnostic?.detected_signals && diagnostic.detected_signals.length > 0 && (
-        <div className="mt-6 pt-6 border-t border-gray-800">
+        <div className="mt-6 pt-6 border-t border-gray-200">
           <p className="text-xs text-gray-500 mb-3 uppercase tracking-wide">Detected Signals</p>
           <ul className="space-y-2">
             {diagnostic.detected_signals.map((signal, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-sm text-gray-400">
+              <li key={idx} className="flex items-start gap-2 text-sm text-gray-500">
                 <span className="mt-1 text-cyan-500 shrink-0">•</span>
                 <span>{signal}</span>
               </li>

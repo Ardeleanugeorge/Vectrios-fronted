@@ -52,12 +52,12 @@ export default function ExecutiveInterpretation({
       : "Tighten conversion-stage messaging using the playbook and Revenue-Stage Alignment Map — ICP clarity, anchors, and positioning carry the most leverage."
 
   return (
-    <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
-      <h2 className="text-sm font-semibold mb-3 uppercase tracking-wide text-gray-400">Executive Takeaway</h2>
+    <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
+      <h2 className="text-sm font-semibold mb-3 uppercase tracking-wide text-gray-500">Executive Takeaway</h2>
       <p className="text-sm text-gray-300 leading-relaxed">{takeawayLine}</p>
       {primaryStructuralTheme && (
         <p className="text-xs text-gray-500 mt-2">
-          Leading structural signal: <span className="text-gray-400">{primaryStructuralTheme}</span> — same theme as the health strip and Alignment Map.
+          Leading structural signal: <span className="text-gray-500">{primaryStructuralTheme}</span> — same theme as the health strip and Alignment Map.
         </p>
       )}
     </div>

@@ -67,7 +67,7 @@ const SEV_META: Record<string, { label: string; dot: string; badge: string; bord
   low: {
     label: "LOW",
     dot: "bg-gray-500",
-    badge: "bg-gray-500/15 text-gray-400 border-gray-500/30",
+    badge: "bg-gray-500/15 text-gray-500 border-gray-500/30",
     border: "border-l-gray-500",
   },
 }
@@ -113,7 +113,7 @@ function IncidentCard({ inc }: { inc: RevenueIncident }) {
         {inc.estimated_monthly_exposure != null && inc.estimated_monthly_exposure > 0 && (
           <div>
             <span className="text-[10px] text-gray-600 uppercase tracking-wide">Monthly</span>
-            <p className="text-sm font-semibold text-gray-400">{fmt(inc.estimated_monthly_exposure)}</p>
+            <p className="text-sm font-semibold text-gray-500">{fmt(inc.estimated_monthly_exposure)}</p>
           </div>
         )}
       </div>
@@ -148,7 +148,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
   const persistentCount = open.filter(i => i.is_persistent).length
 
   if (loading) return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Incidents</h2>
       <div className="flex gap-2 items-center">
         <span className="w-2 h-2 rounded-full bg-gray-700 animate-pulse" />
@@ -158,20 +158,20 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
   )
 
   if (open.length === 0) return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Incidents</h2>
       <div className="flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-green-500" />
-        <p className="text-sm text-gray-400">No active incidents detected.</p>
+        <p className="text-sm text-gray-500">No active incidents detected.</p>
       </div>
       <p className="text-xs text-gray-600 mt-1 ml-4">All revenue signals within normal range.</p>
     </div>
   )
 
   return (
-    <div className="bg-[#111827] rounded-lg border border-gray-800 overflow-hidden">
+    <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="px-8 pt-7 pb-4 border-b border-gray-800">
+      <div className="px-8 pt-7 pb-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Incidents</h2>

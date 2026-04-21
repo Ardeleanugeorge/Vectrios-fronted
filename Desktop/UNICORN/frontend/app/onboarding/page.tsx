@@ -117,7 +117,7 @@ function QuestionBlock({
           className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
             value === true
               ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
-              : "border-gray-700 hover:border-gray-600 text-gray-300"
+              : "border-gray-200 hover:border-gray-600 text-gray-300"
           }`}
         >
           Yes
@@ -128,14 +128,14 @@ function QuestionBlock({
           className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
             value === false
               ? "border-gray-600 bg-gray-800/30 text-gray-400"
-              : "border-gray-700 hover:border-gray-600 text-gray-300"
+              : "border-gray-200 hover:border-gray-600 text-gray-300"
           }`}
         >
           No
         </button>
       </div>
       {showFeedback && (
-        <div className="mt-3 p-4 bg-gray-800/50 border border-gray-700 rounded-lg">
+        <div className="mt-3 p-4 bg-gray-800/50 border border-gray-200 rounded-lg">
           <p className="text-sm text-gray-400 italic">
             {feedbackMessages[feedbackKey]}
           </p>
@@ -748,7 +748,7 @@ export default function OnboardingPage() {
                 <p className="text-xs text-gray-500 italic">
                   Used to model structural revenue gap.
                 </p>
-                <div className="text-xs text-gray-600 bg-gray-800/50 p-2 rounded border border-gray-700">
+                <div className="text-xs text-gray-600 bg-gray-800/50 p-2 rounded border border-gray-200">
                   <p className="font-medium mb-1">Typical SaaS close rates:</p>
                   <ul className="space-y-0.5 text-gray-500">
                     <li>SMB: 15–25%</li>
@@ -779,7 +779,7 @@ export default function OnboardingPage() {
             </div>
 
             {/* Optional fields - collapsed by default */}
-            <details className="border border-gray-800 rounded-lg p-4 mt-4">
+            <details className="border border-gray-200 rounded-lg p-4 mt-4">
               <summary className="cursor-pointer text-sm text-gray-400 hover:text-gray-300">
                 Additional metrics (optional - helps improve accuracy)
               </summary>
@@ -823,7 +823,7 @@ export default function OnboardingPage() {
                   </div>
                 </div>
 
-                <div className="space-y-4 pt-4 border-t border-gray-800">
+                <div className="space-y-4 pt-4 border-t border-gray-200">
                   <h3 className="text-lg font-semibold">Value & Positioning Clarity (Optional)</h3>
                   
                   <div>
@@ -907,11 +907,11 @@ export default function OnboardingPage() {
 
 
         {/* NAVIGATION */}
-        <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-800">
+        <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200">
           {currentStep > 1 ? (
             <button
               onClick={() => goToStep(currentStep - 1)}
-              className="px-6 py-3 border border-gray-700 hover:border-gray-600 rounded-lg transition"
+              className="px-6 py-3 border border-gray-200 hover:border-gray-600 rounded-lg transition"
             >
               Back
             </button>
@@ -966,7 +966,7 @@ export default function OnboardingPage() {
       </div>
       <SiteFooter />
       {isRouteTransitioning && (
-        <div className="fixed inset-0 z-[80] bg-[#0B0F19]/95 backdrop-blur-sm flex items-center justify-center">
+        <div className="fixed inset-0 z-[80] bg-white/95 backdrop-blur-sm flex items-center justify-center">
           <div className="text-center">
             <svg className="animate-spin w-8 h-8 text-cyan-500 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />

@@ -43,7 +43,7 @@ export default function ConfirmEmailChangePage() {
 
   return (
     <div className="page-root flex items-center justify-center px-6">
-      <div className="w-full max-w-xl rounded-2xl border border-gray-800 bg-[#111827] p-8 text-center">
+      <div className="w-full max-w-xl rounded-2xl border border-gray-200 bg-gray-50 p-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Email Change Verification</h1>
         <p className={status === "error" ? "text-red-400" : status === "success" ? "text-emerald-300" : "text-gray-300"}>
           {message}
@@ -51,7 +51,7 @@ export default function ConfirmEmailChangePage() {
         <div className="mt-6 flex items-center justify-center gap-3">
           <Link
             href="/account"
-            className="inline-flex items-center rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
+            className="inline-flex items-center rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-300 hover:bg-gray-800"
           >
             Back to account
           </Link>

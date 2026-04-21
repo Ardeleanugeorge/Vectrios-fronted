@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* What We Collect */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">What We Collect</h2>
           <div className="space-y-6 text-gray-300">
             <div>
@@ -65,7 +65,7 @@ export default function PrivacyPage() {
         </section>
 
         {/* What We Do NOT Collect */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">What We Do NOT Collect</h2>
           <div className="space-y-4 text-gray-300">
             <p className="text-gray-400 font-semibold">
@@ -86,7 +86,7 @@ export default function PrivacyPage() {
         </section>
 
         {/* How We Use Data */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">How We Use Your Data</h2>
           <div className="space-y-4 text-gray-300">
             <div>
@@ -123,7 +123,7 @@ export default function PrivacyPage() {
         </section>
 
         {/* Data Sharing */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Data Sharing</h2>
           <div className="space-y-4 text-gray-300">
             <p className="text-gray-400">
@@ -138,7 +138,7 @@ export default function PrivacyPage() {
         </section>
 
         {/* Data Retention */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Data Retention</h2>
           <div className="space-y-4 text-gray-300">
             <p className="text-gray-400">
@@ -158,7 +158,7 @@ export default function PrivacyPage() {
         </section>
 
         {/* Your Rights */}
-        <section className="mb-12 border-b border-gray-800 pb-12">
+        <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Your Rights</h2>
           <div className="space-y-4 text-gray-300">
             <p className="text-gray-400">
@@ -192,7 +192,7 @@ export default function PrivacyPage() {
         </section>
 
         {/* Links */}
-        <div className="pt-8 border-t border-gray-800">
+        <div className="pt-8 border-t border-gray-200">
           <div className="flex flex-wrap gap-6 text-sm">
             <Link href="/security" className="text-cyan-400 hover:text-cyan-300">
               Security & Data Handling →

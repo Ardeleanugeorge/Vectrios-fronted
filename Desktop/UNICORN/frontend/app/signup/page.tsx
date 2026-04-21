@@ -199,16 +199,16 @@ export default function SignUpPage() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-700"></div>
+              <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-[#0B0F19] text-gray-500">Or</span>
+              <span className="px-4 bg-white text-gray-500">Or</span>
             </div>
           </div>
 
           <button
             type="button"
-            className="w-full py-4 border border-gray-700 hover:border-gray-600 text-gray-300 font-medium rounded-lg transition"
+            className="w-full py-4 border border-gray-200 hover:border-gray-600 text-gray-300 font-medium rounded-lg transition"
           >
             Continue with Google
           </button>

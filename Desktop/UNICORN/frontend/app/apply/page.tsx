@@ -169,7 +169,7 @@ export default function ApplyPage() {
 
         {/* EXPECTATION SETTING */}
         {currentSection === 1 && (
-          <div className="mb-12 space-y-8 border-t border-gray-800 pt-8">
+          <div className="mb-12 space-y-8 border-t border-gray-200 pt-8">
             <div>
               <h2 className="text-2xl font-bold mb-4">What This Diagnostic Is</h2>
               <ul className="space-y-2 text-gray-300">
@@ -194,7 +194,7 @@ export default function ApplyPage() {
 
         {/* WHO SHOULD APPLY */}
         {currentSection === 1 && (
-          <div className="mb-12 border-t border-gray-800 pt-8">
+          <div className="mb-12 border-t border-gray-200 pt-8">
             <h2 className="text-2xl font-bold mb-6">Who Should Apply</h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
@@ -466,7 +466,7 @@ export default function ApplyPage() {
 
           {/* WHAT HAPPENS NEXT (only on last section) */}
           {currentSection === 5 && (
-            <div className="mb-8 border-t border-gray-800 pt-8">
+            <div className="mb-8 border-t border-gray-200 pt-8">
               <h2 className="text-2xl font-bold mb-4">What Happens Next</h2>
               <ul className="space-y-3 text-gray-300">
                 <li>• We run a structural scan using our diagnostic engine</li>
@@ -481,12 +481,12 @@ export default function ApplyPage() {
           )}
 
           {/* NAVIGATION BUTTONS */}
-          <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-800">
+          <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200">
             {currentSection > 1 ? (
               <button
                 type="button"
                 onClick={() => setCurrentSection(currentSection - 1)}
-                className="px-8 py-3 border border-gray-700 hover:border-gray-600 text-gray-300 font-medium rounded-lg transition"
+                className="px-8 py-3 border border-gray-200 hover:border-gray-600 text-gray-300 font-medium rounded-lg transition"
               >
                 Previous
               </button>

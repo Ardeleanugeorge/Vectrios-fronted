@@ -54,7 +54,7 @@ function RiiBar({ value }: { value: number | null }) {
                   "from-green-500 to-cyan-500";
   return (
     <div className="flex items-center gap-3">
-      <span className="w-10 text-right font-mono text-sm font-semibold text-white">
+      <span className="w-10 text-right font-mono text-sm font-semibold text-gray-900">
         {Math.round(value)}
       </span>
       <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
@@ -129,7 +129,7 @@ export default function SaaSRevenueIndex() {
       <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between">
         <Link href={PUBLIC_HOME_URL} className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-          <span className="text-sm font-semibold text-white tracking-wide">
+          <span className="text-sm font-semibold text-gray-900 tracking-wide">
             Vectri<span className="text-cyan-400">OS</span>
           </span>
         </Link>
@@ -137,7 +137,7 @@ export default function SaaSRevenueIndex() {
           <button
             type="button"
             onClick={handleBack}
-            className="text-xs text-gray-400 hover:text-white transition-colors"
+            className="text-xs text-gray-400 hover:text-gray-900 transition-colors"
           >
             Back
           </button>
@@ -154,7 +154,7 @@ export default function SaaSRevenueIndex() {
 
         {/* Hero */}
         <div className="text-center mb-14">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
             SaaS Revenue Architecture Index
           </h1>
           <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-2">
@@ -170,7 +170,7 @@ export default function SaaSRevenueIndex() {
           <>
             <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
               {[
-                { label: "Companies Analyzed", value: s.total_companies, color: "text-white" },
+                { label: "Companies Analyzed", value: s.total_companies, color: "text-gray-900" },
                 { label: "Average RII (lower = better)", value: s.average_rii !== null ? s.average_rii.toFixed(1) : "—", color: "text-yellow-400" },
               ].map(stat => (
                 <div key={stat.label} className="rounded-xl bg-white/[0.03] border border-white/5 p-5 text-center">
@@ -218,7 +218,7 @@ export default function SaaSRevenueIndex() {
                       }}
                     />
                     <Link href={`/company/${c.domain}`}
-                       className="text-sm text-white hover:text-emerald-300 transition-colors flex-1 truncate">
+                       className="text-sm text-gray-900 hover:text-emerald-300 transition-colors flex-1 truncate">
                       {c.domain}
                     </Link>
                     <span className="text-emerald-400 font-mono text-sm font-bold">
@@ -254,7 +254,7 @@ export default function SaaSRevenueIndex() {
                       }}
                     />
                     <Link href={`/company/${c.domain}`}
-                       className="text-sm text-white hover:text-red-300 transition-colors flex-1 truncate">
+                       className="text-sm text-gray-900 hover:text-red-300 transition-colors flex-1 truncate">
                       {c.domain}
                     </Link>
                     <span className="text-red-400 font-mono text-sm font-bold">
@@ -299,7 +299,7 @@ export default function SaaSRevenueIndex() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search domain..."
-            className="sm:ml-auto bg-white/[0.03] border border-white/10 rounded-lg px-4 py-1.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-cyan-500/40 w-full sm:w-56"
+            className="sm:ml-auto bg-white/[0.03] border border-white/10 rounded-lg px-4 py-1.5 text-sm text-gray-900 placeholder:text-gray-600 focus:outline-none focus:border-cyan-500/40 w-full sm:w-56"
           />
         </div>
 
@@ -362,7 +362,7 @@ export default function SaaSRevenueIndex() {
                     />
                     <Link
                       href={`/company/${c.domain}`}
-                      className="text-sm text-white font-medium group-hover:text-cyan-300 transition-colors"
+                      className="text-sm text-gray-900 font-medium group-hover:text-cyan-300 transition-colors"
                     >
                       {c.domain}
                     </Link>
@@ -407,7 +407,7 @@ export default function SaaSRevenueIndex() {
         {/* Bottom CTA */}
         <div className="mt-14 text-center rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 p-10">
           <p className="text-gray-400 text-sm mb-2">Don't see your company?</p>
-          <h3 className="text-2xl font-bold text-white mb-6">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">
             Run a free Revenue Architecture Scan
           </h3>
           <Link

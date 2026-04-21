@@ -804,7 +804,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-6">
           
           {/* TOP BAR - Infrastructure Header */}
-          <div className="mb-6 pb-4 border-b border-gray-800">
+          <div className="mb-6 pb-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-semibold text-gray-300">Revenue Monitoring Console</h1>
@@ -849,7 +849,7 @@ export default function DashboardPage() {
 
           {/* While monitoring status is loading from API, show spinner */}
           {monitoringLoading && companyId ? (
-            <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
+            <div className="p-8 border border-gray-200 rounded-lg bg-gray-50">
               <p className="text-sm text-gray-400 animate-pulse">Loading revenue monitoring statusΓÇª</p>
             </div>
           ) : isMonitoringActive && monitoringStatus ? (
@@ -887,7 +887,7 @@ export default function DashboardPage() {
             />
           ) : !hasDiagnostic && !monitoringLoading ? (
             /* STATE 1 ΓÇö NO DIAGNOSTIC & monitoring confirmed off */
-            <div className="p-12 border border-gray-800 rounded-lg bg-[#111827] text-center">
+            <div className="p-12 border border-gray-200 rounded-lg bg-gray-50 text-center">
               <h2 className="text-2xl font-bold mb-4 text-gray-300">Revenue Monitoring Not Yet Active</h2>
               <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
                 Run a scan first to quantify your revenue-stage exposure and identify compression risk.
@@ -900,7 +900,7 @@ export default function DashboardPage() {
               </Link>
             </div>
           ) : subscriptionLoading ? (
-            <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
+            <div className="p-8 border border-gray-200 rounded-lg bg-gray-50">
               <p className="text-sm text-gray-400 animate-pulse">Loading subscription statusΓÇª</p>
             </div>
           ) : diagnostic?.is_partial ? (

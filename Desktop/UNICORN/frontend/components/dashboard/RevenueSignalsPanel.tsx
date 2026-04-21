@@ -70,7 +70,7 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
       case "info":
         return "bg-blue-500/20 text-blue-400 border-blue-500/30"
       default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30"
+        return "bg-gray-500/20 text-gray-500 border-gray-500/30"
     }
   }
 
@@ -108,7 +108,7 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
 
   if (loading) {
     return (
-      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+      <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
         <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Recent Structural Signals</h2>
         <p className="text-sm text-gray-500">Loading signals...</p>
       </div>
@@ -117,7 +117,7 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
 
   if (signals.length === 0) {
     return (
-      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+      <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
         <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Recent Structural Signals</h2>
         <p className="text-sm text-gray-500">No signals detected. Monitoring active.</p>
       </div>
@@ -135,14 +135,14 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
   }
 
   return (
-    <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
+    <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Recent Structural Signals</h2>
 
       <div className="space-y-0 mb-6">
         {recent.map((signal, index) => (
           <div 
             key={signal.id || `r-${index}`}
-            className="flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0"
+            className="flex items-start gap-4 py-3 px-0 border-b border-gray-200 last:border-b-0"
           >
             <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getSeverityColor(signal.severity)}`}>
               {getSeverityLabel(signal.severity)}
@@ -172,13 +172,13 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
       </div>
 
       {history.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-gray-800">
+        <div className="mt-4 pt-3 border-t border-gray-200">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">History</h3>
           <div className="space-y-0">
             {history.map((signal, index) => (
               <div 
                 key={signal.id || `h-${index}`}
-                className="flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0"
+                className="flex items-start gap-4 py-3 px-0 border-b border-gray-200 last:border-b-0"
               >
                 <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getSeverityColor(signal.severity)}`}>
                   {getSeverityLabel(signal.severity)}

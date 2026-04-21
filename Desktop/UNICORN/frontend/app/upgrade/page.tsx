@@ -241,14 +241,14 @@ export default function UpgradePage() {
 
           {/* -- Current plan banner ------------------------------------------ */}
           {currentPlanName && (
-            <div className="mb-10 p-5 rounded-2xl border border-gray-700/50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-between gap-4 flex-wrap">
+            <div className="mb-10 p-5 rounded-2xl border border-gray-200/50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-between gap-4 flex-wrap">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
                   <span className="text-cyan-400 text-lg" aria-hidden>✓</span>
                 </div>
                   <div>
                   <div className="text-xs text-gray-500 uppercase tracking-widest mb-0.5">Current plan</div>
-                  <div className="text-white font-semibold text-lg flex items-center gap-2">
+                  <div className="text-gray-900 font-semibold text-lg flex items-center gap-2">
                     {currentPlanName.charAt(0).toUpperCase() + currentPlanName.slice(1)}
                     {isTrial && (
                       <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-500/20 border border-amber-500/30 text-amber-300">
@@ -282,7 +282,7 @@ export default function UpgradePage() {
           {isScale ? (
             <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-b from-cyan-500/5 to-transparent p-10 text-center mb-12">
               <div className="text-5xl mb-4 text-emerald-400" aria-hidden>✓</div>
-              <h2 className="text-2xl font-bold mb-3 text-white">You're on Scale — the highest plan</h2>
+              <h2 className="text-2xl font-bold mb-3 text-gray-900">You're on Scale — the highest plan</h2>
               <p className="text-gray-400 mb-6 max-w-lg mx-auto">
                 Downgrade is not available. Scale includes continuous monitoring, delta engine, and behavioral intelligence. For billing or account help, use Account → Support.
               </p>
@@ -299,7 +299,7 @@ export default function UpgradePage() {
             <>
               {/* -- Billing toggle ---------------------------------------------- */}
               <div className="flex items-center justify-center gap-3 mb-10">
-                <span className={`text-sm font-medium ${billing === 'monthly' ? 'text-white' : 'text-gray-500'}`}>Monthly</span>
+                <span className={`text-sm font-medium ${billing === 'monthly' ? 'text-gray-900' : 'text-gray-500'}`}>Monthly</span>
                 <button
                   onClick={() => setBilling(b => b === 'monthly' ? 'annual' : 'monthly')}
                   className="relative w-12 h-6 rounded-full transition-colors"
@@ -307,7 +307,7 @@ export default function UpgradePage() {
                 >
                   <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${billing === 'annual' ? 'left-7' : 'left-1'}`} />
                 </button>
-                <span className={`text-sm font-medium flex items-center gap-1.5 ${billing === 'annual' ? 'text-white' : 'text-gray-500'}`}>
+                <span className={`text-sm font-medium flex items-center gap-1.5 ${billing === 'annual' ? 'text-gray-900' : 'text-gray-500'}`}>
                   Annual
                   <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-medium">Save 20%</span>
                 </span>
@@ -366,7 +366,7 @@ export default function UpgradePage() {
                       </ul>
 
                       {isCurrent && !isTrial ? (
-                        <div className="w-full py-3 rounded-xl text-center text-sm font-medium bg-gray-800/50 text-gray-500 border border-gray-700/50">
+                        <div className="w-full py-3 rounded-xl text-center text-sm font-medium bg-gray-800/50 text-gray-500 border border-gray-200/50">
                           Current plan
                         </div>
                       ) : isAvailable ? (
@@ -392,10 +392,10 @@ export default function UpgradePage() {
           {/* -- Feature list ------------------------------------------------- */}
           <div className="mb-16">
             <h2 className="text-xl font-semibold text-center text-gray-300 mb-8">Everything in Scale</h2>
-            <div className="max-w-lg mx-auto rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
+            <div className="max-w-lg mx-auto rounded-2xl border border-gray-200 bg-gray-900/40 overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-800">
+                  <tr className="border-b border-gray-200">
                     <th className="text-left p-4 text-gray-400 font-medium">Feature</th>
                     <th className="p-4 text-center font-semibold text-cyan-400">Scale</th>
                   </tr>
@@ -418,7 +418,7 @@ export default function UpgradePage() {
                     'Executive-grade reporting',
                     'Team monitoring — unlimited seats',
                   ].map((label, i) => (
-                    <tr key={i} className="border-b border-gray-800/50 hover:bg-gray-800/20 transition">
+                    <tr key={i} className="border-b border-gray-200/50 hover:bg-gray-800/20 transition">
                       <td className="p-4 text-gray-400">{label}</td>
                       <td className="p-4 text-center">
                         <span className="text-cyan-400 font-bold" aria-hidden>✓</span>

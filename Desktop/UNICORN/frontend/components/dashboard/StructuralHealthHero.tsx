@@ -38,7 +38,7 @@ export default function StructuralHealthHero({
       case "orange": return "text-orange-400"
       case "yellow": return "text-yellow-400"
       case "green": return "text-green-400"
-      default: return "text-gray-400"
+      default: return "text-gray-500"
     }
   }
 
@@ -77,7 +77,7 @@ export default function StructuralHealthHero({
       <div className="grid md:grid-cols-2 gap-8">
         {/* Left: Health Score */}
         <div>
-          <p className="text-sm text-gray-400 mb-4 uppercase tracking-wide">Structural Health</p>
+          <p className="text-sm text-gray-500 mb-4 uppercase tracking-wide">Structural Health</p>
           <div className="mb-4">
             <span className={`text-5xl font-bold ${getHealthColor(healthClassification)}`}>
               {getHealthLabel(healthClassification)}
@@ -87,13 +87,13 @@ export default function StructuralHealthHero({
             <div className="mb-2">
               <p className="text-lg font-semibold text-gray-300 mb-2">Monitoring Active</p>
               {baselineRii !== null ? (
-                <p className="text-sm text-gray-400 italic">
+                <p className="text-sm text-gray-500 italic">
                   Baseline established from last structural assessment (RII: {baselineRii.toFixed(0)}).
                   <br />
                   Health score will update after subsequent assessments.
                 </p>
               ) : (
-                <p className="text-sm text-gray-400 italic">
+                <p className="text-sm text-gray-500 italic">
                   Monitoring baseline initializing.
                   <br />
                   Health score will populate after structural assessment.
@@ -106,7 +106,7 @@ export default function StructuralHealthHero({
             </div>
           )}
           {!isInitializing && (
-            <p className="text-sm text-gray-400 italic">
+            <p className="text-sm text-gray-500 italic">
               {healthClassification === "red" && "Critical structural exposure. Immediate intervention required."}
               {healthClassification === "orange" && "Degrading structure detected. Structural recalibration recommended."}
               {healthClassification === "yellow" && "Watch condition. Structural metrics require monitoring."}
@@ -114,8 +114,8 @@ export default function StructuralHealthHero({
             </p>
           )}
           {trialDays !== null && trialDays !== undefined && (
-            <div className="mt-4 pt-4 border-t border-gray-700/50">
-              <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Monitoring Phase</p>
+            <div className="mt-4 pt-4 border-t border-gray-200/50">
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Monitoring Phase</p>
               <p className="text-sm font-semibold text-gray-300">
                 Day {trialDays} of 14 <span className="text-gray-500 font-normal">(Trial Period)</span>
               </p>
@@ -126,7 +126,7 @@ export default function StructuralHealthHero({
         {/* Right: Trend, Volatility, Drift, Delta */}
         <div className="space-y-4">
           <div>
-            <p className="text-xs text-gray-400 mb-1 uppercase tracking-wide">Trend</p>
+            <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Trend</p>
             <p className={`text-xl font-semibold ${
               trendDirection === "escalating" ? "text-red-400" :
               trendDirection === "improving" ? "text-green-400" :
@@ -140,11 +140,11 @@ export default function StructuralHealthHero({
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-400 mb-1 uppercase tracking-wide">Volatility</p>
+            <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Volatility</p>
             <p className={`text-xl font-semibold ${
               volatility === "high" ? "text-red-400" :
               volatility === "moderate" ? "text-yellow-400" :
-              volatility === "stable" && isInitializing ? "text-gray-400" :
+              volatility === "stable" && isInitializing ? "text-gray-500" :
               "text-green-400"
             }`}>
               {volatility === "high" ? "High" :
@@ -154,12 +154,12 @@ export default function StructuralHealthHero({
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-400 mb-1 uppercase tracking-wide">Drift Status</p>
+            <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Drift Status</p>
             <p className={`text-xl font-semibold ${
               driftStatus === "critical" ? "text-red-400" :
               driftStatus === "degrading" ? "text-orange-400" :
               driftStatus === "watch" ? "text-yellow-400" :
-              driftStatus === "stable" && isInitializing ? "text-gray-400" :
+              driftStatus === "stable" && isInitializing ? "text-gray-500" :
               "text-green-400"
             }`}>
               {driftStatus === "critical" ? "Critical" :
@@ -171,7 +171,7 @@ export default function StructuralHealthHero({
           </div>
           {riskDelta !== undefined && (
             <div>
-              <p className="text-xs text-gray-400 mb-1 uppercase tracking-wide">Delta Since Last Scan</p>
+              <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Delta Since Last Scan</p>
               <p className={`text-xl font-semibold ${
                 (riskDelta || 0) > 0 ? "text-red-400" : "text-green-400"
               }`}>

@@ -460,7 +460,7 @@ export default function LoginPage() {
             <form onSubmit={handleVerifyOtp} className="space-y-6">
               <div>
                 <p className="text-sm text-gray-400 mb-2">
-                  Use the code for <span className="text-white font-medium">{email}</span> (inbox + Spam/Junk +
+                  Use the code for <span className="text-gray-900 font-medium">{email}</span> (inbox + Spam/Junk +
                   Promotions). Nothing there? Confirm the email matches your account or use password below.
                 </p>
                 {otpInfo && (
@@ -554,7 +554,7 @@ export default function LoginPage() {
                 <div className="p-4 bg-red-500/10 border border-red-500 rounded-lg text-red-400 text-sm">{error}</div>
               )}
               {showCreateAccountCta && (
-                <div className="p-4 bg-[#111827] border border-gray-700 rounded-lg text-sm flex items-center justify-between gap-3">
+                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm flex items-center justify-between gap-3">
                   <span className="text-gray-300">No account yet?</span>
                   <Link
                     href="/signup"

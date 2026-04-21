@@ -16,7 +16,7 @@ export default function NotQualifiedPage() {
         <div className="space-y-4">
           <Link
             href={PUBLIC_HOME_URL}
-            className="inline-block px-8 py-3 border border-gray-700 hover:border-gray-600 text-gray-300 font-medium rounded-lg transition"
+            className="inline-block px-8 py-3 border border-gray-200 hover:border-gray-600 text-gray-300 font-medium rounded-lg transition"
           >
             Return to Homepage
           </Link>

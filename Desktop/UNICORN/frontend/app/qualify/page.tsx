@@ -104,7 +104,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.b2b_saas === true
                     ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
-                    : "border-gray-700 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-300"
                 }`}
               >
                 Yes
@@ -115,7 +115,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.b2b_saas === false
                     ? "border-gray-600 bg-gray-800/30 text-gray-400"
-                    : "border-gray-700 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-300"
                 }`}
               >
                 No
@@ -136,7 +136,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.active_sales_motion === true
                     ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
-                    : "border-gray-700 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-300"
                 }`}
               >
                 Yes
@@ -147,7 +147,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.active_sales_motion === false
                     ? "border-gray-600 bg-gray-800/30 text-gray-400"
-                    : "border-gray-700 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-300"
                 }`}
               >
                 No
@@ -168,7 +168,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.publishing_content === true
                     ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
-                    : "border-gray-700 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-300"
                 }`}
               >
                 Yes
@@ -179,7 +179,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.publishing_content === false
                     ? "border-gray-600 bg-gray-800/30 text-gray-400"
-                    : "border-gray-700 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-300"
                 }`}
               >
                 No
@@ -200,7 +200,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.close_rate_matters === true
                     ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
-                    : "border-gray-700 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-300"
                 }`}
               >
                 Yes
@@ -211,7 +211,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.close_rate_matters === false
                     ? "border-gray-600 bg-gray-800/30 text-gray-400"
-                    : "border-gray-700 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-300"
                 }`}
               >
                 No
@@ -222,7 +222,7 @@ export default function QualifyPage() {
 
         {/* Status Message */}
         {allAnswered && !allYes && (
-          <div className="mb-6 p-4 bg-gray-800/50 border border-gray-700 rounded-lg text-center">
+          <div className="mb-6 p-4 bg-gray-800/50 border border-gray-200 rounded-lg text-center">
             <p className="text-gray-300">
               This assessment is currently designed for B2B SaaS teams with active revenue motion.
             </p>
@@ -244,7 +244,7 @@ export default function QualifyPage() {
             className={`px-10 py-4 rounded-lg font-bold transition text-lg ${
               isQualified
                 ? "bg-cyan-500 hover:bg-cyan-400 text-black cursor-pointer"
-                : "bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700"
+                : "bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-200"
             }`}
           >
             {checking ? "Checking..." : "Continue to Strategic Application"}

@@ -29,7 +29,7 @@ export default function StructuralRiskOverview({
       case "escalating": return "text-red-400"
       case "improving": return "text-green-400"
       case "unstable": return "text-yellow-400"
-      default: return "text-gray-400"
+      default: return "text-gray-500"
     }
   }
 
@@ -83,19 +83,19 @@ export default function StructuralRiskOverview({
       case "Structural Misalignment": return "text-red-400"
       case "Alignment Risk Detected": return "text-orange-400"
       case "Stable": return "text-green-400"
-      default: return "text-gray-400"
+      default: return "text-gray-500"
     }
   }
 
   const integrityStatus = getIntegrityStatus(riskScore, riskLevel)
 
   return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Revenue Alignment Status</h2>
       
       <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Status snapshot</p>
+          <p className="text-sm text-gray-500 mb-2 uppercase tracking-wide">Status snapshot</p>
           {riskScore !== null ? (
             <div>
               <p className={`text-4xl font-bold ${getIntegrityColor(integrityStatus)}`}>
@@ -119,7 +119,7 @@ export default function StructuralRiskOverview({
 
         {!suppressTrend && (
           <div>
-            <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Trend Signal</p>
+            <p className="text-sm text-gray-500 mb-2 uppercase tracking-wide">Trend Signal</p>
             <p className={`text-2xl font-semibold ${getTrendColor(trendDirection)}`}>
               {getTrendLabel(trendDirection)}
               {riskDelta !== undefined && riskDelta !== null && riskDelta !== 0 && (
@@ -135,7 +135,7 @@ export default function StructuralRiskOverview({
         )}
 
         <div>
-          <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Drift Detection</p>
+          <p className="text-sm text-gray-500 mb-2 uppercase tracking-wide">Drift Detection</p>
           <p className={`text-2xl font-semibold ${getDriftColor(driftStatus)}`}>
             {getDriftLabel(driftStatus)}
           </p>

@@ -18,7 +18,7 @@ export default function CumulativeExposureCard({
   const annualizedProjection = monthlyExposure ? monthlyExposure * 12 : null
 
   return (
-    <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
+    <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
       <div className="grid md:grid-cols-3 gap-6">
         {hasCumulative ? (
           <>
@@ -49,7 +49,7 @@ export default function CumulativeExposureCard({
           </>
         ) : (
           <div className="md:col-span-2">
-            <p className="text-sm text-gray-400">No cumulative exposure recorded.</p>
+            <p className="text-sm text-gray-500">No cumulative exposure recorded.</p>
           </div>
         )}
       </div>

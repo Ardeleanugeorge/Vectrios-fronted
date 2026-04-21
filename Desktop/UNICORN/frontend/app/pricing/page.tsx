@@ -620,7 +620,7 @@ export default function PricingPage() {
 
         {/* ROI anchor — makes dollar price feel small vs. problem size */}
         <div className="max-w-3xl mx-auto mb-10 p-6 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/25 to-[#111827]">
-          <p className="text-center text-lg sm:text-xl font-semibold text-white mb-2">
+          <p className="text-center text-lg sm:text-xl font-semibold text-gray-900 mb-2">
             Companies like yours typically lose{" "}
             <span className="text-amber-300">$120K–$300K/year</span>
           </p>
@@ -651,16 +651,16 @@ export default function PricingPage() {
         </div>
 
         <div className="flex justify-center mb-8">
-          <div className="inline-flex items-center gap-4 p-1 bg-[#111827] rounded-lg border border-gray-800">
+          <div className="inline-flex items-center gap-4 p-1 bg-gray-50 rounded-lg border border-gray-200">
             <button
               onClick={() => setBillingCycle("monthly")}
-              className={`px-6 py-2 rounded-md transition ${billingCycle === "monthly" ? "bg-cyan-500 text-black font-medium" : "text-gray-400 hover:text-white"}`}
+              className={`px-6 py-2 rounded-md transition ${billingCycle === "monthly" ? "bg-cyan-500 text-black font-medium" : "text-gray-400 hover:text-gray-900"}`}
             >
               Monthly
             </button>
             <button
               onClick={() => setBillingCycle("annual")}
-              className={`px-6 py-2 rounded-md transition ${billingCycle === "annual" ? "bg-cyan-500 text-black font-medium" : "text-gray-400 hover:text-white"}`}
+              className={`px-6 py-2 rounded-md transition ${billingCycle === "annual" ? "bg-cyan-500 text-black font-medium" : "text-gray-400 hover:text-gray-900"}`}
             >
               Annual <span className="text-[10px] ml-1 opacity-70">Save 20%</span>
             </button>
@@ -673,7 +673,7 @@ export default function PricingPage() {
             return (
               <div
                 key={plan.name}
-                className={`relative p-8 bg-[#111827] rounded-2xl border flex flex-col transition ${
+                className={`relative p-8 bg-gray-50 rounded-2xl border flex flex-col transition ${
                   isActivePlan
                     ? "border-emerald-500/80 shadow-[0_0_24px_-4px_rgba(16,185,129,0.35)]"
                     : "border-cyan-500/80 shadow-[0_0_32px_-4px_rgba(34,211,238,0.3)]"
@@ -719,7 +719,7 @@ export default function PricingPage() {
                     isProcessing
                       ? "bg-gray-700 text-gray-500 cursor-not-allowed"
                       : isActivePlan
-                        ? "bg-emerald-600 text-white cursor-default"
+                        ? "bg-emerald-600 text-gray-900 cursor-default"
                         : "bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20"
                   }`}
                 >
@@ -730,7 +730,7 @@ export default function PricingPage() {
           })}
         </div>
 
-        <div id="contact" className="border-t border-gray-800 pt-12 mt-4 scroll-mt-24">
+        <div id="contact" className="border-t border-gray-200 pt-12 mt-4 scroll-mt-24">
           <div className="text-center mb-8 max-w-xl mx-auto">
             <h2 className="text-2xl font-bold mb-2">Questions?</h2>
             <p className="text-gray-400 text-sm leading-relaxed">
@@ -738,7 +738,7 @@ export default function PricingPage() {
             </p>
           </div>
 
-          <div className="max-w-lg mx-auto p-8 bg-[#111827] rounded-lg border border-gray-800 space-y-5">
+          <div className="max-w-lg mx-auto p-8 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-gray-300 mb-2">Name</label>
@@ -746,7 +746,7 @@ export default function PricingPage() {
                   type="text"
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500"
+                  className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 text-gray-900 outline-none focus:border-cyan-500"
                   placeholder="Your name"
                   autoComplete="name"
                 />
@@ -757,7 +757,7 @@ export default function PricingPage() {
                   type="email"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500"
+                  className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 text-gray-900 outline-none focus:border-cyan-500"
                   placeholder="you@company.com"
                   autoComplete="email"
                 />
@@ -770,7 +770,7 @@ export default function PricingPage() {
                 type="text"
                 value={contactCompany}
                 onChange={(e) => setContactCompany(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500"
+                className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 text-gray-900 outline-none focus:border-cyan-500"
                 placeholder="Company name"
                 autoComplete="organization"
               />
@@ -782,7 +782,7 @@ export default function PricingPage() {
                 value={contactMessage}
                 onChange={(e) => setContactMessage(e.target.value)}
                 rows={5}
-                className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500 resize-y min-h-[120px]"
+                className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 text-gray-900 outline-none focus:border-cyan-500 resize-y min-h-[120px]"
                 placeholder="What would you like to know?"
               />
             </div>
@@ -835,7 +835,7 @@ export default function PricingPage() {
       </main>
       <SiteFooter />
       {(isRouteTransitioning || (preparingAutoResume && !resumeTriggered)) && (
-        <div className="fixed inset-0 z-[80] bg-[#0B0F19]/95 backdrop-blur-sm flex items-center justify-center">
+        <div className="fixed inset-0 z-[80] bg-white/95 backdrop-blur-sm flex items-center justify-center">
           <div className="text-center">
             <svg className="animate-spin w-8 h-8 text-cyan-500 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />

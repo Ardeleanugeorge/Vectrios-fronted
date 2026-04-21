@@ -127,7 +127,7 @@ function MetricBar({ label, value }: { label: string; value: number | null }) {
     <div>
       <div className="flex justify-between mb-1.5">
         <span className="text-sm text-gray-400">{label}</span>
-        <span className="text-sm font-bold text-white">{value !== null ? Math.round(v) : "—"}</span>
+        <span className="text-sm font-bold text-gray-900">{value !== null ? Math.round(v) : "—"}</span>
       </div>
       <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
         <div className={`h-full bg-gradient-to-r ${color} rounded-full`} style={{ width: `${Math.min(v, 100)}%` }} />
@@ -202,7 +202,7 @@ export default function CompanyProfilePage() {
       <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between">
         <Link href={PUBLIC_HOME_URL} className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-          <span className="text-sm font-semibold text-white tracking-wide">
+          <span className="text-sm font-semibold text-gray-900 tracking-wide">
             Vectri<span className="text-cyan-400">OS</span>
           </span>
         </Link>
@@ -221,7 +221,7 @@ export default function CompanyProfilePage() {
             onError={e => (e.currentTarget.style.display = "none")}
           />
           <div>
-            <h1 className="text-2xl font-bold text-white">{data.domain}</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{data.domain}</h1>
             {latest.inferred_icp && (
               <p className="text-sm text-gray-500">{latest.inferred_icp}</p>
             )}
@@ -268,7 +268,7 @@ export default function CompanyProfilePage() {
           </div>
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center">
             <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Scans</p>
-            <p className="text-4xl font-bold text-white">{data.scan_count}</p>
+            <p className="text-4xl font-bold text-gray-900">{data.scan_count}</p>
             <p className="text-xs text-gray-500 mt-1">data points</p>
           </div>
         </div>
@@ -371,7 +371,7 @@ export default function CompanyProfilePage() {
         {/* CTA */}
         <div className="text-center rounded-xl bg-white/[0.03] border border-white/5 p-8">
           <p className="text-gray-400 text-sm mb-1">Want to track your own company?</p>
-          <h3 className="text-xl font-bold text-white mb-5">Get the full revenue diagnostic</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-5">Get the full revenue diagnostic</h3>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href={PUBLIC_HOME_URL}
@@ -381,7 +381,7 @@ export default function CompanyProfilePage() {
             </Link>
             <Link
               href="/saas-revenue-index"
-              className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-900 text-sm transition-colors"
             >
               ← Back to index
             </Link>

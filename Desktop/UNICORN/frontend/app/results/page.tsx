@@ -91,7 +91,7 @@ export default function ResultsPage() {
           />
         </div>
 
-        <div className="bg-[#111827] p-6 rounded-xl border border-gray-700">
+        <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h3 className="text-xl font-semibold mb-4">Recommendations</h3>
           <ul className="space-y-3">
             {data.recommendations.map((rec: string, i: number) => (
@@ -103,30 +103,30 @@ export default function ResultsPage() {
           </ul>
         </div>
 
-        <div className="bg-[#111827] p-6 rounded-xl border border-gray-700">
+        <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h3 className="text-xl font-semibold mb-4">Metrics Breakdown</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
               <p className="text-gray-400">Alignment</p>
-              <p className="text-white font-medium">
+              <p className="text-gray-900 font-medium">
                 {data.metrics_breakdown.alignment_average}%
               </p>
             </div>
             <div>
               <p className="text-gray-400">Anchor Density</p>
-              <p className="text-white font-medium">
+              <p className="text-gray-900 font-medium">
                 {data.metrics_breakdown.anchor_density_average}%
               </p>
             </div>
             <div>
               <p className="text-gray-400">ICP Mentions</p>
-              <p className="text-white font-medium">
+              <p className="text-gray-900 font-medium">
                 {data.metrics_breakdown.icp_mentions_total}
               </p>
             </div>
             <div>
               <p className="text-gray-400">Samples</p>
-              <p className="text-white font-medium">
+              <p className="text-gray-900 font-medium">
                 {data.metrics_breakdown.samples_analyzed}
               </p>
             </div>
@@ -136,13 +136,13 @@ export default function ResultsPage() {
         <div className="flex gap-4">
           <a
             href="/diagnostic"
-            className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition"
+            className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-gray-900 font-medium rounded-lg transition"
           >
             Run Another Diagnostic
           </a>
           <a
             href={PUBLIC_HOME_URL}
-            className="px-6 py-3 border border-gray-700 hover:border-gray-600 text-white font-medium rounded-lg transition"
+            className="px-6 py-3 border border-gray-200 hover:border-gray-600 text-gray-900 font-medium rounded-lg transition"
           >
             Back to Home
           </a>

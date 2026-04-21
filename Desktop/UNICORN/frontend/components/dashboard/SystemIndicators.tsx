@@ -41,22 +41,22 @@ export default function SystemIndicators({
   }
 
   return (
-    <div className="flex items-center gap-6 text-xs text-gray-500 border-t border-gray-800 pt-4">
+    <div className="flex items-center gap-6 text-xs text-gray-500 border-t border-gray-200 pt-4">
       <div className="flex items-center gap-2">
         <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-        <span>Monitoring Status: <span className="text-gray-400 font-medium">Active</span></span>
+        <span>Monitoring Status: <span className="text-gray-500 font-medium">Active</span></span>
       </div>
       <div>
-        Last Scan: <span className="text-gray-400 font-medium">{formatLastScan(lastScan)}</span>
+        Last Scan: <span className="text-gray-500 font-medium">{formatLastScan(lastScan)}</span>
       </div>
       <div>
-        Next Scan: <span className="text-gray-400 font-medium">{formatNextScan(lastScan)}</span>
+        Next Scan: <span className="text-gray-500 font-medium">{formatNextScan(lastScan)}</span>
       </div>
       <div>
-        Drift Sensitivity: <span className="text-gray-400 font-medium">{driftSensitivity}</span>
+        Drift Sensitivity: <span className="text-gray-500 font-medium">{driftSensitivity}</span>
       </div>
       <div>
-        Coverage: <span className="text-gray-400 font-medium">{coverage}</span>
+        Coverage: <span className="text-gray-500 font-medium">{coverage}</span>
       </div>
 
       <div className="hidden sm:block">
