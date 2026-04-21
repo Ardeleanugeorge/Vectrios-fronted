@@ -241,7 +241,7 @@ export default function UpgradePage() {
 
           {/* -- Current plan banner ------------------------------------------ */}
           {currentPlanName && (
-            <div className="mb-10 p-5 rounded-2xl border border-gray-200/50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-between gap-4 flex-wrap">
+            <div className="mb-10 p-5 rounded-2xl border border-gray-200/50 bg-gray-100">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
                   <span className="text-cyan-400 text-lg" aria-hidden>✓</span>
@@ -392,7 +392,7 @@ export default function UpgradePage() {
           {/* -- Feature list ------------------------------------------------- */}
           <div className="mb-16">
             <h2 className="text-xl font-semibold text-center text-gray-300 mb-8">Everything in Scale</h2>
-            <div className="max-w-lg mx-auto rounded-2xl border border-gray-200 bg-gray-900/40 overflow-hidden">
+            <div className="max-w-lg mx-auto rounded-2xl border border-gray-200 bg-gray-100">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-200">

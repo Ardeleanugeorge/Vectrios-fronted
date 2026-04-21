@@ -985,7 +985,7 @@ export default function AccountPage() {
           )}
 
           {/* -- Tabs -------------------------------------------------------- */}
-          <div className="flex gap-1 mb-8 p-1 bg-slate-200/90 border border-slate-300 rounded-2xl w-fit dark:bg-gray-900/60 dark:border-gray-200">
+          <div className="flex gap-1 mb-8 p-1 bg-slate-200/90 border border-slate-300 rounded-2xl w-fit dark:bg-gray-100">
             {TABS.map(tab => (
               <button
                 key={tab.id}
@@ -1004,7 +1004,7 @@ export default function AccountPage() {
                 
           {/* -- PROFILE TAB ------------------------------------------------- */}
           {activeTab === 'profile' && (
-            <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-200 dark:bg-gray-900/40 dark:shadow-none overflow-hidden">
+            <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-200 dark:bg-gray-100">
               <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Profile information</h2>
                 <p className="text-gray-500 text-sm mt-0.5">Update your email and company name.</p>
@@ -1018,7 +1018,7 @@ export default function AccountPage() {
                       value={profileEmail}
                       onChange={e => setProfileEmail(e.target.value)}
                       disabled={profileLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                       placeholder="you@company.com"
                     />
                     <p className="text-xs text-gray-600 mt-1">Changing email sends a verification link first.</p>
@@ -1030,7 +1030,7 @@ export default function AccountPage() {
                       value={profileCompanyName}
                       onChange={e => setProfileCompanyName(e.target.value)}
                       disabled={profileLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                       placeholder="Acme Corp"
                     />
                   </div>
@@ -1056,7 +1056,7 @@ export default function AccountPage() {
           {activeTab === 'plan' && (
             <div className="space-y-5">
               {/* Current plan card */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-900/40 overflow-hidden">
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
                 <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Current plan</h2>
                 </div>
@@ -1120,7 +1120,7 @@ export default function AccountPage() {
           </div>
 
               {/* Included features — always visible, grouped by plan tier */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-900/40 overflow-hidden">
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
                 <div className="px-6 py-5 border-b border-slate-200 dark:border-gray-200 flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Included features</h2>
@@ -1168,7 +1168,7 @@ export default function AccountPage() {
                               className={`flex items-start gap-3 px-4 py-3 rounded-xl border ${
                                 groupEnabled
                                       ? "border-cyan-500/20 bg-cyan-500/5"
-                                  : "border-gray-200/40 bg-gray-900/10"
+                                  : "border-gray-200/40 bg-gray-100"
                               }`}
                             >
                               <span className="text-base mt-0.5 shrink-0">{feat.icon}</span>
@@ -1217,7 +1217,7 @@ export default function AccountPage() {
               </div>
 
               {/* Billing card */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-900/40 overflow-hidden">
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
                 <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Payment & billing</h2>
                 </div>
@@ -1240,7 +1240,7 @@ export default function AccountPage() {
           {/* -- REVENUE MODEL TAB ------------------------------------------- */}
           {activeTab === 'revenue' && (
             <div className="space-y-5">
-              <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-200 dark:bg-gray-900/40 dark:shadow-none overflow-hidden">
+              <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-200 dark:bg-gray-100">
                 <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Financial calibration</h2>
                   <p className="text-gray-500 text-sm mt-0.5">
@@ -1261,7 +1261,7 @@ export default function AccountPage() {
                           value={calibrationArr}
                           onChange={e => setCalibrationArr(e.target.value)}
                           placeholder="1000000"
-                          className="w-full pl-8 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                          className="w-full pl-8 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                         />
                       </div>
                       <p className="text-xs text-gray-600 mt-1.5">Your current ARR in USD</p>
@@ -1279,7 +1279,7 @@ export default function AccountPage() {
                           value={calibrationCurrentCloseRate}
                           onChange={e => setCalibrationCurrentCloseRate(e.target.value)}
                           placeholder="12.5"
-                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">%</span>
                       </div>
@@ -1298,7 +1298,7 @@ export default function AccountPage() {
                           value={calibrationTargetCloseRate}
                           onChange={e => setCalibrationTargetCloseRate(e.target.value)}
                           placeholder="18.0"
-                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">%</span>
                       </div>
@@ -1340,7 +1340,7 @@ export default function AccountPage() {
               </div>
 
               {/* Info card */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-900/20 p-5">
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">How it works</p>
                 <div className="grid sm:grid-cols-3 gap-4">
                   {[
@@ -1363,7 +1363,7 @@ export default function AccountPage() {
 
           {/* -- SECURITY TAB ------------------------------------------------ */}
           {activeTab === 'security' && (
-            <div className="rounded-2xl border border-gray-200 bg-gray-900/40 overflow-hidden">
+            <div className="rounded-2xl border border-gray-200 bg-gray-100">
               <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Change password</h2>
                 <p className="text-gray-500 text-sm mt-0.5">Use a strong password of at least 8 characters.</p>
@@ -1378,7 +1378,7 @@ export default function AccountPage() {
                     disabled={passwordLoading}
                     minLength={8}
                     required
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                     placeholder="At least 8 characters"
                   />
                 </div>
@@ -1391,7 +1391,7 @@ export default function AccountPage() {
                     disabled={passwordLoading}
                     minLength={8}
                     required
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                     placeholder="Repeat new password"
                   />
                 </div>
@@ -1426,7 +1426,7 @@ export default function AccountPage() {
           {/* -- SUPPORT TAB ------------------------------------------------- */}
           {activeTab === 'support' && (
             <div className="space-y-8">
-            <div className="rounded-2xl border border-gray-200 bg-gray-900/40 overflow-hidden">
+            <div className="rounded-2xl border border-gray-200 bg-gray-100">
               <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Ask a question</h2>
                 <p className="text-gray-500 text-sm mt-0.5">
@@ -1442,7 +1442,7 @@ export default function AccountPage() {
                     onChange={(e) => setGeneralContactName(e.target.value)}
                     disabled={generalContactLoading}
                     placeholder={profileCompanyName || "Your name"}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                   />
                 </div>
                 <div>
@@ -1465,7 +1465,7 @@ export default function AccountPage() {
                     required
                     disabled={generalContactLoading}
                     placeholder="What would you like to know?"
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                   />
                 </div>
                 {generalContactError && (
@@ -1484,7 +1484,7 @@ export default function AccountPage() {
               </form>
             </div>
 
-            <div className="rounded-2xl border border-gray-200 bg-gray-900/40 overflow-hidden">
+            <div className="rounded-2xl border border-gray-200 bg-gray-100">
               <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Technical support ticket</h2>
                 <p className="text-gray-500 text-sm mt-0.5">
@@ -1502,7 +1502,7 @@ export default function AccountPage() {
                       maxLength={160}
                       required
                       disabled={supportLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                       placeholder="Briefly describe the issue"
                     />
                   </div>
@@ -1512,7 +1512,7 @@ export default function AccountPage() {
                       value={supportPriority}
                       onChange={e => setSupportPriority(e.target.value)}
                       disabled={supportLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 dark:bg-gray-100"
                     >
                       <option value="low">Low</option>
                       <option value="normal">Normal</option>
@@ -1531,7 +1531,7 @@ export default function AccountPage() {
                     maxLength={5000}
                     required
                     disabled={supportLoading}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                     placeholder="What happened, what you expected, and any steps to reproduce."
                   />
                   <p className="text-xs text-gray-600 mt-1.5">
@@ -1574,7 +1574,7 @@ export default function AccountPage() {
                           className={`w-full text-left p-3 rounded-lg border transition ${
                             selectedTicketId === t.ticket_id
                               ? "border-cyan-500/40 bg-cyan-500/10"
-                              : "border-gray-200 bg-gray-900/30 hover:border-gray-200"
+                              : "border-gray-200 bg-gray-100"
                           }`}
                         >
                           <p className="text-sm font-medium text-gray-200 truncate">{t.subject}</p>
@@ -1609,7 +1609,7 @@ export default function AccountPage() {
                               className={`p-3 rounded-lg border ${
                                 m.author === "support"
                                   ? "bg-cyan-500/10 border-cyan-500/20"
-                                  : "bg-gray-900/40 border-gray-200"
+                                  : "bg-gray-100"
                               }`}
                             >
                               <p className="text-xs text-gray-500 mb-1">{m.author === "support" ? "Support" : "You"}</p>
@@ -1628,7 +1628,7 @@ export default function AccountPage() {
                             maxLength={5000}
                             placeholder="Add a follow-up message"
                             disabled={supportThreadLoading}
-                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                           />
                           <button
                             type="submit"
@@ -1666,7 +1666,7 @@ export default function AccountPage() {
 
               {/* Platform Ops snapshot */}
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="rounded-2xl border border-gray-200 bg-gray-900/40 p-5">
+                <div className="rounded-2xl border border-gray-200 bg-gray-100">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">System Health</h3>
                   <div className="space-y-2 text-sm">
                     <p className="text-gray-300">DB: <span className={adminSystemHealth?.db_connected ? "text-emerald-300" : "text-red-300"}>{adminSystemHealth?.db_connected ? "Connected" : "Down"}</span></p>
@@ -1676,7 +1676,7 @@ export default function AccountPage() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-gray-200 bg-gray-900/40 p-5">
+                <div className="rounded-2xl border border-gray-200 bg-gray-100">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pipeline Metrics</h3>
                   <div className="space-y-2 text-sm">
                     <p className="text-gray-300">Scans 24h: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "–"}</span></p>
@@ -1689,7 +1689,7 @@ export default function AccountPage() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-gray-200 bg-gray-900/40 p-5">
+                <div className="rounded-2xl border border-gray-200 bg-gray-100">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">RII Consistency Guard</h3>
                   <div className="space-y-2 text-sm">
                     <p className="text-gray-300">Checked: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminRiiConsistency?.checked_companies ?? "–"}</span></p>
@@ -1703,7 +1703,7 @@ export default function AccountPage() {
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-gray-200 bg-gray-900/40 p-5">
+                <div className="rounded-2xl border border-gray-200 bg-gray-100">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Top Scan Failure Reasons (7d)</h3>
                   <div className="space-y-2">
                     {(adminPipelineMetrics?.window_7d?.top_reasons || []).slice(0, 5).map((r) => (
@@ -1718,7 +1718,7 @@ export default function AccountPage() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-gray-200 bg-gray-900/40 p-5">
+                <div className="rounded-2xl border border-gray-200 bg-gray-100">
                   <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Top RII Mismatches</h3>
                   <div className="space-y-2">
                     {(adminRiiConsistency?.items || []).slice(0, 5).map((it) => (
@@ -1734,24 +1734,24 @@ export default function AccountPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-gray-200 bg-gray-900/40 p-6">
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
                 <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Monitoring Coverage (24h)</h3>
                 <div className="grid md:grid-cols-4 gap-3 mb-4">
-                  <div className="rounded-xl bg-gray-900 border border-gray-200 p-3">
+                  <div className="rounded-xl bg-gray-100">
                     <p className="text-xs text-gray-500">Active companies</p>
                     <p className="text-lg font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.active_companies ?? "–"}</p>
                   </div>
-                  <div className="rounded-xl bg-gray-900 border border-gray-200 p-3">
+                  <div className="rounded-xl bg-gray-100">
                     <p className="text-xs text-gray-500">Scanned in 24h</p>
                     <p className="text-lg font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.companies_scanned_in_window ?? "–"}</p>
                   </div>
-                  <div className="rounded-xl bg-gray-900 border border-gray-200 p-3">
+                  <div className="rounded-xl bg-gray-100">
                     <p className="text-xs text-gray-500">Coverage</p>
                     <p className={`text-lg font-semibold ${coverageStatus === "good" ? "text-emerald-300" : coverageStatus === "warn" ? "text-amber-300" : "text-red-300"}`}>
                       {adminCoverage?.coverage_pct ?? "–"}%
                     </p>
                   </div>
-                  <div className="rounded-xl bg-gray-900 border border-gray-200 p-3">
+                  <div className="rounded-xl bg-gray-100">
                     <p className="text-xs text-gray-500">Cycles</p>
                     <p className="text-lg font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.cycles_breakdown?.total_cycles ?? "–"}</p>
                   </div>
@@ -1807,27 +1807,27 @@ export default function AccountPage() {
               </div>
 
               {/* Current DB stats */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-900/40 p-6">
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
                 <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Current Status</h3>
                 {calibStatus ? (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-                    <div className="rounded-xl bg-gray-900 border border-gray-200 p-4 text-center">
+                    <div className="rounded-xl bg-gray-100">
                       <div className="text-2xl font-bold text-slate-900 dark:text-gray-900">{calibStatus.total_scans_in_db ?? "–"}</div>
                       <div className="text-xs text-gray-500 mt-1">Total scans in DB</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">incl. monitoring cycles</div>
                     </div>
-                    <div className="rounded-xl bg-gray-900 border border-gray-200 p-4 text-center">
+                    <div className="rounded-xl bg-gray-100">
                       <div className="text-2xl font-bold text-slate-900 dark:text-gray-900">{calibStatus.n_scans || "–"}</div>
                       <div className="text-xs text-gray-500 mt-1">Last calibration scans</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">unique companies used</div>
                     </div>
-                    <div className="rounded-xl bg-gray-900 border border-gray-200 p-4 text-center">
+                    <div className="rounded-xl bg-gray-100">
                       <div className={`text-2xl font-bold ${calibStatus.mae && calibStatus.mae < 6 ? "text-emerald-400" : "text-amber-400"}`}>
                         {calibStatus.mae ? `${calibStatus.mae.toFixed(1)} pts` : "—"}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">MAE (lower = better)</div>
                     </div>
-                    <div className="rounded-xl bg-gray-900 border border-gray-200 p-4 text-center">
+                    <div className="rounded-xl bg-gray-100">
                       <div className={`text-2xl font-bold ${calibStatus.state === "done" ? "text-emerald-400" : calibStatus.state === "running" ? "text-cyan-400" : calibStatus.state === "error" ? "text-red-400" : "text-amber-400"}`}>
                         {calibStatus.state === "done" ? "?" : calibStatus.state === "running" ? "?" : calibStatus.state === "error" ? "?" : "?"}
                       </div>
@@ -1866,7 +1866,7 @@ export default function AccountPage() {
 
                 {/* Optimal global weights */}
                 {calibStatus?.global_weights && (
-                  <div className="p-4 rounded-xl bg-gray-900 border border-gray-200 mb-5">
+                  <div className="p-4 rounded-xl bg-gray-100">
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Calibrated Weights (active)</p>
                     <div className="flex flex-wrap gap-3">
                       {Object.entries(calibStatus.global_weights).map(([k, v]) => (
@@ -1903,7 +1903,7 @@ export default function AccountPage() {
                       <button onClick={handleRejectCandidate} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium text-sm transition">
                         Reject
                       </button>
-                      <button onClick={handleRollback} className="px-4 py-2 rounded-lg bg-gray-900 border border-gray-200 hover:border-gray-600 text-gray-300 font-medium text-sm transition">
+                      <button onClick={handleRollback} className="px-4 py-2 rounded-lg bg-gray-100">
                         Rollback to Previous
                       </button>
                     </div>
@@ -1957,7 +1957,7 @@ export default function AccountPage() {
               </div>
 
               {/* How it works */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-900/40 p-6">
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
                 <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">What happens when you click Run</h3>
                 <ol className="space-y-2 text-sm text-gray-400">
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">1.</span> Loads all successful scans from the database</li>
@@ -1970,10 +1970,10 @@ export default function AccountPage() {
               </div>
 
               {/* Admin Support Console */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-900/40 p-6">
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
                 <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Admin Support Inbox</h3>
                 <div className="grid md:grid-cols-3 gap-4">
-                  <div className="rounded-xl bg-gray-900 border border-gray-200 p-3 md:col-span-1">
+                  <div className="rounded-xl bg-gray-100">
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Tickets (all companies)</p>
                     <div className="space-y-2 max-h-80 overflow-auto pr-1">
                       {adminTickets.length === 0 && (
@@ -2004,7 +2004,7 @@ export default function AccountPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl bg-gray-900 border border-gray-200 p-3 md:col-span-2">
+                  <div className="rounded-xl bg-gray-100">
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Selected ticket</p>
                     {adminSupportLoading && <p className="text-sm text-gray-500">Loading...</p>}
                     {!adminSupportLoading && !adminSelectedTicket && (
@@ -2051,7 +2051,7 @@ export default function AccountPage() {
               </div>
 
               {/* Runtime feature flags */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-900/40 p-6">
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
                 <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Runtime Feature Flags</h3>
                 <div className="flex flex-wrap gap-2">
                   {Object.keys(adminFlags).length === 0 && (
@@ -2066,7 +2066,7 @@ export default function AccountPage() {
               </div>
 
               {/* Audit preview */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-900/40 p-6">
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
                 <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Audit Log Preview (selected ticket company)</h3>
                 <div className="space-y-2">
                   {adminAuditPreview.length === 0 && (

@@ -398,7 +398,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
       </div>
 
       {/* Why */}
-      <div className="px-4 py-2.5 border-t border-gray-200/60 bg-gray-900/30">
+      <div className="px-4 py-2.5 border-t border-gray-200/60 bg-gray-100">
         <p className="text-[11px] text-gray-500">
           <span className="text-gray-600 font-semibold">Why: </span>{fix.reason}
         </p>
@@ -497,7 +497,7 @@ export default function ActionableInsights({
           className={`mb-4 px-4 py-3 rounded-lg border ${
             isHigh
               ? "bg-orange-950/40 border-orange-500/40"
-              : "bg-gray-900/60 border-gray-200"
+              : "bg-gray-100 border-gray-200"
           }`}
         >
           <p className={`text-sm font-bold ${isHigh ? "text-orange-400" : "text-gray-300"}`}>
