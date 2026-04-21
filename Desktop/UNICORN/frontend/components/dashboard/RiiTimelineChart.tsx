@@ -208,8 +208,8 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
         >
           <defs>
             <linearGradient id="riiGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="#06b6d4" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.02" />
+              <stop offset="0%"   stopColor="#3b82f6" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.02" />
             </linearGradient>
           </defs>
 
@@ -264,7 +264,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
             <polyline
               points={polyline}
               fill="none"
-              stroke="#06b6d4"
+              stroke="#3b82f6"
               strokeWidth="1.5"
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -277,7 +277,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
               key={i}
               cx={xOf(i)} cy={yOf(e.rii)}
               r={hoveredIdx === i ? 5 : e.interpolated ? 2 : 3}
-              fill={hoveredIdx === i ? "#06b6d4" : e.interpolated ? "#1e3a4a" : "#0e7490"}
+              fill={hoveredIdx === i ? "#3b82f6" : e.interpolated ? "#bfdbfe" : "#3b82f6"}
               stroke={hoveredIdx === i ? "#fff" : "none"}
               strokeWidth="1.5"
               opacity={e.interpolated ? 0.4 : 1}
