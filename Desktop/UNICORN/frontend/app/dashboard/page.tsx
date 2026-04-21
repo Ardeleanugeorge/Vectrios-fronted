@@ -8,6 +8,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import DashboardHeader from "@/components/DashboardHeader"
+import DashboardSummaryCard from "@/components/dashboard/DashboardSummaryCard"
 import SiteFooter from "@/components/SiteFooter"
 import SnapshotLayer from "@/components/dashboard/SnapshotLayer"
 import MonitoringLayer from "@/components/dashboard/MonitoringLayer"
@@ -812,6 +813,12 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          <DashboardSummaryCard
+            companyName={user?.company_name || null}
+            monthlyLoss={null}
+            riiScore={diagnostic?.risk_score ?? monitoringStatus?.structural_scores?.rii_score ?? null}
+            riskLevel={diagnostic?.risk_level || null}
+          />
           {/* REVENUE RISK INDEX - Visible when diagnostic OR monitoring structural scores exist */}
           {(() => {
             const riiScore =
