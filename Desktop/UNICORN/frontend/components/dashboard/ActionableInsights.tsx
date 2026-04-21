@@ -508,7 +508,7 @@ export default function ActionableInsights({
         </div>
 
         {/* 1. Primary leak */}
-        <div className="mb-6 p-4 rounded-lg bg-gradient-to-br from-orange-950/30 to-[#0B0F19] border border-orange-500/20">
+        <div className="mb-6 p-4 rounded-lg bg-orange-50 border border-orange-200">
           <p className="text-xs font-semibold uppercase tracking-wider text-orange-400 mb-2">
             Primary revenue leak
           </p>

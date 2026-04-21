@@ -170,7 +170,7 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
       </div>
 
       {/* ══ CTA PRINCIPAL ══ */}
-      <div className="p-8 rounded-lg border border-cyan-800/40 bg-gradient-to-br from-cyan-950/30 to-[#111827]">
+      <div className="p-8 rounded-lg border border-cyan-200 bg-cyan-50">
         <h3 className="text-lg font-bold text-gray-900 mb-2">
           Your diagnostic is ready—see how much you can recover.
         </h3>
