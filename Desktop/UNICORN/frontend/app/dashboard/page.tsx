@@ -850,7 +850,7 @@ export default function DashboardPage() {
           {/* While monitoring status is loading from API, show spinner */}
           {monitoringLoading && companyId ? (
             <div className="p-8 border border-gray-200 rounded-lg bg-gray-50">
-              <p className="text-sm text-gray-400 animate-pulse">Loading revenue monitoring statusΓÇª</p>
+              <p className="text-sm text-gray-500 animate-pulse">Loading revenue monitoring status...</p>
             </div>
           ) : isMonitoringActive && monitoringStatus ? (
             /* STATE 3 ΓÇö CONTINUOUS MONITORING ACTIVE */
@@ -901,7 +901,7 @@ export default function DashboardPage() {
             </div>
           ) : subscriptionLoading ? (
             <div className="p-8 border border-gray-200 rounded-lg bg-gray-50">
-              <p className="text-sm text-gray-400 animate-pulse">Loading subscription statusΓÇª</p>
+              <p className="text-sm text-gray-500 animate-pulse">Loading subscription status...</p>
             </div>
           ) : diagnostic?.is_partial ? (
             /* STATE 2 ΓÇö PARTIAL DIAGNOSTIC (from scan), monitoring not active */
