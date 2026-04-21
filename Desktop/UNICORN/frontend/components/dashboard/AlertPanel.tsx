@@ -39,8 +39,8 @@ export default function AlertPanel({ alerts, onMarkAlertRead }: AlertPanelProps)
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`text-xs font-semibold uppercase ${
-                    alert.severity_level === "critical" ? "text-red-400" :
-                    alert.severity_level === "degrading" ? "text-orange-400" :
+                    alert.severity_level === "critical" ? "text-red-600" :
+                    alert.severity_level === "degrading" ? "text-orange-600" :
                     "text-yellow-400"
                   }`}>
                     {alert.severity_level}

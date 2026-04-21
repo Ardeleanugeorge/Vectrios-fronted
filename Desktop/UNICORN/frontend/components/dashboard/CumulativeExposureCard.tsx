@@ -26,7 +26,7 @@ export default function CumulativeExposureCard({
               <p className="text-xs text-gray-600 mb-1 uppercase tracking-wide">
                 {uiState === "low" ? "30-Day Realized Opportunity" : "30-Day Cumulative"}
               </p>
-              <p className={`text-3xl font-bold ${uiState === "low" ? "text-emerald-300" : "text-amber-400"}`}>
+              <p className={`text-3xl font-bold ${uiState === "low" ? "text-emerald-600" : "text-amber-600"}`}>
                 ${cumulativeValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </p>
             </div>
@@ -41,7 +41,7 @@ export default function CumulativeExposureCard({
             {uiState === "low" && monthlyExposure && monthlyExposure > 0 && (
               <div>
                 <p className="text-xs text-gray-600 mb-1 uppercase tracking-wide">Current Monthly Upside</p>
-                <p className="text-3xl font-bold text-emerald-300">
+                <p className="text-3xl font-bold text-emerald-600">
                   ${monthlyExposure.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
               </div>

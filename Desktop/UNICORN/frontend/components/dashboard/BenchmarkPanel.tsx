@@ -40,10 +40,10 @@ const METRICS = [
 
 function rankLabel(rank: number, higherIsBetter: boolean): { text: string; color: string } {
   const r = higherIsBetter ? rank : (100 - rank)
-  if (r >= 75) return { text: "Top 25%",  color: "text-green-400" }
-  if (r >= 50) return { text: "Above median", color: "text-cyan-400" }
-  if (r >= 25) return { text: "Below median", color: "text-amber-400" }
-  return { text: "Bottom 25%", color: "text-red-400" }
+  if (r >= 75) return { text: "Top 25%",  color: "text-green-600" }
+  if (r >= 50) return { text: "Above median", color: "text-blue-600" }
+  if (r >= 25) return { text: "Below median", color: "text-amber-600" }
+  return { text: "Bottom 25%", color: "text-red-600" }
 }
 
 function ordinal(n: number): string {
@@ -175,9 +175,9 @@ export default function BenchmarkPanel({ companyId }: Props) {
             <div className="text-right">
               <p className="text-[10px] text-gray-600 uppercase tracking-wide mb-1">Revenue Risk Rank</p>
               <p className={`text-2xl font-bold ${
-                riiRank >= 75 ? "text-green-400" :
-                riiRank >= 50 ? "text-cyan-400" :
-                riiRank >= 25 ? "text-amber-400" : "text-red-400"
+                riiRank >= 75 ? "text-green-600" :
+                riiRank >= 50 ? "text-blue-600" :
+                riiRank >= 25 ? "text-amber-600" : "text-red-600"
               }`}>
                 {ordinal(riiRank)} <span className="text-sm text-gray-600 font-normal">pct</span>
               </p>
@@ -238,7 +238,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
 
       {/* Footer */}
       <div className="px-8 pb-5 pt-2 text-[10px] text-gray-700 border-t border-gray-200">
-        Benchmarks are computed from anonymized assessments across the Vectri<span className="text-cyan-400">OS</span> dataset.
+        Benchmarks are computed from anonymized assessments across the Vectri<span className="text-blue-600">OS</span> dataset.
         Updated after each assessment run.
       </div>
     </div>

@@ -84,8 +84,8 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
   const riskLevel = normalizeLevel(diagnostic?.risk_level)
 
   const riskColor =
-    riskLevel === "HIGH" ? "text-red-400 border-red-900/40 bg-red-50" :
-    riskLevel === "MODERATE" ? "text-orange-400 border-orange-900/40 bg-orange-50" :
+    riskLevel === "HIGH" ? "text-red-600 border-red-900/40 bg-red-50" :
+    riskLevel === "MODERATE" ? "text-orange-600 border-orange-900/40 bg-orange-50" :
     "text-yellow-400 border-yellow-900/40 bg-yellow-950/10"
 
   const riskLabel =
@@ -175,7 +175,7 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
           Your diagnostic is ready—see how much you can recover.
         </h3>
         <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-          Typical companies lose $120K–$300K/year to messaging and funnel leaks. Vectri<span className="text-cyan-400">OS</span> maps the fix and the dollar impact—from $99/mo.
+          Typical companies lose $120K–$300K/year to messaging and funnel leaks. Vectri<span className="text-blue-600">OS</span> maps the fix and the dollar impact—from $99/mo.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <Link

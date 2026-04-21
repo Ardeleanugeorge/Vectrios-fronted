@@ -441,7 +441,7 @@ export default function MonitoringLayer({
       {/* ALERTS FIRST — Critical alerts at top */}
       {hasCriticalAlerts && (
         <div className={`p-4 rounded border-l-4 ${ (rii !== null && rii < 40) ? "bg-amber-500/10 border-amber-500" : "bg-red-500/10 border-red-500" }`}>
-          <p className={`text-sm font-semibold mb-1 ${ (rii !== null && rii < 40) ? "text-amber-400" : "text-red-400" }`}>Recent critical structural events detected</p>
+          <p className={`text-sm font-semibold mb-1 ${ (rii !== null && rii < 40) ? "text-amber-600" : "text-red-600" }`}>Recent critical structural events detected</p>
           <p className="text-xs text-gray-600">
             {criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? 's' : ''} require immediate attention.
           </p>
@@ -450,7 +450,7 @@ export default function MonitoringLayer({
 
       {hasInconsistency && (
         <div className="p-3 rounded border border-amber-600/30 bg-amber-900/10">
-          <p className="text-xs text-amber-300 font-semibold">In review</p>
+          <p className="text-xs text-amber-600 font-semibold">In review</p>
           <p className="text-xs text-amber-200/90">We detected mixed signals; numbers are correct, display emphasizes positives while monitoring risks separately.</p>
         </div>
       )}
@@ -466,7 +466,7 @@ export default function MonitoringLayer({
 
       {/* REVENUE TRUTH BANNER — unified semantic layer */}
       <div className="p-5 rounded-lg border border-cyan-700/30 bg-cyan-950/10">
-        <p className="text-sm font-semibold text-cyan-300">{truth.headline}</p>
+        <p className="text-sm font-semibold text-blue-600">{truth.headline}</p>
         <p className="text-xs text-gray-700 mt-1">{truth.subtext}{truthLossPct ? ` — ${truthLossPct}` : ""}</p>
         <p className="text-xs text-gray-600 mt-1">{truth.explanation}</p>
       </div>
@@ -477,7 +477,7 @@ export default function MonitoringLayer({
       {!monitoringStatus.last_evaluated_at && !monitoringStatus.created_at && (
         <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-800/40 bg-cyan-950/10">
           <div>
-            <p className="text-sm font-semibold text-cyan-300">
+            <p className="text-sm font-semibold text-blue-600">
               Run your first diagnostic to activate monitoring
             </p>
             <p className="text-xs text-gray-600 mt-0.5">
@@ -507,8 +507,8 @@ export default function MonitoringLayer({
             <p className="text-xs text-gray-600 uppercase tracking-wide font-medium">Revenue Change (last scan)</p>
             {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (typeof revenueDelta.delta_monthly_loss === "number" && revenueDelta.delta_monthly_loss !== 0) && (
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                revenueDelta.trend_last_4 === "worsening" ? "text-red-400 bg-red-400/10" :
-                revenueDelta.trend_last_4 === "improving" ? "text-emerald-400 bg-emerald-400/10" :
+                revenueDelta.trend_last_4 === "worsening" ? "text-red-600 bg-red-400/10" :
+                revenueDelta.trend_last_4 === "improving" ? "text-emerald-600 bg-emerald-400/10" :
                 "text-gray-600 bg-gray-800"
               }`}>
                 {revenueDelta.trend_last_4 === "worsening" ? "🔺 Worsening" :
@@ -520,8 +520,8 @@ export default function MonitoringLayer({
           {/* Main number */}
           <div className="px-5 py-4">
             <p className={`text-2xl font-bold ${
-              revenueDelta.direction === "worse" ? "text-red-400" :
-              revenueDelta.direction === "better" ? "text-emerald-400" : "text-gray-700"
+              revenueDelta.direction === "worse" ? "text-red-600" :
+              revenueDelta.direction === "better" ? "text-emerald-600" : "text-gray-700"
             }`}>
               {revenueDelta.delta_monthly_loss > 0
                 ? `+$${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month worse`
@@ -545,7 +545,7 @@ export default function MonitoringLayer({
                   <ul className="space-y-1">
                     {(revenueDelta.drivers?.positives || []).map((d:any, i:number) => (
                       <li key={`pos-${i}`} className="flex items-start gap-2 text-xs text-gray-700">
-                        <span className="mt-0.5 shrink-0 text-emerald-400">•</span>
+                        <span className="mt-0.5 shrink-0 text-emerald-600">•</span>
                         {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
                       </li>
                     ))}
@@ -558,7 +558,7 @@ export default function MonitoringLayer({
                   <ul className="space-y-1">
                     {(revenueDelta.drivers?.risks || []).map((d:any, i:number) => (
                       <li key={`risk-${i}`} className="flex items-start gap-2 text-xs text-gray-700">
-                        <span className="mt-0.5 shrink-0 text-red-400">•</span>
+                        <span className="mt-0.5 shrink-0 text-red-600">•</span>
                         {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
                       </li>
                     ))}
@@ -571,7 +571,7 @@ export default function MonitoringLayer({
           {/* Fix this first — delta + action combo (killer UX) */}
           {revenueDelta.direction === "worse" && diagnostic?.action_layer?.fixes?.[0] && (
             <div className="mx-4 mb-4 px-4 py-3 rounded-lg bg-orange-50">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400 mb-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-orange-600 mb-1.5">
                 🔴 Fix this first
               </p>
               <p className="text-sm font-semibold text-gray-900">
@@ -579,7 +579,7 @@ export default function MonitoringLayer({
               </p>
               {diagnostic.action_layer.fixes[0].impact_contribution?.monthly_impact &&
                diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact !== "—" && (
-                <p className="text-xs text-emerald-400 mt-1">
+                <p className="text-xs text-emerald-600 mt-1">
                   → expected recovery: <span className="font-bold">{diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact}</span>
                 </p>
               )}
@@ -596,12 +596,12 @@ export default function MonitoringLayer({
         <p className="text-lg font-semibold text-gray-900">{headline}</p>
         <p className="text-sm text-gray-700 mt-1">{subtext}</p>
         {uiState === "low" && (
-          <p className="text-xs text-emerald-300/80 mt-2">
+          <p className="text-xs text-emerald-600/80 mt-2">
             Your system is structurally healthy, but small inefficiencies still create measurable upside.
           </p>
         )}
         {improvementsDetected > 0 && (
-          <p className="text-xs text-cyan-300/80 mt-2">
+          <p className="text-xs text-blue-600/80 mt-2">
             +{improvementsDetected} improvement{improvementsDetected > 1 ? "s" : ""} detected since last scan.
           </p>
         )}
@@ -648,7 +648,7 @@ export default function MonitoringLayer({
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span className="text-emerald-400 font-medium text-xs uppercase tracking-wide">Live</span>
+              <span className="text-emerald-600 font-medium text-xs uppercase tracking-wide">Live</span>
             </div>
 
             {/* Last scan */}
@@ -660,7 +660,7 @@ export default function MonitoringLayer({
             {/* Next scan */}
             <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               <span className="text-gray-600 text-xs">Next</span>
-              <span className="text-cyan-400 font-semibold text-xs">{nextScanLabel}</span>
+              <span className="text-blue-600 font-semibold text-xs">{nextScanLabel}</span>
             </div>
 
             {/* Cadence */}
@@ -680,10 +680,10 @@ export default function MonitoringLayer({
                   return "breach"
                 })()
                 const cls = band === "on-track"
-                  ? "text-emerald-300 bg-emerald-400/10 border-emerald-400/20"
+                  ? "text-emerald-600 bg-emerald-400/10 border-emerald-400/20"
                   : band === "warning"
-                  ? "text-amber-300 bg-amber-400/10 border-amber-400/20"
-                  : "text-red-300 bg-red-400/10 border-red-400/20"
+                  ? "text-amber-600 bg-amber-400/10 border-amber-400/20"
+                  : "text-red-600 bg-red-400/10 border-red-400/20"
                 const label = band === "on-track" ? "SLA On Track" : band === "warning" ? "SLA Warning" : band === "breach" ? "SLA Breach" : "SLA"
                 return (
                   <span className={`px-2.5 py-0.5 rounded-full border text-xs font-semibold ${cls}`}>
@@ -695,7 +695,7 @@ export default function MonitoringLayer({
 
             {/* Plan */}
             <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 ml-auto">
-              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-semibold text-xs tracking-wide">
+              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-blue-600 font-semibold text-xs tracking-wide">
                 {planLabel}{trialLabel}
               </span>
             </div>

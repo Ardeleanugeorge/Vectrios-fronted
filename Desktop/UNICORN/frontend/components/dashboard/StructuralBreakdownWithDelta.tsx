@@ -77,7 +77,7 @@ export default function StructuralBreakdownWithDelta({
         These four dimensions feed your headline {RII_NAME} ({RII_ABBREV}). They explain <em>where</em> structural risk concentrates — not dollar impact (see model below).
       </p>
       <p className="text-xs text-gray-600 mb-6">
-        <Link href={METHODOLOGY_RII_HREF} className="text-cyan-600 hover:text-cyan-400 hover:underline">
+        <Link href={METHODOLOGY_RII_HREF} className="text-cyan-600 hover:text-blue-600 hover:underline">
           How {RII_ABBREV} combines these signals →
         </Link>
       </p>

@@ -39,9 +39,9 @@ export default function RevenueRiskIndex({
   const scoreClass = classifyFromScore(displayScore)
 
   const getRiskColor = () => {
-    if (scoreClass === "HIGH") return "text-red-400"
+    if (scoreClass === "HIGH") return "text-red-600"
     if (scoreClass === "MODERATE") return "text-yellow-400"
-    return "text-green-400"
+    return "text-green-600"
   }
 
   const getRiskLabel = () => {
@@ -75,7 +75,7 @@ export default function RevenueRiskIndex({
           {RII_NAME}
         </h2>
         <p className="text-sm text-gray-600 mb-3">
-          <abbr title={RII_TAGLINE} className="cursor-help font-semibold text-cyan-400/90 border-b border-dotted border-cyan-500/50">
+          <abbr title={RII_TAGLINE} className="cursor-help font-semibold text-blue-600/90 border-b border-dotted border-cyan-500/50">
             {RII_ABBREV}
           </abbr>
           <span className="text-gray-600"> · </span>
@@ -85,7 +85,7 @@ export default function RevenueRiskIndex({
           {RII_INTRO}{" "}
           <Link
             href={METHODOLOGY_RII_HREF}
-            className="text-cyan-500 hover:text-cyan-400 underline-offset-2 hover:underline whitespace-nowrap"
+            className="text-cyan-500 hover:text-blue-600 underline-offset-2 hover:underline whitespace-nowrap"
           >
             How RII is calculated →
           </Link>
@@ -111,7 +111,7 @@ export default function RevenueRiskIndex({
           </div>
           <p className={`text-2xl font-bold mb-1 ${getRiskColor()}`} title={RII_TAGLINE}>
             {getRiskLabel()}
-            {scoreClass === "LOW" && <span className="ml-2 text-emerald-400 text-xl" aria-hidden>✓</span>}
+            {scoreClass === "LOW" && <span className="ml-2 text-emerald-600 text-xl" aria-hidden>✓</span>}
           </p>
           <p className="text-sm text-gray-700">
             {heroBodyPrimary}
@@ -125,26 +125,26 @@ export default function RevenueRiskIndex({
         )}
         {/* Visual legend — flex + separators so bands never read as one word */}
         <div className="text-[11px] text-gray-600 mb-4 mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 max-w-xl mx-auto">
-          <span>0–30: <span className="text-emerald-400">Excellent</span></span>
+          <span>0–30: <span className="text-emerald-600">Excellent</span></span>
           <span className="text-gray-700" aria-hidden>
             ·
           </span>
-          <span>30–50: <span className="text-emerald-300">Strong</span></span>
+          <span>30–50: <span className="text-emerald-600">Strong</span></span>
           <span className="text-gray-700" aria-hidden>
             ·
           </span>
-          <span>50–70: <span className="text-amber-400">Inefficient</span></span>
+          <span>50–70: <span className="text-amber-600">Inefficient</span></span>
           <span className="text-gray-700" aria-hidden>
             ·
           </span>
-          <span>70+: <span className="text-red-400">Critical</span></span>
+          <span>70+: <span className="text-red-600">Critical</span></span>
           <span className="text-gray-700 px-1" aria-hidden>
             ·
           </span>
           <span className="text-gray-600">Lower is better</span>
         </div>
         {effectiveConfidence < 50 && (
-          <p className="text-xs text-amber-300 mb-4">
+          <p className="text-xs text-amber-600 mb-4">
             Limited content detected - results may be less accurate.
           </p>
         )}

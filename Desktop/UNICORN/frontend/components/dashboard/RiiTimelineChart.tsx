@@ -112,7 +112,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
           <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Risk Trend (30 Days)</h2>
           {riskDelta !== undefined && riskDelta !== null && (
             <span className={`text-sm font-semibold px-2 py-0.5 rounded ${
-              riskDelta > 0 ? "text-red-400 bg-red-400/10" : "text-green-400 bg-green-400/10"
+              riskDelta > 0 ? "text-red-600 bg-red-400/10" : "text-green-600 bg-green-400/10"
             }`}>
               {riskDelta > 0 ? "+" : ""}{riskDelta.toFixed(1)} {uiState === "low" ? "volatility delta" : "risk delta"}
             </span>
@@ -169,7 +169,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
           </p>
         </div>
         <div className="text-right">
-          <p className={`text-lg font-bold ${totalDelta > 2 ? "text-red-400" : totalDelta < -2 ? "text-green-400" : "text-gray-600"}`}>
+          <p className={`text-lg font-bold ${totalDelta > 2 ? "text-red-600" : totalDelta < -2 ? "text-green-600" : "text-gray-600"}`}>
             {totalDelta > 0 ? "+" : ""}{totalDelta.toFixed(1)}
           </p>
           <p className="text-[10px] text-gray-600 mt-0.5">{uiState === "low" ? "Stability delta" : "RII delta"} ({entries.length}d)</p>
@@ -185,12 +185,12 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
               RII {hovered.rii.toFixed(1)}
             </span>
             {hovered.delta_rii !== null && (
-              <span className={hovered.delta_rii > 0 ? "text-red-400" : "text-green-400"}>
+              <span className={hovered.delta_rii > 0 ? "text-red-600" : "text-green-600"}>
                 {hovered.delta_rii > 0 ? "+" : ""}{hovered.delta_rii.toFixed(1)} pts
               </span>
             )}
             {hovered.drift_detected && (
-              <span className="text-amber-400 text-[10px] uppercase tracking-wide">
+              <span className="text-amber-600 text-[10px] uppercase tracking-wide">
                 · drift {hovered.drift_severity}
               </span>
             )}

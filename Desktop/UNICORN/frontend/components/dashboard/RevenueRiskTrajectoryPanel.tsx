@@ -56,9 +56,9 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
   }, [companyId])
 
   const getRiiColor = (rii: number): string => {
-    if (rii >= 70) return "text-red-400"
-    if (rii >= 40) return "text-amber-400"
-    return "text-green-400"
+    if (rii >= 70) return "text-red-600"
+    if (rii >= 40) return "text-amber-600"
+    return "text-green-600"
   }
 
   const getRiiLabel = (rii: number): string => {

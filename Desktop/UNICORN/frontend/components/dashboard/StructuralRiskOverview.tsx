@@ -26,8 +26,8 @@ export default function StructuralRiskOverview({
 }: StructuralRiskOverviewProps) {
   const getTrendColor = (trend: string) => {
     switch (trend) {
-      case "escalating": return "text-red-400"
-      case "improving": return "text-green-400"
+      case "escalating": return "text-red-600"
+      case "improving": return "text-green-600"
       case "unstable": return "text-yellow-400"
       default: return "text-gray-600"
     }
@@ -64,10 +64,10 @@ export default function StructuralRiskOverview({
 
   const getDriftColor = (status: string) => {
     switch (status) {
-      case "critical": return "text-red-400"
-      case "degrading": return "text-orange-400"
+      case "critical": return "text-red-600"
+      case "degrading": return "text-orange-600"
       case "watch": return "text-yellow-400"
-      default: return "text-green-400"
+      default: return "text-green-600"
     }
   }
 
@@ -80,9 +80,9 @@ export default function StructuralRiskOverview({
 
   const getIntegrityColor = (status: string) => {
     switch (status) {
-      case "Structural Misalignment": return "text-red-400"
-      case "Alignment Risk Detected": return "text-orange-400"
-      case "Stable": return "text-green-400"
+      case "Structural Misalignment": return "text-red-600"
+      case "Alignment Risk Detected": return "text-orange-600"
+      case "Stable": return "text-green-600"
       default: return "text-gray-600"
     }
   }
@@ -144,7 +144,7 @@ export default function StructuralRiskOverview({
 
       <p className="text-xs text-gray-600 mt-6">
         Breakdown by alignment, ICP, anchors, and positioning is in the{" "}
-        <a href="#revenue-alignment-map" className="text-cyan-600 hover:text-cyan-400 hover:underline">
+        <a href="#revenue-alignment-map" className="text-cyan-600 hover:text-blue-600 hover:underline">
           Revenue-Stage Alignment Map
         </a>{" "}
         below — not duplicated here.

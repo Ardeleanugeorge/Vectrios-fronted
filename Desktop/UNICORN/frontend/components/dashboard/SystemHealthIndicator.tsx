@@ -30,27 +30,27 @@ export default function SystemHealthIndicator({
     if (score >= 70) {
       return {
         label: "System stability: Strong",
-        color: "text-green-400",
+        color: "text-green-600",
         bgColor: "bg-green-500"
       }
     }
     if (score >= 40) {
       return {
         label: "System stability: Moderate",
-        color: "text-amber-400",
+        color: "text-amber-600",
         bgColor: "bg-amber-500"
       }
     }
     if (score >= 20) {
       return {
         label: "System stability: Needs attention",
-        color: "text-orange-400",
+        color: "text-orange-600",
         bgColor: "bg-orange-500"
       }
     }
     return {
       label: "Critical instability",
-      color: "text-red-400",
+      color: "text-red-600",
       bgColor: "bg-red-500"
     }
   }
@@ -66,7 +66,7 @@ export default function SystemHealthIndicator({
     const absDelta = Math.abs(healthDelta)
     
     return (
-      <span className={`text-xs font-medium ${isImproving ? 'text-green-400' : 'text-red-400'}`}>
+      <span className={`text-xs font-medium ${isImproving ? 'text-green-600' : 'text-red-600'}`}>
         {isImproving ? '↑' : '↓'} {absDelta.toFixed(0)} {isImproving ? 'improvement' : 'deterioration'} since last monitoring cycle
       </span>
     )
@@ -116,12 +116,12 @@ export default function SystemHealthIndicator({
         // Determine severity icon based on health score
         const getSeverityIcon = (score: number): { icon: string; color: string } => {
           if (score < 20) {
-            return { icon: "⛔", color: "text-red-400" } // Critical
+            return { icon: "⛔", color: "text-red-600" } // Critical
           }
           if (score < 40) {
-            return { icon: "⚠", color: "text-orange-400" } // Warning
+            return { icon: "⚠", color: "text-orange-600" } // Warning
           }
-          return { icon: "⚡", color: "text-amber-400" } // Structural
+          return { icon: "⚡", color: "text-amber-600" } // Structural
         }
         
         const severity = getSeverityIcon(healthScore)
@@ -136,7 +136,7 @@ export default function SystemHealthIndicator({
               <span>{primaryRiskDriver}</span>
             </div>
             <p className="text-[10px] text-gray-600 mt-1">
-              <a href="#revenue-alignment-map" className="text-cyan-600 hover:text-cyan-400 hover:underline">
+              <a href="#revenue-alignment-map" className="text-cyan-600 hover:text-blue-600 hover:underline">
                 Open Alignment Map
               </a>
             </p>

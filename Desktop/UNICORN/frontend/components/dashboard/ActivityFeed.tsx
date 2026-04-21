@@ -63,13 +63,13 @@ export default function ActivityFeed({ companyId, defaultCollapsed = false }: Ac
   const getTypeColor = (type: string) => {
     switch (type) {
       case "incident":
-        return "bg-red-500/20 text-red-400 border-red-500/30"
+        return "bg-red-500/20 text-red-600 border-red-500/30"
       case "alert":
-        return "bg-orange-500/20 text-orange-400 border-orange-500/30"
+        return "bg-orange-500/20 text-orange-600 border-orange-500/30"
       case "signal":
-        return "bg-amber-500/20 text-amber-400 border-amber-500/30"
+        return "bg-amber-500/20 text-amber-600 border-amber-500/30"
       case "drift":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/30"
+        return "bg-blue-500/20 text-blue-600 border-blue-500/30"
       case "exposure_update":
         return "bg-purple-500/20 text-purple-400 border-purple-500/30"
       default:

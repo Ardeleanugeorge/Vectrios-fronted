@@ -18,14 +18,14 @@ export default function RevenueImpactCard({ revenueImpact }: RevenueImpactCardPr
       <div className="grid md:grid-cols-3 gap-6">
         <div>
           <p className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Estimated Close Rate Erosion</p>
-          <p className="text-3xl font-bold text-red-400">
+          <p className="text-3xl font-bold text-red-600">
             {revenueImpact.projected_close_rate_drop?.toFixed(1)}%
           </p>
         </div>
         {revenueImpact.projected_monthly_revenue_impact && (
           <div>
             <p className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Projected Monthly Exposure</p>
-            <p className="text-3xl font-bold text-red-400">
+            <p className="text-3xl font-bold text-red-600">
               ${revenueImpact.projected_monthly_revenue_impact.toLocaleString()}
             </p>
           </div>

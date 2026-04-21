@@ -107,14 +107,14 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
 
   const getSeverityColor = (severity: string, isHistorical: boolean) => {
     if (isHistorical && (riiScore !== null && riiScore < 40)) {
-      return "bg-amber-500/20 text-amber-300 border-amber-500/30"
+      return "bg-amber-500/20 text-amber-600 border-amber-500/30"
     }
     switch (severity) {
       case "critical":
       case "high":
-        return "bg-red-500/20 text-red-400 border-red-500/30"
+        return "bg-red-500/20 text-red-600 border-red-500/30"
       case "medium":
-        return "bg-amber-500/20 text-amber-400 border-amber-500/30"
+        return "bg-amber-500/20 text-amber-600 border-amber-500/30"
       default:
         return "bg-gray-500/20 text-gray-600 border-gray-500/30"
     }

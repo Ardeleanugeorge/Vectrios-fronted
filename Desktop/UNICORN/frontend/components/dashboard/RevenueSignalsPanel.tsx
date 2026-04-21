@@ -64,11 +64,11 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "critical":
-        return "bg-red-500/20 text-red-400 border-red-500/30"
+        return "bg-red-500/20 text-red-600 border-red-500/30"
       case "warning":
-        return "bg-amber-500/20 text-amber-400 border-amber-500/30"
+        return "bg-amber-500/20 text-amber-600 border-amber-500/30"
       case "info":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/30"
+        return "bg-blue-500/20 text-blue-600 border-blue-500/30"
       default:
         return "bg-gray-500/20 text-gray-600 border-gray-500/30"
     }

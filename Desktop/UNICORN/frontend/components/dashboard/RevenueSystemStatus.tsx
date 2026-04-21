@@ -55,7 +55,7 @@ export default function RevenueSystemStatus({
       
       {hasExposure ? (
         <div>
-          <p className={`text-lg font-semibold mb-2 ${uiState === "low" ? "text-emerald-300" : "text-amber-400"}`}>
+          <p className={`text-lg font-semibold mb-2 ${uiState === "low" ? "text-emerald-600" : "text-amber-600"}`}>
             {uiState === "low" ? "Optimization opportunity identified" : "Revenue inefficiency detected"}
           </p>
           <p className="text-sm text-gray-600">

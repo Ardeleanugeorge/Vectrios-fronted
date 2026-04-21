@@ -122,14 +122,14 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
         <div className="flex items-center gap-2">
           <span className="w-3 h-1 rounded-full bg-red-500 inline-block" />
           <span className="text-xs text-gray-600">
-            No action: <span className="text-red-400 font-semibold">{fmt(data.no_action[12])}</span>
+            No action: <span className="text-red-600 font-semibold">{fmt(data.no_action[12])}</span>
             <span className="text-gray-600 ml-1">(−{fmt(data.annual_exposure)})</span>
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-1 rounded-full bg-green-500 inline-block" />
           <span className="text-xs text-gray-600">
-            With fix: <span className="text-green-400 font-semibold">{fmt(data.with_fix[12])}</span>
+            With fix: <span className="text-green-600 font-semibold">{fmt(data.with_fix[12])}</span>
             <span className="text-gray-600 ml-1">(+{fmt(data.recovery_potential)})</span>
           </span>
         </div>

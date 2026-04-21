@@ -29,7 +29,7 @@ export default function RevenueExposureHero({
         <div>
           <div className="mb-6">
             <p className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Directional Compression Detected</p>
-            <p className="text-5xl font-bold text-amber-400 mb-2">
+            <p className="text-5xl font-bold text-amber-600 mb-2">
               ${exposureValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </p>
             <p className="text-sm text-gray-600">Estimated Monthly Exposure</p>
