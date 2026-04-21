@@ -92,22 +92,22 @@ function MetricRow({ label, data, higherIsBetter }: {
       {/* Track — full width wrapper so dot can overflow */}
       <div className="relative w-full" style={{ paddingTop: "2px", paddingBottom: "2px" }}>
         {/* Track background */}
-        <div className="relative w-full h-3 bg-gray-800 rounded-full border border-gray-200/50">
+        <div className="relative w-full h-3 bg-gray-100 rounded-full border border-gray-300">
           {/* IQ range band */}
           <div
-            className="absolute top-0 h-full bg-gray-600/40 rounded-full"
+            className="absolute top-0 h-full bg-blue-100 rounded-full"
             style={{ left: bandLeft, width: bandWidth }}
           />
           {/* Median line */}
           <div
-            className="absolute top-0 h-full w-0.5 bg-gray-400/70 rounded-full"
+            className="absolute top-0 h-full w-0.5 bg-gray-500 rounded-full"
             style={{ left: `${medianPos}%` }}
           />
         </div>
 
         {/* Your score dot — outside track so it's never clipped */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-[#ffffff] bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.6)] z-10 pointer-events-none"
+          className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-white bg-blue-500 z-10 pointer-events-none"
           style={{ left: `clamp(0px, calc(${yourPos}% - 7px), calc(100% - 14px))` }}
         />
       </div>
@@ -117,7 +117,7 @@ function MetricRow({ label, data, higherIsBetter }: {
         <span className="text-gray-700">0</span>
         <div className="flex items-center gap-4 text-gray-600">
           <span>
-            You: <span className="text-cyan-400 font-bold">{data.score.toFixed(0)}</span>
+            You: <span className="text-blue-600 font-bold">{data.score.toFixed(0)}</span>
           </span>
           <span>Median: <span className="text-gray-700">{data.median.toFixed(0)}</span></span>
           <span>Top 25%: <span className="text-gray-700">{data.top_quartile.toFixed(0)}</span></span>
