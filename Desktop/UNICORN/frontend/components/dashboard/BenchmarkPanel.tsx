@@ -195,9 +195,9 @@ export default function BenchmarkPanel({ companyId }: Props) {
               ARR: {data.context.arr_range}
             </span>
           )}
-          <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-600 rounded border border-gray-200">
-            {data.context.industry}
-          </span>
+
+
+
 
 
 
