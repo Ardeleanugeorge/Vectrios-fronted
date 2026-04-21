@@ -59,19 +59,19 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
   }, [companyId])
 
   const getConfidenceLabel = (s: number) => s >= 0.7 ? "High" : s >= 0.5 ? "Moderate" : "Low"
-  const getConfidenceColor = (s: number) => s >= 0.7 ? "text-green-400" : s >= 0.5 ? "text-amber-400" : "text-gray-500"
+  const getConfidenceColor = (s: number) => s >= 0.7 ? "text-green-400" : s >= 0.5 ? "text-amber-400" : "text-gray-600"
 
   if (loading) return (
     <div id="revenue-optimization-model" className="p-8 bg-gray-50 rounded-lg border border-gray-200 scroll-mt-24">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Optimization Model</h2>
-      <p className="text-sm text-gray-500">Calculating revenue impact...</p>
+      <p className="text-sm text-gray-600">Calculating revenue impact...</p>
     </div>
   )
 
   if (!forecast) return (
     <div id="revenue-optimization-model" className="p-8 bg-gray-50 rounded-lg border border-gray-200 scroll-mt-24">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Optimization Model</h2>
-      <p className="text-sm text-gray-500">Insufficient data for revenue calculation.</p>
+      <p className="text-sm text-gray-600">Insufficient data for revenue calculation.</p>
     </div>
   )
 
@@ -82,7 +82,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
     <div id="revenue-optimization-model" className="p-8 bg-gray-50 rounded-lg border border-gray-200 space-y-6 scroll-mt-24">
       <div>
         <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Optimization Model</h2>
-        <p className="text-xs text-gray-500 mt-1 uppercase tracking-wide">Messaging impact on ARR</p>
+        <p className="text-xs text-gray-600 mt-1 uppercase tracking-wide">Messaging impact on ARR</p>
       </div>
 
       {/* -- PRIMARY: Annual Revenue at Risk --------------------------- */}
@@ -102,7 +102,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
             </div>
           )}
           {forecast.close_rate_compression !== undefined && (
-            <div className="mt-1 text-xs text-gray-500">
+            <div className="mt-1 text-xs text-gray-600">
               {uiState === "low" ? "Performance improvement available: " : "Modeled close-rate impact: "}
               <span className={uiState === "low" ? "text-emerald-300" : "text-red-400"}>
                 {uiState === "low" ? "+" : "-"}{Math.abs(forecast.close_rate_compression).toFixed(1)}%
@@ -115,7 +115,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
             </div>
           )}
           {uiState !== "low" && (
-            <p className="text-[11px] text-gray-500 mt-3 pt-3 border-t border-gray-200/80">
+            <p className="text-[11px] text-gray-600 mt-3 pt-3 border-t border-gray-200/80">
               Driven by scale — not high structural risk. Represents modeled exposure, not immediate loss.
             </p>
           )}
@@ -132,7 +132,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
             +{formatCurrency(forecast.recovery_potential_annual!)}
             <span className="text-base font-normal text-green-400/60 ml-2">/ year</span>
           </div>
-          <div className="mt-1 text-xs text-gray-500">
+          <div className="mt-1 text-xs text-gray-600">
             If messaging is aligned to target close rate
           </div>
         </div>
@@ -141,13 +141,13 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
       {/* -- SECONDARY METRICS ----------------------------------------- */}
       <div className="grid grid-cols-2 gap-4 pt-2">
         <div>
-          <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Monthly Exposure</div>
+          <div className="text-xs text-gray-600 mb-1 uppercase tracking-wide">Monthly Exposure</div>
           <div className="text-xl font-bold text-amber-400">
             {formatCurrency(forecast.estimated_monthly_exposure)}
           </div>
         </div>
         <div>
-          <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
+          <div className="text-xs text-gray-600 mb-1 uppercase tracking-wide">
             {uiState === "low" ? "Performance Upside" : "Close-Rate Risk"}
           </div>
           <div
@@ -169,10 +169,10 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
       {(forecast.arr_used || forecast.acv_used || forecast.pipeline_deals) && (
         <div className="pt-4 border-t border-gray-200">
           <div className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Model Inputs</div>
-          <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
-            {forecast.arr_used && <span>ARR: <span className="text-gray-500">{formatCurrency(forecast.arr_used)}</span></span>}
-            {forecast.acv_used && <span>ACV: <span className="text-gray-500">{formatCurrency(forecast.acv_used)}</span></span>}
-            {forecast.pipeline_deals && <span>Pipeline: <span className="text-gray-500">{Math.round(forecast.pipeline_deals)} deals/yr</span></span>}
+          <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-gray-600">
+            {forecast.arr_used && <span>ARR: <span className="text-gray-600">{formatCurrency(forecast.arr_used)}</span></span>}
+            {forecast.acv_used && <span>ACV: <span className="text-gray-600">{formatCurrency(forecast.acv_used)}</span></span>}
+            {forecast.pipeline_deals && <span>Pipeline: <span className="text-gray-600">{Math.round(forecast.pipeline_deals)} deals/yr</span></span>}
           </div>
         </div>
       )}
@@ -180,17 +180,17 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
       {/* -- CONFIDENCE ------------------------------------------------ */}
       <div className="pt-4 border-t border-gray-200 flex items-center justify-between">
         <div>
-          <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Forecast Confidence</div>
+          <div className="text-xs text-gray-600 mb-1 uppercase tracking-wide">Forecast Confidence</div>
           <div className={`text-lg font-semibold ${getConfidenceColor(forecast.confidence_score)}`}>
             {getConfidenceLabel(forecast.confidence_score)} ({(forecast.confidence_score * 100).toFixed(0)}%)
           </div>
         </div>
         {forecast.drivers && forecast.drivers.length > 0 && (
           <div className="text-right">
-            <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Drivers</div>
+            <div className="text-xs text-gray-600 mb-1 uppercase tracking-wide">Drivers</div>
             <ul className="space-y-0.5">
               {forecast.drivers.slice(0, 2).map((d, i) => (
-                <li key={i} className="text-xs text-gray-500">· {d}</li>
+                <li key={i} className="text-xs text-gray-600">· {d}</li>
               ))}
             </ul>
           </div>

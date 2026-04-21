@@ -43,11 +43,11 @@ export default function RevenueSystemStatus({
     <div className="p-8 bg-gray-50 rounded-lg border-2 border-gray-200 mb-6">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-semibold text-gray-300 mb-2">Revenue System Status</h2>
+          <h2 className="text-2xl font-semibold text-gray-700 mb-2">Revenue System Status</h2>
           {monitoringActive && (
             <div className="flex items-center gap-2 mt-2">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              <span className="text-xs text-gray-500 uppercase tracking-wide">Monitoring Active</span>
+              <span className="text-xs text-gray-600 uppercase tracking-wide">Monitoring Active</span>
             </div>
           )}
         </div>
@@ -58,10 +58,10 @@ export default function RevenueSystemStatus({
           <p className={`text-lg font-semibold mb-2 ${uiState === "low" ? "text-emerald-300" : "text-amber-400"}`}>
             {uiState === "low" ? "Optimization opportunity identified" : "Revenue inefficiency detected"}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-600">
             Estimated monthly exposure: {compact ? <span title={compact.full}>{compact.short}</span> : "Not available"}
           </p>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-gray-600 mt-2">
             {uiState === "low"
               ? "Structurally healthy — low revenue risk."
               : `Versus last scan: ${deltaDirection === "better" ? "improving" : "worsening"} (${deltaDirection === "better" ? "structural gains" : "structural gaps"}).`}
@@ -69,8 +69,8 @@ export default function RevenueSystemStatus({
         </div>
       ) : (
         <div>
-          <p className="text-lg font-semibold text-gray-300 mb-2">Revenue Monitoring Active</p>
-          <p className="text-sm text-gray-500">
+          <p className="text-lg font-semibold text-gray-700 mb-2">Revenue Monitoring Active</p>
+          <p className="text-sm text-gray-600">
             Structural signals are being monitored. Financial exposure is not yet measurable with current evidence.
           </p>
         </div>
@@ -78,9 +78,9 @@ export default function RevenueSystemStatus({
       
       {/* Signal coverage note — hidden when data is insufficient */}
       {(modelConfidence || confident) && (
-        <div className="mt-6 pt-4 border-t border-gray-200 text-xs text-gray-500">
+        <div className="mt-6 pt-4 border-t border-gray-200 text-xs text-gray-600">
           <span>Signal Coverage: </span>
-          <span className="text-gray-500 font-medium capitalize">{modelConfidence || impactConfidence}</span>
+          <span className="text-gray-600 font-medium capitalize">{modelConfidence || impactConfidence}</span>
         </div>
       )}
     </div>

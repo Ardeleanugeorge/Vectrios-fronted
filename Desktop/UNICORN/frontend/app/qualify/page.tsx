@@ -82,10 +82,10 @@ export default function QualifyPage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Before You Apply
           </h1>
-          <p className="text-xl text-gray-400 mb-2">
+          <p className="text-xl text-gray-600 mb-2">
             Vectri<span className="text-cyan-400">OS</span> performs structural revenue risk assessments for B2B SaaS companies with an active sales motion.
           </p>
-          <p className="text-lg text-gray-500">
+          <p className="text-lg text-gray-600">
             To preserve diagnostic integrity, we onboard only companies that meet the following baseline criteria.
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.b2b_saas === true
                     ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
-                    : "border-gray-200 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
                 Yes
@@ -114,8 +114,8 @@ export default function QualifyPage() {
                 onClick={() => handleAnswer("b2b_saas", false)}
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.b2b_saas === false
-                    ? "border-gray-600 bg-gray-800/30 text-gray-400"
-                    : "border-gray-200 hover:border-gray-600 text-gray-300"
+                    ? "border-gray-600 bg-gray-800/30 text-gray-600"
+                    : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
                 No
@@ -136,7 +136,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.active_sales_motion === true
                     ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
-                    : "border-gray-200 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
                 Yes
@@ -146,8 +146,8 @@ export default function QualifyPage() {
                 onClick={() => handleAnswer("active_sales_motion", false)}
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.active_sales_motion === false
-                    ? "border-gray-600 bg-gray-800/30 text-gray-400"
-                    : "border-gray-200 hover:border-gray-600 text-gray-300"
+                    ? "border-gray-600 bg-gray-800/30 text-gray-600"
+                    : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
                 No
@@ -168,7 +168,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.publishing_content === true
                     ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
-                    : "border-gray-200 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
                 Yes
@@ -178,8 +178,8 @@ export default function QualifyPage() {
                 onClick={() => handleAnswer("publishing_content", false)}
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.publishing_content === false
-                    ? "border-gray-600 bg-gray-800/30 text-gray-400"
-                    : "border-gray-200 hover:border-gray-600 text-gray-300"
+                    ? "border-gray-600 bg-gray-800/30 text-gray-600"
+                    : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
                 No
@@ -200,7 +200,7 @@ export default function QualifyPage() {
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.close_rate_matters === true
                     ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
-                    : "border-gray-200 hover:border-gray-600 text-gray-300"
+                    : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
                 Yes
@@ -210,8 +210,8 @@ export default function QualifyPage() {
                 onClick={() => handleAnswer("close_rate_matters", false)}
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.close_rate_matters === false
-                    ? "border-gray-600 bg-gray-800/30 text-gray-400"
-                    : "border-gray-200 hover:border-gray-600 text-gray-300"
+                    ? "border-gray-600 bg-gray-800/30 text-gray-600"
+                    : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
                 No
@@ -223,10 +223,10 @@ export default function QualifyPage() {
         {/* Status Message */}
         {allAnswered && !allYes && (
           <div className="mb-6 p-4 bg-gray-800/50 border border-gray-200 rounded-lg text-center">
-            <p className="text-gray-300">
+            <p className="text-gray-700">
               This assessment is currently designed for B2B SaaS teams with active revenue motion.
             </p>
-            <p className="text-gray-500 text-sm mt-2">
+            <p className="text-gray-600 text-sm mt-2">
               If your company evolves into this stage, we'd be glad to reassess eligibility.
             </p>
           </div>
@@ -244,13 +244,13 @@ export default function QualifyPage() {
             className={`px-10 py-4 rounded-lg font-bold transition text-lg ${
               isQualified
                 ? "bg-cyan-500 hover:bg-cyan-400 text-black cursor-pointer"
-                : "bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-200"
+                : "bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-200"
             }`}
           >
             {checking ? "Checking..." : "Continue to Strategic Application"}
           </button>
           {isQualified && (
-            <p className="mt-4 text-sm text-gray-500">
+            <p className="mt-4 text-sm text-gray-600">
               Only qualified companies proceed to diagnostic review.
             </p>
           )}

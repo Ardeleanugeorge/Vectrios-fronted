@@ -45,13 +45,13 @@ export default function AlertPanel({ alerts, onMarkAlertRead }: AlertPanelProps)
                   }`}>
                     {alert.severity_level}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-gray-600">
                     {alert.alert_type} • {alert.metric_name?.replace("_", " ") || "Structural"}
                   </span>
                 </div>
-                <p className="text-sm text-gray-300">{alert.message}</p>
+                <p className="text-sm text-gray-700">{alert.message}</p>
                 {alert.created_at && (
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-gray-600 mt-2">
                     {new Date(alert.created_at).toLocaleDateString('en-US', { 
                       month: 'short', 
                       day: 'numeric', 

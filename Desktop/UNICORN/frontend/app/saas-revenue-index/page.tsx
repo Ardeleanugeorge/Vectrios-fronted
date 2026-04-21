@@ -38,7 +38,7 @@ interface IndexData {
 }
 
 function getRiskColor(risk: string | null) {
-  if (!risk) return { bg: "bg-gray-500/10", text: "text-gray-400", dot: "bg-gray-500" };
+  if (!risk) return { bg: "bg-gray-500/10", text: "text-gray-600", dot: "bg-gray-500" };
   const r = risk.toLowerCase();
   if (r.includes("high"))     return { bg: "bg-red-500/10",    text: "text-red-400",    dot: "bg-red-500" };
   if (r.includes("moderate")) return { bg: "bg-yellow-500/10", text: "text-yellow-400", dot: "bg-yellow-500" };
@@ -137,7 +137,7 @@ export default function SaaSRevenueIndex() {
           <button
             type="button"
             onClick={handleBack}
-            className="text-xs text-gray-400 hover:text-gray-900 transition-colors"
+            className="text-xs text-gray-600 hover:text-gray-900 transition-colors"
           >
             Back
           </button>
@@ -157,10 +157,10 @@ export default function SaaSRevenueIndex() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
             SaaS Revenue Architecture Index
           </h1>
-          <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-2">
+          <p className="text-gray-700 text-lg max-w-2xl mx-auto mb-2">
             Most SaaS companies are losing $120K–$300K/year from messaging gaps they don&apos;t see.
           </p>
-          <p className="text-gray-500 text-sm max-w-2xl mx-auto">
+          <p className="text-gray-600 text-sm max-w-2xl mx-auto">
             This index shows how clearly each company&apos;s story supports revenue — so you can see where you stand.
           </p>
         </div>
@@ -175,11 +175,11 @@ export default function SaaSRevenueIndex() {
               ].map(stat => (
                 <div key={stat.label} className="rounded-xl bg-white/[0.03] border border-white/5 p-5 text-center">
                   <div className={`text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
-                  <div className="text-xs text-gray-500">{stat.label}</div>
+                  <div className="text-xs text-gray-600">{stat.label}</div>
                 </div>
               ))}
             </div>
-            <p className="text-xs sm:text-sm text-gray-500 mb-10 max-w-3xl mx-auto text-center">
+            <p className="text-xs sm:text-sm text-gray-600 mb-10 max-w-3xl mx-auto text-center">
               Companies in this dataset quietly lose an estimated
               <span className="text-amber-300 font-semibold"> $8K–$25K/month</span>{" "}
               from messaging gaps that never show up in dashboards.
@@ -285,7 +285,7 @@ export default function SaaSRevenueIndex() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
                   filter === f
                     ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300"
-                    : "bg-white/[0.03] border-white/10 text-gray-400 hover:border-white/20"
+                    : "bg-white/[0.03] border-white/10 text-gray-600 hover:border-white/20"
                 }`}
               >
                 {f === "all" ? "All Companies" :
@@ -306,7 +306,7 @@ export default function SaaSRevenueIndex() {
         {/* Table */}
         <div className="rounded-2xl border border-white/5 overflow-hidden">
           {/* Table header */}
-          <div className="grid grid-cols-[2.5rem_1fr_7rem_5rem_5rem_5rem_5rem_6rem] gap-2 px-5 py-3 bg-white/[0.02] border-b border-white/5 text-xs text-gray-500 font-medium uppercase tracking-widest">
+          <div className="grid grid-cols-[2.5rem_1fr_7rem_5rem_5rem_5rem_5rem_6rem] gap-2 px-5 py-3 bg-white/[0.02] border-b border-white/5 text-xs text-gray-600 font-medium uppercase tracking-widest">
             <span>#</span>
             <span>Company</span>
             <span className="text-center">RII Score</span>
@@ -406,7 +406,7 @@ export default function SaaSRevenueIndex() {
 
         {/* Bottom CTA */}
         <div className="mt-14 text-center rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 p-10">
-          <p className="text-gray-400 text-sm mb-2">Don't see your company?</p>
+          <p className="text-gray-600 text-sm mb-2">Don't see your company?</p>
           <h3 className="text-2xl font-bold text-gray-900 mb-6">
             Run a free Revenue Architecture Scan
           </h3>

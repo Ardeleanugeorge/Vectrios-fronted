@@ -67,7 +67,7 @@ const SEV_META: Record<string, { label: string; dot: string; badge: string; bord
   low: {
     label: "LOW",
     dot: "bg-gray-500",
-    badge: "bg-gray-500/15 text-gray-500 border-gray-500/30",
+    badge: "bg-gray-500/15 text-gray-600 border-gray-500/30",
     border: "border-l-gray-500",
   },
 }
@@ -81,7 +81,7 @@ function IncidentCard({ inc }: { inc: RevenueIncident }) {
         <div className="flex items-start justify-between gap-3 mb-2">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <span className={`w-2 h-2 rounded-full flex-shrink-0 ${sev.dot}`} />
-          <span className="text-sm font-semibold text-gray-200 leading-tight">{inc.title}</span>
+          <span className="text-sm font-semibold text-gray-700 leading-tight">{inc.title}</span>
           {inc.is_persistent && (
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded border bg-purple-500/15 text-purple-400 border-purple-500/30 flex-shrink-0">
               PERSISTENT — {inc.days_detected}d
@@ -113,14 +113,14 @@ function IncidentCard({ inc }: { inc: RevenueIncident }) {
         {inc.estimated_monthly_exposure != null && inc.estimated_monthly_exposure > 0 && (
           <div>
             <span className="text-[10px] text-gray-600 uppercase tracking-wide">Monthly</span>
-            <p className="text-sm font-semibold text-gray-500">{fmt(inc.estimated_monthly_exposure)}</p>
+            <p className="text-sm font-semibold text-gray-600">{fmt(inc.estimated_monthly_exposure)}</p>
           </div>
         )}
       </div>
 
       {/* Description */}
       {inc.description && (
-        <p className="text-xs text-gray-500 leading-relaxed ml-4">{inc.description}</p>
+        <p className="text-xs text-gray-600 leading-relaxed ml-4">{inc.description}</p>
       )}
     </div>
   )
@@ -152,7 +152,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Incidents</h2>
       <div className="flex gap-2 items-center">
         <span className="w-2 h-2 rounded-full bg-gray-700 animate-pulse" />
-        <p className="text-sm text-gray-500">Scanning for incidents...</p>
+        <p className="text-sm text-gray-600">Scanning for incidents...</p>
       </div>
     </div>
   )
@@ -162,7 +162,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Incidents</h2>
       <div className="flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-green-500" />
-        <p className="text-sm text-gray-500">No active incidents detected.</p>
+        <p className="text-sm text-gray-600">No active incidents detected.</p>
       </div>
       <p className="text-xs text-gray-600 mt-1 ml-4">All revenue signals within normal range.</p>
     </div>
@@ -175,7 +175,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Incidents</h2>
-            <p className="text-xs text-gray-500 mt-0.5">Live structural risk events</p>
+            <p className="text-xs text-gray-600 mt-0.5">Live structural risk events</p>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
@@ -193,7 +193,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
           )}
           <div>
             <p className="text-[10px] text-gray-600 uppercase tracking-wide">Total Incidents</p>
-            <p className="text-lg font-bold text-gray-300">{open.length}</p>
+            <p className="text-lg font-bold text-gray-700">{open.length}</p>
           </div>
           {persistentCount > 0 && (
             <div>

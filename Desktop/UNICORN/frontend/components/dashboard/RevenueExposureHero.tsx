@@ -28,22 +28,22 @@ export default function RevenueExposureHero({
       {hasExposure ? (
         <div>
           <div className="mb-6">
-            <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide">Directional Compression Detected</p>
+            <p className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Directional Compression Detected</p>
             <p className="text-5xl font-bold text-amber-400 mb-2">
               ${exposureValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </p>
-            <p className="text-sm text-gray-500">Estimated Monthly Exposure</p>
+            <p className="text-sm text-gray-600">Estimated Monthly Exposure</p>
           </div>
           <div className="pt-4 border-t border-gray-200">
-            <p className="text-xs text-gray-500">
-              Confidence: <span className="text-gray-500 font-medium">{impactConfidence.charAt(0).toUpperCase() + impactConfidence.slice(1)}</span>
+            <p className="text-xs text-gray-600">
+              Confidence: <span className="text-gray-600 font-medium">{impactConfidence.charAt(0).toUpperCase() + impactConfidence.slice(1)}</span>
             </p>
           </div>
         </div>
       ) : (
         <div>
-          <p className="text-2xl font-semibold text-gray-300 mb-2">Revenue Monitoring Active</p>
-          <p className="text-sm text-gray-500">Structural risk signals detected. No measurable revenue compression observed.</p>
+          <p className="text-2xl font-semibold text-gray-700 mb-2">Revenue Monitoring Active</p>
+          <p className="text-sm text-gray-600">Structural risk signals detected. No measurable revenue compression observed.</p>
         </div>
       )}
     </div>

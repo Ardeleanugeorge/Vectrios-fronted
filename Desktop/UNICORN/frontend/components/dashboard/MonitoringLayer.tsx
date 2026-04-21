@@ -442,7 +442,7 @@ export default function MonitoringLayer({
       {hasCriticalAlerts && (
         <div className={`p-4 rounded border-l-4 ${ (rii !== null && rii < 40) ? "bg-amber-500/10 border-amber-500" : "bg-red-500/10 border-red-500" }`}>
           <p className={`text-sm font-semibold mb-1 ${ (rii !== null && rii < 40) ? "text-amber-400" : "text-red-400" }`}>Recent critical structural events detected</p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-600">
             {criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? 's' : ''} require immediate attention.
           </p>
         </div>
@@ -467,8 +467,8 @@ export default function MonitoringLayer({
       {/* REVENUE TRUTH BANNER — unified semantic layer */}
       <div className="p-5 rounded-lg border border-cyan-700/30 bg-cyan-950/10">
         <p className="text-sm font-semibold text-cyan-300">{truth.headline}</p>
-        <p className="text-xs text-gray-300 mt-1">{truth.subtext}{truthLossPct ? ` — ${truthLossPct}` : ""}</p>
-        <p className="text-xs text-gray-500 mt-1">{truth.explanation}</p>
+        <p className="text-xs text-gray-700 mt-1">{truth.subtext}{truthLossPct ? ` — ${truthLossPct}` : ""}</p>
+        <p className="text-xs text-gray-600 mt-1">{truth.explanation}</p>
       </div>
 
       {/* FULL DIAGNOSTIC NUDGE — shown only when monitoring has NEVER run
@@ -480,7 +480,7 @@ export default function MonitoringLayer({
             <p className="text-sm font-semibold text-cyan-300">
               Run your first diagnostic to activate monitoring
             </p>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-gray-600 mt-0.5">
               One scan creates your baseline — monitoring then runs automatically every 24h.
             </p>
           </div>
@@ -504,12 +504,12 @@ export default function MonitoringLayer({
         }`}>
           {/* Header row */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
-            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Revenue Change (last scan)</p>
+            <p className="text-xs text-gray-600 uppercase tracking-wide font-medium">Revenue Change (last scan)</p>
             {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (typeof revenueDelta.delta_monthly_loss === "number" && revenueDelta.delta_monthly_loss !== 0) && (
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                 revenueDelta.trend_last_4 === "worsening" ? "text-red-400 bg-red-400/10" :
                 revenueDelta.trend_last_4 === "improving" ? "text-emerald-400 bg-emerald-400/10" :
-                "text-gray-500 bg-gray-800"
+                "text-gray-600 bg-gray-800"
               }`}>
                 {revenueDelta.trend_last_4 === "worsening" ? "🔺 Worsening" :
                  revenueDelta.trend_last_4 === "improving" ? "🔻 Improving" : "→ Stable"}
@@ -521,7 +521,7 @@ export default function MonitoringLayer({
           <div className="px-5 py-4">
             <p className={`text-2xl font-bold ${
               revenueDelta.direction === "worse" ? "text-red-400" :
-              revenueDelta.direction === "better" ? "text-emerald-400" : "text-gray-300"
+              revenueDelta.direction === "better" ? "text-emerald-400" : "text-gray-700"
             }`}>
               {revenueDelta.delta_monthly_loss > 0
                 ? `+$${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month worse`
@@ -530,7 +530,7 @@ export default function MonitoringLayer({
                 : "No change vs last scan"}
             </p>
             {typeof revenueDelta.delta_rii === "number" && revenueDelta.delta_rii !== 0 && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-600 mt-1">
                 RII {revenueDelta.delta_rii > 0 ? `+${revenueDelta.delta_rii}` : revenueDelta.delta_rii} pts since last scan
               </p>
             )}
@@ -541,10 +541,10 @@ export default function MonitoringLayer({
             <div className="px-5 pb-4 border-t border-white/5 pt-3">
               {revenueDelta.direction === "better" && posCount > 0 && (
                 <>
-                  <p className="text-xs text-gray-500 mb-2">Driven by:</p>
+                  <p className="text-xs text-gray-600 mb-2">Driven by:</p>
                   <ul className="space-y-1">
                     {(revenueDelta.drivers?.positives || []).map((d:any, i:number) => (
-                      <li key={`pos-${i}`} className="flex items-start gap-2 text-xs text-gray-300">
+                      <li key={`pos-${i}`} className="flex items-start gap-2 text-xs text-gray-700">
                         <span className="mt-0.5 shrink-0 text-emerald-400">•</span>
                         {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
                       </li>
@@ -554,10 +554,10 @@ export default function MonitoringLayer({
               )}
               {riskCount > 0 && (
                 <div className="mt-3">
-                  <p className="text-xs text-gray-500 mb-2">Risks to monitor:</p>
+                  <p className="text-xs text-gray-600 mb-2">Risks to monitor:</p>
                   <ul className="space-y-1">
                     {(revenueDelta.drivers?.risks || []).map((d:any, i:number) => (
-                      <li key={`risk-${i}`} className="flex items-start gap-2 text-xs text-gray-300">
+                      <li key={`risk-${i}`} className="flex items-start gap-2 text-xs text-gray-700">
                         <span className="mt-0.5 shrink-0 text-red-400">•</span>
                         {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
                       </li>
@@ -594,7 +594,7 @@ export default function MonitoringLayer({
         : "border-red-700/40 bg-red-50"
       }`}>
         <p className="text-lg font-semibold text-gray-900">{headline}</p>
-        <p className="text-sm text-gray-300 mt-1">{subtext}</p>
+        <p className="text-sm text-gray-700 mt-1">{subtext}</p>
         {uiState === "low" && (
           <p className="text-xs text-emerald-300/80 mt-2">
             Your system is structurally healthy, but small inefficiencies still create measurable upside.
@@ -605,7 +605,7 @@ export default function MonitoringLayer({
             +{improvementsDetected} improvement{improvementsDetected > 1 ? "s" : ""} detected since last scan.
           </p>
         )}
-        <p className="text-xs text-gray-500 mt-2">{effectiveTrendText}</p>
+        <p className="text-xs text-gray-600 mt-2">{effectiveTrendText}</p>
       </div>
 
       {/* MONITORING STATUS STRIP */}
@@ -666,7 +666,7 @@ export default function MonitoringLayer({
             {/* Cadence */}
             <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               <span className="text-gray-600 text-xs">Cadence</span>
-              <span className="text-gray-300 font-medium text-xs">24h auto</span>
+              <span className="text-gray-700 font-medium text-xs">24h auto</span>
             </div>
 
             {/* SLA band */}
@@ -868,7 +868,7 @@ export default function MonitoringLayer({
       {uiState === "low" && annualDelta !== null && annualDelta > 0 && (
         <div className="p-6 bg-emerald-950/10 border border-emerald-700/30 rounded-lg">
           <p className="text-sm font-semibold text-emerald-200">Summary</p>
-          <p className="text-sm text-gray-300 mt-1">
+          <p className="text-sm text-gray-700 mt-1">
             Your revenue system is strong. Addressing the 2–3 remaining gaps could unlock ~${Math.round(annualDelta / 1000) * 1000} annually.
           </p>
         </div>

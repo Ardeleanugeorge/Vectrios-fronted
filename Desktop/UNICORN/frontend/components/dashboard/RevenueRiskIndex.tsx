@@ -74,14 +74,14 @@ export default function RevenueRiskIndex({
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 tracking-tight">
           {RII_NAME}
         </h2>
-        <p className="text-sm text-gray-500 mb-3">
+        <p className="text-sm text-gray-600 mb-3">
           <abbr title={RII_TAGLINE} className="cursor-help font-semibold text-cyan-400/90 border-b border-dotted border-cyan-500/50">
             {RII_ABBREV}
           </abbr>
-          <span className="text-gray-500"> · </span>
+          <span className="text-gray-600"> · </span>
           <span title={RII_TAGLINE}>0–100 scale · lower is stronger architecture</span>
         </p>
-        <p className="text-xs text-gray-500 max-w-2xl mx-auto leading-relaxed mb-4">
+        <p className="text-xs text-gray-600 max-w-2xl mx-auto leading-relaxed mb-4">
           {RII_INTRO}{" "}
           <Link
             href={METHODOLOGY_RII_HREF}
@@ -113,18 +113,18 @@ export default function RevenueRiskIndex({
             {getRiskLabel()}
             {scoreClass === "LOW" && <span className="ml-2 text-emerald-400 text-xl" aria-hidden>✓</span>}
           </p>
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-gray-700">
             {heroBodyPrimary}
           </p>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-gray-600 mt-2">
             {heroBodySecondary}
           </p>
           </>
         ) : (
-          <p className="text-2xl font-bold text-gray-500 mb-4">Initializing</p>
+          <p className="text-2xl font-bold text-gray-600 mb-4">Initializing</p>
         )}
         {/* Visual legend — flex + separators so bands never read as one word */}
-        <div className="text-[11px] text-gray-500 mb-4 mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 max-w-xl mx-auto">
+        <div className="text-[11px] text-gray-600 mb-4 mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 max-w-xl mx-auto">
           <span>0–30: <span className="text-emerald-400">Excellent</span></span>
           <span className="text-gray-700" aria-hidden>
             ·
@@ -150,8 +150,8 @@ export default function RevenueRiskIndex({
         )}
         <div className="flex items-center justify-center gap-6 text-sm flex-wrap">
           <div>
-            <span className="text-gray-500">Data Coverage: </span>
-            <span className="font-semibold text-gray-300">
+            <span className="text-gray-600">Data Coverage: </span>
+            <span className="font-semibold text-gray-700">
               {(() => {
                 const cov = typeof coveragePct === "number" ? coveragePct : confidence
                 return <>
@@ -161,12 +161,12 @@ export default function RevenueRiskIndex({
             </span>
           </div>
           <div>
-            <span className="text-gray-500">Monitoring Coverage: </span>
-            <span className="font-semibold text-gray-300">Revenue-Stage Messaging</span>
+            <span className="text-gray-600">Monitoring Coverage: </span>
+            <span className="font-semibold text-gray-700">Revenue-Stage Messaging</span>
           </div>
           <div>
-            <span className="text-gray-500">Assessment Date: </span>
-            <span className="font-semibold text-gray-300">
+            <span className="text-gray-600">Assessment Date: </span>
+            <span className="font-semibold text-gray-700">
               {assessmentDate
                 ? new Date(assessmentDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
                 : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}

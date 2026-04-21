@@ -358,7 +358,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
             {useMonitoringSnapshot ? "Before (from latest monitoring snapshot)" : "Before (from crawl)"}
           </p>
-          <p className="text-sm text-gray-500 italic leading-relaxed">
+          <p className="text-sm text-gray-600 italic leading-relaxed">
             {hasRealBefore
               ? `"${fix.current_example}"`
               : useMonitoringSnapshot
@@ -389,7 +389,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
                   t === "INTENT MISMATCH" ? "Low CTR vs position on priority queries (GSC)" :
                   b
                 return (
-                  <li key={i} className="text-[11px] text-gray-500">{label}</li>
+                  <li key={i} className="text-[11px] text-gray-600">{label}</li>
                 )
               })}
             </ul>
@@ -399,7 +399,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
 
       {/* Why */}
       <div className="px-4 py-2.5 border-t border-gray-200/60 bg-gray-100">
-        <p className="text-[11px] text-gray-500">
+        <p className="text-[11px] text-gray-600">
           <span className="text-gray-600 font-semibold">Why: </span>{fix.reason}
         </p>
       </div>
@@ -434,10 +434,10 @@ export default function ActionableInsights({
   if (playbookLoading && !actionLayer?.fixes?.length) {
     return (
       <div className={`relative z-10 mb-8 p-6 bg-gray-50 rounded-lg border ${tone}`}>
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600 mb-4">
           Revenue playbook
         </h3>
-        <p className="text-sm text-gray-500 animate-pulse">Loading playbook…</p>
+        <p className="text-sm text-gray-600 animate-pulse">Loading playbook…</p>
       </div>
     )
   }
@@ -488,7 +488,7 @@ export default function ActionableInsights({
 
     return (
       <div className={`relative z-10 mb-8 p-6 bg-gray-50 rounded-lg border ${tone}`}>
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600 mb-4">
           Revenue playbook
         </h3>
 
@@ -500,11 +500,11 @@ export default function ActionableInsights({
               : "bg-gray-100 border-gray-200"
           }`}
         >
-          <p className={`text-sm font-bold ${isHigh ? "text-orange-400" : "text-gray-300"}`}>
+          <p className={`text-sm font-bold ${isHigh ? "text-orange-400" : "text-gray-700"}`}>
             {isHigh ? "🔥 HIGH IMPACT (optional)" : "⚡ IMPACT"} — {pri.level}
           </p>
-          <p className="text-xs text-gray-500 mt-1">{pri.display_line || pri.reason}</p>
-          <p className="text-[11px] text-gray-500 mt-1">Low risk ≠ zero upside at scale — highest ROI comes from targeted fixes.</p>
+          <p className="text-xs text-gray-600 mt-1">{pri.display_line || pri.reason}</p>
+          <p className="text-[11px] text-gray-600 mt-1">Low risk ≠ zero upside at scale — highest ROI comes from targeted fixes.</p>
         </div>
 
         {/* 1. Primary leak */}
@@ -513,17 +513,17 @@ export default function ActionableInsights({
             Primary revenue leak
           </p>
           <h4 className="text-lg font-bold text-gray-900 mb-2">{effectiveLayer.primary_issue.title}</h4>
-          <p className="text-sm text-gray-300 leading-relaxed">{effectiveLayer.primary_issue.description}</p>
+          <p className="text-sm text-gray-700 leading-relaxed">{effectiveLayer.primary_issue.description}</p>
         </div>
 
         {/* 2. Where */}
         <div className="mb-6">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-2">
             Where this appears
           </p>
           <ul className="space-y-1.5">
             {effectiveLayer.affected_areas?.map((area) => (
-              <li key={area} className="text-sm text-gray-300 flex items-start gap-2">
+              <li key={area} className="text-sm text-gray-700 flex items-start gap-2">
                 <span className="text-cyan-500 mt-0.5">•</span>
                 <span>{area}</span>
               </li>
@@ -535,7 +535,7 @@ export default function ActionableInsights({
         <div className="mb-4">
           {/* START HERE banner */}
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-600">
               What to change first
             </p>
             {first.impact_contribution?.monthly_impact && first.impact_contribution.monthly_impact !== "—" && (
@@ -564,7 +564,7 @@ export default function ActionableInsights({
                 {effectiveLayer.behavioral_insight.query && effectiveLayer.behavioral_insight.ctr_pct !== null && (
                   <>
                     {". Query "}
-                    <span className="italic text-gray-200">
+                    <span className="italic text-gray-700">
                       &ldquo;{effectiveLayer.behavioral_insight.query}&rdquo;
                     </span>
                     {" has CTR "}
@@ -641,8 +641,8 @@ export default function ActionableInsights({
 
               {(pri?.reason && String(pri.reason).trim()) && (
                 <div className="p-4 rounded-lg bg-white border border-gray-200">
-                  <p className="text-xs font-semibold uppercase text-gray-500 mb-2">Why this priority</p>
-                  <p className="text-xs text-gray-500">{pri.reason}</p>
+                  <p className="text-xs font-semibold uppercase text-gray-600 mb-2">Why this priority</p>
+                  <p className="text-xs text-gray-600">{pri.reason}</p>
                 </div>
               )}
             </div>

@@ -76,7 +76,7 @@ export default function SystemHealthIndicator({
     <div className="mb-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
       <div className="flex items-center justify-between mb-3">
         <div className="min-w-0 flex-1 pr-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600">
             Revenue System Health
           </h3>
           <p className="text-[10px] text-gray-600 mt-1 max-w-xl leading-snug">
@@ -128,10 +128,10 @@ export default function SystemHealthIndicator({
         
         return (
           <div className="pt-2 border-t border-gray-200">
-            <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
+            <div className="text-xs text-gray-600 mb-1 uppercase tracking-wide">
               Leading signal
             </div>
-            <div className="text-sm text-gray-500 flex items-center gap-2">
+            <div className="text-sm text-gray-600 flex items-center gap-2">
               <span className={severity.color}>{severity.icon}</span>
               <span>{primaryRiskDriver}</span>
             </div>

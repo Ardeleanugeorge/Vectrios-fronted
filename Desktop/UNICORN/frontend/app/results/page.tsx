@@ -44,7 +44,7 @@ export default function ResultsPage() {
   if (!data) {
     return (
       <main className="page-root p-8 flex items-center justify-center">
-        <p className="text-gray-400">Loading results...</p>
+        <p className="text-gray-600">Loading results...</p>
       </main>
     )
   }
@@ -54,7 +54,7 @@ export default function ResultsPage() {
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
           <h2 className="text-3xl font-semibold mb-2">Diagnostic Results</h2>
-          <p className="text-gray-400">
+          <p className="text-gray-600">
             Analysis of your content samples and close rate performance
           </p>
         </div>
@@ -97,7 +97,7 @@ export default function ResultsPage() {
             {data.recommendations.map((rec: string, i: number) => (
               <li key={i} className="flex items-start">
                 <span className="text-cyan-500 mr-3">•</span>
-                <span className="text-gray-300">{rec}</span>
+                <span className="text-gray-700">{rec}</span>
               </li>
             ))}
           </ul>
@@ -107,25 +107,25 @@ export default function ResultsPage() {
           <h3 className="text-xl font-semibold mb-4">Metrics Breakdown</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
-              <p className="text-gray-400">Alignment</p>
+              <p className="text-gray-600">Alignment</p>
               <p className="text-gray-900 font-medium">
                 {data.metrics_breakdown.alignment_average}%
               </p>
             </div>
             <div>
-              <p className="text-gray-400">Anchor Density</p>
+              <p className="text-gray-600">Anchor Density</p>
               <p className="text-gray-900 font-medium">
                 {data.metrics_breakdown.anchor_density_average}%
               </p>
             </div>
             <div>
-              <p className="text-gray-400">ICP Mentions</p>
+              <p className="text-gray-600">ICP Mentions</p>
               <p className="text-gray-900 font-medium">
                 {data.metrics_breakdown.icp_mentions_total}
               </p>
             </div>
             <div>
-              <p className="text-gray-400">Samples</p>
+              <p className="text-gray-600">Samples</p>
               <p className="text-gray-900 font-medium">
                 {data.metrics_breakdown.samples_analyzed}
               </p>

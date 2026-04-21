@@ -71,7 +71,7 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
     return (
       <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
         <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Revenue Risk Trajectory</h2>
-        <p className="text-sm text-gray-500">Calculating trajectory...</p>
+        <p className="text-sm text-gray-600">Calculating trajectory...</p>
       </div>
     )
   }
@@ -80,7 +80,7 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
     return (
       <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
         <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Revenue Risk Trajectory</h2>
-        <p className="text-sm text-gray-500">Insufficient data for trajectory calculation.</p>
+        <p className="text-sm text-gray-600">Insufficient data for trajectory calculation.</p>
       </div>
     )
   }
@@ -88,51 +88,51 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
   return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-2 uppercase tracking-wide">Revenue Risk Trajectory</h2>
-      <p className="text-xs text-gray-500 mb-6 leading-relaxed max-w-3xl">
+      <p className="text-xs text-gray-600 mb-6 leading-relaxed max-w-3xl">
         Time-path implied from today’s {RII_ABBREV} snapshot using the engine’s decay model — same 0–100 scale as your headline score. This is not the same as the “no action vs fix” ARR chart below; numbers can move either way depending on scenario math.
       </p>
       
       <div className="grid grid-cols-4 gap-4 mb-6">
         {/* Current */}
         <div className="text-center">
-          <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">Current</div>
+          <div className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Current</div>
           <div className={`text-3xl font-bold ${getRiiColor(trajectory.current_rii)}`}>
             {trajectory.current_rii.toFixed(0)}
           </div>
-          <div className="text-xs text-gray-500 mt-1">
+          <div className="text-xs text-gray-600 mt-1">
             {getRiiLabel(trajectory.current_rii)}
           </div>
         </div>
 
         {/* 30 Days */}
         <div className="text-center">
-          <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">30 Days</div>
+          <div className="text-xs text-gray-600 mb-2 uppercase tracking-wide">30 Days</div>
           <div className={`text-3xl font-bold ${getRiiColor(trajectory.rii_30d)}`}>
             {trajectory.rii_30d.toFixed(0)}
           </div>
-          <div className="text-xs text-gray-500 mt-1">
+          <div className="text-xs text-gray-600 mt-1">
             {getRiiLabel(trajectory.rii_30d)}
           </div>
         </div>
 
         {/* 60 Days */}
         <div className="text-center">
-          <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">60 Days</div>
+          <div className="text-xs text-gray-600 mb-2 uppercase tracking-wide">60 Days</div>
           <div className={`text-3xl font-bold ${getRiiColor(trajectory.rii_60d)}`}>
             {trajectory.rii_60d.toFixed(0)}
           </div>
-          <div className="text-xs text-gray-500 mt-1">
+          <div className="text-xs text-gray-600 mt-1">
             {getRiiLabel(trajectory.rii_60d)}
           </div>
         </div>
 
         {/* 90 Days */}
         <div className="text-center">
-          <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">90 Days</div>
+          <div className="text-xs text-gray-600 mb-2 uppercase tracking-wide">90 Days</div>
           <div className={`text-3xl font-bold ${getRiiColor(trajectory.rii_90d)}`}>
             {trajectory.rii_90d.toFixed(0)}
           </div>
-          <div className="text-xs text-gray-500 mt-1">
+          <div className="text-xs text-gray-600 mt-1">
             {getRiiLabel(trajectory.rii_90d)}
           </div>
         </div>
@@ -140,8 +140,8 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
 
       {/* Confidence */}
       <div className="pt-4 border-t border-gray-200 text-center">
-        <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Projection Confidence</div>
-        <div className="text-sm font-semibold text-gray-500">
+        <div className="text-xs text-gray-600 mb-1 uppercase tracking-wide">Projection Confidence</div>
+        <div className="text-sm font-semibold text-gray-600">
           {Math.round(trajectory.confidence_score * 100)}%
         </div>
       </div>

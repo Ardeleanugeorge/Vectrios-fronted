@@ -125,7 +125,7 @@ export default function SignUpPage() {
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">Create Free Account</h1>
-          <p className="text-lg text-gray-400">
+          <p className="text-lg text-gray-600">
             Establish your structural baseline in under 3 minutes.
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function SignUpPage() {
               placeholder="Enter your password"
               minLength={8}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-600 mt-1">
               Minimum 8 characters. Secure password recommended.
             </p>
           </div>
@@ -189,10 +189,10 @@ export default function SignUpPage() {
           </button>
 
           <div className="text-center space-y-2">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-600">
               No credit card required.
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-600">
               1 free diagnostic per company.
             </p>
           </div>
@@ -202,18 +202,18 @@ export default function SignUpPage() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">Or</span>
+              <span className="px-4 bg-white text-gray-600">Or</span>
             </div>
           </div>
 
           <button
             type="button"
-            className="w-full py-4 border border-gray-200 hover:border-gray-600 text-gray-300 font-medium rounded-lg transition"
+            className="w-full py-4 border border-gray-200 hover:border-gray-600 text-gray-700 font-medium rounded-lg transition"
           >
             Continue with Google
           </button>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-sm text-gray-600 mt-6">
             Already have an account?{" "}
             <Link href="/login" className="text-cyan-400 hover:text-cyan-300">
               Sign in

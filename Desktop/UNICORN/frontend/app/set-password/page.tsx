@@ -116,7 +116,7 @@ export default function SetPasswordPage() {
           <h1 className="text-3xl font-bold mb-3">
             Set your Vectri<span className="text-cyan-400">OS</span> password
           </h1>
-          <p className="text-sm text-gray-400 mb-6">
+          <p className="text-sm text-gray-600 mb-6">
             Secure your account. After this step you&apos;ll continue to plans — no extra sign-in if you open the link in the same browser.
           </p>
 
@@ -154,7 +154,7 @@ export default function SetPasswordPage() {
               >
                 {loading ? "Setting password..." : "Set password"}
               </button>
-              <p className="text-xs text-gray-500 text-center">
+              <p className="text-xs text-gray-600 text-center">
                 Need another link?{" "}
                 <Link href="/login" className="text-cyan-400 hover:text-cyan-300">
                   Go to sign in

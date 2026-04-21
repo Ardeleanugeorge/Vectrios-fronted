@@ -80,7 +80,7 @@ function MetricRow({ label, data, higherIsBetter }: {
     <div className="py-5 border-b border-gray-200/60 last:border-b-0">
       {/* Label + rank */}
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-gray-200 font-medium">{label}</span>
+        <span className="text-sm text-gray-700 font-medium">{label}</span>
         <div className="flex items-center gap-2">
           <span className={`text-xs font-semibold ${rankColor}`}>{rankText}</span>
           <span className="text-[10px] text-gray-600 tabular-nums">
@@ -115,12 +115,12 @@ function MetricRow({ label, data, higherIsBetter }: {
       {/* Numbers row */}
       <div className="flex items-center justify-between mt-2 text-[10px]">
         <span className="text-gray-700">0</span>
-        <div className="flex items-center gap-4 text-gray-500">
+        <div className="flex items-center gap-4 text-gray-600">
           <span>
             You: <span className="text-cyan-400 font-bold">{data.score.toFixed(0)}</span>
           </span>
-          <span>Median: <span className="text-gray-300">{data.median.toFixed(0)}</span></span>
-          <span>Top 25%: <span className="text-gray-300">{data.top_quartile.toFixed(0)}</span></span>
+          <span>Median: <span className="text-gray-700">{data.median.toFixed(0)}</span></span>
+          <span>Top 25%: <span className="text-gray-700">{data.top_quartile.toFixed(0)}</span></span>
         </div>
         <span className="text-gray-700">100</span>
       </div>
@@ -147,14 +147,14 @@ export default function BenchmarkPanel({ companyId }: Props) {
   if (loading) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Benchmark Intelligence</h2>
-      <p className="text-sm text-gray-500">Loading benchmarks...</p>
+      <p className="text-sm text-gray-600">Loading benchmarks...</p>
     </div>
   )
 
   if (!data) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Benchmark Intelligence</h2>
-      <p className="text-sm text-gray-500">Run an assessment to unlock benchmarks.</p>
+      <p className="text-sm text-gray-600">Run an assessment to unlock benchmarks.</p>
     </div>
   )
 
@@ -167,7 +167,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold uppercase tracking-wide">Benchmark Intelligence</h2>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-gray-600 mt-0.5">
               Your GTM messaging vs {data.context.total_companies} {data.context.industry} companies
             </p>
           </div>
@@ -179,7 +179,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
                 riiRank >= 50 ? "text-cyan-400" :
                 riiRank >= 25 ? "text-amber-400" : "text-red-400"
               }`}>
-                {ordinal(riiRank)} <span className="text-sm text-gray-500 font-normal">pct</span>
+                {ordinal(riiRank)} <span className="text-sm text-gray-600 font-normal">pct</span>
               </p>
               <p className="text-[10px] text-gray-600 mt-0.5">
                 {riiRank >= 50 ? "better risk profile than majority" : "higher risk than majority"}
@@ -191,14 +191,14 @@ export default function BenchmarkPanel({ companyId }: Props) {
         {/* Context pills */}
         <div className="flex gap-2 mt-3 flex-wrap">
           {data.context.arr_range && (
-            <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-500 rounded border border-gray-200">
+            <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-600 rounded border border-gray-200">
               ARR: {data.context.arr_range}
             </span>
           )}
-          <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-500 rounded border border-gray-200">
+          <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-600 rounded border border-gray-200">
             {data.context.industry}
           </span>
-          <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-500 rounded border border-gray-200">
+          <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-600 rounded border border-gray-200">
             n={data.context.total_companies} companies
           </span>
         </div>

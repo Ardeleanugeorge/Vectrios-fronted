@@ -116,7 +116,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
       case "medium":
         return "bg-amber-500/20 text-amber-400 border-amber-500/30"
       default:
-        return "bg-gray-500/20 text-gray-500 border-gray-500/30"
+        return "bg-gray-500/20 text-gray-600 border-gray-500/30"
     }
   }
 
@@ -156,7 +156,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
     return (
       <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
         <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Active Alerts</h2>
-        <p className="text-sm text-gray-500">Loading alerts...</p>
+        <p className="text-sm text-gray-600">Loading alerts...</p>
       </div>
     )
   }
@@ -165,7 +165,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
     return (
       <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
         <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Active Alerts</h2>
-        <p className="text-sm text-gray-500">No active alerts. All systems operational.</p>
+        <p className="text-sm text-gray-600">No active alerts. All systems operational.</p>
       </div>
     )
   }
@@ -174,7 +174,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
     <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold uppercase tracking-wide">Active Alerts</h2>
-        <span className="text-xs text-gray-500">{alerts.length} unread</span>
+        <span className="text-xs text-gray-600">{alerts.length} unread</span>
       </div>
       
       <div className="space-y-0">
@@ -191,11 +191,11 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
               {isHistorical ? "HISTORICAL" : getSeverityLabel(alert.severity)}
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-300 leading-relaxed">
+              <p className="text-sm text-gray-700 leading-relaxed">
                 {alert.message}
               </p>
               {alert.timestamp && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   {formatTimeAgo(alert.timestamp)}
                 </p>
               )}
@@ -203,7 +203,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
             {!alert.is_read && (
               <button
                 onClick={() => handleMarkRead(alert.id)}
-                className="self-center text-xs text-gray-500 hover:text-gray-300 opacity-0 group-hover:opacity-100 transition"
+                className="self-center text-xs text-gray-600 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition"
                 title="Mark as read"
               >
                 –

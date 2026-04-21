@@ -205,7 +205,7 @@ export default function UpgradePage() {
       <div className="page-root flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-400 text-sm">Loading plan status…</p>
+          <p className="text-gray-600 text-sm">Loading plan status…</p>
         </div>
       </div>
     )
@@ -225,7 +225,7 @@ export default function UpgradePage() {
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
               {isScale ? 'You\'re on the highest plan' : 'Upgrade your monitoring'}
             </h1>
-            <p className="text-gray-400 text-lg max-w-xl mx-auto">
+            <p className="text-gray-600 text-lg max-w-xl mx-auto">
               {isScale
                 ? 'Scale gives you everything — continuous monitoring, delta engine, behavioral modifiers, and executive reporting.'
                 : 'Move up at any time. Upgrades are instant. No downgrades from Scale.'}
@@ -247,7 +247,7 @@ export default function UpgradePage() {
                   <span className="text-cyan-400 text-lg" aria-hidden>✓</span>
                 </div>
                   <div>
-                  <div className="text-xs text-gray-500 uppercase tracking-widest mb-0.5">Current plan</div>
+                  <div className="text-xs text-gray-600 uppercase tracking-widest mb-0.5">Current plan</div>
                   <div className="text-gray-900 font-semibold text-lg flex items-center gap-2">
                     {currentPlanName.charAt(0).toUpperCase() + currentPlanName.slice(1)}
                     {isTrial && (
@@ -283,14 +283,14 @@ export default function UpgradePage() {
             <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-b from-cyan-500/5 to-transparent p-10 text-center mb-12">
               <div className="text-5xl mb-4 text-emerald-400" aria-hidden>✓</div>
               <h2 className="text-2xl font-bold mb-3 text-gray-900">You're on Scale — the highest plan</h2>
-              <p className="text-gray-400 mb-6 max-w-lg mx-auto">
+              <p className="text-gray-600 mb-6 max-w-lg mx-auto">
                 Downgrade is not available. Scale includes continuous monitoring, delta engine, and behavioral intelligence. For billing or account help, use Account → Support.
               </p>
               <div className="flex items-center justify-center gap-4 flex-wrap">
                 <Link href="/dashboard" className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl transition">
                   Go to dashboard
                 </Link>
-                <Link href="/account?tab=support" className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium rounded-xl transition">
+                <Link href="/account?tab=support" className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-700 font-medium rounded-xl transition">
                   Account &amp; help
                 </Link>
               </div>
@@ -299,7 +299,7 @@ export default function UpgradePage() {
             <>
               {/* -- Billing toggle ---------------------------------------------- */}
               <div className="flex items-center justify-center gap-3 mb-10">
-                <span className={`text-sm font-medium ${billing === 'monthly' ? 'text-gray-900' : 'text-gray-500'}`}>Monthly</span>
+                <span className={`text-sm font-medium ${billing === 'monthly' ? 'text-gray-900' : 'text-gray-600'}`}>Monthly</span>
                 <button
                   onClick={() => setBilling(b => b === 'monthly' ? 'annual' : 'monthly')}
                   className="relative w-12 h-6 rounded-full transition-colors"
@@ -307,7 +307,7 @@ export default function UpgradePage() {
                 >
                   <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${billing === 'annual' ? 'left-7' : 'left-1'}`} />
                 </button>
-                <span className={`text-sm font-medium flex items-center gap-1.5 ${billing === 'annual' ? 'text-gray-900' : 'text-gray-500'}`}>
+                <span className={`text-sm font-medium flex items-center gap-1.5 ${billing === 'annual' ? 'text-gray-900' : 'text-gray-600'}`}>
                   Annual
                   <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-medium">Save 20%</span>
                 </span>
@@ -347,12 +347,12 @@ export default function UpgradePage() {
                         </div>
                         <div className="flex items-end gap-1">
                           <span className="text-4xl font-bold">${displayPrice}</span>
-                          <span className="text-gray-500 text-sm mb-1">/mo</span>
+                          <span className="text-gray-600 text-sm mb-1">/mo</span>
                         </div>
                         {billing === 'annual' ? (
-                          <p className="text-xs text-gray-500">Billed annually (${price.annual * 12}/yr) — save ${(price.monthly - price.annual) * 12}/yr</p>
+                          <p className="text-xs text-gray-600">Billed annually (${price.annual * 12}/yr) — save ${(price.monthly - price.annual) * 12}/yr</p>
                         ) : (
-                          <p className="text-xs text-gray-500">Switch to annual and save ${(price.monthly - price.annual) * 12}/yr</p>
+                          <p className="text-xs text-gray-600">Switch to annual and save ${(price.monthly - price.annual) * 12}/yr</p>
                         )}
                       </div>
 
@@ -360,13 +360,13 @@ export default function UpgradePage() {
                         {PLAN_FEATURES[planName].map((f, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm">
                             <span className="mt-0.5 text-xs text-cyan-400" aria-hidden>✓</span>
-                            <span className="text-gray-300">{f}</span>
+                            <span className="text-gray-700">{f}</span>
                           </li>
                         ))}
                       </ul>
 
                       {isCurrent && !isTrial ? (
-                        <div className="w-full py-3 rounded-xl text-center text-sm font-medium bg-gray-800/50 text-gray-500 border border-gray-200/50">
+                        <div className="w-full py-3 rounded-xl text-center text-sm font-medium bg-gray-800/50 text-gray-600 border border-gray-200/50">
                           Current plan
                         </div>
                       ) : isAvailable ? (
@@ -391,12 +391,12 @@ export default function UpgradePage() {
 
           {/* -- Feature list ------------------------------------------------- */}
           <div className="mb-16">
-            <h2 className="text-xl font-semibold text-center text-gray-300 mb-8">Everything in Scale</h2>
+            <h2 className="text-xl font-semibold text-center text-gray-700 mb-8">Everything in Scale</h2>
             <div className="max-w-lg mx-auto rounded-2xl border border-gray-200 bg-gray-100">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="text-left p-4 text-gray-400 font-medium">Feature</th>
+                    <th className="text-left p-4 text-gray-600 font-medium">Feature</th>
                     <th className="p-4 text-center font-semibold text-cyan-400">Scale</th>
                   </tr>
                 </thead>
@@ -419,7 +419,7 @@ export default function UpgradePage() {
                     'Team monitoring — unlimited seats',
                   ].map((label, i) => (
                     <tr key={i} className="border-b border-gray-200/50 hover:bg-gray-800/20 transition">
-                      <td className="p-4 text-gray-400">{label}</td>
+                      <td className="p-4 text-gray-600">{label}</td>
                       <td className="p-4 text-center">
                         <span className="text-cyan-400 font-bold" aria-hidden>✓</span>
                       </td>
@@ -430,7 +430,7 @@ export default function UpgradePage() {
             </div>
           </div>
 
-          <p className="text-center text-sm text-gray-500 pb-6">
+          <p className="text-center text-sm text-gray-600 pb-6">
             Have a question?{" "}
             <Link
               href="/pricing#contact"

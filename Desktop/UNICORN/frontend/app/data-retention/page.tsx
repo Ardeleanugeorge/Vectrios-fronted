@@ -11,7 +11,7 @@ export default function DataRetentionPage() {
         
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-4">Data Retention & Deletion Policy</h1>
-          <p className="text-sm text-gray-500 mb-8">
+          <p className="text-sm text-gray-600 mb-8">
             Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
@@ -19,7 +19,7 @@ export default function DataRetentionPage() {
         {/* Overview */}
         <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Overview</h2>
-          <p className="text-gray-400 leading-relaxed">
+          <p className="text-gray-600 leading-relaxed">
             This policy defines how Vectri<span className="text-cyan-400">OS</span> retains and deletes data. Retention periods are designed to balance service functionality, compliance requirements, and user privacy.
           </p>
         </section>
@@ -27,40 +27,40 @@ export default function DataRetentionPage() {
         {/* Retention Periods */}
         <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Retention Periods</h2>
-          <div className="space-y-6 text-gray-300">
+          <div className="space-y-6 text-gray-700">
             <div>
               <h3 className="font-semibold mb-3">Structural Assessments</h3>
-              <p className="text-gray-400">
+              <p className="text-gray-600">
                 Retained for the duration of active monitoring plus 90 days after account closure. Assessments are essential for trend analysis and drift detection.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-3">Risk History</h3>
-              <p className="text-gray-400">
+              <p className="text-gray-600">
                 Daily risk snapshots retained for 2 years. Enables longitudinal trend analysis and volatility calculation. After 2 years, data is aggregated into monthly summaries.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-3">Drift Events</h3>
-              <p className="text-gray-400">
+              <p className="text-gray-600">
                 Retained for 1 year. Critical for understanding structural degradation patterns and alert history.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-3">Monitoring Configuration</h3>
-              <p className="text-gray-400">
+              <p className="text-gray-600">
                 Retained for active account duration. Deleted 30 days after account closure.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-3">Audit Logs</h3>
-              <p className="text-gray-400">
+              <p className="text-gray-600">
                 System actions, login events, and configuration changes retained for 1 year for security and compliance analysis.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-3">Backup Retention</h3>
-              <p className="text-gray-400">
+              <p className="text-gray-600">
                 Daily encrypted backups retained for 30 days. Weekly backups retained for 90 days. Monthly backups retained for 1 year.
               </p>
             </div>
@@ -70,10 +70,10 @@ export default function DataRetentionPage() {
         {/* Account Deletion Flow */}
         <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Account Deletion Flow</h2>
-          <div className="space-y-4 text-gray-300">
+          <div className="space-y-4 text-gray-700">
             <div>
               <h3 className="font-semibold mb-2">Immediate Actions (Day 0)</h3>
-              <ul className="list-disc list-inside space-y-2 text-gray-400 ml-4">
+              <ul className="list-disc list-inside space-y-2 text-gray-600 ml-4">
                 <li>Account marked as deleted (soft delete)</li>
                 <li>Monitoring cycles stopped</li>
                 <li>New assessments blocked</li>
@@ -83,7 +83,7 @@ export default function DataRetentionPage() {
             </div>
             <div>
               <h3 className="font-semibold mb-2">Soft Delete Period (Days 1-90)</h3>
-              <ul className="list-disc list-inside space-y-2 text-gray-400 ml-4">
+              <ul className="list-disc list-inside space-y-2 text-gray-600 ml-4">
                 <li>Data remains in database but inaccessible</li>
                 <li>Recovery possible upon request</li>
                 <li>Export functionality remains available</li>
@@ -92,7 +92,7 @@ export default function DataRetentionPage() {
             </div>
             <div>
               <h3 className="font-semibold mb-2">Hard Delete (After Day 90)</h3>
-              <ul className="list-disc list-inside space-y-2 text-gray-400 ml-4">
+              <ul className="list-disc list-inside space-y-2 text-gray-600 ml-4">
                 <li>All company data permanently deleted</li>
                 <li>All structural assessments removed</li>
                 <li>All risk history deleted</li>
@@ -107,18 +107,18 @@ export default function DataRetentionPage() {
         {/* Data Export Before Deletion */}
         <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Data Export Before Deletion</h2>
-          <div className="space-y-4 text-gray-300">
-            <p className="text-gray-400">
+          <div className="space-y-4 text-gray-700">
+            <p className="text-gray-600">
               Before account deletion, you can export all monitoring data:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-400 ml-4">
+            <ul className="list-disc list-inside space-y-2 text-gray-600 ml-4">
               <li>Structural assessment history (PDF or CSV)</li>
               <li>Risk index progression (CSV)</li>
               <li>Drift events log (CSV)</li>
               <li>Revenue impact projections (CSV)</li>
               <li>Executive summaries (PDF)</li>
             </ul>
-            <p className="text-gray-400 mt-4">
+            <p className="text-gray-600 mt-4">
               Export functionality is available in account settings. You can request bulk exports via support.
             </p>
           </div>
@@ -127,16 +127,16 @@ export default function DataRetentionPage() {
         {/* Legal Retention Requirements */}
         <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Legal Retention Requirements</h2>
-          <div className="space-y-4 text-gray-300">
-            <p className="text-gray-400">
+          <div className="space-y-4 text-gray-700">
+            <p className="text-gray-600">
               Certain data may be retained longer if required by law:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-400 ml-4">
+            <ul className="list-disc list-inside space-y-2 text-gray-600 ml-4">
               <li>Financial records: 7 years (for tax compliance)</li>
               <li>Audit logs: 1 year minimum (may extend for legal holds)</li>
               <li>Contract data: Duration of contract + 7 years</li>
             </ul>
-            <p className="text-gray-400 mt-4">
+            <p className="text-gray-600 mt-4">
               Legal holds may extend retention periods. Affected users will be notified.
             </p>
           </div>
@@ -145,16 +145,16 @@ export default function DataRetentionPage() {
         {/* Requesting Deletion */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-6">Requesting Deletion</h2>
-          <div className="space-y-4 text-gray-300">
-            <p className="text-gray-400">
+          <div className="space-y-4 text-gray-700">
+            <p className="text-gray-600">
               Account deletion can be initiated:
             </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-400 ml-4">
+            <ul className="list-disc list-inside space-y-2 text-gray-600 ml-4">
               <li>Via account settings (self-service)</li>
               <li>Via email request to privacy@vectrios.com</li>
               <li>Via support ticket</li>
             </ul>
-            <p className="text-gray-400 mt-4">
+            <p className="text-gray-600 mt-4">
               Deletion requests are processed within 48 hours. Confirmation email sent upon completion.
             </p>
           </div>
@@ -163,11 +163,11 @@ export default function DataRetentionPage() {
         {/* Contact */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-6">Contact</h2>
-          <div className="space-y-2 text-gray-300">
-            <p className="text-gray-400">
+          <div className="space-y-2 text-gray-700">
+            <p className="text-gray-600">
               For questions about data retention or deletion:
             </p>
-            <p className="text-gray-400">
+            <p className="text-gray-600">
               Email: <a href="mailto:privacy@vectrios.com" className="text-cyan-400 hover:text-cyan-300">privacy@vectrios.com</a>
             </p>
           </div>

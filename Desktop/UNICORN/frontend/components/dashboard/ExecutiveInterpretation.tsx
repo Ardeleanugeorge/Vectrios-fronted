@@ -53,11 +53,11 @@ export default function ExecutiveInterpretation({
 
   return (
     <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-sm font-semibold mb-3 uppercase tracking-wide text-gray-500">Executive Takeaway</h2>
-      <p className="text-sm text-gray-300 leading-relaxed">{takeawayLine}</p>
+      <h2 className="text-sm font-semibold mb-3 uppercase tracking-wide text-gray-600">Executive Takeaway</h2>
+      <p className="text-sm text-gray-700 leading-relaxed">{takeawayLine}</p>
       {primaryStructuralTheme && (
-        <p className="text-xs text-gray-500 mt-2">
-          Leading structural signal: <span className="text-gray-500">{primaryStructuralTheme}</span> — same theme as the health strip and Alignment Map.
+        <p className="text-xs text-gray-600 mt-2">
+          Leading structural signal: <span className="text-gray-600">{primaryStructuralTheme}</span> — same theme as the health strip and Alignment Map.
         </p>
       )}
     </div>

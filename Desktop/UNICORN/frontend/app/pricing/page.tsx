@@ -613,7 +613,7 @@ export default function PricingPage() {
 
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-3">Recover revenue'not features</h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <p className="text-gray-600 max-w-2xl mx-auto">
             One plan — Scale: find what&apos;s leaking, fix it, and quantify what you get back. Start with a 14-day full-access trial.
           </p>
         </div>
@@ -624,7 +624,7 @@ export default function PricingPage() {
             Companies like yours typically lose{" "}
             <span className="text-amber-300">$120K–$300K/year</span>
           </p>
-          <p className="text-center text-sm text-gray-400">
+          <p className="text-center text-sm text-gray-600">
             Vectri<span className="text-cyan-400">OS</span> helps recover a significant portion of that'before you spend more on traffic or headcount.
           </p>
         </div>
@@ -635,14 +635,14 @@ export default function PricingPage() {
               Try risk-free — recover your first $50K in lost revenue
             </p>
             <h2 className="text-2xl font-bold mb-2">14-day trial — full Scale access</h2>
-            <p className="text-gray-400 text-sm mb-6">
+            <p className="text-gray-600 text-sm mb-6">
               Every trial includes the full Scale playbook so you can see the complete recovery path'not a watered-down demo.
             </p>
             <button
               onClick={handleTrial}
               disabled={isProcessing}
               className={`px-10 py-3 font-semibold rounded-lg transition ${
-                isProcessing ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
+                isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
               }`}
             >
               Start 14-day trial — full access
@@ -654,13 +654,13 @@ export default function PricingPage() {
           <div className="inline-flex items-center gap-4 p-1 bg-gray-50 rounded-lg border border-gray-200">
             <button
               onClick={() => setBillingCycle("monthly")}
-              className={`px-6 py-2 rounded-md transition ${billingCycle === "monthly" ? "bg-cyan-500 text-black font-medium" : "text-gray-400 hover:text-gray-900"}`}
+              className={`px-6 py-2 rounded-md transition ${billingCycle === "monthly" ? "bg-cyan-500 text-black font-medium" : "text-gray-600 hover:text-gray-900"}`}
             >
               Monthly
             </button>
             <button
               onClick={() => setBillingCycle("annual")}
-              className={`px-6 py-2 rounded-md transition ${billingCycle === "annual" ? "bg-cyan-500 text-black font-medium" : "text-gray-400 hover:text-gray-900"}`}
+              className={`px-6 py-2 rounded-md transition ${billingCycle === "annual" ? "bg-cyan-500 text-black font-medium" : "text-gray-600 hover:text-gray-900"}`}
             >
               Annual <span className="text-[10px] ml-1 opacity-70">Save 20%</span>
             </button>
@@ -695,16 +695,16 @@ export default function PricingPage() {
                   <span className="text-5xl font-bold">
                     ${billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly}
                   </span>
-                  <span className="text-gray-400">/month</span>
+                  <span className="text-gray-600">/month</span>
                   {billingCycle === "annual" ? (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-600 mt-1">
                       Billed annually (${plan.priceAnnual * 12}/year) — save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year
                     </p>
                   ) : (
-                    <p className="text-xs text-gray-500 mt-1">Switch to annual and save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year</p>
+                    <p className="text-xs text-gray-600 mt-1">Switch to annual and save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year</p>
                   )}
                 </div>
-                <ul className="space-y-2 mb-7 text-sm text-gray-300 flex-1">
+                <ul className="space-y-2 mb-7 text-sm text-gray-700 flex-1">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex gap-2">
                       <span className="text-cyan-400 shrink-0" aria-hidden>✓</span>
@@ -717,7 +717,7 @@ export default function PricingPage() {
                   disabled={isProcessing || isActivePlan}
                   className={`w-full py-3 font-semibold rounded-lg transition text-base ${
                     isProcessing
-                      ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+                      ? "bg-gray-700 text-gray-600 cursor-not-allowed"
                       : isActivePlan
                         ? "bg-emerald-600 text-gray-900 cursor-default"
                         : "bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20"
@@ -733,7 +733,7 @@ export default function PricingPage() {
         <div id="contact" className="border-t border-gray-200 pt-12 mt-4 scroll-mt-24">
           <div className="text-center mb-8 max-w-xl mx-auto">
             <h2 className="text-2xl font-bold mb-2">Questions?</h2>
-            <p className="text-gray-400 text-sm leading-relaxed">
+            <p className="text-gray-600 text-sm leading-relaxed">
               Ask anything about Scale, the trial, or how monitoring works — we&apos;ll reply by email.
             </p>
           </div>
@@ -741,7 +741,7 @@ export default function PricingPage() {
           <div className="max-w-lg mx-auto p-8 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-gray-300 mb-2">Name</label>
+                <label className="block text-sm text-gray-700 mb-2">Name</label>
                 <input
                   type="text"
                   value={contactName}
@@ -752,7 +752,7 @@ export default function PricingPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">Email</label>
+                <label className="block text-sm text-gray-700 mb-2">Email</label>
                 <input
                   type="email"
                   value={contactEmail}
@@ -765,7 +765,7 @@ export default function PricingPage() {
             </div>
 
             <div>
-              <label className="block text-sm text-gray-300 mb-2">Company (optional)</label>
+              <label className="block text-sm text-gray-700 mb-2">Company (optional)</label>
               <input
                 type="text"
                 value={contactCompany}
@@ -777,7 +777,7 @@ export default function PricingPage() {
             </div>
 
             <div>
-              <label className="block text-sm text-gray-300 mb-2">Message</label>
+              <label className="block text-sm text-gray-700 mb-2">Message</label>
               <textarea
                 value={contactMessage}
                 onChange={(e) => setContactMessage(e.target.value)}
@@ -808,7 +808,7 @@ export default function PricingPage() {
                   className={`w-full py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 ${
                     canSendContact && !contactLoading
                       ? "bg-cyan-500 hover:bg-cyan-400 text-black"
-                      : "bg-gray-700 text-gray-500 cursor-not-allowed"
+                      : "bg-gray-700 text-gray-600 cursor-not-allowed"
                   }`}
                 >
                   {contactLoading ? (
@@ -824,7 +824,7 @@ export default function PricingPage() {
                   )}
                 </button>
                 {!canSendContact && (
-                  <p className="text-xs text-gray-500 text-center -mt-2">
+                  <p className="text-xs text-gray-600 text-center -mt-2">
                     Add your name, email, and a message to send.
                   </p>
                 )}
@@ -841,7 +841,7 @@ export default function PricingPage() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            <p className="text-sm text-gray-300">Continuing…</p>
+            <p className="text-sm text-gray-700">Continuing…</p>
             {(selectedPlanName || pendingActivationLabel) && (
               <p className="text-xs text-cyan-300 mt-2">
                 Activating {selectedPlanName || pendingActivationLabel}...

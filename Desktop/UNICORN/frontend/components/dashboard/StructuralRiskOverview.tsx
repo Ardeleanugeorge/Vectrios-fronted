@@ -29,7 +29,7 @@ export default function StructuralRiskOverview({
       case "escalating": return "text-red-400"
       case "improving": return "text-green-400"
       case "unstable": return "text-yellow-400"
-      default: return "text-gray-500"
+      default: return "text-gray-600"
     }
   }
 
@@ -83,7 +83,7 @@ export default function StructuralRiskOverview({
       case "Structural Misalignment": return "text-red-400"
       case "Alignment Risk Detected": return "text-orange-400"
       case "Stable": return "text-green-400"
-      default: return "text-gray-500"
+      default: return "text-gray-600"
     }
   }
 
@@ -95,13 +95,13 @@ export default function StructuralRiskOverview({
       
       <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <p className="text-sm text-gray-500 mb-2 uppercase tracking-wide">Status snapshot</p>
+          <p className="text-sm text-gray-600 mb-2 uppercase tracking-wide">Status snapshot</p>
           {riskScore !== null ? (
             <div>
               <p className={`text-4xl font-bold ${getIntegrityColor(integrityStatus)}`}>
                 {integrityStatus}
               </p>
-              <p className="text-sm text-gray-500 mt-1" title={RII_TAGLINE}>
+              <p className="text-sm text-gray-600 mt-1" title={RII_TAGLINE}>
                 Revenue Impact Index (RII): {riskScore.toFixed(0)}
               </p>
               {alignmentScore != null &&
@@ -113,13 +113,13 @@ export default function StructuralRiskOverview({
                 )}
             </div>
           ) : (
-            <p className="text-2xl font-bold text-gray-500">Monitoring</p>
+            <p className="text-2xl font-bold text-gray-600">Monitoring</p>
           )}
         </div>
 
         {!suppressTrend && (
           <div>
-            <p className="text-sm text-gray-500 mb-2 uppercase tracking-wide">Trend Signal</p>
+            <p className="text-sm text-gray-600 mb-2 uppercase tracking-wide">Trend Signal</p>
             <p className={`text-2xl font-semibold ${getTrendColor(trendDirection)}`}>
               {getTrendLabel(trendDirection)}
               {riskDelta !== undefined && riskDelta !== null && riskDelta !== 0 && (
@@ -129,20 +129,20 @@ export default function StructuralRiskOverview({
               )}
             </p>
             {getTrendSubtext(trendDirection) && (
-              <p className="text-xs text-gray-500 mt-1">{getTrendSubtext(trendDirection)}</p>
+              <p className="text-xs text-gray-600 mt-1">{getTrendSubtext(trendDirection)}</p>
             )}
           </div>
         )}
 
         <div>
-          <p className="text-sm text-gray-500 mb-2 uppercase tracking-wide">Drift Detection</p>
+          <p className="text-sm text-gray-600 mb-2 uppercase tracking-wide">Drift Detection</p>
           <p className={`text-2xl font-semibold ${getDriftColor(driftStatus)}`}>
             {getDriftLabel(driftStatus)}
           </p>
         </div>
       </div>
 
-      <p className="text-xs text-gray-500 mt-6">
+      <p className="text-xs text-gray-600 mt-6">
         Breakdown by alignment, ICP, anchors, and positioning is in the{" "}
         <a href="#revenue-alignment-map" className="text-cyan-600 hover:text-cyan-400 hover:underline">
           Revenue-Stage Alignment Map

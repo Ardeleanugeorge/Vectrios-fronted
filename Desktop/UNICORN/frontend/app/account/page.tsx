@@ -919,7 +919,7 @@ export default function AccountPage() {
       <div className="page-root flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-400 text-sm">Loading account…</p>
+          <p className="text-gray-600 text-sm">Loading account…</p>
         </div>
       </div>
     )
@@ -934,13 +934,13 @@ export default function AccountPage() {
           {/* -- Page header ---------------------------------------------------- */}
           <div className="flex items-start justify-between mb-10 gap-4 flex-wrap">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-200 border border-slate-300 text-slate-600 dark:bg-gray-800 dark:border-gray-200 dark:text-gray-400 text-xs font-medium mb-3 uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-200 border border-slate-300 text-slate-600 dark:bg-gray-800 dark:border-gray-200 dark:text-gray-600 text-xs font-medium mb-3 uppercase tracking-widest">
                 Account Settings
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">
                 {isOwner ? "VectriOS" : (user?.company_name || "Your Account")}
               </h1>
-              <p className="text-gray-500 text-sm mt-1">{user?.email}</p>
+              <p className="text-gray-600 text-sm mt-1">{user?.email}</p>
             </div>
             <div className="flex flex-wrap items-center gap-3 justify-end">
               <Link
@@ -951,7 +951,7 @@ export default function AccountPage() {
               </Link>
               <button
                 onClick={handleSignOut}
-                className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 font-medium text-sm transition"
+                className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-700 font-medium text-sm transition"
               >
                 Sign out
               </button>
@@ -993,7 +993,7 @@ export default function AccountPage() {
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition ${
                   activeTab === tab.id
                     ? 'bg-white text-slate-900 shadow-sm border border-slate-200 dark:bg-gray-800 dark:text-gray-900 dark:border-transparent'
-                    : 'text-slate-600 hover:text-slate-900 dark:text-gray-500 dark:hover:text-gray-300'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-gray-600 dark:hover:text-gray-700'
                 }`}
               >
                 <span className="text-base">{tab.icon}</span>
@@ -1007,12 +1007,12 @@ export default function AccountPage() {
             <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-200 dark:bg-gray-100">
               <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Profile information</h2>
-                <p className="text-gray-500 text-sm mt-0.5">Update your email and company name.</p>
+                <p className="text-gray-600 text-sm mt-0.5">Update your email and company name.</p>
               </div>
               <form onSubmit={handleProfileSave} className="p-6 space-y-5">
                 <div className="grid md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Email address</label>
+                    <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Email address</label>
                     <input
                       type="email"
                       value={profileEmail}
@@ -1024,7 +1024,7 @@ export default function AccountPage() {
                     <p className="text-xs text-gray-600 mt-1">Changing email sends a verification link first.</p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Company name</label>
+                    <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Company name</label>
                     <input
                       type="text"
                       value={profileCompanyName}
@@ -1082,7 +1082,7 @@ export default function AccountPage() {
                             )}
                           </div>
                           {subscription?.next_billing && !isTrial && (
-                            <p className="text-gray-500 text-sm">
+                            <p className="text-gray-600 text-sm">
                               Next billing: {new Date(subscription.next_billing).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                             </p>
                           )}
@@ -1097,7 +1097,7 @@ export default function AccountPage() {
                       </div>
                       <Link
                         href="/upgrade"
-                        className="px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium text-sm transition border border-gray-200"
+                        className="px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-700 font-medium text-sm transition border border-gray-200"
                       >
                         {isTrial ? 'Upgrade plan ?' : 'View plans ?'}
                       </Link>
@@ -1105,7 +1105,7 @@ export default function AccountPage() {
             ) : (
                     <div className="flex items-center justify-between flex-wrap gap-4">
                       <div>
-                        <p className="text-gray-400 mb-1">No active subscription</p>
+                        <p className="text-gray-600 mb-1">No active subscription</p>
                         <p className="text-gray-600 text-sm">Start a free trial to unlock monitoring.</p>
                       </div>
                 <Link
@@ -1124,7 +1124,7 @@ export default function AccountPage() {
                 <div className="px-6 py-5 border-b border-slate-200 dark:border-gray-200 flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Included features</h2>
-                    <p className="text-gray-500 text-sm mt-0.5">
+                    <p className="text-gray-600 text-sm mt-0.5">
                       {planLabel ? `What's active on your ${planLabel} plan` : "Start a plan to unlock features"}
                     </p>
                   </div>
@@ -1154,7 +1154,7 @@ export default function AccountPage() {
                           ) : (
                             <Link
                               href="/upgrade"
-                              className="ml-auto text-[10px] font-bold text-gray-500 bg-gray-800 border border-gray-200 px-2 py-0.5 rounded-full hover:text-gray-300 transition"
+                              className="ml-auto text-[10px] font-bold text-gray-600 bg-gray-800 border border-gray-200 px-2 py-0.5 rounded-full hover:text-gray-700 transition"
                             >
                               Upgrade ?
                             </Link>
@@ -1174,14 +1174,14 @@ export default function AccountPage() {
                               <span className="text-base mt-0.5 shrink-0">{feat.icon}</span>
                               <div className="min-w-0">
                                 <div className="flex items-center gap-1.5">
-                                  <span className={`text-sm font-medium ${groupEnabled ? "text-gray-200" : "text-gray-600"}`}>
+                                  <span className={`text-sm font-medium ${groupEnabled ? "text-gray-700" : "text-gray-600"}`}>
                                     {feat.label}
                                   </span>
                                   {groupEnabled && (
                                     <span className="text-[10px] font-bold text-cyan-400" aria-hidden>✓</span>
                                   )}
                                 </div>
-                                <p className={`text-xs mt-0.5 leading-relaxed ${groupEnabled ? "text-gray-500" : "text-gray-700"}`}>
+                                <p className={`text-xs mt-0.5 leading-relaxed ${groupEnabled ? "text-gray-600" : "text-gray-700"}`}>
                                   {feat.desc}
                                 </p>
                               </div>
@@ -1201,7 +1201,7 @@ export default function AccountPage() {
                         <p className="text-sm font-semibold text-cyan-300">
                           Activate Scale — $99/month
                         </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="text-xs text-gray-600 mt-0.5">
                           Unlock 24h monitoring, full playbook, ARR at risk, incidents, benchmark, and team access.
                         </p>
                       </div>
@@ -1223,7 +1223,7 @@ export default function AccountPage() {
                 </div>
                 <div className="p-6 flex items-center justify-between flex-wrap gap-4">
                   <div>
-                    <p className="text-gray-400 text-sm">Stripe billing portal — update card, view invoices, cancel.</p>
+                    <p className="text-gray-600 text-sm">Stripe billing portal — update card, view invoices, cancel.</p>
                   </div>
                   <button
                     disabled
@@ -1243,18 +1243,18 @@ export default function AccountPage() {
               <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-200 dark:bg-gray-100">
                 <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Financial calibration</h2>
-                  <p className="text-gray-500 text-sm mt-0.5">
+                  <p className="text-gray-600 text-sm mt-0.5">
                     Set your real business numbers to improve financial impact estimates. Structural risk is derived from website scan signals — these values calibrate the dollar output.
                   </p>
                 </div>
                 <form onSubmit={handleCalibrationSave} className="p-6 space-y-6">
                   <div className="grid md:grid-cols-3 gap-5">
                     <div>
-                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
                         Annual Recurring Revenue
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm">$</span>
                         <input
                           type="number"
                           min={1}
@@ -1267,7 +1267,7 @@ export default function AccountPage() {
                       <p className="text-xs text-gray-600 mt-1.5">Your current ARR in USD</p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
                         Current close rate
                       </label>
                       <div className="relative">
@@ -1281,12 +1281,12 @@ export default function AccountPage() {
                           placeholder="12.5"
                           className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                         />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">%</span>
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm">%</span>
                       </div>
                       <p className="text-xs text-gray-600 mt-1.5">Trial-to-paid or lead-to-close</p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
                         Target close rate
                       </label>
                       <div className="relative">
@@ -1300,7 +1300,7 @@ export default function AccountPage() {
                           placeholder="18.0"
                           className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                         />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">%</span>
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm">%</span>
                       </div>
                       <p className="text-xs text-gray-600 mt-1.5">What you're aiming to reach</p>
                     </div>
@@ -1310,7 +1310,7 @@ export default function AccountPage() {
                   {calibrationArr && calibrationCurrentCloseRate && calibrationTargetCloseRate && (
                     <div className="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
                       <p className="text-xs text-cyan-400 font-medium uppercase tracking-wider mb-1">Model preview</p>
-                      <p className="text-sm text-gray-300">
+                      <p className="text-sm text-gray-700">
                         Closing gap:{" "}
                         <span className="text-slate-900 dark:text-gray-900 font-semibold">
                           +{(Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)).toFixed(1)}pp
@@ -1341,7 +1341,7 @@ export default function AccountPage() {
 
               {/* Info card */}
               <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">How it works</p>
+                <p className="text-xs font-medium text-gray-600 uppercase tracking-wider mb-3">How it works</p>
                 <div className="grid sm:grid-cols-3 gap-4">
                   {[
                     { icon: "•", title: "Structural scan", desc: "RII and risk drivers come from crawling your site — always accurate." },
@@ -1351,7 +1351,7 @@ export default function AccountPage() {
                     <div key={item.title} className="flex gap-3">
                       <span className="text-xl mt-0.5">{item.icon}</span>
                       <div>
-                        <p className="text-sm font-medium text-gray-300">{item.title}</p>
+                        <p className="text-sm font-medium text-gray-700">{item.title}</p>
                         <p className="text-xs text-gray-600 mt-0.5">{item.desc}</p>
                       </div>
                     </div>
@@ -1366,11 +1366,11 @@ export default function AccountPage() {
             <div className="rounded-2xl border border-gray-200 bg-gray-100">
               <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Change password</h2>
-                <p className="text-gray-500 text-sm mt-0.5">Use a strong password of at least 8 characters.</p>
+                <p className="text-gray-600 text-sm mt-0.5">Use a strong password of at least 8 characters.</p>
               </div>
               <form onSubmit={handleChangePassword} className="p-6 space-y-5 max-w-md">
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">New password</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">New password</label>
                   <input
                     type="password"
                     value={newPassword}
@@ -1383,7 +1383,7 @@ export default function AccountPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Confirm new password</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Confirm new password</label>
                   <input
                     type="password"
                     value={confirmPassword}
@@ -1429,13 +1429,13 @@ export default function AccountPage() {
             <div className="rounded-2xl border border-gray-200 bg-gray-100">
               <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Ask a question</h2>
-                <p className="text-gray-500 text-sm mt-0.5">
+                <p className="text-gray-600 text-sm mt-0.5">
                   Billing, trial, Scale features, or how something works — same as the form on the pricing page. We&apos;ll email you back.
                 </p>
               </div>
               <form onSubmit={handleGeneralContactSubmit} className="p-6 space-y-5">
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Your name</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Your name</label>
                   <input
                     type="text"
                     value={generalContactName}
@@ -1446,17 +1446,17 @@ export default function AccountPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Email</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Email</label>
                   <input
                     type="email"
                     value={profileEmail || user?.email || ""}
                     readOnly
-                    className="w-full px-4 py-3 rounded-xl bg-gray-950 border border-gray-200 text-gray-400 cursor-not-allowed"
+                    className="w-full px-4 py-3 rounded-xl bg-gray-950 border border-gray-200 text-gray-600 cursor-not-allowed"
                   />
                   <p className="text-xs text-gray-600 mt-1.5">From your account. Change it on the Profile tab if needed.</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Message</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Message</label>
                   <textarea
                     value={generalContactMessage}
                     onChange={(e) => setGeneralContactMessage(e.target.value)}
@@ -1487,14 +1487,14 @@ export default function AccountPage() {
             <div className="rounded-2xl border border-gray-200 bg-gray-100">
               <div className="p-6 border-b border-slate-200 dark:border-gray-200">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Technical support ticket</h2>
-                <p className="text-gray-500 text-sm mt-0.5">
+                <p className="text-gray-600 text-sm mt-0.5">
                   For bugs or product issues — opens a tracked thread with technical context attached automatically.
                 </p>
               </div>
               <form onSubmit={handleSupportSubmit} className="p-6 space-y-5">
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Subject</label>
+                    <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Subject</label>
                     <input
                       type="text"
                       value={supportSubject}
@@ -1507,7 +1507,7 @@ export default function AccountPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Priority</label>
+                    <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Priority</label>
                     <select
                       value={supportPriority}
                       onChange={e => setSupportPriority(e.target.value)}
@@ -1523,7 +1523,7 @@ export default function AccountPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Message</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Message</label>
                   <textarea
                     value={supportMessage}
                     onChange={e => setSupportMessage(e.target.value)}
@@ -1558,10 +1558,10 @@ export default function AccountPage() {
               <div className="px-6 pb-6 border-t border-gray-200/80">
                 <div className="grid md:grid-cols-3 gap-5">
                   <div className="rounded-xl border border-gray-200 bg-gray-950/40 p-4 md:col-span-1">
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">My tickets</p>
+                    <p className="text-xs font-medium text-gray-600 uppercase tracking-wider mb-3">My tickets</p>
                     <div className="space-y-2 max-h-80 overflow-auto pr-1">
                       {supportTickets.length === 0 && (
-                        <p className="text-sm text-gray-500">No tickets yet.</p>
+                        <p className="text-sm text-gray-600">No tickets yet.</p>
                       )}
                       {supportTickets.map(t => (
                         <button
@@ -1577,8 +1577,8 @@ export default function AccountPage() {
                               : "border-gray-200 bg-gray-100"
                           }`}
                         >
-                          <p className="text-sm font-medium text-gray-200 truncate">{t.subject}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">
+                          <p className="text-sm font-medium text-gray-700 truncate">{t.subject}</p>
+                          <p className="text-xs text-gray-600 mt-0.5">
                             {t.ticket_id} — {t.priority}
                           </p>
                         </button>
@@ -1587,18 +1587,18 @@ export default function AccountPage() {
                   </div>
 
                   <div className="rounded-xl border border-gray-200 bg-gray-950/40 p-4 md:col-span-2">
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Ticket thread</p>
+                    <p className="text-xs font-medium text-gray-600 uppercase tracking-wider mb-3">Ticket thread</p>
                     {supportThreadLoading && (
-                      <p className="text-sm text-gray-500">Loading thread...</p>
+                      <p className="text-sm text-gray-600">Loading thread...</p>
                     )}
                     {!supportThreadLoading && !selectedTicket && (
-                      <p className="text-sm text-gray-500">Select a ticket to view conversation.</p>
+                      <p className="text-sm text-gray-600">Select a ticket to view conversation.</p>
                     )}
                     {!supportThreadLoading && selectedTicket && (
                       <div className="space-y-3">
                         <div className="pb-2 border-b border-slate-200 dark:border-gray-200">
-                          <p className="text-sm font-semibold text-gray-200">{selectedTicket.subject}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">
+                          <p className="text-sm font-semibold text-gray-700">{selectedTicket.subject}</p>
+                          <p className="text-xs text-gray-600 mt-0.5">
                             {selectedTicket.ticket_id} — {selectedTicket.priority} — {selectedTicket.status}
                           </p>
                         </div>
@@ -1612,12 +1612,12 @@ export default function AccountPage() {
                                   : "bg-gray-100"
                               }`}
                             >
-                              <p className="text-xs text-gray-500 mb-1">{m.author === "support" ? "Support" : "You"}</p>
-                              <p className="text-sm text-gray-200 whitespace-pre-wrap">{m.message}</p>
+                              <p className="text-xs text-gray-600 mb-1">{m.author === "support" ? "Support" : "You"}</p>
+                              <p className="text-sm text-gray-700 whitespace-pre-wrap">{m.message}</p>
                             </div>
                           ))}
                           {(selectedTicket.messages || []).length === 0 && (
-                            <p className="text-sm text-gray-500">No messages yet.</p>
+                            <p className="text-sm text-gray-600">No messages yet.</p>
                           )}
                         </div>
                         <form onSubmit={handleSupportFollowup} className="pt-2 space-y-2">
@@ -1658,7 +1658,7 @@ export default function AccountPage() {
                   <h2 className="text-lg font-bold text-cyan-300">RII Auto-Calibration</h2>
                   <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest">Owner only</span>
                 </div>
-                <p className="text-gray-400 text-sm mt-1">
+                <p className="text-gray-600 text-sm mt-1">
                   Re-calibrates the RII scoring model using all scan results in the database.
                   No terminal, no Excel — one click.
                 </p>
@@ -1667,22 +1667,22 @@ export default function AccountPage() {
               {/* Platform Ops snapshot */}
               <div className="grid md:grid-cols-3 gap-4">
                 <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">System Health</h3>
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">System Health</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">DB: <span className={adminSystemHealth?.db_connected ? "text-emerald-300" : "text-red-300"}>{adminSystemHealth?.db_connected ? "Connected" : "Down"}</span></p>
-                    <p className="text-gray-300">Companies: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminSystemHealth?.counts?.companies_total ?? "–"}</span></p>
-                    <p className="text-gray-300">Monitoring active: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminSystemHealth?.counts?.monitoring_active ?? "–"}</span></p>
-                    <p className="text-gray-500 text-xs">Last monitoring: {adminSystemHealth?.minutes_since_last_monitoring != null ? `${adminSystemHealth.minutes_since_last_monitoring} min ago` : "—"}</p>
+                    <p className="text-gray-700">DB: <span className={adminSystemHealth?.db_connected ? "text-emerald-300" : "text-red-300"}>{adminSystemHealth?.db_connected ? "Connected" : "Down"}</span></p>
+                    <p className="text-gray-700">Companies: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminSystemHealth?.counts?.companies_total ?? "–"}</span></p>
+                    <p className="text-gray-700">Monitoring active: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminSystemHealth?.counts?.monitoring_active ?? "–"}</span></p>
+                    <p className="text-gray-600 text-xs">Last monitoring: {adminSystemHealth?.minutes_since_last_monitoring != null ? `${adminSystemHealth.minutes_since_last_monitoring} min ago` : "—"}</p>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pipeline Metrics</h3>
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Pipeline Metrics</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">Scans 24h: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "–"}</span></p>
-                    <p className="text-gray-300">Success 24h: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "–"}%</span></p>
-                    <p className="text-gray-300">Scans 7d: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "–"}</span></p>
-                    <p className="text-gray-300">No-evidence 7d: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "–"}%</span></p>
+                    <p className="text-gray-700">Scans 24h: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "–"}</span></p>
+                    <p className="text-gray-700">Success 24h: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "–"}%</span></p>
+                    <p className="text-gray-700">Scans 7d: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "–"}</span></p>
+                    <p className="text-gray-700">No-evidence 7d: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "–"}%</span></p>
                     <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(noEvidenceStatus)}`}>
                       No-evidence status: {noEvidenceStatus === "good" ? "healthy" : noEvidenceStatus === "warn" ? "watch" : "critical"}
                     </span>
@@ -1690,11 +1690,11 @@ export default function AccountPage() {
                 </div>
 
                 <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">RII Consistency Guard</h3>
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">RII Consistency Guard</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">Checked: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminRiiConsistency?.checked_companies ?? "–"}</span></p>
-                    <p className="text-gray-300">Mismatches: <span className={`${(adminRiiConsistency?.mismatch_count || 0) > 0 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{adminRiiConsistency?.mismatch_count ?? "–"}</span></p>
-                    <p className="text-gray-300">Mismatch rate: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "–"}%</span></p>
+                    <p className="text-gray-700">Checked: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminRiiConsistency?.checked_companies ?? "–"}</span></p>
+                    <p className="text-gray-700">Mismatches: <span className={`${(adminRiiConsistency?.mismatch_count || 0) > 0 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{adminRiiConsistency?.mismatch_count ?? "–"}</span></p>
+                    <p className="text-gray-700">Mismatch rate: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "–"}%</span></p>
                     <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(mismatchStatus)}`}>
                       Consistency status: {mismatchStatus === "good" ? "healthy" : mismatchStatus === "warn" ? "watch" : "critical"}
                     </span>
@@ -1704,55 +1704,55 @@ export default function AccountPage() {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Top Scan Failure Reasons (7d)</h3>
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Top Scan Failure Reasons (7d)</h3>
                   <div className="space-y-2">
                     {(adminPipelineMetrics?.window_7d?.top_reasons || []).slice(0, 5).map((r) => (
-                      <div key={`${r.reason}-${r.count}`} className="text-sm text-gray-300 flex items-center justify-between">
+                      <div key={`${r.reason}-${r.count}`} className="text-sm text-gray-700 flex items-center justify-between">
                         <span>{r.reason}</span>
                         <span className="text-slate-900 dark:text-gray-900 font-semibold">{r.count}</span>
                       </div>
                     ))}
                     {(!adminPipelineMetrics?.window_7d?.top_reasons || adminPipelineMetrics.window_7d.top_reasons.length === 0) && (
-                      <p className="text-sm text-gray-500">No recent scan reason data.</p>
+                      <p className="text-sm text-gray-600">No recent scan reason data.</p>
                     )}
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Top RII Mismatches</h3>
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Top RII Mismatches</h3>
                   <div className="space-y-2">
                     {(adminRiiConsistency?.items || []).slice(0, 5).map((it) => (
-                      <div key={it.company_id} className="text-sm text-gray-300 flex items-center justify-between gap-3">
+                      <div key={it.company_id} className="text-sm text-gray-700 flex items-center justify-between gap-3">
                         <span className="truncate">{it.company_name}</span>
                         <span className={`${Math.abs(it.delta) > 0.2 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{it.delta > 0 ? "+" : ""}{it.delta}</span>
                       </div>
                     ))}
                     {(!adminRiiConsistency?.items || adminRiiConsistency.items.length === 0) && (
-                      <p className="text-sm text-gray-500">No no-evidence consistency rows yet.</p>
+                      <p className="text-sm text-gray-600">No no-evidence consistency rows yet.</p>
                     )}
                   </div>
                 </div>
               </div>
 
               <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Monitoring Coverage (24h)</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Monitoring Coverage (24h)</h3>
                 <div className="grid md:grid-cols-4 gap-3 mb-4">
                   <div className="rounded-xl bg-gray-100">
-                    <p className="text-xs text-gray-500">Active companies</p>
+                    <p className="text-xs text-gray-600">Active companies</p>
                     <p className="text-lg font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.active_companies ?? "–"}</p>
                   </div>
                   <div className="rounded-xl bg-gray-100">
-                    <p className="text-xs text-gray-500">Scanned in 24h</p>
+                    <p className="text-xs text-gray-600">Scanned in 24h</p>
                     <p className="text-lg font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.companies_scanned_in_window ?? "–"}</p>
                   </div>
                   <div className="rounded-xl bg-gray-100">
-                    <p className="text-xs text-gray-500">Coverage</p>
+                    <p className="text-xs text-gray-600">Coverage</p>
                     <p className={`text-lg font-semibold ${coverageStatus === "good" ? "text-emerald-300" : coverageStatus === "warn" ? "text-amber-300" : "text-red-300"}`}>
                       {adminCoverage?.coverage_pct ?? "–"}%
                     </p>
                   </div>
                   <div className="rounded-xl bg-gray-100">
-                    <p className="text-xs text-gray-500">Cycles</p>
+                    <p className="text-xs text-gray-600">Cycles</p>
                     <p className="text-lg font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.cycles_breakdown?.total_cycles ?? "–"}</p>
                   </div>
                 </div>
@@ -1778,13 +1778,13 @@ export default function AccountPage() {
                       Coverage status: {coverageStatus === "good" ? "healthy" : coverageStatus === "warn" ? "watch" : "critical"}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Missing companies (not scanned in 24h)</p>
+                  <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">Missing companies (not scanned in 24h)</p>
                   <div className="space-y-2 max-h-56 overflow-auto pr-1">
                     {(adminCoverage?.missing_companies || []).slice(0, 30).map((m) => (
                       <div key={m.company_id} className="p-2 rounded-lg border border-gray-200 bg-gray-950/40 flex items-center justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-sm text-gray-200 truncate">{m.company_name || m.company_id}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-sm text-gray-700 truncate">{m.company_name || m.company_id}</p>
+                          <p className="text-xs text-gray-600">
                             Last: {m.last_monitoring_at ? new Date(m.last_monitoring_at).toLocaleString() : "never"}
                           </p>
                         </div>
@@ -1800,7 +1800,7 @@ export default function AccountPage() {
                       </div>
                     ))}
                     {(!adminCoverage?.missing_companies || adminCoverage.missing_companies.length === 0) && (
-                      <p className="text-sm text-gray-500">No missing companies in the last 24h window.</p>
+                      <p className="text-sm text-gray-600">No missing companies in the last 24h window.</p>
                     )}
                   </div>
                 </div>
@@ -1808,36 +1808,36 @@ export default function AccountPage() {
 
               {/* Current DB stats */}
               <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Current Status</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Current Status</h3>
                 {calibStatus ? (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
                     <div className="rounded-xl bg-gray-100">
                       <div className="text-2xl font-bold text-slate-900 dark:text-gray-900">{calibStatus.total_scans_in_db ?? "–"}</div>
-                      <div className="text-xs text-gray-500 mt-1">Total scans in DB</div>
+                      <div className="text-xs text-gray-600 mt-1">Total scans in DB</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">incl. monitoring cycles</div>
                     </div>
                     <div className="rounded-xl bg-gray-100">
                       <div className="text-2xl font-bold text-slate-900 dark:text-gray-900">{calibStatus.n_scans || "–"}</div>
-                      <div className="text-xs text-gray-500 mt-1">Last calibration scans</div>
+                      <div className="text-xs text-gray-600 mt-1">Last calibration scans</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">unique companies used</div>
                     </div>
                     <div className="rounded-xl bg-gray-100">
                       <div className={`text-2xl font-bold ${calibStatus.mae && calibStatus.mae < 6 ? "text-emerald-400" : "text-amber-400"}`}>
                         {calibStatus.mae ? `${calibStatus.mae.toFixed(1)} pts` : "—"}
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">MAE (lower = better)</div>
+                      <div className="text-xs text-gray-600 mt-1">MAE (lower = better)</div>
                     </div>
                     <div className="rounded-xl bg-gray-100">
                       <div className={`text-2xl font-bold ${calibStatus.state === "done" ? "text-emerald-400" : calibStatus.state === "running" ? "text-cyan-400" : calibStatus.state === "error" ? "text-red-400" : "text-amber-400"}`}>
                         {calibStatus.state === "done" ? "?" : calibStatus.state === "running" ? "?" : calibStatus.state === "error" ? "?" : "?"}
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-gray-600 mt-1">
                         {calibStatus.state === "done" ? "Done" : calibStatus.state === "running" ? "Running…" : calibStatus.state === "error" ? "Error" : "Ready"}
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm mb-5">No calibration has been run yet. Click below to run the first one.</p>
+                  <p className="text-gray-600 text-sm mb-5">No calibration has been run yet. Click below to run the first one.</p>
                 )}
 
                 {/* Label distribution */}
@@ -1867,7 +1867,7 @@ export default function AccountPage() {
                 {/* Optimal global weights */}
                 {calibStatus?.global_weights && (
                   <div className="p-4 rounded-xl bg-gray-100">
-                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Calibrated Weights (active)</p>
+                    <p className="text-xs text-gray-600 uppercase tracking-wider mb-3">Calibrated Weights (active)</p>
                     <div className="flex flex-wrap gap-3">
                       {Object.entries(calibStatus.global_weights).map(([k, v]) => (
                         <div key={k} className="text-xs font-mono bg-gray-800 rounded-lg px-3 py-1.5 text-cyan-300">
@@ -1882,7 +1882,7 @@ export default function AccountPage() {
                 {calibStatus?.candidate?.present && (
                   <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-5">
                     <p className="text-xs text-amber-300 uppercase tracking-wider mb-2">Candidate Calibration (pending review)</p>
-                    <div className="text-sm text-gray-300 mb-3">
+                    <div className="text-sm text-gray-700 mb-3">
                       <span className="mr-4">MAE: <span className="font-semibold">{calibStatus.candidate?.mae?.toFixed?.(1) ?? "–"} pts</span></span>
                       <span className="mr-4">Scans: <span className="font-semibold">{calibStatus.candidate?.n_scans ?? "–"}</span></span>
                       <span>Calibrated at: <span className="font-semibold">{calibStatus.candidate?.calibrated_at ? new Date(calibStatus.candidate.calibrated_at).toLocaleString() : "—"}</span></span>
@@ -1900,7 +1900,7 @@ export default function AccountPage() {
                       <button onClick={handleAcceptCandidate} className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition">
                         Accept and activate
                       </button>
-                      <button onClick={handleRejectCandidate} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium text-sm transition">
+                      <button onClick={handleRejectCandidate} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-700 font-medium text-sm transition">
                         Reject
                       </button>
                       <button onClick={handleRollback} className="px-4 py-2 rounded-lg bg-gray-100">
@@ -1936,7 +1936,7 @@ export default function AccountPage() {
                   <button
                     onClick={loadCalibStatus}
                     disabled={calibRunning}
-                    className="px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium transition disabled:opacity-50"
+                    className="px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-700 text-sm font-medium transition disabled:opacity-50"
                   >
                     Refresh status
                   </button>
@@ -1958,8 +1958,8 @@ export default function AccountPage() {
 
               {/* How it works */}
               <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">What happens when you click Run</h3>
-                <ol className="space-y-2 text-sm text-gray-400">
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">What happens when you click Run</h3>
+                <ol className="space-y-2 text-sm text-gray-600">
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">1.</span> Loads all successful scans from the database</li>
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">2.</span> Auto-labels each scan as good / mid / bad based on current RII</li>
                   <li className="flex gap-3"><span className="text-cyan-400 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
@@ -1971,13 +1971,13 @@ export default function AccountPage() {
 
               {/* Admin Support Console */}
               <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Admin Support Inbox</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Admin Support Inbox</h3>
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="rounded-xl bg-gray-100">
-                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Tickets (all companies)</p>
+                    <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">Tickets (all companies)</p>
                     <div className="space-y-2 max-h-80 overflow-auto pr-1">
                       {adminTickets.length === 0 && (
-                        <p className="text-xs text-gray-500">No tickets found.</p>
+                        <p className="text-xs text-gray-600">No tickets found.</p>
                       )}
                       {adminTickets.map(t => (
                         <button
@@ -1993,8 +1993,8 @@ export default function AccountPage() {
                               : "border-gray-200 bg-gray-950/40 hover:border-gray-200"
                           }`}
                         >
-                          <p className="text-sm text-gray-200 truncate">{t.subject}</p>
-                          <p className="text-xs text-gray-500 mt-0.5 truncate">{t.company_name || t.owner_email || "unknown"}</p>
+                          <p className="text-sm text-gray-700 truncate">{t.subject}</p>
+                          <p className="text-xs text-gray-600 mt-0.5 truncate">{t.company_name || t.owner_email || "unknown"}</p>
                           <p className="text-[11px] text-gray-600 mt-1">
                             {t.ticket_id} — {t.priority} — {t.status}
                             {adminSelectedTicketId === t.ticket_id ? " — selected" : ""}
@@ -2005,24 +2005,24 @@ export default function AccountPage() {
                   </div>
 
                   <div className="rounded-xl bg-gray-100">
-                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Selected ticket</p>
-                    {adminSupportLoading && <p className="text-sm text-gray-500">Loading...</p>}
+                    <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">Selected ticket</p>
+                    {adminSupportLoading && <p className="text-sm text-gray-600">Loading...</p>}
                     {!adminSupportLoading && !adminSelectedTicket && (
-                      <p className="text-sm text-gray-500">Select a ticket to read and reply.</p>
+                      <p className="text-sm text-gray-600">Select a ticket to read and reply.</p>
                     )}
                     {!adminSupportLoading && adminSelectedTicket && (
                       <div className="space-y-3">
                         <div className="pb-2 border-b border-slate-200 dark:border-gray-200">
-                          <p className="text-sm font-semibold text-gray-200">{adminSelectedTicket.subject}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">
+                          <p className="text-sm font-semibold text-gray-700">{adminSelectedTicket.subject}</p>
+                          <p className="text-xs text-gray-600 mt-0.5">
                             {adminSelectedTicket.ticket_id} — {adminSelectedTicket.company_name || "Unknown company"} — {adminSelectedTicket.status}
                           </p>
                         </div>
                         <div className="space-y-2 max-h-52 overflow-auto pr-1">
                           {(adminSelectedTicket.messages || []).map((m, i) => (
                             <div key={`${m.created_at || i}-${i}`} className={`p-3 rounded-lg border ${m.author === "support" ? "bg-cyan-500/10 border-cyan-500/20" : "bg-gray-950/40 border-gray-200"}`}>
-                              <p className="text-xs text-gray-500 mb-1">{m.author === "support" ? "Support" : "Client"}</p>
-                              <p className="text-sm text-gray-200 whitespace-pre-wrap">{m.message}</p>
+                              <p className="text-xs text-gray-600 mb-1">{m.author === "support" ? "Support" : "Client"}</p>
+                              <p className="text-sm text-gray-700 whitespace-pre-wrap">{m.message}</p>
                             </div>
                           ))}
                         </div>
@@ -2052,13 +2052,13 @@ export default function AccountPage() {
 
               {/* Runtime feature flags */}
               <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Runtime Feature Flags</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Runtime Feature Flags</h3>
                 <div className="flex flex-wrap gap-2">
                   {Object.keys(adminFlags).length === 0 && (
-                    <p className="text-sm text-gray-500">No flags loaded.</p>
+                    <p className="text-sm text-gray-600">No flags loaded.</p>
                   )}
                   {Object.entries(adminFlags).map(([k, v]) => (
-                    <div key={k} className={`text-xs rounded-lg px-3 py-1.5 border ${v ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300" : "bg-gray-800 border-gray-200 text-gray-400"}`}>
+                    <div key={k} className={`text-xs rounded-lg px-3 py-1.5 border ${v ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300" : "bg-gray-800 border-gray-200 text-gray-600"}`}>
                       {k}: <span className="font-bold">{v ? "ON" : "OFF"}</span>
                     </div>
                   ))}
@@ -2067,15 +2067,15 @@ export default function AccountPage() {
 
               {/* Audit preview */}
               <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Audit Log Preview (selected ticket company)</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Audit Log Preview (selected ticket company)</h3>
                 <div className="space-y-2">
                   {adminAuditPreview.length === 0 && (
-                    <p className="text-sm text-gray-500">Select a ticket to load recent logs.</p>
+                    <p className="text-sm text-gray-600">Select a ticket to load recent logs.</p>
                   )}
                   {adminAuditPreview.map((log, i) => (
-                    <div key={`${log.created_at || i}-${i}`} className="p-2 rounded-lg border border-gray-200 bg-gray-950/40 text-xs text-gray-300 flex items-center justify-between">
+                    <div key={`${log.created_at || i}-${i}`} className="p-2 rounded-lg border border-gray-200 bg-gray-950/40 text-xs text-gray-700 flex items-center justify-between">
                       <span>{log.action_type}</span>
-                      <span className="text-gray-500">{log.created_at ? new Date(log.created_at).toLocaleString() : "—"}</span>
+                      <span className="text-gray-600">{log.created_at ? new Date(log.created_at).toLocaleString() : "—"}</span>
                     </div>
                   ))}
                 </div>

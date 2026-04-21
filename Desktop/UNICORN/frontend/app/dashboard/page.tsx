@@ -708,7 +708,7 @@ export default function DashboardPage() {
     return (
       <div className="page-root flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-gray-400">Loading...</p>
+          <p className="text-xl text-gray-600">Loading...</p>
         </div>
       </div>
     )
@@ -719,7 +719,7 @@ export default function DashboardPage() {
     return (
       <div className="page-root flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-gray-400">Please log in</p>
+          <p className="text-xl text-gray-600">Please log in</p>
         </div>
       </div>
     )
@@ -774,7 +774,7 @@ export default function DashboardPage() {
       case "orange": return "text-orange-400"
       case "yellow": return "text-yellow-400"
       case "green": return "text-green-400"
-      default: return "text-gray-400"
+      default: return "text-gray-600"
     }
   }
 
@@ -857,7 +857,7 @@ export default function DashboardPage() {
           {/* While monitoring status is loading from API, show spinner */}
           {monitoringLoading && companyId ? (
             <div className="p-8 border border-gray-200 rounded-lg bg-gray-50">
-              <p className="text-sm text-gray-500 animate-pulse">Loading revenue monitoring status...</p>
+              <p className="text-sm text-gray-600 animate-pulse">Loading revenue monitoring status...</p>
             </div>
           ) : isMonitoringActive && monitoringStatus ? (
             /* STATE 3 ΓÇö CONTINUOUS MONITORING ACTIVE */
@@ -896,7 +896,7 @@ export default function DashboardPage() {
             /* STATE 1 ΓÇö NO DIAGNOSTIC & monitoring confirmed off */
             <div className="p-12 border border-gray-200 rounded-lg bg-gray-50 text-center">
               <h2 className="text-2xl font-bold mb-4 text-gray-900">Revenue Monitoring Not Yet Active</h2>
-              <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
+              <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
                 Run a scan first to quantify your revenue-stage exposure and identify compression risk.
               </p>
               <Link
@@ -908,7 +908,7 @@ export default function DashboardPage() {
             </div>
           ) : subscriptionLoading ? (
             <div className="p-8 border border-gray-200 rounded-lg bg-gray-50">
-              <p className="text-sm text-gray-500 animate-pulse">Loading subscription status...</p>
+              <p className="text-sm text-gray-600 animate-pulse">Loading subscription status...</p>
             </div>
           ) : diagnostic?.is_partial ? (
             /* STATE 2 ΓÇö PARTIAL DIAGNOSTIC (from scan), monitoring not active */
