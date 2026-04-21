@@ -798,7 +798,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="page-root">
+    <div className="page-root bg-white">
       <DashboardHeader />
       <main className="py-12">
         <div className="max-w-7xl mx-auto px-6">
@@ -807,7 +807,7 @@ export default function DashboardPage() {
           <div className="mb-6 pb-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-semibold text-gray-300">Revenue Monitoring Console</h1>
+                <h1 className="text-2xl font-semibold text-gray-900">Revenue Monitoring Console</h1>
               </div>
             </div>
           </div>
@@ -888,7 +888,7 @@ export default function DashboardPage() {
           ) : !hasDiagnostic && !monitoringLoading ? (
             /* STATE 1 ΓÇö NO DIAGNOSTIC & monitoring confirmed off */
             <div className="p-12 border border-gray-200 rounded-lg bg-gray-50 text-center">
-              <h2 className="text-2xl font-bold mb-4 text-gray-300">Revenue Monitoring Not Yet Active</h2>
+              <h2 className="text-2xl font-bold mb-4 text-gray-900">Revenue Monitoring Not Yet Active</h2>
               <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
                 Run a scan first to quantify your revenue-stage exposure and identify compression risk.
               </p>
