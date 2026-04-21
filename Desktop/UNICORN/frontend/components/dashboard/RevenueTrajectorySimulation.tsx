@@ -81,14 +81,14 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
 
   if (loading) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Trajectory</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Trajectory</h2>
       <p className="text-sm text-gray-600">Simulating trajectories...</p>
     </div>
   )
 
   if (!data) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Trajectory</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Trajectory</h2>
       <p className="text-sm text-gray-600">Run an assessment to generate trajectory simulation.</p>
     </div>
   )
@@ -113,7 +113,7 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
     <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
       {/* Header */}
       <div className="px-8 pt-7 pb-4">
-        <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Trajectory Simulation</h2>
+        <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Trajectory Simulation</h2>
         <p className="text-xs text-gray-600 mt-1">12-month ARR projection — no action vs. messaging fix</p>
       </div>
 

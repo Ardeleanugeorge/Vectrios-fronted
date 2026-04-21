@@ -148,7 +148,7 @@ export default function ActivityFeed({ companyId, defaultCollapsed = false }: Ac
 
   return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Revenue System Activity</h2>
+      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Revenue System Activity</h2>
       {loading ? (
         <p className="text-sm text-gray-600">Loading activity...</p>
       ) : events.length === 0 ? (

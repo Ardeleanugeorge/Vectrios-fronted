@@ -149,7 +149,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
 
   if (loading) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Incidents</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Incidents</h2>
       <div className="flex gap-2 items-center">
         <span className="w-2 h-2 rounded-full bg-gray-700 animate-pulse" />
         <p className="text-sm text-gray-600">Scanning for incidents...</p>
@@ -159,7 +159,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
 
   if (open.length === 0) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Incidents</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Incidents</h2>
       <div className="flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-green-500" />
         <p className="text-sm text-gray-600">No active incidents detected.</p>
@@ -174,7 +174,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
       <div className="px-8 pt-7 pb-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Incidents</h2>
+            <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Incidents</h2>
             <p className="text-xs text-gray-600 mt-0.5">Live structural risk events</p>
           </div>
           <div className="flex items-center gap-2">

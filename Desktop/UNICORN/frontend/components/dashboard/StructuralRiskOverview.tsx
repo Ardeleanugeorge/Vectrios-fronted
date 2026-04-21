@@ -91,7 +91,7 @@ export default function StructuralRiskOverview({
 
   return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Revenue Alignment Status</h2>
+      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Revenue Alignment Status</h2>
       
       <div className="grid md:grid-cols-2 gap-6">
         <div>

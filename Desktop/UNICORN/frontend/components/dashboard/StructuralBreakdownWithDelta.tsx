@@ -72,7 +72,7 @@ export default function StructuralBreakdownWithDelta({
 
   return (
     <div id="revenue-alignment-map" className="p-8 bg-gray-50 rounded-lg border border-gray-200 scroll-mt-24">
-      <h2 className="text-xl font-bold mb-2 uppercase tracking-wide">Revenue-Stage Alignment Map</h2>
+      <h2 className="text-xl font-bold mb-2 uppercase tracking-wide text-gray-900">Revenue-Stage Alignment Map</h2>
       <p className="text-xs text-gray-600 mb-2 leading-relaxed">
         These four dimensions feed your headline {RII_NAME} ({RII_ABBREV}). They explain <em>where</em> structural risk concentrates — not dollar impact (see model below).
       </p>

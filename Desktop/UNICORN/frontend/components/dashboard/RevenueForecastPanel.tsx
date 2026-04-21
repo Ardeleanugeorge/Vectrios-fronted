@@ -63,14 +63,14 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
 
   if (loading) return (
     <div id="revenue-optimization-model" className="p-8 bg-gray-50 rounded-lg border border-gray-200 scroll-mt-24">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Optimization Model</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Optimization Model</h2>
       <p className="text-sm text-gray-600">Calculating revenue impact...</p>
     </div>
   )
 
   if (!forecast) return (
     <div id="revenue-optimization-model" className="p-8 bg-gray-50 rounded-lg border border-gray-200 scroll-mt-24">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Optimization Model</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Optimization Model</h2>
       <p className="text-sm text-gray-600">Insufficient data for revenue calculation.</p>
     </div>
   )
@@ -81,7 +81,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
   return (
     <div id="revenue-optimization-model" className="p-8 bg-gray-50 rounded-lg border border-gray-200 space-y-6 scroll-mt-24">
       <div>
-        <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Optimization Model</h2>
+        <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Optimization Model</h2>
         <p className="text-xs text-gray-600 mt-1 uppercase tracking-wide">Messaging impact on ARR</p>
       </div>
 

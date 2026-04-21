@@ -14,7 +14,7 @@ interface RevenueImpactCardProps {
 export default function RevenueImpactCard({ revenueImpact }: RevenueImpactCardProps) {
   return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Projected Revenue Impact</h2>
+      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Projected Revenue Impact</h2>
       <div className="grid md:grid-cols-3 gap-6">
         <div>
           <p className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Estimated Close Rate Erosion</p>

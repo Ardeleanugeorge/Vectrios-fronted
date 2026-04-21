@@ -70,7 +70,7 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
   if (loading) {
     return (
       <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Revenue Risk Trajectory</h2>
+        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Revenue Risk Trajectory</h2>
         <p className="text-sm text-gray-600">Calculating trajectory...</p>
       </div>
     )
@@ -79,7 +79,7 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
   if (!trajectory) {
     return (
       <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Revenue Risk Trajectory</h2>
+        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Revenue Risk Trajectory</h2>
         <p className="text-sm text-gray-600">Insufficient data for trajectory calculation.</p>
       </div>
     )
@@ -87,7 +87,7 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
 
   return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-2 uppercase tracking-wide">Revenue Risk Trajectory</h2>
+      <h2 className="text-xl font-bold mb-2 uppercase tracking-wide text-gray-900">Revenue Risk Trajectory</h2>
       <p className="text-xs text-gray-600 mb-6 leading-relaxed max-w-3xl">
         Time-path implied from today’s {RII_ABBREV} snapshot using the engine’s decay model — same 0–100 scale as your headline score. This is not the same as the “no action vs fix” ARR chart below; numbers can move either way depending on scenario math.
       </p>

@@ -155,7 +155,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
   if (loading) {
     return (
       <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Active Alerts</h2>
+        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Active Alerts</h2>
         <p className="text-sm text-gray-600">Loading alerts...</p>
       </div>
     )
@@ -164,7 +164,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
   if (alerts.length === 0) {
     return (
       <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Active Alerts</h2>
+        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Active Alerts</h2>
         <p className="text-sm text-gray-600">No active alerts. All systems operational.</p>
       </div>
     )
@@ -173,7 +173,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
   return (
     <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold uppercase tracking-wide">Active Alerts</h2>
+        <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Active Alerts</h2>
         <span className="text-xs text-gray-600">{alerts.length} unread</span>
       </div>
       

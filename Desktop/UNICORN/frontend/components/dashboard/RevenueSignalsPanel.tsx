@@ -109,7 +109,7 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
   if (loading) {
     return (
       <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Recent Structural Signals</h2>
+        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Recent Structural Signals</h2>
         <p className="text-sm text-gray-600">Loading signals...</p>
       </div>
     )
@@ -118,7 +118,7 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
   if (signals.length === 0) {
     return (
       <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Recent Structural Signals</h2>
+        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Recent Structural Signals</h2>
         <p className="text-sm text-gray-600">No signals detected. Monitoring active.</p>
       </div>
     )
@@ -136,7 +136,7 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
 
   return (
     <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Recent Structural Signals</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Recent Structural Signals</h2>
 
       <div className="space-y-0 mb-6">
         {recent.map((signal, index) => (

@@ -146,14 +146,14 @@ export default function BenchmarkPanel({ companyId }: Props) {
 
   if (loading) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Benchmark Intelligence</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
       <p className="text-sm text-gray-600">Loading benchmarks...</p>
     </div>
   )
 
   if (!data) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Benchmark Intelligence</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
       <p className="text-sm text-gray-600">Run an assessment to unlock benchmarks.</p>
     </div>
   )
@@ -166,7 +166,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
       <div className="px-8 pt-7 pb-4 border-b border-gray-200">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold uppercase tracking-wide">Benchmark Intelligence</h2>
+            <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
             <p className="text-xs text-gray-600 mt-0.5">
               Your GTM messaging vs {data.context.total_companies} {data.context.industry} companies
             </p>

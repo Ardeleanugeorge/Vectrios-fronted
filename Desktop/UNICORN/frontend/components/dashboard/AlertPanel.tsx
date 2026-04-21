@@ -24,7 +24,7 @@ export default function AlertPanel({ alerts, onMarkAlertRead }: AlertPanelProps)
 
   return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Active Alerts</h2>
+      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Active Alerts</h2>
       <div className="space-y-4">
         {unreadAlerts.map((alert) => (
           <div 
