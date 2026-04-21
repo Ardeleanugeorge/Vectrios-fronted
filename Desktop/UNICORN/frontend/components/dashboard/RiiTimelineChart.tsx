@@ -219,7 +219,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
               <line
                 x1={PAD.left} y1={yOf(tick)}
                 x2={PAD.left + chartW} y2={yOf(tick)}
-                stroke="#1f2937" strokeWidth="1"
+                stroke="#e5e7eb" strokeWidth="1"
               />
               <text
                 x={PAD.left - 6} y={yOf(tick)}

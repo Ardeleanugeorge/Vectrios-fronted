@@ -152,7 +152,7 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
             return (
               <g key={i}>
                 <line x1={PAD} y1={y} x2={W - PAD} y2={y}
-                  stroke="#1f2937" strokeWidth="1" strokeDasharray="4,4" />
+                  stroke="#e5e7eb" strokeWidth="1" strokeDasharray="4,4" />
                 <text x={PAD - 6} y={y + 4} textAnchor="end"
                   fill="#4b5563" fontSize="10">{fmt(tick)}</text>
               </g>
@@ -181,7 +181,7 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
           {/* Hover line */}
           {hoveredX !== null && (
             <line x1={hoveredX} y1={PAD} x2={hoveredX} y2={H - PAD}
-              stroke="#374151" strokeWidth="1" />
+              stroke="#e5e7eb" strokeWidth="1" />
           )}
 
           {/* No Action path */}
@@ -205,7 +205,7 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
                 <circle cx={x} cy={toY(data.with_fix[hovered],  minV, maxV, H, PAD)}
                   r={3} fill="#22c55e" />
                 <rect x={boxX} y={PAD} width={120} height={56}
-                  rx={4} fill="#1f2937" stroke="#374151" strokeWidth="1" />
+                  rx={4} fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
                 <text x={boxX + 8} y={PAD + 16} fill="#9ca3af" fontSize="10">
                   Month {hovered}
                 </text>
