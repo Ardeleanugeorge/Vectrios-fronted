@@ -227,7 +227,7 @@ export default function Home() {
       {/* -- 1. HERO ------------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 pt-12 pb-16 md:pt-16 md:pb-20">
         <div className="text-center max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-8 uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-semibold mb-8 uppercase tracking-wider">
             Revenue Loss Early Warning
           </div>
           <h1 className="text-4xl md:text-6xl text-slate-900 dark:text-gray-900 mb-6 font-bold leading-tight">
