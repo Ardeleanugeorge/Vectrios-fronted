@@ -1002,17 +1002,17 @@ function ScanResultsContent() {
           }`}
         >
           {!wideLayout && !isBlocked && financialImpact && (
-            <div className="mb-6 p-4 rounded-xl bg-gradient-to-br from-orange-950/50 to-[#0d1320] border border-orange-500/30 text-left">
+            <div className="mb-6 p-4 rounded-xl bg-orange-50 border border-orange-200 text-left">
               <p className="text-lg font-semibold text-gray-900 leading-snug mb-2">
                 Your website is silently losing revenue right now
               </p>
-              <p className="text-base text-orange-300 font-semibold">
+              <p className="text-base text-orange-700 font-semibold">
                 Estimated impact: {modeledAnnualLossLabel} at risk
               </p>
             </div>
           )}
           {!wideLayout && !isBlocked && !financialImpact && (
-            <div className="mb-6 p-4 rounded-xl bg-orange-950/30 border border-orange-500/20 text-left">
+            <div className="mb-6 p-4 rounded-xl bg-orange-50 border border-orange-200 text-left">
               <p className="text-lg font-semibold text-gray-900 leading-snug">
                 Your website is silently losing revenue right now
               </p>
