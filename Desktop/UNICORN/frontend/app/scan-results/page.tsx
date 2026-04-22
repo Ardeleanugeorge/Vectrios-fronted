@@ -1203,7 +1203,7 @@ function ScanResultsContent() {
 
         {/* Soft Paywall - Full Diagnostic (only show if not unlocked) */}
         {!unlocked && (
-          <div className="text-center p-8 bg-gradient-to-br from-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/20 mb-6">
+          <div className="text-center p-8 bg-white rounded-xl border border-gray-200 mb-6">
             <div className="mb-4">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium">
                 Full Diagnostic
