@@ -397,7 +397,7 @@ export default function Home() {
             <div className="p-6 grid md:grid-cols-3 gap-4">
               {/* RII Score */}
               <div className="md:col-span-1 bg-white rounded-lg p-5 border border-gray-200 text-center">
-                <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Revenue Risk Index</p>
+                <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">REVENUE IMPACT INDEX</p>
                 <p className="text-6xl font-bold text-orange-400 mb-1">63</p>
                 <p className="text-sm font-semibold text-orange-400">Moderate Exposure</p>
                 <div className="mt-3 w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
@@ -448,10 +448,10 @@ export default function Home() {
           </p>
 
           {/* Financial proof — hook */}
-          <div className="mt-10 p-6 rounded-2xl border border-amber-200/80 bg-amber-50/90 text-center dark:border-amber-500/25 dark:bg-gradient-to-br dark:from-amber-950/30 dark:to-[#111827]">
+          <div className="mt-10 p-6 rounded-2xl border border-amber-200 bg-amber-50 text-center">
             <p className="text-lg md:text-xl font-semibold text-slate-900 dark:text-gray-900">
               Companies we analyze typically uncover{" "}
-              <span className="text-amber-300">$20K–$200K</span> in hidden revenue loss.
+              <span className="text-amber-700">$20K-$200K</span> in hidden revenue loss.
             </p>
             <p className="text-sm text-gray-600 mt-2">
               Financial exposure estimates, not vanity content metrics.
