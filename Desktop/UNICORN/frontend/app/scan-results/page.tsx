@@ -301,11 +301,11 @@ function closeRateDeltaBase(data: ScanData): number {
 
 function LockedInsight({ label }: { label: string }) {
   return (
-    <div className="flex items-center justify-between p-4 bg-[#0d1320] rounded-lg border border-gray-200">
+    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
       <span className="text-sm text-gray-600">{label}</span>
       <div className="flex items-center gap-2">
         <div className="w-16 h-2 bg-gray-50 rounded-full overflow-hidden">
-          <div className="w-1/2 h-full bg-gray-700 rounded-full" />
+          <div className="w-1/2 h-full bg-gray-100 rounded-full" />
         </div>
         <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
@@ -1169,7 +1169,7 @@ function ScanResultsContent() {
         )}
 
         {!unlocked && (
-          <div className="p-5 bg-[#0d1320] rounded-xl border border-orange-500/20 mb-6">
+          <div className="p-5 bg-gray-50 rounded-xl border border-orange-500/20 mb-6">
             <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">Primary signal</p>
             <p className="text-orange-200 font-semibold text-lg mb-2 leading-snug">
               {primarySignalDisplay(data.primary_signal).headline}
@@ -1336,7 +1336,7 @@ function ScanResultsContent() {
                       Most teams don&apos;t notice this until pipeline slows down.
                     </p>
                   </div>
-                  <div className="max-w-3xl mb-6 rounded-lg border border-cyan-500/20 bg-[#0d1320] p-4 relative overflow-hidden">
+                  <div className="max-w-3xl mb-6 rounded-lg border border-cyan-500/20 bg-gray-50 p-4 relative overflow-hidden">
                     <p className="text-[11px] uppercase tracking-wider text-cyan-300 mb-1">Preview of your recovery model</p>
                     <p className="text-[11px] text-gray-600 mb-3">Based on 500+ SaaS revenue architectures</p>
                     <div className="grid sm:grid-cols-3 gap-3 blur-[1px]">
@@ -1667,7 +1667,7 @@ function ScanResultsContent() {
                       <button
                         type="submit"
                         disabled={capturing || !email.trim()}
-                        className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
+                        className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
                       >
                         {capturing ? "Sending code…" : "See full analysis"}
                       </button>
@@ -1712,7 +1712,7 @@ function ScanResultsContent() {
                       <button
                         type="submit"
                         disabled={otpVerifying || otpCode.length < 6}
-                        className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
+                        className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
                       >
                         {otpVerifying ? "Verifying…" : "Verify code"}
                       </button>
