@@ -1614,8 +1614,8 @@ function ScanResultsContent() {
 
         {/* Email Capture Modal */}
         {showEmailCapture && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 max-w-md w-full">
+          <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-xl p-8 max-w-md w-full">
               <h3 className="text-2xl font-bold mb-2 text-gray-900">Get your full revenue breakdown</h3>
               <p className="text-gray-600 mb-6 text-sm leading-relaxed">
                 {otpStep === "email" ? (
@@ -1626,7 +1626,7 @@ function ScanResultsContent() {
                 ) : (
                   <>
                     Check your inbox — we sent a 6-digit code to{" "}
-                    <span className="text-cyan-400">{email}</span>
+                    <span className="text-cyan-600">{email}</span>
                     <span className="block text-gray-600 text-xs mt-3 leading-relaxed">
                       New workspace: you&apos;ll get a second email with a secure link to create your password when
                       you&apos;re ready (separate from the sign-in code).
