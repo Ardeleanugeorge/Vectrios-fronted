@@ -379,12 +379,12 @@ export default function Home() {
 
           {/* Mock Dashboard — ARR anchor overlay (visual hook) */}
           <div className="relative rounded-xl border border-gray-200 bg-gray-50 overflow-hidden shadow-2xl">
-            <div className="absolute top-[48px] right-3 sm:right-5 z-20 px-3 py-2 rounded-lg bg-[#1a0505]/95 border border-red-500/50 shadow-lg shadow-red-950/50 backdrop-blur-sm pointer-events-none text-right min-w-[7rem]">
+            <div className="absolute top-[48px] right-3 sm:right-5 z-20 px-3 py-2 rounded-lg bg-red-50/95 border border-red-500/50 shadow-lg shadow-red-950/50 backdrop-blur-sm pointer-events-none text-right min-w-[7rem]">
               <p className="text-[10px] uppercase tracking-wider text-red-300/85 font-semibold">ARR at risk</p>
               <p className="text-xl sm:text-2xl font-bold text-red-400 tabular-nums leading-tight">$287K</p>
             </div>
             {/* Top bar */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 bg-[#0d1320]">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-red-500/60" />
                 <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
@@ -426,7 +426,7 @@ export default function Home() {
 
             {/* ARR Risk row */}
             <div className="px-6 pb-6 grid md:grid-cols-3 gap-4">
-              <div className="bg-[#1a0f0f] rounded-lg p-4 border border-red-900/40">
+              <div className="bg-red-50 rounded-lg p-4 border border-red-900/40">
                 <p className="text-xs text-gray-600 mb-1">ARR at Risk</p>
                 <p className="text-2xl font-bold text-red-400">$287K</p>
                 <p className="text-xs text-gray-600 mt-1">Annual exposure estimate</p>
@@ -618,7 +618,7 @@ export default function Home() {
 
       {showCookieBanner && (
         <div className="fixed inset-x-0 bottom-0 z-[70] px-3 sm:px-6 pb-3 sm:pb-5">
-          <div className="max-w-6xl mx-auto rounded-xl border border-gray-200 bg-[#0f1524] shadow-2xl shadow-black/40">
+          <div className="max-w-6xl mx-auto rounded-xl border border-gray-200 bg-white shadow-2xl shadow-black/40">
             <div className="p-4 sm:p-5">
               <p className="text-sm text-gray-700 leading-relaxed">
                 <span className="font-semibold text-gray-900">Our site uses cookies.</span>{" "}
@@ -654,7 +654,7 @@ export default function Home() {
               </div>
 
               {showCookiePreferences && (
-                <div className="mt-4 rounded-lg border border-gray-200 bg-[#0b111d] p-4">
+                <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center justify-between gap-3">
                       <div>
