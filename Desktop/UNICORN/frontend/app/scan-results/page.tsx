@@ -209,7 +209,7 @@ function ScoreBar({ label, hint, value }: { label: string; hint: string; value: 
           )}
         </div>
       </div>
-      <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden mb-1">
+      <div className="w-full h-2 bg-gray-50 rounded-full overflow-hidden mb-1">
         <div
           className={`h-full bg-gradient-to-r ${color} rounded-full transition-all duration-700`}
           style={{ width: `${Math.min(v, 100)}%` }}
@@ -304,7 +304,7 @@ function LockedInsight({ label }: { label: string }) {
     <div className="flex items-center justify-between p-4 bg-[#0d1320] rounded-lg border border-gray-200">
       <span className="text-sm text-gray-600">{label}</span>
       <div className="flex items-center gap-2">
-        <div className="w-16 h-2 bg-gray-800 rounded-full overflow-hidden">
+        <div className="w-16 h-2 bg-gray-50 rounded-full overflow-hidden">
           <div className="w-1/2 h-full bg-gray-700 rounded-full" />
         </div>
         <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
@@ -983,7 +983,7 @@ function ScanResultsContent() {
 
         {/* Domain + badge */}
         <div className={`flex items-center gap-3 mb-8 ${wideLayout ? "flex-wrap lg:mb-10" : ""}`}>
-          <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs font-bold text-cyan-400 border border-gray-200">
+          <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-xs font-bold text-cyan-400 border border-gray-200">
             {data.domain.charAt(0).toUpperCase()}
           </div>
           <div>
@@ -1069,7 +1069,7 @@ function ScanResultsContent() {
                   wideLayout ? "justify-start" : "justify-center"
                 }`}
               >
-                <div className={`h-1.5 bg-gray-800 rounded-full overflow-hidden ${wideLayout ? "w-24 sm:w-32" : "w-24"}`}>
+                <div className={`h-1.5 bg-gray-50 rounded-full overflow-hidden ${wideLayout ? "w-24 sm:w-32" : "w-24"}`}>
                   <div className="h-full bg-cyan-500/60 rounded-full" style={{ width: `${data.confidence}%` }} />
                 </div>
                 <span>Confidence: {Math.round(data.confidence)}%</span>
@@ -1114,7 +1114,7 @@ function ScanResultsContent() {
             ) : (
               !isBlocked && benchmarkLabel ? (
                 <div
-                  className={`flex items-center px-4 py-3 rounded-xl bg-gray-800/60 border border-gray-200 text-sm text-gray-700 w-full ${
+                  className={`flex items-center px-4 py-3 rounded-xl bg-gray-50/60 border border-gray-200 text-sm text-gray-700 w-full ${
                     wideLayout ? "max-w-none" : "max-w-lg mx-auto justify-center"
                   }`}
                 >

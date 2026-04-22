@@ -5,7 +5,7 @@ export default function SiteFooter() {
     <footer className="mt-16 border-t border-slate-200 dark:border-gray-200">
       <div className="max-w-7xl mx-auto px-6 py-10 text-center">
         <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-gray-900">
-          Vectri<span className="text-cyan-500 dark:text-cyan-400">OS</span>
+          Vectri<span className="text-cyan-600">OS</span>
         </h3>
         <p className="text-slate-600 dark:text-gray-500 mb-4">
           Revenue-Stage Monitoring Infrastructure for B2B SaaS
@@ -28,7 +28,7 @@ export default function SiteFooter() {
           </Link>
         </div>
         <p className="text-sm text-slate-500 dark:text-gray-600">
-          © 2026 Vectri<span className="text-cyan-500 dark:text-cyan-400">OS</span>. All rights reserved.
+          © 2026 Vectri<span className="text-cyan-600">OS</span>. All rights reserved.
         </p>
       </div>
     </footer>
