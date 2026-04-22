@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply min-h-screen bg-[#0B0F19] text-white antialiased;
+    @apply min-h-screen bg-gray-50 text-gray-900 antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 }
@@ -18,7 +18,7 @@
   }
 
   .input {
-    @apply w-full p-4 rounded-lg border bg-[#111827] border-gray-700 text-white placeholder-gray-500;
+    @apply w-full p-4 rounded-lg border bg-white border-gray-200 text-gray-900 placeholder-gray-400;
     @apply focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500;
   }
 
