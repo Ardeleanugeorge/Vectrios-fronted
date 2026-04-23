@@ -630,7 +630,7 @@ export default function PricingPage() {
         </div>
 
         <div className="max-w-2xl mx-auto mb-12">
-          <div className="p-7 bg-gradient-to-br from-cyan-950/40 to-[#111827] rounded-2xl border border-cyan-500/40 text-center">
+          <div className="p-7 bg-gradient-to-br bg-blue-50">
             <p className="text-cyan-200/90 font-semibold mb-2 text-lg">
               Try risk-free — recover your first $50K in lost revenue
             </p>
