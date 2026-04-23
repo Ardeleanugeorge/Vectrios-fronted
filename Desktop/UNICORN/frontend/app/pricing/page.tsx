@@ -606,7 +606,7 @@ export default function PricingPage() {
           </div>
         )}
         {isProcessing && (
-          <div className="mb-6 p-4 rounded-lg bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-sm">
+          <div className="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 text-sm">
             Activating <span className="font-semibold">{selectedPlanName}</span>...
           </div>
         )}
@@ -625,12 +625,12 @@ export default function PricingPage() {
             <span className="text-amber-300">$120K–$300K/year</span>
           </p>
           <p className="text-center text-sm text-gray-600">
-            Vectri<span className="text-cyan-400">OS</span> helps recover a significant portion of that'before you spend more on traffic or headcount.
+            Vectri<span className="text-blue-600">OS</span> helps recover a significant portion of that'before you spend more on traffic or headcount.
           </p>
         </div>
 
         <div className="max-w-2xl mx-auto mb-12">
-          <div className="p-7 bg-gradient-to-br bg-blue-50">
+          <div className="p-7 bg-blue-50 border border-blue-200">
             <p className="text-cyan-200/90 font-semibold mb-2 text-lg">
               Try risk-free — recover your first $50K in lost revenue
             </p>
@@ -687,7 +687,7 @@ export default function PricingPage() {
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide text-center leading-tight">
                   Everything included
                 </span>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-cyan-400/80 mb-1">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-blue-600 mb-1">
                   {plan.name}
                 </p>
                 <h3 className="text-xl font-bold mb-4 leading-snug">{plan.headline}</h3>
@@ -707,7 +707,7 @@ export default function PricingPage() {
                 <ul className="space-y-2 mb-7 text-sm text-gray-700 flex-1">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex gap-2">
-                      <span className="text-cyan-400 shrink-0" aria-hidden>✓</span>
+                      <span className="text-blue-600 shrink-0" aria-hidden>✓</span>
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -843,7 +843,7 @@ export default function PricingPage() {
             </svg>
             <p className="text-sm text-gray-700">Continuing…</p>
             {(selectedPlanName || pendingActivationLabel) && (
-              <p className="text-xs text-cyan-300 mt-2">
+              <p className="text-xs text-blue-700 mt-2">
                 Activating {selectedPlanName || pendingActivationLabel}...
               </p>
             )}
