@@ -913,7 +913,7 @@ function ScanResultsContent() {
     <div className="page-root flex items-center justify-center">
       <div className="text-center max-w-md">
         <p className="text-red-400 mb-4">{error}</p>
-        <Link href={PUBLIC_HOME_URL} className="text-cyan-400 hover:text-cyan-300">Run a new scan</Link>
+        <Link href={PUBLIC_HOME_URL} className="text-cyan-400 hover:text-blue-600">Run a new scan</Link>
       </div>
     </div>
   )
@@ -1188,7 +1188,7 @@ function ScanResultsContent() {
           <div className="p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <p className="text-xs text-gray-600 uppercase tracking-widest">Full Diagnostic</p>
-              <span className="px-2 py-0.5 text-xs bg-cyan-500/10 text-cyan-400 rounded border border-cyan-500/20">Locked</span>
+              <span className="px-2 py-0.5 text-xs bg-cyan-500/10 text-cyan-400 rounded border border-gray-200">Locked</span>
             </div>
             <div className="space-y-3">
               <LockedInsight label="Estimated ARR at Risk" />
@@ -1205,7 +1205,7 @@ function ScanResultsContent() {
         {!unlocked && (
           <div className="text-center p-8 bg-white rounded-xl border border-gray-200 mb-6">
             <div className="mb-4">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-gray-200 text-cyan-400 text-xs font-medium">
                 Full Diagnostic
               </span>
             </div>
@@ -1292,9 +1292,9 @@ function ScanResultsContent() {
         {unlocked && showFinancialImpact && !isBlocked && (
           <div
             id="financial-impact-instant"
-            className="p-6 sm:p-8 lg:p-10 bg-gradient-to-br from-cyan-950/25 via-[#111827] to-[#0d1320] rounded-xl border border-cyan-500/25 mb-8"
+            className="p-6 sm:p-8 lg:p-10 bg-white rounded-xl border border-gray-200 shadow-sm mb-8"
           >
-            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2 text-center lg:text-left">
+            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 text-center lg:text-left">
               You&apos;ve unlocked your recovery model
             </p>
             {(() => {
@@ -1309,7 +1309,7 @@ function ScanResultsContent() {
                       ? `You're losing ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}/month`
                       : "You're already losing revenue every month"}
                   </h3>
-                  <p className="text-base font-semibold text-orange-300 mb-2 text-center lg:text-left">
+                  <p className="text-base font-semibold text-orange-600 mb-2 text-center lg:text-left">
                     {impact
                       ? `Modeled annual impact: ~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year`
                       : "Modeled annual impact based on structural analysis"}
@@ -1317,8 +1317,8 @@ function ScanResultsContent() {
                   <p className="text-sm text-gray-600 mb-6 max-w-3xl text-center lg:text-left">
                     Modeled from your messaging structure and benchmark vs 500+ SaaS companies.
                   </p>
-                  <div className="max-w-3xl mb-6 rounded-lg border border-cyan-500/20 bg-cyan-500/[0.04] p-4">
-                    <p className="text-[11px] uppercase tracking-wider text-cyan-300 mb-2">We&apos;ve built a full revenue model for your business</p>
+                  <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-cyan-500/[0.04] p-4">
+                    <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-2">We&apos;ve built a full revenue model for your business</p>
                     <ul className="space-y-1.5 text-sm text-gray-700">
                       <li>Annual revenue at risk</li>
                       <li>Recoverable revenue range</li>
@@ -1336,8 +1336,8 @@ function ScanResultsContent() {
                       Most teams don&apos;t notice this until pipeline slows down.
                     </p>
                   </div>
-                  <div className="max-w-3xl mb-6 rounded-lg border border-cyan-500/20 bg-gray-50 p-4 relative overflow-hidden">
-                    <p className="text-[11px] uppercase tracking-wider text-cyan-300 mb-1">Preview of your recovery model</p>
+                  <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
+                    <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-1">Preview of your recovery model</p>
                     <p className="text-[11px] text-gray-600 mb-3">Based on 500+ SaaS revenue architectures</p>
                     <div className="grid sm:grid-cols-3 gap-3 blur-[1px]">
                       <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
@@ -1539,7 +1539,7 @@ function ScanResultsContent() {
                           ? `/login?email=${encodeURIComponent(savedWorkEmail)}&reason=resume_scan`
                           : "/login?reason=resume_scan"
                       }
-                      className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-cyan-700/80 text-cyan-300 hover:bg-cyan-950/40 font-semibold text-sm sm:text-base transition w-full sm:w-auto text-center"
+                      className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-cyan-700/80 text-blue-600 hover:bg-cyan-950/40 font-semibold text-sm sm:text-base transition w-full sm:w-auto text-center"
                     >
                       Sign in
                     </Link>
@@ -1568,14 +1568,14 @@ function ScanResultsContent() {
                             ? `/login?email=${encodeURIComponent(savedWorkEmail)}&reason=resume_scan`
                             : "/login?reason=resume_scan"
                         }
-                        className="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline"
+                        className="text-cyan-400 hover:text-blue-600 underline-offset-2 hover:underline"
                       >
                         Sign in
                       </Link>
                       {" – "}
                       <Link
                         href="/pricing?from=scan&focus=recovery"
-                        className="text-gray-600 hover:text-cyan-300 underline-offset-2 hover:underline"
+                        className="text-gray-600 hover:text-blue-600 underline-offset-2 hover:underline"
                       >
                         View plans
                       </Link>
@@ -1583,11 +1583,11 @@ function ScanResultsContent() {
                   ) : (
                     <>
                       Already have an account?{" "}
-                      <Link href="/login" className="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline">
+                      <Link href="/login" className="text-cyan-400 hover:text-blue-600 underline-offset-2 hover:underline">
                         Sign in
                       </Link>
                       {" – "}
-                      <Link href="/pricing?from=scan&focus=recovery" className="text-gray-600 hover:text-cyan-300 underline-offset-2 hover:underline">
+                      <Link href="/pricing?from=scan&focus=recovery" className="text-gray-600 hover:text-blue-600 underline-offset-2 hover:underline">
                         View plans
                       </Link>
                     </>
@@ -1727,7 +1727,7 @@ function ScanResultsContent() {
                         setOtpCode("")
                         setOtpError("")
                       }}
-                      className="text-cyan-400 hover:text-cyan-300 bg-transparent border-0 p-0 cursor-pointer"
+                      className="text-cyan-400 hover:text-blue-600 bg-transparent border-0 p-0 cursor-pointer"
                     >
                       Try again
                     </button>
