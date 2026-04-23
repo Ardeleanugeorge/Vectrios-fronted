@@ -619,10 +619,10 @@ export default function PricingPage() {
         </div>
 
         {/* ROI anchor — makes dollar price feel small vs. problem size */}
-        <div className="max-w-3xl mx-auto mb-10 p-6 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/25 to-[#111827]">
+        <div className="max-w-3xl mx-auto mb-10 p-6 rounded-2xl border border-amber-200 bg-amber-50">
           <p className="text-center text-lg sm:text-xl font-semibold text-gray-900 mb-2">
             Companies like yours typically lose{" "}
-            <span className="text-amber-300">$120K–$300K/year</span>
+            <span className="text-amber-700">$120K-$300K/year</span>
           </p>
           <p className="text-center text-sm text-gray-600">
             Vectri<span className="text-blue-600">OS</span> helps recover a significant portion of that'before you spend more on traffic or headcount.
@@ -631,8 +631,8 @@ export default function PricingPage() {
 
         <div className="max-w-2xl mx-auto mb-12">
           <div className="p-7 bg-blue-50 border border-blue-200">
-            <p className="text-cyan-200/90 font-semibold mb-2 text-lg">
-              Try risk-free — recover your first $50K in lost revenue
+          <div className="p-7 bg-blue-50 border border-blue-200 rounded-xl">
+            <p className="text-blue-700 font-semibold mb-2 text-lg">
             </p>
             <h2 className="text-2xl font-bold mb-2">14-day trial — full Scale access</h2>
             <p className="text-gray-600 text-sm mb-6">
