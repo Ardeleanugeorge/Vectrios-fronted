@@ -324,7 +324,7 @@ export default function DashboardPage() {
           /* ignore */
         }
         if (cancelled) return
-        if (cid) setCompanyId((prev: any) => prev === cid ? prev : cid)
+        setCompanyId(cid)
         setUser((prev: any) =>
           prev && typeof prev === "object"
             ? {
