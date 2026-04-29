@@ -311,7 +311,7 @@ export default function PricingPage() {
     }
   }
 
-  /** Legacy sessions: scan_data without unlock_company_id — copy from user_data before profile overwrites. */
+  /** Legacy sessions: scan_data without unlock_company_id ΓÇö copy from user_data before profile overwrites. */
   useEffect(() => {
     if (typeof window === "undefined") return
     try {
@@ -532,7 +532,7 @@ export default function PricingPage() {
       })
       const data = await res.json().catch(() => ({}))
       if (res.ok) {
-        setContactSuccess(data.message || "Message sent — we'll get back to you soon.")
+        setContactSuccess(data.message || "Message sent ΓÇö we'll get back to you soon.")
         setContactName("")
         setContactEmail("")
         setContactCompany("")
@@ -593,10 +593,10 @@ export default function PricingPage() {
 
       <main className="max-w-6xl mx-auto px-6 py-12">
         {scanMonthlyLoss && (
-          <div className="mb-6 p-4 rounded-lg bg-amber-950/40 border border-amber-500/40 text-amber-200 text-sm text-center">
+          <div className="mb-6 p-4 rounded-lg bg-amber-950/40 border border-amber-500/40 text-amber-700 text-sm text-center">
             Based on your scan, you&apos;re losing approximately{" "}
-            <span className="font-semibold text-amber-300">
-              {formatCurrency(scanMonthlyLoss.low)}–{formatCurrency(scanMonthlyLoss.high)}/month
+            <span className="font-semibold text-amber-700">
+              {formatCurrency(scanMonthlyLoss.low)}ΓÇô{formatCurrency(scanMonthlyLoss.high)}/month
             </span>
           </div>
         )}
@@ -614,15 +614,15 @@ export default function PricingPage() {
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-3">Recover revenue'not features</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            One plan — Scale: find what&apos;s leaking, fix it, and quantify what you get back. Start with a 14-day full-access trial.
+            One plan ΓÇö Scale: find what&apos;s leaking, fix it, and quantify what you get back. Start with a 14-day full-access trial.
           </p>
         </div>
 
-        {/* ROI anchor — makes dollar price feel small vs. problem size */}
+        {/* ROI anchor ΓÇö makes dollar price feel small vs. problem size */}
         <div className="max-w-3xl mx-auto mb-10 p-6 rounded-2xl border border-amber-200 bg-amber-50">
           <p className="text-center text-lg sm:text-xl font-semibold text-gray-900 mb-2">
             Companies like yours typically lose{" "}
-            <span className="text-amber-700">$120K-$300K/year</span>
+            <span className="text-amber-700">$120KΓÇô$300K/year</span>
           </p>
           <p className="text-center text-sm text-gray-600">
             Vectri<span className="text-blue-600">OS</span> helps recover a significant portion of that'before you spend more on traffic or headcount.
@@ -630,11 +630,11 @@ export default function PricingPage() {
         </div>
 
         <div className="max-w-2xl mx-auto mb-12">
-          <div className="p-7 bg-blue-50 border border-blue-200">
-          <div className="p-7 bg-blue-50 border border-blue-200 rounded-xl">
-            <p className="text-blue-700 font-semibold mb-2 text-lg">
+          <div className="p-7 bg-gradient-to-br from-cyan-950/40 to-[#111827] rounded-2xl border border-blue-200 text-center">
+            <p className="text-cyan-200/90 font-semibold mb-2 text-lg">
+              Try risk-free ΓÇö recover your first $50K in lost revenue
             </p>
-            <h2 className="text-2xl font-bold mb-2">14-day trial — full Scale access</h2>
+            <h2 className="text-2xl font-bold mb-2">14-day trial ΓÇö full Scale access</h2>
             <p className="text-gray-600 text-sm mb-6">
               Every trial includes the full Scale playbook so you can see the complete recovery path'not a watered-down demo.
             </p>
@@ -645,7 +645,7 @@ export default function PricingPage() {
                 isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
               }`}
             >
-              Start 14-day trial — full access
+              Start 14-day trial ΓÇö full access
             </button>
           </div>
         </div>
@@ -687,7 +687,7 @@ export default function PricingPage() {
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide text-center leading-tight">
                   Everything included
                 </span>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-blue-600 mb-1">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-blue-600/80 mb-1">
                   {plan.name}
                 </p>
                 <h3 className="text-xl font-bold mb-4 leading-snug">{plan.headline}</h3>
@@ -698,7 +698,7 @@ export default function PricingPage() {
                   <span className="text-gray-600">/month</span>
                   {billingCycle === "annual" ? (
                     <p className="text-xs text-gray-600 mt-1">
-                      Billed annually (${plan.priceAnnual * 12}/year) — save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year
+                      Billed annually (${plan.priceAnnual * 12}/year) ΓÇö save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year
                     </p>
                   ) : (
                     <p className="text-xs text-gray-600 mt-1">Switch to annual and save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year</p>
@@ -707,7 +707,7 @@ export default function PricingPage() {
                 <ul className="space-y-2 mb-7 text-sm text-gray-700 flex-1">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex gap-2">
-                      <span className="text-blue-600 shrink-0" aria-hidden>✓</span>
+                      <span className="text-blue-600 shrink-0" aria-hidden>Γ£ô</span>
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -734,7 +734,7 @@ export default function PricingPage() {
           <div className="text-center mb-8 max-w-xl mx-auto">
             <h2 className="text-2xl font-bold mb-2">Questions?</h2>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Ask anything about Scale, the trial, or how monitoring works — we&apos;ll reply by email.
+              Ask anything about Scale, the trial, or how monitoring works ΓÇö we&apos;ll reply by email.
             </p>
           </div>
 
@@ -817,7 +817,7 @@ export default function PricingPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                       </svg>
-                      Sending…
+                      SendingΓÇª
                     </>
                   ) : (
                     "Send message"
@@ -841,7 +841,7 @@ export default function PricingPage() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            <p className="text-sm text-gray-700">Continuing…</p>
+            <p className="text-sm text-gray-700">ContinuingΓÇª</p>
             {(selectedPlanName || pendingActivationLabel) && (
               <p className="text-xs text-blue-700 mt-2">
                 Activating {selectedPlanName || pendingActivationLabel}...
