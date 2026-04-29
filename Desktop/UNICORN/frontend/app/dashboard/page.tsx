@@ -855,7 +855,7 @@ export default function DashboardPage() {
           })()}
 
           {/* While monitoring status is loading from API, show spinner */}
-          {monitoringLoading && companyId ? (
+          {monitoringLoading || !companyId ? (
             <div className="p-8 border border-gray-200 rounded-lg bg-gray-50">
               <p className="text-sm text-gray-600 animate-pulse">Loading revenue monitoring status...</p>
             </div>
