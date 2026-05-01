@@ -1,8 +1,6 @@
-"use client";
+﻿"use client";
 import { apiFetch } from "@/lib/api"
-
 import { API_URL, PUBLIC_HOME_URL } from '@/lib/config'
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -35,6 +33,17 @@ interface IndexData {
   companies: CompanyRow[];
   top10: CompanyRow[];
   worst10: CompanyRow[];
+}
+
+interface PublicStats {
+  total_companies_analyzed: number;
+  average_rii: number;
+  monthly_loss: {
+    average: number;
+    min: number;
+    max: number;
+    basis: string;
+  };
 }
 
 function getRiskColor(risk: string | null) {
@@ -78,10 +87,11 @@ function ScoreCell({ value }: { value: number | null }) {
 
 export default function SaaSRevenueIndex() {
   const router = useRouter();
-  const [data, setData]       = useState<IndexData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter]   = useState<"all" | "high" | "moderate" | "low">("all");
-  const [search, setSearch]   = useState("");
+  const [data, setData]             = useState<IndexData | null>(null);
+  const [publicStats, setPublicStats] = useState<PublicStats | null>(null);
+  const [loading, setLoading]       = useState(true);
+  const [filter, setFilter]         = useState<"all" | "high" | "moderate" | "low">("all");
+  const [search, setSearch]         = useState("");
 
   const handleBack = () => {
     if (typeof window !== "undefined" && window.history.length > 1) {
@@ -92,19 +102,18 @@ export default function SaaSRevenueIndex() {
   };
 
   useEffect(() => {
+    // Fetch index table data
     apiFetch(`/saas-revenue-index`)
-      .then(r => {
-        if (!r.ok) {
-          throw new Error(`HTTP ${r.status}`);
-        }
-        return r.json();
-      })
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
       .then(setData)
-      .catch((err) => {
-        console.error("[SAAS-INDEX] Fetch error:", err);
-        setData(null);
-      })
+      .catch((err) => { console.error("[SAAS-INDEX] Fetch error:", err); setData(null); })
       .finally(() => setLoading(false));
+
+    // Fetch real public stats from scan_results
+    fetch(`https://api.vectrios.com/public/index-stats`)
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(setPublicStats)
+      .catch((err) => { console.error("[PUBLIC-STATS] Fetch error:", err); });
   }, []);
 
   const companies = data?.companies ?? [];
@@ -121,6 +130,13 @@ export default function SaaSRevenueIndex() {
   });
 
   const s = data?.stats;
+
+  // Real numbers from backend — fallback to index stats if public stats loaded
+  const displayTotal    = publicStats?.total_companies_analyzed ?? s?.total_companies ?? 0;
+  const displayAvgRii   = publicStats?.average_rii?.toFixed(1) ?? (s?.average_rii !== null ? s?.average_rii?.toFixed(1) : "—");
+  const displayLossMin  = publicStats ? `$${Math.round(publicStats.monthly_loss.min / 1000)}K` : "$1.5K";
+  const displayLossMax  = publicStats ? `$${Math.round(publicStats.monthly_loss.max / 1000)}K` : "$2.9K";
+  const displayBasis    = publicStats?.monthly_loss.basis ?? "Based on median SaaS ARR $3M";
 
   return (
     <div className="page-root font-sans">
@@ -158,41 +174,39 @@ export default function SaaSRevenueIndex() {
             SaaS Revenue Architecture Index
           </h1>
           <p className="text-gray-700 text-lg max-w-2xl mx-auto mb-2">
-            Most SaaS companies are losing $120K–$300K/year from messaging gaps they don&apos;t see.
+            Most SaaS companies are losing {displayLossMin}–{displayLossMax}/month from messaging gaps they don&apos;t see.
           </p>
           <p className="text-gray-600 text-sm max-w-2xl mx-auto">
             This index shows how clearly each company&apos;s story supports revenue — so you can see where you stand.
           </p>
         </div>
 
-        {/* Stats bar */}
-        {s && (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
-              {[
-                { label: "Companies Analyzed", value: s.total_companies, color: "text-gray-900" },
-                { label: "Average RII (lower = better)", value: s.average_rii !== null ? s.average_rii.toFixed(1) : "—", color: "text-yellow-400" },
-              ].map(stat => (
-                <div key={stat.label} className="rounded-xl bg-white/[0.03] border border-white/5 p-5 text-center">
-                  <div className={`text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
-                  <div className="text-xs text-gray-600">{stat.label}</div>
-                </div>
-              ))}
+        {/* Stats bar — real numbers */}
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
+          {[
+            { label: "Companies Analyzed", value: displayTotal.toLocaleString("en-US"), color: "text-gray-900" },
+            { label: "Average RII (lower = better)", value: displayAvgRii, color: "text-yellow-400" },
+          ].map(stat => (
+            <div key={stat.label} className="rounded-xl bg-white/[0.03] border border-white/5 p-5 text-center">
+              <div className={`text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
+              <div className="text-xs text-gray-600">{stat.label}</div>
             </div>
-            <p className="text-xs sm:text-sm text-gray-600 mb-10 max-w-3xl mx-auto text-center">
-              Companies in this dataset quietly lose an estimated
-              <span className="text-amber-300 font-semibold"> $8K–$25K/month</span>{" "}
-              from messaging gaps that never show up in dashboards.
-              Use this benchmark to understand how risky your own revenue architecture might be — then run your scan to see your exact exposure.
-            </p>
-          </>
-        )}
+          ))}
+        </div>
+
+        <p className="text-xs sm:text-sm text-gray-600 mb-10 max-w-3xl mx-auto text-center">
+          Companies in this dataset quietly lose an estimated
+          <span className="text-amber-300 font-semibold"> {displayLossMin}–{displayLossMax}/month</span>{" "}
+          from messaging gaps that never show up in dashboards.{" "}
+          <span className="text-gray-600 text-xs">({displayBasis})</span>{" "}
+          Use this benchmark to understand how risky your own revenue architecture might be — then run your scan to see your exact exposure.
+        </p>
 
         {/* -- Top 10 / Worst 10 -- */}
         {data && (data.top10.length > 0 || data.worst10.length > 0) && (
           <div className="grid md:grid-cols-2 gap-6 mb-12">
 
-            {/* Top 10 — best architecture */}
+            {/* Top 10 */}
             <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] overflow-hidden">
               <div className="px-5 py-4 border-b border-emerald-500/20 flex items-center gap-2">
                 <span className="text-emerald-400 text-sm font-semibold">Best revenue architecture</span>
@@ -209,12 +223,9 @@ export default function SaaSRevenueIndex() {
                       onError={e => {
                         const img = e.currentTarget as HTMLImageElement;
                         const host = c.domain.replace(/^https?:\/\//, '').split('/')[0];
-                        // Try direct site favicon once, then hide
-                        img.onerror = null; // prevent recursive handler reuse
+                        img.onerror = null;
                         img.src = `https://${host}/favicon.ico`;
-                        img.addEventListener("error", () => {
-                          img.style.display = "none";
-                        }, { once: true });
+                        img.addEventListener("error", () => { img.style.display = "none"; }, { once: true });
                       }}
                     />
                     <Link href={`/company/${c.domain}`}
@@ -229,7 +240,7 @@ export default function SaaSRevenueIndex() {
               </div>
             </div>
 
-            {/* Worst 10 — highest exposure */}
+            {/* Worst 10 */}
             <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.03] overflow-hidden">
               <div className="px-5 py-4 border-b border-red-500/20 flex items-center gap-2">
                 <span className="text-red-400 text-sm font-semibold">Highest revenue exposure</span>
@@ -248,9 +259,7 @@ export default function SaaSRevenueIndex() {
                         const host = c.domain.replace(/^https?:\/\//, '').split('/')[0];
                         img.onerror = null;
                         img.src = `https://${host}/favicon.ico`;
-                        img.addEventListener("error", () => {
-                          img.style.display = "none";
-                        }, { once: true });
+                        img.addEventListener("error", () => { img.style.display = "none"; }, { once: true });
                       }}
                     />
                     <Link href={`/company/${c.domain}`}
@@ -305,7 +314,6 @@ export default function SaaSRevenueIndex() {
 
         {/* Table */}
         <div className="rounded-2xl border border-white/5 overflow-hidden">
-          {/* Table header */}
           <div className="grid grid-cols-[2.5rem_1fr_7rem_5rem_5rem_5rem_5rem_6rem] gap-2 px-5 py-3 bg-white/[0.02] border-b border-white/5 text-xs text-gray-600 font-medium uppercase tracking-widest">
             <span>#</span>
             <span>Company</span>
@@ -340,10 +348,7 @@ export default function SaaSRevenueIndex() {
                 key={c.domain}
                 className="grid grid-cols-[2.5rem_1fr_7rem_5rem_5rem_5rem_5rem_6rem] gap-2 items-center px-5 py-3.5 border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors group"
               >
-                {/* Rank */}
                 <span className="text-xs text-gray-600 font-mono">{i + 1}</span>
-
-                {/* Domain */}
                 <div>
                   <div className="flex items-center gap-2">
                     <img
@@ -355,9 +360,7 @@ export default function SaaSRevenueIndex() {
                         const host = c.domain.replace(/^https?:\/\//, '').split('/')[0];
                         img.onerror = null;
                         img.src = `https://${host}/favicon.ico`;
-                        img.addEventListener("error", () => {
-                          img.style.display = "none";
-                        }, { once: true });
+                        img.addEventListener("error", () => { img.style.display = "none"; }, { once: true });
                       }}
                     />
                     <Link
@@ -373,23 +376,15 @@ export default function SaaSRevenueIndex() {
                     </p>
                   )}
                 </div>
-
-                {/* RII bar */}
-                <div className="flex justify-center">
-                  <RiiBar value={c.rii} />
-                </div>
-
-                {/* Sub-scores */}
+                <div className="flex justify-center"><RiiBar value={c.rii} /></div>
                 <div className="text-center"><ScoreCell value={c.alignment} /></div>
                 <div className="text-center"><ScoreCell value={c.icp_clarity} /></div>
                 <div className="text-center"><ScoreCell value={c.anchor_density} /></div>
                 <div className="text-center"><ScoreCell value={c.positioning} /></div>
-
-                {/* Risk badge */}
                 <div className="flex justify-center">
                   <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${risk.bg} ${risk.text}`}>
                     <span className={`w-1 h-1 rounded-full ${risk.dot}`} />
-                    {c.risk_level?.replace(" Exposure", "") ?? "–"}
+                    {c.risk_level?.replace(" Exposure", "") ?? "—"}
                   </span>
                 </div>
               </div>
@@ -406,7 +401,7 @@ export default function SaaSRevenueIndex() {
 
         {/* Bottom CTA */}
         <div className="mt-14 text-center rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 p-10">
-          <p className="text-gray-600 text-sm mb-2">Don't see your company?</p>
+          <p className="text-gray-600 text-sm mb-2">Don&apos;t see your company?</p>
           <h3 className="text-2xl font-bold text-gray-900 mb-6">
             Run a free Revenue Architecture Scan
           </h3>
@@ -420,7 +415,6 @@ export default function SaaSRevenueIndex() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-white/5 px-6 py-6 text-center text-gray-600 text-xs">
         Vectri<span className="text-cyan-400">OS</span> Revenue Architecture Index — data sourced from anonymous public website scans.
         All scores based on structural messaging analysis only.
