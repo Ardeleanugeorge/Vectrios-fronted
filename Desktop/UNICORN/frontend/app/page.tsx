@@ -40,10 +40,10 @@ export default function Home() {
 
   // Fake scan phases for perceived progress
   const scanPhases = useRef([
-    "Crawling your pages…",
-    "Analyzing messaging structure…",
-    "Detecting ICP & value signals…",
-    "Estimating Revenue Impact Index…"
+    "Crawling your pagesâ€¦",
+    "Analyzing messaging structureâ€¦",
+    "Detecting ICP & value signalsâ€¦",
+    "Estimating Revenue Impact Indexâ€¦"
   ])
   const [scanPhase, setScanPhase] = useState(0)
   const [showCookieBanner, setShowCookieBanner] = useState(false)
@@ -62,18 +62,12 @@ export default function Home() {
     } catch {}
 
     // Fetch real scan count
-    apiFetch(`/scan-stats`)
-      .then(r => {
-        if (!r.ok) {
-          throw new Error(`HTTP ${r.status}`);
-        }
-        return r.json();
-      })
-      .then(d => setScanCount(d.total ?? 0))
-      .catch((err) => {
-        console.error("[SCAN-STATS] Fetch error:", err);
-        setScanCount(0);
-      })
+    fetch(`https://api.vectrios.com/public/index-stats`)
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(d => setScanCount(d.total_companies_analyzed ?? 0))
+      .catch((err) => { console.error("[INDEX-STATS] Fetch error:", err); setScanCount(0); })
+      
+      
   }, [])
 
   useEffect(() => {
@@ -237,10 +231,10 @@ export default function Home() {
           </h1>
           <p className="text-lg md:text-xl text-slate-600 dark:text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
             Your messaging is already costing you deals.
-            We show you where — before pipeline drops.
+            We show you where â€” before pipeline drops.
           </p>
           <p className="text-sm md:text-base text-amber-200/90 font-medium mb-6 max-w-2xl mx-auto">
-            Most teams don&apos;t realize they&apos;re losing $20K–$200K/year from messaging gaps until pipeline slows.
+            Most teams don&apos;t realize they&apos;re losing $20Kâ€“$200K/year from messaging gaps until pipeline slows.
           </p>
           <p className="text-xs text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
             Analyzing revenue-stage messaging across B2B SaaS companies to surface hidden revenue loss before it hits pipeline.
@@ -271,7 +265,7 @@ export default function Home() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                       <path className="opacity-75" fill="currentColor" d="M4 12a 8 8 0 018-8v8H4z"/>
                     </svg>
-                    Scanning…
+                    Scanningâ€¦
                   </span>
                 ) : "Scan my site to detect revenue risk"}
               </button>
@@ -296,7 +290,7 @@ export default function Home() {
           )}
           <div className="text-xs sm:text-sm text-gray-600 mb-8 space-y-3 max-w-lg mx-auto">
             <p className="font-medium">
-              Takes 30 seconds — No signup — Instant baseline
+              Takes 30 seconds â€” No signup â€” Instant baseline
             </p>
             <p className="text-gray-600 leading-relaxed border-t border-slate-200 dark:border-gray-200/80 pt-3">
               Get your baseline risk score, see where revenue leaks, then track drift weekly.
@@ -356,7 +350,7 @@ export default function Home() {
             None of this triggers alerts. It quietly reduces conversion every week.
           </p>
           <p className="text-lg text-cyan-400 font-semibold mt-4">
-            We detect it early — before it compounds.
+            We detect it early â€” before it compounds.
           </p>
         </div>
       </section>
@@ -367,7 +361,7 @@ export default function Home() {
           <p className="text-xs text-gray-600 uppercase tracking-widest mb-4 text-center">Example Revenue Architecture Scan</p>
           <p className="text-center text-base md:text-lg font-semibold text-slate-900 dark:text-gray-900 mb-6 max-w-xl mx-auto leading-snug">
             Example:{" "}
-            <span className="text-red-400">$287K</span> lost potential –{" "}
+            <span className="text-red-400">$287K</span> lost potential â€“{" "}
             <span className="text-gray-700 font-medium">
               caused by messaging misalignment across pages
             </span>{" "}
@@ -377,7 +371,7 @@ export default function Home() {
             Often nobody notices until the pipeline slows.
           </p>
 
-          {/* Mock Dashboard — ARR anchor overlay (visual hook) */}
+          {/* Mock Dashboard â€” ARR anchor overlay (visual hook) */}
           <div className="relative rounded-xl border border-gray-200 bg-gray-50 overflow-hidden shadow-2xl">
             <div className="absolute top-[48px] right-3 sm:right-5 z-20 px-3 py-2 rounded-lg bg-red-50/95 border border-red-500/50 shadow-lg shadow-red-950/50 backdrop-blur-sm pointer-events-none text-right min-w-[7rem]">
               <p className="text-[10px] uppercase tracking-wider text-red-300/85 font-semibold">ARR at risk</p>
@@ -444,10 +438,10 @@ export default function Home() {
           </div>
 
           <p className="text-center text-xs text-gray-600 mt-4">
-            Sample output — your actual scan will reflect your live messaging data
+            Sample output â€” your actual scan will reflect your live messaging data
           </p>
 
-          {/* Financial proof — hook */}
+          {/* Financial proof â€” hook */}
           <div className="mt-10 p-6 rounded-2xl border border-amber-200 bg-amber-50 text-center">
             <p className="text-lg md:text-xl font-semibold text-slate-900 dark:text-gray-900">
               Companies we analyze typically uncover{" "}
@@ -493,7 +487,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">How messaging gaps turn into lost revenue</h2>
           <p className="text-lg text-gray-700 mb-8">
-            Even small drops in clarity can quietly cost $3K–$10K/month.
+            Even small drops in clarity can quietly cost $3Kâ€“$10K/month.
             Most teams don&apos;t notice until pipeline slows.
           </p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
@@ -550,7 +544,7 @@ export default function Home() {
               <ul className="space-y-3 text-lg text-gray-700">
                 {["B2B SaaS companies", "CROs responsible for pipeline performance", "Revenue teams protecting conversion quality", "Operators tracking consistency week over week"].map(r => (
                   <li key={r} className="flex items-center gap-3">
-                    <span className="text-cyan-400" aria-hidden>✓</span>
+                    <span className="text-cyan-400" aria-hidden>âœ“</span>
                     {r}
                   </li>
                 ))}
@@ -560,7 +554,7 @@ export default function Home() {
 
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
             <p className="text-lg text-gray-700">
-              Vectri<span className="text-cyan-400">OS</span> is a revenue-stage monitoring layer — not a content tool.
+              Vectri<span className="text-cyan-400">OS</span> is a revenue-stage monitoring layer â€” not a content tool.
             </p>
           </div>
         </div>
@@ -570,7 +564,7 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Find what&apos;s already costing you revenue — before it compounds
+            Find what&apos;s already costing you revenue â€” before it compounds
           </h2>
           <p className="text-lg text-gray-700 mb-8">
             Scan your site to create a baseline in 30 seconds.
@@ -611,7 +605,7 @@ export default function Home() {
             <Link href="/data-retention" className="text-gray-600 hover:text-gray-600">Data Retention</Link>
           </div>
           <p className="text-sm text-gray-600">
-            © 2026 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
+            Â© 2026 Vectri<span className="text-cyan-400">OS</span>. All rights reserved.
           </p>
         </div>
       </footer>
@@ -720,3 +714,4 @@ export default function Home() {
     </div>
   )
 }
+
