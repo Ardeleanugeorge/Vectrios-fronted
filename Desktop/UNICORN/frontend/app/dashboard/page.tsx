@@ -8,6 +8,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import DashboardHeader from "@/components/DashboardHeader"
+import IntegrationsPanel from "@/components/dashboard/IntegrationsPanel"
 import DashboardSummaryCard from "@/components/dashboard/DashboardSummaryCard"
 import SiteFooter from "@/components/SiteFooter"
 import SnapshotLayer from "@/components/dashboard/SnapshotLayer"
@@ -920,6 +921,9 @@ export default function DashboardPage() {
             )
           )}
 
+        </div>
+        <div className="mt-8 max-w-4xl mx-auto px-6">
+          <IntegrationsPanel />
         </div>
       </main>
       <SiteFooter />
