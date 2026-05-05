@@ -438,7 +438,7 @@ export default function LoginPage() {
               >
                 {submitting ? "Sending…" : "Email me a sign-in code"}
               </button>
-              <p className="text-center text-sm text-gray-600">
+              <p className="text-center text-sm text-gray-700">
                 We email a 6-digit code only if this address is already registered. Check Spam/Junk (iCloud/Gmail).
                 Sessions stay signed in for a long time — you won&apos;t need a code every visit.
               </p>
@@ -459,9 +459,8 @@ export default function LoginPage() {
           {!usePassword && otpStep === "code" && (
             <form onSubmit={handleVerifyOtp} className="space-y-6">
               <div>
-                <p className="text-sm text-gray-600 mb-2">
-                  Use the code for <span className="text-gray-900 font-medium">{email}</span> (inbox + Spam/Junk +
-                  Promotions). Nothing there? Confirm the email matches your account or use password below.
+                <p className="text-sm text-gray-700 mb-2">
+                  Use the code for <span className="text-gray-900 font-medium">{email}</span> — check inbox, Spam/Junk and Promotions. Nothing there? Confirm the email matches your account or use password below.
                 </p>
                 {otpInfo && (
                   <div className="mb-3 p-3 bg-emerald-500/10 border border-emerald-500/25 rounded-lg text-emerald-200 text-sm">
