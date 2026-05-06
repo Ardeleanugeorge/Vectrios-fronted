@@ -28,8 +28,8 @@ export const PLANS: Plan[] = [
     name: "Scale",
     headline: "Full revenue intelligence — one flat price",
     ctaLabel: "Start Scale",
-    priceMonthly: 99,
-    priceAnnual: 79, // per month when billed annually
+    priceMonthly: 299,
+    priceAnnual: 239, // per month when billed annually (~$2,868/year, save $720)
     maxUsers: 20,
     features: [
       "Revenue Impact Index (RII) — structural score 0–100",
