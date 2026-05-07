@@ -343,7 +343,8 @@ export default function MonitoringLayer({
     }
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token") || ""
     setPlaybookFetchDone(false)
-    let cancelled = false
+let cancelled = false
+const delayTimer = setTimeout(() => {
 
 
 
@@ -403,11 +404,13 @@ export default function MonitoringLayer({
       if (!cancelled) setPlaybookActionLayer(al)
     })
       .catch(() => {})
-      .finally(() => {
+  .finally(() => {
         if (!cancelled) setPlaybookFetchDone(true)
       })
+    }, 2000)
     return () => {
       cancelled = true
+      clearTimeout(delayTimer)
     }
   }, [companyId, diagnostic?.action_layer])
 
