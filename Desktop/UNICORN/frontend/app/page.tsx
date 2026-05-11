@@ -229,7 +229,7 @@ export default function Home() {
           </h1>
           <p className="text-lg md:text-xl text-slate-600 dark:text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
             Your messaging is already costing you deals.
-            We show you where &mdash; before pipeline drops.
+            We quantify exactly where — and what it costs you.
           </p>
           <p className="text-sm md:text-base text-amber-700 font-medium mb-6 max-w-2xl mx-auto">
             Revenue leakage compounds silently every week your messaging drifts undetected. Most teams only notice after pipeline slows.
@@ -572,7 +572,7 @@ export default function Home() {
             href="/signup"
             className="inline-block px-12 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-lg"
           >
-            Scan my site to detect revenue risk
+            Detect hidden revenue loss
           </Link>
           <div className="mt-4">
             <p className="text-sm text-gray-500">
