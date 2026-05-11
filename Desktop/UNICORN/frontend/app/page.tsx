@@ -562,7 +562,7 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
-            Find what&apos;s already costing you revenue &mdash; before it compounds
+            Your pipeline is already affected. Find out by how much.
           </h2>
           <p className="text-lg text-gray-600 mb-8">
             Scan your site to create a baseline in 30 seconds.
