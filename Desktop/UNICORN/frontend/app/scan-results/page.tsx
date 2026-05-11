@@ -1056,7 +1056,7 @@ function ScanResultsContent() {
                 {typeof data.percentile === "number" && (
                   <p className="text-xs text-gray-600 mt-1">
                     {data.percentile >= 50
-                      ? `Better than ${Math.round(data.percentile)}% of SaaS – but still leaving significant revenue on the table`
+                      ? `Above-average structural performance — measurable revenue recovery still available`
                       : `You're performing worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of similar SaaS companies`}
                   </p>
                 )}
@@ -1262,7 +1262,7 @@ function ScanResultsContent() {
               See exactly what&apos;s costing you revenue
             </button>
             <p className="text-xs text-gray-600 mt-3 max-w-md mx-auto text-center leading-relaxed">
-              Takes 30 seconds - Instant access - No spam
+              Revenue leakage compounds weekly without intervention · Takes 30 seconds
             </p>
           </div>
         )}
