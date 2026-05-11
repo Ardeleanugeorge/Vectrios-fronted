@@ -323,32 +323,32 @@ export default function Home() {
             Your dashboard shows the result.
           </h2>
           <p className="text-2xl text-cyan-600 font-semibold mb-8">
-            Your messaging is the cause.
+            Your GTM messaging is where it starts.
           </p>
           <p className="text-xl text-gray-700 mb-6">It happens when:</p>
           <ul className="space-y-4 text-lg text-gray-600 mb-8 ml-6">
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-              You fill pipeline with deals that never close
+              Pipeline fills with deals that stall before close
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-              Your value takes too long to understand
+              Value proposition takes too long to register
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-              Buyers hesitate instead of moving forward
+              Buyers go quiet — no objection, no decision
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-              Deals stall without a clear reason
+              Close rates drop with no obvious cause
             </li>
           </ul>
           <p className="text-lg text-gray-700 leading-relaxed mb-2">
             None of this triggers alerts. It quietly reduces conversion every week.
           </p>
           <p className="text-lg text-cyan-600 font-semibold mt-4">
-            We detect it early &mdash; before it compounds.
+            VectriOS detects the structural cause — before it costs another quarter.
           </p>
         </div>
       </section>
