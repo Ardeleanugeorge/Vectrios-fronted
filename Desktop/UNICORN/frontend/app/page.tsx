@@ -315,29 +315,16 @@ export default function Home() {
           )}
         </div>
       </section>
-{/* -- 7. BUILT FOR -------------------------------------------------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-8 text-slate-900">Built For</h2>
-          <div className="grid md:grid-cols-1 gap-6 mb-10">
-            <div>
-              <p className="text-lg text-gray-700 mb-4 font-semibold text-cyan-600">Built for:</p>
-              <ul className="space-y-3 text-lg text-gray-700">
-                {["B2B SaaS companies ($500K–$10M ARR)", "CROs who need to protect close rates before they drop", "RevOps teams who track pipeline efficiency weekly", "Founders who suspect messaging is costing them deals"].map(r => (
-                  <li key={r} className="flex items-center gap-3">
-                    <span className="text-cyan-600 font-bold" aria-hidden>&#10003;</span>
-                    {r}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-            <p className="text-lg text-gray-700">
-              Vectri<span className="text-cyan-600">OS</span> is a revenue-stage monitoring layer &mdash; not a content tool.
-            </p>
-          </div>
+{/* -- QUALIFICATION STRIP ----------------------------------------- */}
+      <section className="border-t border-b border-slate-200 bg-slate-50">
+        <div className="max-w-6xl mx-auto px-6 py-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+          <span className="text-xs text-gray-500 uppercase tracking-widest font-medium shrink-0">Built for</span>
+          {["B2B SaaS ($500K-$10M ARR)", "CROs protecting close rates", "RevOps tracking pipeline weekly", "Founders losing deals silently"].map(r => (
+            <span key={r} className="flex items-center gap-1.5 text-sm text-gray-700">
+              <span className="text-cyan-600 font-bold text-xs">&#10003;</span>
+              {r}
+            </span>
+          ))}
         </div>
       </section>
       {/* -- 2. PROBLEM ---------------------------------------------------- */}
