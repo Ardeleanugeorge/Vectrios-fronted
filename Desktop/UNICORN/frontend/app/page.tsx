@@ -232,7 +232,7 @@ export default function Home() {
             We show you where &mdash; before pipeline drops.
           </p>
           <p className="text-sm md:text-base text-amber-700 font-medium mb-6 max-w-2xl mx-auto">
-            Most teams don&apos;t realize they&apos;re losing $20K&ndash;$200K/year from messaging gaps until pipeline slows.
+            Revenue leakage compounds silently every week your messaging drifts undetected. Most teams only notice after pipeline slows.
           </p>
           <p className="text-xs text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
             Analyzing revenue-stage messaging across B2B SaaS companies to surface hidden revenue loss before it hits pipeline.
@@ -265,7 +265,7 @@ export default function Home() {
                     </svg>
                     Scanning...
                   </span>
-                ) : "Scan my site to detect revenue risk"}
+                ) : "Detect hidden revenue loss"}
               </button>
             </div>
             {scanError && (
@@ -465,15 +465,15 @@ export default function Home() {
             <ul className="space-y-4 text-lg text-gray-700">
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0" />
-                Your homepage targets one audience
+                Your homepage attracts buyers your pricing page fails to convert
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0" />
-                Your pricing page speaks to another
+                Your proof arrives too late to stop comparison shopping
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0" />
-                Your proof doesn&apos;t justify the next step
+                Deals stall silently — no objection, no reply, no close
               </li>
             </ul>
           </div>
@@ -540,7 +540,7 @@ export default function Home() {
             <div>
               <p className="text-lg text-gray-700 mb-4 font-semibold text-cyan-600">Built for:</p>
               <ul className="space-y-3 text-lg text-gray-700">
-                {["B2B SaaS companies", "CROs responsible for pipeline performance", "Revenue teams protecting conversion quality", "Operators tracking consistency week over week"].map(r => (
+                {["B2B SaaS companies ($500K–$10M ARR)", "CROs who need to protect close rates before they drop", "RevOps teams who track pipeline efficiency weekly", "Founders who suspect messaging is costing them deals"].map(r => (
                   <li key={r} className="flex items-center gap-3">
                     <span className="text-cyan-600 font-bold" aria-hidden>&#10003;</span>
                     {r}
