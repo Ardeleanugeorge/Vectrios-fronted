@@ -1133,7 +1133,7 @@ function ScanResultsContent() {
             >
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shrink-0" />
               <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
-                Benchmarked against 500+ SaaS companies
+                Benchmarked against 500+ SaaS companies — structural analysis, not content grading — structural analysis, not content grading
               </span>
               <span className="text-cyan-500 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                 View index
@@ -1144,8 +1144,8 @@ function ScanResultsContent() {
 
         {!unlocked && (
           <div className={`p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6 ${wideLayout ? "lg:p-8 lg:mb-8" : ""}`}>
-            <p className="text-lg font-semibold text-gray-900 mb-1">Where you&apos;re losing revenue</p>
-            <p className="text-sm text-gray-600 mb-1">These issues are actively reducing your conversion rate</p>
+            <p className="text-lg font-semibold text-gray-900 mb-1">Revenue compression signals detected</p>
+            <p className="text-sm text-gray-600 mb-1">Structural conversion leaks identified across revenue journey</p>
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-5">Leak severity by area</p>
             <ul className="space-y-3 text-sm text-gray-700">
               <li className="flex items-center justify-between gap-3">
@@ -1175,7 +1175,7 @@ function ScanResultsContent() {
               {primarySignalDisplay(data.primary_signal).headline}
             </p>
             <p className="text-sm text-gray-600">
-              This directly reduces conversion rates.
+              This introduces structural conversion drag across the pipeline.
             </p>
             {data.inferred_icp && (
               <p className="text-xs text-gray-600 mt-3">Detected audience: {data.inferred_icp}</p>
@@ -1213,7 +1213,7 @@ function ScanResultsContent() {
               You&apos;re losing {modeledMonthlyLossLabel ? `~${modeledMonthlyLossLabel}` : "~$13K-$25K/month"}
             </h2>
             <p className="text-gray-600 mb-5 text-sm max-w-2xl mx-auto leading-relaxed">
-              Modeled from your messaging structure and benchmark vs 500+ SaaS companies.
+              Modeled using benchmark-adjusted close-rate compression vs 500+ SaaS peer set.
             </p>
             <div className="text-left max-w-2xl mx-auto mb-5">
               <p className="text-sm text-gray-700 mb-2">
@@ -1259,7 +1259,7 @@ function ScanResultsContent() {
               onClick={handleUnlock}
               className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
             >
-              See exactly what&apos;s costing you revenue
+              Unlock revenue compression analysis
             </button>
             <p className="text-xs text-gray-600 mt-3 max-w-md mx-auto text-center leading-relaxed">
               Revenue leakage compounds weekly without intervention · Takes 30 seconds
@@ -1315,7 +1315,7 @@ function ScanResultsContent() {
                       : "Modeled annual impact based on structural analysis"}
                   </p>
                   <p className="text-sm text-gray-600 mb-6 max-w-3xl text-center lg:text-left">
-                    Modeled from your messaging structure and benchmark vs 500+ SaaS companies.
+                    Modeled using benchmark-adjusted close-rate compression vs 500+ SaaS peer set.
                   </p>
                   <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-cyan-500/[0.04] p-4">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-2">We&apos;ve built a full revenue model for your business</p>
@@ -1551,7 +1551,7 @@ function ScanResultsContent() {
                       onClick={handleUnlock}
                       className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                     >
-                      See exactly what&apos;s costing you revenue
+                      Unlock revenue compression analysis
                     </button>
                     <p className="text-xs text-gray-600 mt-3">
                       Takes 30 seconds – Instant access – No spam
