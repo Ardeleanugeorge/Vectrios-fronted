@@ -1500,7 +1500,7 @@ function ScanResultsContent() {
                 href="/pricing?from=scan&focus=recovery"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
-                  Activate monitoring
+                  Start 14-day monitoring trial
                 </Link>
               </div>
             ) : (
