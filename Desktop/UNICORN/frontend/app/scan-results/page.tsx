@@ -1249,6 +1249,7 @@ function ScanResultsContent() {
             </div>
             <p className="text-xs text-gray-600 mb-5">
               Companies at your level typically recover $80K-$220K/year.
+                  <span className="block text-xs text-gray-500 mt-1">Modeled using your structural scan + peer conversion benchmarks. Refined further once CRM connects.</span>
             </p>
             {modeledAnnualLossLabel && (
               <p className="text-sm text-amber-300 font-semibold mb-4">
@@ -1295,7 +1296,7 @@ function ScanResultsContent() {
             className="p-6 sm:p-8 lg:p-10 bg-white rounded-xl border border-gray-200 shadow-sm mb-8"
           >
             <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 text-center lg:text-left">
-              You&apos;ve unlocked your recovery model
+              Revenue recovery workspace initialized
             </p>
             {(() => {
               const impact = financialImpact
@@ -1307,7 +1308,7 @@ function ScanResultsContent() {
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-3 text-center lg:text-left max-w-4xl">
                     {impact && mLow !== null && mHigh !== null
                       ? `You're losing ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}/month`
-                      : "You're already losing revenue every month"}
+                      : "Structural conversion loss confirmed"}
                   </h3>
                   <p className="text-base font-semibold text-orange-600 mb-2 text-center lg:text-left">
                     {impact
@@ -1339,24 +1340,24 @@ function ScanResultsContent() {
                   <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-1">Preview of your recovery model</p>
                     <p className="text-[11px] text-gray-600 mb-3">Based on 500+ SaaS revenue architectures</p>
-                    <div className="grid sm:grid-cols-3 gap-3 blur-[1px]">
-                      <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Annual loss</p>
-                        <p className="text-xl font-bold text-red-300">
+                    <div className="grid sm:grid-cols-3 gap-3">
+                      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                        <p className="text-[10px] uppercase tracking-wider text-red-600 mb-1">Annual revenue at risk</p>
+                        <p className="text-2xl font-bold text-red-600">
                           {impact ? `~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year` : "Full modeled loss available after unlock"}
                         </p>
-                        <p className="text-[11px] text-gray-600">{impact ? "Modeled annual downside" : "Modeled from full dataset"}</p>
+                        <p className="text-[11px] text-red-500 mt-1">Modeled annual downside</p>
                       </div>
-                      <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Recoverable</p>
-                        <p className="text-xl font-bold text-emerald-300">
+                      <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                        <p className="text-[10px] uppercase tracking-wider text-emerald-700 mb-1">Recovery potential</p>
+                        <p className="text-2xl font-bold text-emerald-700">
                           {impact ? `~${formatCurrency(impact.recovery_low)}–${formatCurrency(impact.recovery_high)}/year` : "Recovery range calculated (unlock to view)"}
                         </p>
-                        <p className="text-[11px] text-gray-600">{impact ? "If messaging is aligned" : "Modeled from full dataset"}</p>
+                        <p className="text-[11px] text-emerald-600 mt-1">If structural fixes are applied</p>
                       </div>
-                      <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Close-rate gap</p>
-                        <p className="text-xl font-bold text-orange-300">{modeledCloseRateGapLabel || "-1.4%"}</p>
+                      <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
+                        <p className="text-[10px] uppercase tracking-wider text-orange-700 mb-1">Close-rate compression</p>
+                        <p className="text-2xl font-bold text-orange-700">{modeledCloseRateGapLabel || "-1.4%"}</p>
                         <p className="text-[11px] text-gray-600">Estimated structural compression</p>
                       </div>
                     </div>
@@ -1369,6 +1370,7 @@ function ScanResultsContent() {
                   </div>
                   <p className="text-xs text-gray-600 mb-6">
                     Companies at your level typically recover $80K-$220K/year.
+                  <span className="block text-xs text-gray-500 mt-1">Modeled using your structural scan + peer conversion benchmarks. Refined further once CRM connects.</span>
                   </p>
 
                   <div className="grid lg:grid-cols-12 gap-6 mb-8">
@@ -1476,7 +1478,7 @@ function ScanResultsContent() {
               /* -- STATE B: Authenticated but no active plan ? upgrade CTA -- */
               <div className="p-5 sm:p-6 rounded-xl bg-gray-50 border border-amber-800/40">
                 <p className="text-xs font-semibold text-amber-400/90 uppercase tracking-wider mb-2">
-                  Activate monitoring to unlock the full model
+                  Stop the leakage before it compounds further
                 </p>
                 <p className="text-sm text-gray-700 mb-3">
                   You&apos;re logged in, but your plan hasn&apos;t been activated yet. Upgrade to access the full recovery model, page-level fixes, and automated monitoring.
