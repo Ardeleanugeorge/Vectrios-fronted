@@ -1133,7 +1133,7 @@ function ScanResultsContent() {
             >
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shrink-0" />
               <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
-                Benchmarked against 500+ SaaS companies — structural analysis, not content grading — structural analysis, not content grading
+                Benchmarked against 500+ SaaS companies — structural analysis, not content grading
               </span>
               <span className="text-cyan-500 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                 View index
