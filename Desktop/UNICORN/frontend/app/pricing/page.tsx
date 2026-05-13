@@ -596,7 +596,7 @@ export default function PricingPage() {
           <div className="mb-6 p-4 rounded-lg bg-amber-950/40 border border-amber-500/40 text-amber-700 text-sm text-center">
             Based on your scan, you&apos;re losing approximately{" "}
             <span className="font-semibold text-amber-700">
-              {formatCurrency(scanMonthlyLoss.low)}ΓÇô{formatCurrency(scanMonthlyLoss.high)}/month
+              {formatCurrency(scanMonthlyLoss.low)}–{formatCurrency(scanMonthlyLoss.high)}/month
             </span>
           </div>
         )}
