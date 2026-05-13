@@ -638,7 +638,7 @@ export default function PricingPage() {
             >
               Start 14-day free trial
             </button>
-            <p className="text-xs text-gray-400 mt-3">No charge today · cancel anytime · full access in under 10 minutes</p>
+            <p className="text-xs text-gray-200 mt-3 font-medium">No charge today · cancel anytime · full access in under 10 minutes</p>
           </div>
         </div>
 
