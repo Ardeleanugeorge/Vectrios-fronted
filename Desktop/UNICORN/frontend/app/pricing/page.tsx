@@ -593,9 +593,9 @@ export default function PricingPage() {
 
       <main className="max-w-6xl mx-auto px-6 py-12">
         {scanMonthlyLoss && (
-          <div className="mb-6 p-4 rounded-lg bg-amber-950/40 border border-amber-500/40 text-amber-700 text-sm text-center">
+          <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-300 text-red-800 text-sm text-center font-medium">
             Based on your scan, you&apos;re losing approximately{" "}
-            <span className="font-semibold text-amber-700">
+            <span className="font-bold text-red-700">
               {formatCurrency(scanMonthlyLoss.low)}–{formatCurrency(scanMonthlyLoss.high)}/month
             </span>
           </div>
