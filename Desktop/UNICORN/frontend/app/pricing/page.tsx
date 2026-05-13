@@ -626,7 +626,7 @@ export default function PricingPage() {
               Try risk-free — recover your first $50K in lost revenue
             </p>
             <h2 className="text-2xl font-bold mb-2">14-day trial — full Scale access</h2>
-            <p className="text-gray-600 text-sm mb-6">
+            <p className="text-gray-200 text-sm mb-6">
               Every trial includes the full Scale playbook so you can see the complete recovery path — not a watered-down demo.
             </p>
             <button
