@@ -638,7 +638,7 @@ export default function PricingPage() {
             >
               Start 14-day free trial
             </button>
-            <p className="text-xs text-gray-500 mt-3">No charge today · cancel anytime · full access in under 10 minutes</p>
+            <p className="text-xs text-gray-400 mt-3">No charge today · cancel anytime · full access in under 10 minutes</p>
           </div>
         </div>
 
@@ -723,106 +723,31 @@ export default function PricingPage() {
           })}
         </div>
 
-        <div id="contact" className="border-t border-gray-200 pt-12 mt-4 scroll-mt-24">
+                <div id="faq" className="border-t border-gray-200 pt-12 mt-4">
           <div className="text-center mb-8 max-w-xl mx-auto">
-            <h2 className="text-2xl font-bold mb-2">Questions?</h2>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Ask anything about Scale, the trial, or how monitoring works — we&apos;ll reply by email.
-            </p>
+            <h2 className="text-2xl font-bold mb-2">Common questions</h2>
+            <p className="text-gray-600 text-sm">Everything you need to know before starting.</p>
           </div>
-
-          <div className="max-w-lg mx-auto p-8 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Name</label>
-                <input
-                  type="text"
-                  value={contactName}
-                  onChange={(e) => setContactName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 text-gray-900 outline-none focus:border-cyan-500"
-                  placeholder="Your name"
-                  autoComplete="name"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-700 mb-2">Email</label>
-                <input
-                  type="email"
-                  value={contactEmail}
-                  onChange={(e) => setContactEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 text-gray-900 outline-none focus:border-cyan-500"
-                  placeholder="you@company.com"
-                  autoComplete="email"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">Company (optional)</label>
-              <input
-                type="text"
-                value={contactCompany}
-                onChange={(e) => setContactCompany(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 text-gray-900 outline-none focus:border-cyan-500"
-                placeholder="Company name"
-                autoComplete="organization"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">Message</label>
-              <textarea
-                value={contactMessage}
-                onChange={(e) => setContactMessage(e.target.value)}
-                rows={5}
-                className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 text-gray-900 outline-none focus:border-cyan-500 resize-y min-h-[120px]"
-                placeholder="What would you like to know?"
-              />
-            </div>
-
-            {contactSuccess && (
-              <div className="w-full px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm text-center">
-                {contactSuccess}
-              </div>
-            )}
-
-            {contactError && (
-              <div className="w-full px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
-                {contactError}
-              </div>
-            )}
-
-            {!contactSuccess && (
-              <>
-                <button
-                  type="button"
-                  onClick={handleContactQuestion}
-                  disabled={!canSendContact || contactLoading}
-                  className={`w-full py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 ${
-                    canSendContact && !contactLoading
-                      ? "bg-cyan-500 hover:bg-cyan-400 text-black"
-                      : "bg-gray-700 text-gray-600 cursor-not-allowed"
-                  }`}
-                >
-                  {contactLoading ? (
-                    <>
-                      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                      </svg>
-                      SendingΓÇª
-                    </>
-                  ) : (
-                    "Send message"
-                  )}
-                </button>
-                {!canSendContact && (
-                  <p className="text-xs text-gray-600 text-center -mt-2">
-                    Add your name, email, and a message to send.
-                  </p>
-                )}
-              </>
-            )}
+          <div className="max-w-2xl mx-auto space-y-3">
+            {[
+              { q: "What happens after the 14-day trial?", a: "After 14 days, your plan continues at $299/month. You can cancel anytime before the trial ends — no charge." },
+              { q: "Do I need HubSpot or Google Analytics?", a: "No. VectriOS works without integrations. Connecting HubSpot and Google refines the model with your real close rates and behavioral data." },
+              { q: "How long does setup take?", a: "Under 10 minutes. Scan your domain, enter your email, and monitoring starts automatically. No onboarding call required." },
+              { q: "How accurate are the revenue estimates?", a: "Estimates are modeled from your structural scan + 500+ SaaS peer benchmarks. They become more precise once CRM and analytics connect." },
+              { q: "Can my team use it?", a: "Yes. All plans include unlimited team seats." },
+              { q: "Is this a content audit or SEO tool?", a: "Neither. VectriOS measures revenue-stage messaging architecture — not content quality or SEO." },
+            ].map(({ q, a }) => (
+              <details key={q} className="group rounded-xl border border-gray-200 bg-gray-50 p-5 cursor-pointer">
+                <summary className="flex items-center justify-between font-medium text-gray-900 list-none">
+                  {q}
+                  <span className="ml-4 text-cyan-600">&#8964;</span>
+                </summary>
+                <p className="mt-3 text-sm text-gray-600 leading-relaxed">{a}</p>
+              </details>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <p className="text-sm text-gray-500">Still have questions? <a href="mailto:support@vectrios.com" className="text-cyan-600 hover:underline">Email us</a></p>
           </div>
         </div>
       </main>
