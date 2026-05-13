@@ -612,22 +612,13 @@ export default function PricingPage() {
         )}
 
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold mb-3">Recover revenue'not features</h1>
+          <h1 className="text-4xl font-bold mb-3">Your recovery plan is ready</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            One plan — Scale: find what&apos;s leaking, fix it, and quantify what you get back. Start with a 14-day full-access trial.
+            Your scan identified structural revenue leakage. Start 14 days of continuous monitoring to validate, refine, and recover it.
           </p>
         </div>
 
-        {/* ROI anchor — makes dollar price feel small vs. problem size */}
-        <div className="max-w-3xl mx-auto mb-10 p-6 rounded-2xl border border-amber-200 bg-amber-50">
-          <p className="text-center text-lg sm:text-xl font-semibold text-gray-900 mb-2">
-            Companies like yours typically lose{" "}
-            <span className="text-amber-700">$120KΓÇô$300K/year</span>
-          </p>
-          <p className="text-center text-sm text-gray-600">
-            Vectri<span className="text-blue-600">OS</span> helps recover a significant portion of that — before you spend more on traffic or headcount.
-          </p>
-        </div>
+
 
         <div className="max-w-2xl mx-auto mb-12">
           <div className="p-7 bg-gradient-to-br from-cyan-950/40 to-[#111827] rounded-2xl border border-blue-200 text-center">
@@ -645,8 +636,9 @@ export default function PricingPage() {
                 isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
               }`}
             >
-              Start 14-day trial — full access
+              Start 14-day free trial
             </button>
+            <p className="text-xs text-gray-500 mt-3">No charge today · cancel anytime · full access in under 10 minutes</p>
           </div>
         </div>
 
@@ -696,6 +688,7 @@ export default function PricingPage() {
                     ${billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly}
                   </span>
                   <span className="text-gray-600">/month</span>
+                  <p className="text-xs text-emerald-700 mt-1 font-medium">vs. modeled $600K+ annual exposure</p>
                   {billingCycle === "annual" ? (
                     <p className="text-xs text-gray-600 mt-1">
                       Billed annually (${plan.priceAnnual * 12}/year) — save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year
@@ -723,7 +716,7 @@ export default function PricingPage() {
                         : "bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20"
                   }`}
                 >
-                  {isActivePlan ? "Activated" : plan.ctaLabel}
+                  {isActivePlan ? "Activated" : "Start 14-day free trial"}
                 </button>
               </div>
             )
