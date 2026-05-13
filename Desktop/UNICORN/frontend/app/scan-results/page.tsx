@@ -1084,10 +1084,10 @@ function ScanResultsContent() {
                   wideLayout ? "max-w-none" : "max-w-lg mx-auto"
                 } ${
                   (data.percentile ?? 0) >= 60
-                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                    ? "bg-emerald-50 border-emerald-300 text-emerald-800"
                     : (data.percentile ?? 0) >= 40
-                      ? "bg-yellow-500/10 border-yellow-500/30 text-yellow-200"
-                      : "bg-red-500/10 border-red-500/30 text-red-200"
+                      ? "bg-amber-50 border-amber-300 text-amber-800"
+                      : "bg-red-50 border-red-300 text-red-800"
                 }`}
               >
                 <span>
