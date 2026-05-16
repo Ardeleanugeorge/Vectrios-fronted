@@ -178,18 +178,21 @@ export default function SaaSRevenueIndex() {
           <p className="text-gray-700 text-lg max-w-2xl mx-auto mb-2">
             Most SaaS companies are losing {displayLossMin}–{displayLossMax}/month from messaging gaps they don&apos;t see.
           </p>
-          <p className="text-gray-600 text-sm max-w-2xl mx-auto">
+          <p className="text-gray-600 text-sm max-w-2xl mx-auto mb-6">
             This index shows how clearly each company&apos;s story supports revenue — so you can see where you stand.
           </p>
+          <a href="/" className="inline-block px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-sm">
+            Scan your site — see your RII
+          </a>
         </div>
 
         {/* Stats bar — real numbers */}
         <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
           {[
             { label: "Companies Analyzed", value: displayTotal.toLocaleString("en-US"), color: "text-gray-900" },
-            { label: "Average RII (lower = better)", value: displayAvgRii, color: "text-yellow-400" },
+            { label: "Average RII (lower = better)", value: displayAvgRii, color: "text-orange-600" },
           ].map(stat => (
-            <div key={stat.label} className="rounded-xl bg-white/[0.03] border border-white/5 p-5 text-center">
+            <div key={stat.label} className="rounded-xl bg-gray-50 border border-gray-200 p-5 text-center">
               <div className={`text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
               <div className="text-xs text-gray-600">{stat.label}</div>
             </div>
@@ -198,9 +201,9 @@ export default function SaaSRevenueIndex() {
 
         <p className="text-xs sm:text-sm text-gray-600 mb-10 max-w-3xl mx-auto text-center">
           Companies in this dataset quietly lose an estimated
-          <span className="text-amber-300 font-semibold"> {displayLossMin}–{displayLossMax}/month</span>{" "}
+          <span className="text-amber-700 font-semibold"> {displayLossMin}–{displayLossMax}/month</span>{" "}
           from messaging gaps that never show up in dashboards.{" "}
-          <span className="text-gray-600 text-xs">({displayBasis})</span>{" "}
+          <span className="text-gray-500 text-xs">({displayBasis})</span>{" "}
           Use this benchmark to understand how risky your own revenue architecture might be — then run your scan to see your exact exposure.
         </p>
 
