@@ -35,10 +35,10 @@ export default function MethodologyPage() {
               href="/signup"
               className="inline-block px-10 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-lg mb-4"
             >
-              Start Free Diagnostic
+              Detect hidden revenue loss
             </Link>
             <p className="text-sm text-gray-600">
-              3-minute evaluation · No credit card required
+              30-second scan · No credit card required
             </p>
           </div>
 
@@ -126,9 +126,45 @@ export default function MethodologyPage() {
             </p>
           </section>
 
+          {/* BEHAVIORAL & CRM CALIBRATION */}
+          <section className="mb-16 border-t border-gray-200 pt-12">
+            <h2 className="text-3xl font-bold mb-6">2. Behavioral & CRM Calibration</h2>
+            <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+              Structural scoring is calibrated with real behavioral and CRM data when integrations are connected.
+              This moves the model from benchmark-estimated to company-specific.
+            </p>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-xl font-semibold text-cyan-400 mb-2">Google Search Console — CTR Modifier</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Real click-through rate from GSC adjusts the RII by up to ±15%.
+                  Low CTR relative to benchmark signals messaging-search intent misalignment before it appears in pipeline.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-cyan-400 mb-2">Google Analytics 4 — Conversion Modifier</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Session conversion rate from GA4 calibrates the behavioral layer.
+                  Conversion compression below benchmark activates a structural drag modifier on the final RII.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-cyan-400 mb-2">HubSpot CRM — Real Close Rate</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Close rate is computed from actual CRM deal data (90-day window: closed-won vs closed-lost).
+                  This replaces benchmark estimates with your company-specific conversion reality,
+                  making financial exposure modeling significantly more accurate.
+                </p>
+              </div>
+            </div>
+            <p className="text-cyan-400 font-semibold mt-6">
+              Without integrations: benchmark-calibrated estimates. With integrations: company-specific reality.
+            </p>
+          </section>
+
           {/* DOMINANCE & OVERRIDE LOGIC */}
           <section className="mb-16 border-t border-gray-200 pt-12">
-            <h2 className="text-3xl font-bold mb-6">2. Dominance & Override Logic</h2>
+            <h2 className="text-3xl font-bold mb-6">3. Dominance & Override Logic</h2>
             <p className="text-lg text-gray-700 mb-6 leading-relaxed">
               Traditional systems average signals.
             </p>
@@ -148,7 +184,7 @@ export default function MethodologyPage() {
 
           {/* CONFIDENCE LAYER */}
           <section className="mb-16 border-t border-gray-200 pt-12">
-            <h2 className="text-3xl font-bold mb-6">3. Confidence Layer</h2>
+            <h2 className="text-3xl font-bold mb-6">4. Confidence Layer</h2>
             <p className="text-lg text-gray-700 mb-6 leading-relaxed">
               Every classification includes a <span className="font-semibold text-cyan-400">Revenue Leak Confidence Score</span>.
             </p>
@@ -171,7 +207,7 @@ export default function MethodologyPage() {
 
           {/* DIAGNOSTIC OUTPUT */}
           <section className="mb-16 border-t border-gray-200 pt-12">
-            <h2 className="text-3xl font-bold mb-6">4. Diagnostic Output</h2>
+            <h2 className="text-3xl font-bold mb-6">5. Diagnostic Output</h2>
             <p className="text-lg text-gray-700 mb-6 leading-relaxed">
               Each evaluation delivers:
             </p>
@@ -194,7 +230,7 @@ export default function MethodologyPage() {
 
           {/* MONITORING & TREND MODELING */}
           <section className="mb-16 border-t border-gray-200 pt-12">
-            <h2 className="text-3xl font-bold mb-6">5. Monitoring & Trend Modeling</h2>
+            <h2 className="text-3xl font-bold mb-6">6. Monitoring & Trend Modeling</h2>
             <p className="text-lg text-gray-700 mb-6 leading-relaxed">
               Risk is longitudinal.
             </p>
@@ -237,10 +273,10 @@ export default function MethodologyPage() {
               href="/signup"
               className="inline-block px-10 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-lg mb-4"
             >
-              Start Free Diagnostic
+              Detect hidden revenue loss
             </Link>
             <p className="text-sm text-gray-600">
-              3-minute evaluation · No credit card required
+              30-second scan · No credit card required
             </p>
           </section>
 
