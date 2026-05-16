@@ -49,9 +49,11 @@ interface PublicStats {
 function getRiskColor(risk: string | null) {
   if (!risk) return { bg: "bg-gray-500/10", text: "text-gray-600", dot: "bg-gray-500" };
   const r = risk.toLowerCase();
-  if (r.includes("high"))     return { bg: "bg-red-500/10",    text: "text-red-400",    dot: "bg-red-500" };
-  if (r.includes("moderate")) return { bg: "bg-yellow-500/10", text: "text-yellow-400", dot: "bg-yellow-500" };
-  return                             { bg: "bg-green-500/10",  text: "text-green-400",  dot: "bg-green-500" };
+  if (r.includes("high") || r.includes("inefficiency") || r.includes("critical")) 
+    return { bg: "bg-red-500/10", text: "text-red-400", dot: "bg-red-500" };
+  if (r.includes("moderate") || r.includes("detected"))
+    return { bg: "bg-yellow-500/10", text: "text-yellow-400", dot: "bg-yellow-500" };
+  return { bg: "bg-green-500/10", text: "text-green-400", dot: "bg-green-500" };
 }
 
 function RiiBar({ value }: { value: number | null }) {
