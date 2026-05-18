@@ -477,7 +477,7 @@ const delayTimer = setTimeout(() => {
       {/* FULL DIAGNOSTIC NUDGE — shown only when monitoring has NEVER run
            (no last_evaluated_at = no monitoring cycle completed yet).
            Once monitoring runs even once, banner disappears permanently. */}
-      {!monitoringStatus.last_evaluated_at && !monitoringStatus.created_at && (
+      {!monitoringStatus.last_evaluated_at && (
         <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-800/40 bg-cyan-950/10">
           <div>
             <p className="text-sm font-semibold text-blue-600">
