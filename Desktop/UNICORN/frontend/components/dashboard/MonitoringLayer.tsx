@@ -147,6 +147,60 @@ interface MonitoringLayerProps {
 
 type UiState = "low" | "medium" | "high"
 
+
+function DiagnosticNudge({ companyId }: { companyId: string | null }) {
+  const [scanning, setScanning] = useState(false)
+  const [done, setDone] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleRun = async () => {
+    if (!companyId || scanning) return
+    setScanning(true)
+    setError("")
+    try {
+      const { apiFetch } = await import("@/lib/api")
+      const res = await apiFetch(`/company/${companyId}/run-diagnostic`, { method: "POST" })
+      if (res.ok) {
+        setDone(true)
+        setTimeout(() => window.location.reload(), 2000)
+      } else {
+        setError("Scan failed. Please try again.")
+      }
+    } catch {
+      setError("Network error. Please try again.")
+    } finally {
+      setScanning(false)
+    }
+  }
+
+  if (done) return (
+    <div className="px-5 py-4 rounded-xl border border-emerald-500/40 bg-emerald-50 text-sm text-emerald-700 font-medium">
+      Baseline scan complete — dashboard updating...
+    </div>
+  )
+
+  return (
+    <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-800/40 bg-cyan-950/10">
+      <div>
+        <p className="text-sm font-semibold text-blue-600">
+          Run your baseline diagnostic to activate continuous monitoring
+        </p>
+        <p className="text-xs text-gray-600 mt-0.5">
+          Takes 30 seconds. After the scan, monitoring runs automatically every 24h.
+        </p>
+        {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      </div>
+      <button
+        onClick={handleRun}
+        disabled={scanning}
+        className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black rounded-lg transition whitespace-nowrap"
+      >
+        {scanning ? "Scanning..." : "Run baseline scan →"}
+      </button>
+    </div>
+  )
+}
+
 export default function MonitoringLayer({ 
   monitoringStatus, 
   diagnostic, 
