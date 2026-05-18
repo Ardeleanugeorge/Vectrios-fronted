@@ -823,12 +823,12 @@ const delayTimer = setTimeout(() => {
 
       {/* 8. ACTIVE ALERTS — Growth+ */}
       <FeatureGate feature="Revenue Alerts" planRequired="growth" currentPlan={currentPlan}>
-        <RevenueAlertsPanel companyId={companyId} />
+        {!!monitoringStatus.last_evaluated_at && <RevenueAlertsPanel companyId={companyId} />}
       </FeatureGate>
 
       {/* 9. REVENUE INCIDENTS — Growth+ */}
       <FeatureGate feature="Revenue Incidents" planRequired="growth" currentPlan={currentPlan}>
-        <RevenueIncidentsPanel companyId={companyId} />
+        {!!monitoringStatus.last_evaluated_at && <RevenueIncidentsPanel companyId={companyId} />}
       </FeatureGate>
 
       {/* 10. REVENUE SYSTEM ACTIVITY — Growth+ */}
@@ -864,7 +864,7 @@ const delayTimer = setTimeout(() => {
       />
 
       {/* STRUCTURAL ALERTS PANEL (drift/volatility/trend) */}
-      {alerts.length > 0 && (
+      {alerts.length > 0 && !!monitoringStatus.last_evaluated_at && (
         <AlertPanel alerts={alerts} onMarkAlertRead={onMarkAlertRead} />
       )}
 
