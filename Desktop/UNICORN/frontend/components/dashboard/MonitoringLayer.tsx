@@ -162,7 +162,26 @@ function DiagnosticNudge({ companyId }: { companyId: string | null }) {
       const res = await apiFetch(`/company/${companyId}/run-diagnostic`, { method: "POST" })
       if (res.ok) {
         setDone(true)
-        setTimeout(() => window.location.reload(), 2000)
+        // Poll for monitoring completion
+        let attempts = 0
+        const poll = setInterval(async () => {
+          attempts++
+          try {
+            const statusRes = await apiFetch(`/monitoring/status/${companyId}`)
+            if (statusRes.ok) {
+              const status = await statusRes.json()
+              if (status.last_evaluated_at) {
+                clearInterval(poll)
+                window.location.reload()
+                return
+              }
+            }
+          } catch {}
+          if (attempts >= 20) {
+            clearInterval(poll)
+            window.location.reload()
+          }
+        }, 5000) // poll every 5 seconds, max 100 seconds
       } else {
         setError("Scan failed. Please try again.")
       }
