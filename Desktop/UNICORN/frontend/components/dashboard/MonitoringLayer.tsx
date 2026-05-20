@@ -48,6 +48,7 @@ interface MonitoringStatus {
   monitoring_active: boolean
   created_at?: string
   last_evaluated_at?: string
+  source?: string
   data_coverage_pct?: number | null
   revenue_truth?: {
     headline: string
