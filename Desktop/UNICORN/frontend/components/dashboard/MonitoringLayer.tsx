@@ -149,10 +149,18 @@ interface MonitoringLayerProps {
 type UiState = "low" | "medium" | "high"
 
 
-function DiagnosticNudge({ companyId }: { companyId: string | null }) {
+function DiagnosticNudge({ companyId, monitoringSource, lastEvaluated }: { 
+  companyId: string | null
+  monitoringSource?: string
+  lastEvaluated?: string | null
+}) {
   const [scanning, setScanning] = useState(false)
-  const [done, setDone] = useState(false)
+  const [scanComplete, setScanComplete] = useState(false)
   const [error, setError] = useState("")
+
+  // Hide if monitoring has real data
+  const hasRealMonitoring = !!lastEvaluated || (monitoringSource && monitoringSource !== "fallback")
+  if (hasRealMonitoring || scanComplete) return null
 
   const handleRun = async () => {
     if (!companyId || scanning) return
@@ -162,27 +170,9 @@ function DiagnosticNudge({ companyId }: { companyId: string | null }) {
       const { apiFetch } = await import("@/lib/api")
       const res = await apiFetch(`/company/${companyId}/run-diagnostic`, { method: "POST" })
       if (res.ok) {
-        setDone(true)
-        // Poll for monitoring completion
-        let attempts = 0
-        const poll = setInterval(async () => {
-          attempts++
-          try {
-            const statusRes = await apiFetch(`/monitoring/status/${companyId}`)
-            if (statusRes.ok) {
-              const status = await statusRes.json()
-              if (status.last_evaluated_at) {
-                clearInterval(poll)
-                window.location.reload()
-                return
-              }
-            }
-          } catch {}
-          if (attempts >= 20) {
-            clearInterval(poll)
-            window.location.reload()
-          }
-        }, 5000) // poll every 5 seconds, max 100 seconds
+        setScanComplete(true)
+        // Reload after 3 seconds to show fresh data
+        setTimeout(() => window.location.reload(), 3000)
       } else {
         setError("Scan failed. Please try again.")
       }
@@ -193,29 +183,30 @@ function DiagnosticNudge({ companyId }: { companyId: string | null }) {
     }
   }
 
-  if (done) return (
-    <div className="px-5 py-4 rounded-xl border border-emerald-500/40 bg-emerald-50 text-sm text-emerald-700 font-medium">
-      Baseline scan complete — dashboard updating...
+  if (scanComplete) return (
+    <div className="px-5 py-4 rounded-xl border border-emerald-500/40 bg-emerald-50 text-sm text-emerald-800 font-medium flex items-center gap-3">
+      <span className="text-emerald-600">&#10003;</span>
+      Baseline scan complete — monitoring activated. Dashboard refreshing...
     </div>
   )
 
   return (
-    <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-800/40 bg-cyan-950/10">
+    <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-500/30 bg-cyan-950/10">
       <div>
-        <p className="text-sm font-semibold text-blue-600">
-          Run your baseline diagnostic to activate continuous monitoring
+        <p className="text-sm font-semibold text-cyan-300">
+          Activate continuous revenue monitoring
         </p>
-        <p className="text-xs text-gray-600 mt-0.5">
-          Takes 30 seconds. After the scan, monitoring runs automatically every 24h.
+        <p className="text-xs text-gray-400 mt-0.5">
+          Run your baseline scan — monitoring then runs automatically every 24h and alerts you to drift.
         </p>
-        {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+        {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
       </div>
       <button
         onClick={handleRun}
         disabled={scanning}
         className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black rounded-lg transition whitespace-nowrap"
       >
-        {scanning ? "Scanning..." : "Run baseline scan →"}
+        {scanning ? "Scanning…" : "Run monitoring scan →"}
       </button>
     </div>
   )
