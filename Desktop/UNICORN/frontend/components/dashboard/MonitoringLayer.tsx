@@ -550,7 +550,7 @@ const delayTimer = setTimeout(() => {
       {/* FULL DIAGNOSTIC NUDGE — shown only when monitoring has NEVER run
            (no last_evaluated_at = no monitoring cycle completed yet).
            Once monitoring runs even once, banner disappears permanently. */}
-      {!monitoringStatus.last_evaluated_at && (
+      {(!monitoringStatus.last_evaluated_at || monitoringStatus.source === "fallback") && (
         <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-800/40 bg-cyan-950/10">
           <div>
             <p className="text-sm font-semibold text-blue-600">
@@ -896,12 +896,12 @@ const delayTimer = setTimeout(() => {
 
       {/* 8. ACTIVE ALERTS — Growth+ */}
       <FeatureGate feature="Revenue Alerts" planRequired="growth" currentPlan={currentPlan}>
-        {!!monitoringStatus.last_evaluated_at && <RevenueAlertsPanel companyId={companyId} />}
+        {monitoringStatus.source !== "fallback" && <RevenueAlertsPanel companyId={companyId} />}
       </FeatureGate>
 
       {/* 9. REVENUE INCIDENTS — Growth+ */}
       <FeatureGate feature="Revenue Incidents" planRequired="growth" currentPlan={currentPlan}>
-        {!!monitoringStatus.last_evaluated_at && <RevenueIncidentsPanel companyId={companyId} />}
+        {monitoringStatus.source !== "fallback" && <RevenueIncidentsPanel companyId={companyId} />}
       </FeatureGate>
 
       {/* 10. REVENUE SYSTEM ACTIVITY — Growth+ */}
@@ -937,7 +937,7 @@ const delayTimer = setTimeout(() => {
       />
 
       {/* STRUCTURAL ALERTS PANEL (drift/volatility/trend) */}
-      {alerts.length > 0 && !!monitoringStatus.last_evaluated_at && (
+      {alerts.length > 0 && monitoringStatus.source !== "fallback" && (
         <AlertPanel alerts={alerts} onMarkAlertRead={onMarkAlertRead} />
       )}
 
