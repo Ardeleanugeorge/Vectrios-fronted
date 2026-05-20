@@ -153,7 +153,7 @@ function DiagnosticNudge({ companyId, monitoringSource, lastEvaluated }: {
   companyId: string | null
   monitoringSource?: string
   lastEvaluated?: string | null
-}) {
+}): JSX.Element | null {
   const [scanning, setScanning] = useState(false)
   const [scanComplete, setScanComplete] = useState(false)
   const [error, setError] = useState("")
@@ -538,28 +538,7 @@ const delayTimer = setTimeout(() => {
         <p className="text-xs text-gray-700 mt-1">{truth.subtext}{truthLossPct ? ` — ${truthLossPct}` : ""}</p>
         <p className="text-xs text-gray-600 mt-1">{truth.explanation}</p>
       </div>
-
-      {/* FULL DIAGNOSTIC NUDGE — shown only when monitoring has NEVER run
-           (no last_evaluated_at = no monitoring cycle completed yet).
-           Once monitoring runs even once, banner disappears permanently. */}
-      {(!monitoringStatus.last_evaluated_at || monitoringStatus.source === "fallback") && (
-        <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-800/40 bg-cyan-950/10">
-          <div>
-            <p className="text-sm font-semibold text-blue-600">
-              Run your first diagnostic to activate monitoring
-            </p>
-            <p className="text-xs text-gray-600 mt-0.5">
-              One scan creates your baseline — monitoring then runs automatically every 24h.
-            </p>
-          </div>
-          <Link
-            href={companyDomain ? `/?url=${encodeURIComponent(companyDomain)}` : "/"}
-            className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg transition whitespace-nowrap"
-          >
-            Run Diagnostic →
-          </Link>
-        </div>
-      )}
+      <DiagnosticNudge companyId={companyId} monitoringSource={monitoringStatus.source} lastEvaluated={monitoringStatus.last_evaluated_at} />
 
       {/* REVENUE DELTA — +$/-$/stable vs last scan */}
   {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
