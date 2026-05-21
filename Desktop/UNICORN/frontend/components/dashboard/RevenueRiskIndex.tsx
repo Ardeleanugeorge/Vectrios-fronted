@@ -134,10 +134,6 @@ export default function RevenueRiskIndex({
             ·
           </span>
           <span>70+: <span className="text-red-600">High Risk</span></span>
-          <span className="text-gray-700" aria-hidden>
-            ·
-          </span>
-          <span className="text-gray-700 px-1" aria-hidden>
             ·
           </span>
           <span className="text-gray-600">Lower is better</span>
