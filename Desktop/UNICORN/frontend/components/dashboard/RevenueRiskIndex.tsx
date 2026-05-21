@@ -125,17 +125,12 @@ export default function RevenueRiskIndex({
         )}
         {/* Visual legend — flex + separators so bands never read as one word */}
         <div className="text-[11px] text-gray-600 mb-4 mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 max-w-xl mx-auto">
-          <span>0—40: <span className="text-emerald-600">Excellent</span></span>
-          <span className="text-gray-700" aria-hidden>
-            ·
-          </span>
-          <span>40—70: <span className="text-amber-600">Moderate</span></span>
-          <span className="text-gray-700" aria-hidden>
-            ·
-          </span>
+          <span>0–40: <span className="text-emerald-600">Excellent</span></span>
+          <span className="text-gray-700" aria-hidden>·</span>
+          <span>40–70: <span className="text-amber-600">Moderate</span></span>
+          <span className="text-gray-700" aria-hidden>·</span>
           <span>70+: <span className="text-red-600">High Risk</span></span>
-            ·
-          </span>
+          <span className="text-gray-700" aria-hidden>·</span>
           <span className="text-gray-600">Lower is better</span>
         </div>
         {effectiveConfidence < 50 && (
