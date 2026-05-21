@@ -845,7 +845,7 @@ const delayTimer = setTimeout(() => {
 
       {/* 5. REVENUE ALIGNMENT STATUS — System state explanation */}
       <StructuralRiskOverview
-        riskScore={diagnostic?.risk_score || null}
+        riskScore={rii}
         alignmentScore={alignmentScore}
         riskLevel={diagnostic?.risk_level || "MODERATE"}
         trendDirection={monitoringStatus.trend_direction || "unstable"}
