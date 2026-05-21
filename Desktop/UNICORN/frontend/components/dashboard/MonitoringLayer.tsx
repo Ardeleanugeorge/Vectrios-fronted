@@ -304,7 +304,9 @@ export default function MonitoringLayer({
   const lastScan = monitoringStatus.last_evaluated_at || monitoringStatus.created_at || new Date().toISOString()
 
   // Extract RII for health indicator — diagnostic first, then monitoring structural scores fallback
-  const rii = diagnostic?.risk_score ?? ss?.rii_score ?? monitoringStatus.structural_health?.structural_health_score ?? null
+  const rii = (monitoringStatus.source === "monitoring" && ss?.rii_score != null)
+    ? ss.rii_score
+    : diagnostic?.risk_score ?? ss?.rii_score ?? monitoringStatus.structural_health?.structural_health_score ?? null
   const riskDelta = monitoringStatus.risk_delta_since_last_scan || null
   const uiState: UiState =
     monitoringStatus.ui_state_payload?.ui_state ??
