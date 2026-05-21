@@ -815,16 +815,18 @@ export default function DashboardPage() {
           <DashboardSummaryCard
             companyName={user?.company_name || null}
             monthlyLoss={null}
-            riiScore={diagnostic?.risk_score ?? monitoringStatus?.structural_scores?.rii_score ?? null}
+            riiScore={(monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null) ? monitoringStatus.structural_scores.rii_score : diagnostic?.risk_score ?? monitoringStatus?.structural_scores?.rii_score ?? null}
             riskLevel={diagnostic?.risk_level || null}
           />
           {/* REVENUE RISK INDEX - Visible when diagnostic OR monitoring structural scores exist */}
           {(() => {
             const riiScore =
-              diagnostic?.risk_score ??
-              monitoringStatus?.structural_scores?.rii_score ??
-              monitoringStatus?.structural_health?.structural_health_score ??
-              null
+              (monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null)
+                ? monitoringStatus.structural_scores.rii_score
+                : diagnostic?.risk_score ??
+                  monitoringStatus?.structural_scores?.rii_score ??
+                  monitoringStatus?.structural_health?.structural_health_score ??
+                  null
             const shouldShowRII =
               (hasDiagnostic && diagnostic) ||
               (isMonitoringActive && riiScore !== null && riiScore !== undefined)
