@@ -45,9 +45,9 @@ export default function RevenueRiskIndex({
   }
 
   const getRiskLabel = () => {
-    if (scoreClass === "HIGH") return "High Revenue Risk"
-    if (scoreClass === "MODERATE") return "Moderate Revenue Risk"
-    return "Low Revenue Risk"
+    if (scoreClass === "HIGH") return "Revenue Inefficiency Detected"
+    if (scoreClass === "MODERATE") return "Moderate Revenue Compression"
+    return "Efficient Revenue Structure"
   }
 
   /** Avoid “strong messaging” + “moderate risk” contradiction — copy tracks score band */
@@ -125,19 +125,18 @@ export default function RevenueRiskIndex({
         )}
         {/* Visual legend — flex + separators so bands never read as one word */}
         <div className="text-[11px] text-gray-600 mb-4 mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 max-w-xl mx-auto">
-          <span>0–30: <span className="text-emerald-600">Excellent</span></span>
+          <span>0—40: <span className="text-emerald-600">Excellent</span></span>
           <span className="text-gray-700" aria-hidden>
             ·
           </span>
-          <span>30–50: <span className="text-emerald-600">Strong</span></span>
+          <span>40—70: <span className="text-amber-600">Moderate</span></span>
           <span className="text-gray-700" aria-hidden>
             ·
           </span>
-          <span>50–70: <span className="text-amber-600">Inefficient</span></span>
+          <span>70+: <span className="text-red-600">High Risk</span></span>
           <span className="text-gray-700" aria-hidden>
             ·
           </span>
-          <span>70+: <span className="text-red-600">Critical</span></span>
           <span className="text-gray-700 px-1" aria-hidden>
             ·
           </span>
