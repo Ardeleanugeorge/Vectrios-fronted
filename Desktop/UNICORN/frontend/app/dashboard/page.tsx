@@ -461,7 +461,11 @@ export default function DashboardPage() {
   const loadMonitoringStatus = async (companyId: string, scanToken?: string | null) => {
     setMonitoringLoading(true)
     try {
-      const path = scanToken
+      // Only use scan_token if monitoring has never run (source=fallback)
+      // Once monitoring has real data, use monitoring RII directly
+      const currentSource = monitoringStatus?.source
+      const useToken = scanToken && (!currentSource || currentSource === "fallback")
+      const path = useToken
         ? `/monitoring/status/${companyId}?scan_token=${encodeURIComponent(scanToken)}`
         : `/monitoring/status/${companyId}`
       const response = await apiFetch(path)
