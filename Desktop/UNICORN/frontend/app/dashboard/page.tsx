@@ -842,7 +842,17 @@ export default function DashboardPage() {
             riiScore={monitoringLoading ? null : (monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null) ? monitoringStatus.structural_scores.rii_score : diagnostic?.risk_score ?? monitoringStatus?.structural_scores?.rii_score ?? null}
             riskLevel={diagnostic?.risk_level || null}
           />
-          {/* REVENUE RISK INDEX - Visible when diagnostic OR monitoring structural scores exist */}
+          {/* REVENUE RISK INDEX - Skeleton while loading, real data after */}
+          {monitoringLoading ? (
+            <div className="p-10 bg-gray-50 rounded-lg border-2 border-gray-200 mb-8 animate-pulse">
+              <div className="text-center">
+                <div className="h-3 w-24 bg-gray-200 rounded mx-auto mb-4"></div>
+                <div className="h-16 w-16 bg-gray-200 rounded-full mx-auto mb-4"></div>
+                <div className="h-4 w-48 bg-gray-200 rounded mx-auto mb-2"></div>
+                <div className="h-3 w-64 bg-gray-200 rounded mx-auto"></div>
+              </div>
+            </div>
+          ) : null}
           {(() => {
             const riiScore =
               (monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null)
