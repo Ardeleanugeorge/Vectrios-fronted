@@ -130,6 +130,7 @@ export default function DashboardPage() {
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
   const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null)
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const [monitoringLoading, setMonitoringLoading] = useState(true)
   // Company domain ΓÇö used for "Run Full Diagnostic" link pre-fill
@@ -494,6 +495,7 @@ export default function DashboardPage() {
         const data = await response.json()
         console.log("[DASHBOARD] Subscription data:", { plan: data.plan, billing_cycle: data.billing_cycle })
         // Trial users should have full access equivalent to Scale.
+        setSubscriptionStatus(data.status || null)
         if (data.billing_cycle === "trial") {
           console.log("[DASHBOARD] Setting currentPlan to 'scale' (trial has full access)")
           setCurrentPlan("scale")
@@ -797,7 +799,7 @@ export default function DashboardPage() {
     }
   }
 // Trial expired check
-  const isTrialExpired = currentPlan === null && !subscriptionLoading && monitoringStatus?.source !== undefined
+  const isTrialExpired = (currentPlan === null || subscriptionStatus === "cancelled") && !subscriptionLoading && monitoringStatus?.source !== undefined
 
   if (isTrialExpired) {
     return (
