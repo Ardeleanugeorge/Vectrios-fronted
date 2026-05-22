@@ -796,7 +796,29 @@ export default function DashboardPage() {
       default: return "UNKNOWN"
     }
   }
+// Trial expired check
+  const isTrialExpired = currentPlan === null && !subscriptionLoading && monitoringStatus?.source !== undefined
 
+  if (isTrialExpired) {
+    return (
+      <div className="page-root bg-white">
+        <DashboardHeader />
+        <main className="py-12">
+          <div className="max-w-3xl mx-auto px-6 text-center">
+            <div className="rounded-2xl border border-amber-500/40 bg-amber-50 p-10">
+              <p className="text-4xl mb-4">⏰</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">Your trial has ended</h2>
+              <p className="text-gray-600 mb-8">Upgrade to continue monitoring your revenue architecture.</p>
+              <a href="/pricing" className="inline-block px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-xl transition">
+                Upgrade to Scale — $299/mo →
+              </a>
+              <p className="text-xs text-gray-400 mt-4">Your data is safe. Upgrade anytime to restore full access.</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
   return (
     <div className="page-root bg-white">
       <DashboardHeader />
