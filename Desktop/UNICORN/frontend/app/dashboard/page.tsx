@@ -839,7 +839,7 @@ export default function DashboardPage() {
           <DashboardSummaryCard
             companyName={user?.company_name || null}
             monthlyLoss={null}
-            riiScore={(monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null) ? monitoringStatus.structural_scores.rii_score : diagnostic?.risk_score ?? monitoringStatus?.structural_scores?.rii_score ?? null}
+            riiScore={monitoringLoading ? null : (monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null) ? monitoringStatus.structural_scores.rii_score : diagnostic?.risk_score ?? monitoringStatus?.structural_scores?.rii_score ?? null}
             riskLevel={diagnostic?.risk_level || null}
           />
           {/* REVENUE RISK INDEX - Visible when diagnostic OR monitoring structural scores exist */}
