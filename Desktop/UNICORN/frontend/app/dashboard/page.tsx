@@ -852,8 +852,10 @@ export default function DashboardPage() {
                   monitoringStatus?.structural_health?.structural_health_score ??
                   null
             const shouldShowRII =
-              (hasDiagnostic && diagnostic) ||
-              (isMonitoringActive && riiScore !== null && riiScore !== undefined)
+              !monitoringLoading && (
+                (hasDiagnostic && diagnostic) ||
+                (isMonitoringActive && riiScore !== null && riiScore !== undefined)
+              )
             if (!shouldShowRII) return null
             return (
               <RevenueRiskIndex
