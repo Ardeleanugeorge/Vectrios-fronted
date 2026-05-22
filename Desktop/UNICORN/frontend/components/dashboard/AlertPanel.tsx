@@ -64,7 +64,7 @@ export default function AlertPanel({ alerts, onMarkAlertRead }: AlertPanelProps)
               {!alert.is_read && (
                 <button
                   onClick={() => onMarkAlertRead(alert.id)}
-                  className="ml-4 px-3 py-1 text-xs bg-gray-800 hover:bg-gray-100"
+                  className="ml-4 px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-md transition-colors"
                 >
                   Mark Read
                 </button>
