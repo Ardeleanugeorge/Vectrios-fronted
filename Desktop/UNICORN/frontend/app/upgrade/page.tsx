@@ -31,7 +31,7 @@ const PLAN_FEATURES: Record<string, string[]> = {
 }
 
 const PLAN_PRICE: Record<string, { monthly: number; annual: number }> = {
-  scale: { monthly: 99, annual: 79 },
+  scale: { monthly: 299, annual: 239 },
 }
 
 interface SubStatus {
