@@ -468,7 +468,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                     type="button"
                     role="menuitem"
                     onClick={handleSmartDashboard}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-100 transition"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"
                   >
                     Dashboard
                   </button>
@@ -476,7 +476,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                   <Link
                     href="/account"
                     role="menuitem"
-                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-100 transition"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"
                     onClick={() => setShowMenu(false)}
                   >
                     Account Settings
@@ -486,7 +486,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                   <Link
                     href="/upgrade"
                     role="menuitem"
-                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-100 transition"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"
                     onClick={() => setShowMenu(false)}
                   >
                     Upgrade Plan
