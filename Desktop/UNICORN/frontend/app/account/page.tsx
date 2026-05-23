@@ -1097,7 +1097,7 @@ export default function AccountPage() {
                       </div>
                       <Link
                         href="/upgrade"
-                        className="px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-100 text-gray-700 font-medium text-sm transition border border-gray-200"
+                        className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-medium text-sm transition border border-gray-200"
                       >
                         {isTrial ? 'Upgrade to Scale →' : 'View plans →'}
                       </Link>
@@ -1937,7 +1937,7 @@ export default function AccountPage() {
                   <button
                     onClick={loadCalibStatus}
                     disabled={calibRunning}
-                    className="px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-100 text-gray-700 text-sm font-medium transition disabled:opacity-50"
+                    className="px-4 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-sm font-medium transition disabled:opacity-50"
                   >
                     Refresh status
                   </button>
