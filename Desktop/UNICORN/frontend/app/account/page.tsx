@@ -853,7 +853,7 @@ export default function AccountPage() {
     { icon: "•", key: "delta",        label: "Revenue Delta Engine",      desc: "+$X/month worse vs last scan — with WHY drivers (ICP, alignment–)",  minPlan: "scale" },
     { icon: "•", key: "delta_action", label: "Delta + Action Combo",      desc: "'Fix this first' shown instantly when revenue leak increases",       minPlan: "scale" },
     { icon: "•", key: "trajectory",   label: "Risk Trajectory",           desc: "30/60/90-day forward-looking risk projections",                      minPlan: "scale" },
-    { icon: "?", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale" },
+    { icon: "⚡", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale" },
     { icon: "•", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Compare vs 500+ SaaS companies in your revenue tier",               minPlan: "scale" },
     { icon: "•", key: "arr_sim",      label: "12-Month ARR Simulation",   desc: "Model revenue trajectory with vs without fixes applied",             minPlan: "scale" },
     { icon: "•", key: "apis",         label: "GSC + GA4 Modifiers",       desc: "Real search + behavior data applied to revenue model",               minPlan: "scale" },
@@ -1452,7 +1452,7 @@ export default function AccountPage() {
                     type="email"
                     value={profileEmail || user?.email || ""}
                     readOnly
-                    className="w-full px-4 py-3 rounded-xl bg-gray-950 border border-gray-200 text-gray-600 cursor-not-allowed"
+                    className="w-full px-4 py-3 rounded-xl bg-gray-100 border border-gray-200 text-gray-600 cursor-not-allowed"
                   />
                   <p className="text-xs text-gray-600 mt-1.5">From your account. Change it on the Profile tab if needed.</p>
                 </div>
@@ -1558,7 +1558,7 @@ export default function AccountPage() {
 
               <div className="px-6 pb-6 border-t border-gray-200/80">
                 <div className="grid md:grid-cols-3 gap-5">
-                  <div className="rounded-xl border border-gray-200 bg-gray-950/40 p-4 md:col-span-1">
+                  <div className="rounded-xl border border-gray-200 bg-gray-100/40 p-4 md:col-span-1">
                     <p className="text-xs font-medium text-gray-600 uppercase tracking-wider mb-3">My tickets</p>
                     <div className="space-y-2 max-h-80 overflow-auto pr-1">
                       {supportTickets.length === 0 && (
@@ -1587,7 +1587,7 @@ export default function AccountPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-gray-200 bg-gray-950/40 p-4 md:col-span-2">
+                  <div className="rounded-xl border border-gray-200 bg-gray-100/40 p-4 md:col-span-2">
                     <p className="text-xs font-medium text-gray-600 uppercase tracking-wider mb-3">Ticket thread</p>
                     {supportThreadLoading && (
                       <p className="text-sm text-gray-600">Loading thread...</p>
@@ -1782,7 +1782,7 @@ export default function AccountPage() {
                   <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">Missing companies (not scanned in 24h)</p>
                   <div className="space-y-2 max-h-56 overflow-auto pr-1">
                     {(adminCoverage?.missing_companies || []).slice(0, 30).map((m) => (
-                      <div key={m.company_id} className="p-2 rounded-lg border border-gray-200 bg-gray-950/40 flex items-center justify-between gap-3">
+                      <div key={m.company_id} className="p-2 rounded-lg border border-gray-200 bg-gray-100/40 flex items-center justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-sm text-gray-700 truncate">{m.company_name || m.company_id}</p>
                           <p className="text-xs text-gray-600">
@@ -1991,7 +1991,7 @@ export default function AccountPage() {
                           className={`w-full text-left p-3 rounded-lg border transition ${
                             adminSelectedTicketId === t.ticket_id
                               ? "border-cyan-500/40 bg-cyan-500/10"
-                              : "border-gray-200 bg-gray-950/40 hover:border-gray-200"
+                              : "border-gray-200 bg-gray-100/40 hover:border-gray-200"
                           }`}
                         >
                           <p className="text-sm text-gray-700 truncate">{t.subject}</p>
@@ -2021,7 +2021,7 @@ export default function AccountPage() {
                         </div>
                         <div className="space-y-2 max-h-52 overflow-auto pr-1">
                           {(adminSelectedTicket.messages || []).map((m, i) => (
-                            <div key={`${m.created_at || i}-${i}`} className={`p-3 rounded-lg border ${m.author === "support" ? "bg-cyan-500/10 border-cyan-500/20" : "bg-gray-950/40 border-gray-200"}`}>
+                            <div key={`${m.created_at || i}-${i}`} className={`p-3 rounded-lg border ${m.author === "support" ? "bg-cyan-500/10 border-cyan-500/20" : "bg-gray-100/40 border-gray-200"}`}>
                               <p className="text-xs text-gray-600 mb-1">{m.author === "support" ? "Support" : "Client"}</p>
                               <p className="text-sm text-gray-700 whitespace-pre-wrap">{m.message}</p>
                             </div>
@@ -2035,7 +2035,7 @@ export default function AccountPage() {
                             maxLength={5000}
                             placeholder="Write support reply..."
                             disabled={adminSupportLoading}
-                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-950 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
                           />
                           <button
                             type="submit"
@@ -2074,7 +2074,7 @@ export default function AccountPage() {
                     <p className="text-sm text-gray-600">Select a ticket to load recent logs.</p>
                   )}
                   {adminAuditPreview.map((log, i) => (
-                    <div key={`${log.created_at || i}-${i}`} className="p-2 rounded-lg border border-gray-200 bg-gray-950/40 text-xs text-gray-700 flex items-center justify-between">
+                    <div key={`${log.created_at || i}-${i}`} className="p-2 rounded-lg border border-gray-200 bg-gray-100/40 text-xs text-gray-700 flex items-center justify-between">
                       <span>{log.action_type}</span>
                       <span className="text-gray-600">{log.created_at ? new Date(log.created_at).toLocaleString() : "—"}</span>
                     </div>
