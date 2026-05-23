@@ -951,7 +951,7 @@ export default function AccountPage() {
               </Link>
               <button
                 onClick={handleSignOut}
-                className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-gray-800 dark:hover:bg-gray-100 dark:text-gray-700 font-medium text-sm transition"
+                className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-medium text-sm transition border border-slate-300"
               >
                 Sign out
               </button>
