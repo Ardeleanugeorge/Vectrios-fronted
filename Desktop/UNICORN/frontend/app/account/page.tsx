@@ -937,7 +937,7 @@ export default function AccountPage() {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-200 border border-slate-300 text-slate-600 dark:bg-gray-800 dark:border-gray-200 dark:text-gray-600 text-xs font-medium mb-3 uppercase tracking-widest">
                 Account Settings
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-slate-900">
                 {isOwner ? "VectriOS" : (user?.company_name || "Your Account")}
               </h1>
               <p className="text-gray-600 text-sm mt-1">{user?.email}</p>
@@ -951,7 +951,7 @@ export default function AccountPage() {
               </Link>
               <button
                 onClick={handleSignOut}
-                className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-700 font-medium text-sm transition"
+                className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-gray-800 dark:hover:bg-gray-100 dark:text-gray-700 font-medium text-sm transition"
               >
                 Sign out
               </button>
@@ -992,7 +992,7 @@ export default function AccountPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition ${
                   activeTab === tab.id
-                    ? 'bg-white text-slate-900 shadow-sm border border-slate-200 dark:bg-gray-800 dark:text-gray-900 dark:border-transparent'
+                    ? 'bg-slate-800 text-white shadow-sm border border-slate-700'
                     : 'text-slate-600 hover:text-slate-900 dark:text-gray-600 dark:hover:text-gray-700'
                 }`}
               >
@@ -1044,7 +1044,7 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={profileLoading}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {profileLoading ? "Saving…" : "Save changes"}
                 </button>
@@ -1097,7 +1097,7 @@ export default function AccountPage() {
                       </div>
                       <Link
                         href="/upgrade"
-                        className="px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-700 font-medium text-sm transition border border-gray-200"
+                        className="px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-100 text-gray-700 font-medium text-sm transition border border-gray-200"
                       >
                         {isTrial ? 'Upgrade plan ?' : 'View plans ?'}
                       </Link>
@@ -1332,7 +1332,7 @@ export default function AccountPage() {
                   <button
                     type="submit"
                     disabled={calibrationLoading || !companyId}
-                    className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                    className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                   >
                     {calibrationLoading ? "Saving…" : "Save calibration"}
                   </button>
@@ -1404,7 +1404,7 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={passwordLoading}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {passwordLoading ? "Updating…" : "Change password"}
                 </button>
@@ -1477,7 +1477,7 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={generalContactLoading || !(profileEmail || user?.email)}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {generalContactLoading ? "Sending…" : "Send message"}
                 </button>
@@ -1549,7 +1549,7 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={supportLoading}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {supportLoading ? "Creating ticket..." : "Open support ticket"}
                 </button>
@@ -1633,7 +1633,7 @@ export default function AccountPage() {
                           <button
                             type="submit"
                             disabled={supportThreadLoading || !selectedTicketId}
-                            className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-xs transition"
+                            className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-xs transition"
                           >
                             Send follow-up
                           </button>
@@ -1900,7 +1900,7 @@ export default function AccountPage() {
                       <button onClick={handleAcceptCandidate} className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition">
                         Accept and activate
                       </button>
-                      <button onClick={handleRejectCandidate} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-700 font-medium text-sm transition">
+                      <button onClick={handleRejectCandidate} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-100 text-gray-700 font-medium text-sm transition">
                         Reject
                       </button>
                       <button onClick={handleRollback} className="px-4 py-2 rounded-lg bg-gray-100">
@@ -1922,7 +1922,7 @@ export default function AccountPage() {
                   <button
                     onClick={handleRunCalibration}
                     disabled={calibRunning}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                   >
                     {calibRunning ? (
                       <>
@@ -1936,7 +1936,7 @@ export default function AccountPage() {
                   <button
                     onClick={loadCalibStatus}
                     disabled={calibRunning}
-                    className="px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-700 text-sm font-medium transition disabled:opacity-50"
+                    className="px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-100 text-gray-700 text-sm font-medium transition disabled:opacity-50"
                   >
                     Refresh status
                   </button>
@@ -2039,7 +2039,7 @@ export default function AccountPage() {
                           <button
                             type="submit"
                             disabled={adminSupportLoading || !adminSelectedTicketId}
-                            className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-xs transition"
+                            className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-xs transition"
                           >
                             Send admin reply
                           </button>
@@ -2058,7 +2058,7 @@ export default function AccountPage() {
                     <p className="text-sm text-gray-600">No flags loaded.</p>
                   )}
                   {Object.entries(adminFlags).map(([k, v]) => (
-                    <div key={k} className={`text-xs rounded-lg px-3 py-1.5 border ${v ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300" : "bg-gray-800 border-gray-200 text-gray-600"}`}>
+                    <div key={k} className={`text-xs rounded-lg px-3 py-1.5 border ${v ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300" : "bg-gray-100 border-gray-200 text-gray-600"}`}>
                       {k}: <span className="font-bold">{v ? "ON" : "OFF"}</span>
                     </div>
                   ))}
