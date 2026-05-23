@@ -112,7 +112,7 @@ interface AdminMonitoringCoverage {
     last_monitoring_at?: string | null
     minutes_since_last?: number | null
     sla_band: "ok" | "warning" | "critical"
-  }>
+  }
 }
 
 export default function AccountPage() {
@@ -1065,7 +1065,7 @@ export default function AccountPage() {
                     <div className="flex items-center justify-between flex-wrap gap-4">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-2xl">
-                          {isTrial ? '?' : '?'}
+                          {isTrial ? '⏱' : '⭐'}
                         </div>
                         <div>
                           <div className="flex items-center gap-2 mb-1">
