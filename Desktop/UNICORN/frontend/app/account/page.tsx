@@ -142,6 +142,8 @@ export default function AccountPage() {
   const [calibrationArr, setCalibrationArr] = useState("")
   const [calibrationCurrentCloseRate, setCalibrationCurrentCloseRate] = useState("")
   const [calibrationTargetCloseRate, setCalibrationTargetCloseRate] = useState("")
+  const [calibrationAcv, setCalibrationAcv] = useState("")
+  const [calibrationPipeline, setCalibrationPipeline] = useState("")
   const [calibrationLoading, setCalibrationLoading] = useState(false)
   const [calibrationError, setCalibrationError] = useState("")
   const [calibrationSuccess, setCalibrationSuccess] = useState("")
@@ -414,6 +416,8 @@ export default function AccountPage() {
       setCalibrationArr(typeof data.arr === "number" ? String(Math.round(data.arr)) : "")
       setCalibrationCurrentCloseRate(typeof data.current_close_rate === "number" ? String(data.current_close_rate) : "")
       setCalibrationTargetCloseRate(typeof data.target_close_rate === "number" ? String(data.target_close_rate) : "")
+      setCalibrationAcv(typeof data.average_deal_size === "number" ? String(data.average_deal_size) : "")
+      setCalibrationPipeline(typeof data.pipeline_deals === "number" ? String(data.pipeline_deals) : "")
     } catch {}
   }
 
@@ -428,9 +432,11 @@ export default function AccountPage() {
         arr: calibrationArr.trim() ? Number(calibrationArr) : null,
         current_close_rate: calibrationCurrentCloseRate.trim() ? Number(calibrationCurrentCloseRate) : null,
         target_close_rate: calibrationTargetCloseRate.trim() ? Number(calibrationTargetCloseRate) : null,
+        average_deal_size: calibrationAcv.trim() ? Number(calibrationAcv) : null,
+        pipeline_deals: calibrationPipeline.trim() ? Number(calibrationPipeline) : null,
       }
       const res = await apiFetch(`/calibration/${companyId}`, {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       })
@@ -1307,6 +1313,43 @@ export default function AccountPage() {
                     </div>
                   </div>
 
+
+                  {/* ACV + Pipeline */}
+                  <div className="grid md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
+                        Average Contract Value (ACV)
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                        <input
+                          type="number"
+                          min={0}
+                          step="1000"
+                          value={calibrationAcv}
+                          onChange={e => setCalibrationAcv(e.target.value)}
+                          placeholder="20000"
+                          className="w-full pl-8 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1.5">Average deal size in USD</p>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
+                        Pipeline deals / year
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        step="1"
+                        value={calibrationPipeline}
+                        onChange={e => setCalibrationPipeline(e.target.value)}
+                        placeholder="50"
+                        className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500"
+                      />
+                      <p className="text-xs text-gray-600 mt-1.5">Active deals in pipeline per year</p>
+                    </div>
+                  </div>
                   {/* Impact preview */}
                   {calibrationArr && calibrationCurrentCloseRate && calibrationTargetCloseRate && (
                     <div className="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
@@ -1316,7 +1359,7 @@ export default function AccountPage() {
                         <span className="text-slate-900 dark:text-gray-900 font-semibold">
                           +{(Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)).toFixed(1)}pp
                         </span>
-                        {" "}on ${(Number(calibrationArr) / 1_000_000).toFixed(1)}M ARR ?{" "}
+                        {" "}on ${(Number(calibrationArr) / 1_000_000).toFixed(1)}M ARR —{" "}
                         <span className="text-cyan-300 font-bold">
                           ~${Math.round(Number(calibrationArr) * (Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)) / 100 / 1000)}K recoverable
                         </span>
