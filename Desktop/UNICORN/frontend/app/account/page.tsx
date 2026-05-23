@@ -934,7 +934,7 @@ export default function AccountPage() {
           {/* -- Page header ---------------------------------------------------- */}
           <div className="flex items-start justify-between mb-10 gap-4 flex-wrap">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-200 border border-slate-300 text-slate-600 dark:bg-gray-800 dark:border-gray-200 dark:text-gray-600 text-xs font-medium mb-3 uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium mb-3 uppercase tracking-widest">
                 Account Settings
               </div>
               <h1 className="text-3xl font-bold text-slate-900">
@@ -1099,7 +1099,7 @@ export default function AccountPage() {
                         href="/upgrade"
                         className="px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-100 text-gray-700 font-medium text-sm transition border border-gray-200"
                       >
-                        {isTrial ? 'Upgrade plan ?' : 'View plans ?'}
+                        {isTrial ? 'Upgrade to Scale →' : 'View plans →'}
                       </Link>
               </div>
             ) : (
@@ -1227,10 +1227,11 @@ export default function AccountPage() {
                   </div>
                   <button
                     disabled
-                    className="px-5 py-2.5 rounded-xl bg-gray-800 text-gray-600 font-medium text-sm border border-gray-200 cursor-not-allowed"
-                    title="Coming soon with Stripe integration"
+                    className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-sm border border-slate-200 transition"
+                    title="Contact support to manage billing"
+                    onClick={() => {}}
                   >
-                    Manage payment (coming soon)
+                    Manage billing → contact support
                   </button>
                 </div>
               </div>
