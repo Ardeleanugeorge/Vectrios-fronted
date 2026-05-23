@@ -123,73 +123,32 @@ export default function UpgradePage() {
     setActivatingPlan(planName)
     try {
       // Paid Scale in DB (monthly/annual) — replaces trial; persisted for GET /subscription + header cache.
-      const upRes = await apiFetch(`/subscription/${cid}/upgrade-scale`, {
+     const checkoutRes = await apiFetch(`/billing/create-checkout-session`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ billing_cycle: billing }),
+        body: JSON.stringify({ company_id: cid, billing_cycle: billing }),
       })
-      if (!upRes.ok) {
-        const err = await upRes.json().catch(() => ({}))
-        const msg = typeof err?.detail === 'string' ? err.detail : Array.isArray(err?.detail) ? err.detail.map((x: { msg?: string }) => x?.msg).filter(Boolean).join(' ') : 'Upgrade failed. Please try again.'
-        alert(msg || 'Upgrade failed. Please try again.')
+      if (!checkoutRes.ok) {
+        const err = await checkoutRes.json().catch(() => ({}))
+        alert(err?.detail || 'Could not start checkout. Please try again.')
         return
       }
-      const access = (await upRes.json()) as SubStatus
-      setSubStatus(access)
-
-      try {
-        const newCycle = access?.billing_cycle ?? billing
-        const newPlan =
-          newCycle === 'trial'
-            ? 'scale'
-            : access?.plan
-              ? String(access.plan).toLowerCase()
-              : 'scale'
-        const newDays =
-          newCycle === 'trial' && typeof access?.trial_days_left === 'number'
-            ? access.trial_days_left
-            : null
-        localStorage.setItem(
-          'subscription_cache',
-          JSON.stringify({ plan: newPlan, billingCycle: newCycle, trialDaysLeft: newDays, ts: Date.now() }),
-        )
-      } catch {
-        /* ignore */
+      const { url } = await checkoutRes.json()
+      if (url) {
+        window.location.href = url
+        return
       }
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('subscription_updated'))
-      }
-
-      // Turn on monitoring / governance; does not downgrade an existing paid sub.
-      await apiFetch(`/monitoring/activate/${cid}`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      }).catch(() => {})
-
-      const label = billing === 'annual' ? 'annual' : 'monthly'
-      setSuccessMsg(`Scale activated — ${label} billing`)
-      await new Promise((r) => setTimeout(r, 800))
-      const scanToken = (() => {
-        try {
-          const raw = sessionStorage.getItem('scan_data') || localStorage.getItem('scan_data')
-          if (!raw) return null
-          return (JSON.parse(raw) as { scan_token?: string })?.scan_token || null
-        } catch {
-          return null
-        }
-      })()
-      router.push(
-        scanToken
-          ? `/dashboard?governance=activated&token=${encodeURIComponent(scanToken)}`
-          : '/dashboard?governance=activated',
-      )
-    } catch {
-      alert('Network error. Please try again.')
+} catch (err) {
+      console.error('Checkout error:', err)
+      alert('Something went wrong. Please try again.')
+    } finally {
+      setIsActivating(false)
+      setActivatingPlan(null)
     }
-    finally { setIsActivating(false); setActivatingPlan(null) }
+     
   }
 
   // Only Scale plan available
