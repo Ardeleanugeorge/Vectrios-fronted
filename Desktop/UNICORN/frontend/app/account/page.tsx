@@ -1112,7 +1112,7 @@ export default function AccountPage() {
                         href="/upgrade"
                         className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm transition"
                 >
-                        Start free trial ?
+                        Start free trial →
                 </Link>
               </div>
             )}
