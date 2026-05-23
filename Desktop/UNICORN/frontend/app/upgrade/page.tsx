@@ -222,7 +222,7 @@ export default function UpgradePage() {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-5 uppercase tracking-widest">
               Scale — one plan
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r text-slate-900">
               {isScale ? 'You\'re on the highest plan' : 'Upgrade your monitoring'}
             </h1>
             <p className="text-gray-600 text-lg max-w-xl mx-auto">
@@ -309,7 +309,7 @@ export default function UpgradePage() {
                 </button>
                 <span className={`text-sm font-medium flex items-center gap-1.5 ${billing === 'annual' ? 'text-gray-900' : 'text-gray-600'}`}>
                   Annual
-                  <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-medium">Save 20%</span>
+                  <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-medium">Save $720/yr</span>
                 </span>
               </div>
 
