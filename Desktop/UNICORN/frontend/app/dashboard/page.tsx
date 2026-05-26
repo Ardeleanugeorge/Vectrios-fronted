@@ -319,6 +319,32 @@ export default function DashboardPage() {
             company_name: p.company_name ?? parsed.company_name ?? "",
           }
           localStorage.setItem("user_data", JSON.stringify(updated))
+          // Enterprise fix: prevent stale anonymous scan from overriding existing user company
+          try {
+            const SCAN_TTL_MS = 30 * 60 * 1000
+            const scanRaw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+            if (scanRaw) {
+              const scan = JSON.parse(scanRaw)
+              const createdAt = Number(scan?.prefill_created_at || 0)
+              const isFresh = createdAt > 0 && Date.now() - createdAt < SCAN_TTL_MS
+              // Check if user already had a company BEFORE this login
+              const prevUserRaw = localStorage.getItem("user_data")
+              const prevCompanyId = prevUserRaw ? (JSON.parse(prevUserRaw)?.company_id || null) : null
+              const isExistingUser = !!prevCompanyId
+              // Clear if: user is existing (has company) OR scan is stale
+              if (isExistingUser || !isFresh) {
+                sessionStorage.removeItem("scan_data")
+                localStorage.removeItem("scan_data")
+                sessionStorage.removeItem("diagnostic_result_full")
+                localStorage.removeItem("diagnostic_result_full")
+                sessionStorage.removeItem("diagnostic_result")
+                localStorage.removeItem("diagnostic_result")
+                sessionStorage.removeItem("diagnostic_result_partial")
+                localStorage.removeItem("diagnostic_result_partial")
+                console.log("[DASHBOARD] Cleared scan data - existing user or stale scan")
+              }
+            }
+          } catch {}
           sessionStorage.setItem("user_data", JSON.stringify(updated))
           localStorage.setItem("company_id", cid)
           sessionStorage.setItem("company_id", cid)
@@ -586,6 +612,32 @@ export default function DashboardPage() {
                   email: p.email ?? parsed.email,
                 }
                 localStorage.setItem("user_data", JSON.stringify(updated))
+          // Enterprise fix: prevent stale anonymous scan from overriding existing user company
+          try {
+            const SCAN_TTL_MS = 30 * 60 * 1000
+            const scanRaw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+            if (scanRaw) {
+              const scan = JSON.parse(scanRaw)
+              const createdAt = Number(scan?.prefill_created_at || 0)
+              const isFresh = createdAt > 0 && Date.now() - createdAt < SCAN_TTL_MS
+              // Check if user already had a company BEFORE this login
+              const prevUserRaw = localStorage.getItem("user_data")
+              const prevCompanyId = prevUserRaw ? (JSON.parse(prevUserRaw)?.company_id || null) : null
+              const isExistingUser = !!prevCompanyId
+              // Clear if: user is existing (has company) OR scan is stale
+              if (isExistingUser || !isFresh) {
+                sessionStorage.removeItem("scan_data")
+                localStorage.removeItem("scan_data")
+                sessionStorage.removeItem("diagnostic_result_full")
+                localStorage.removeItem("diagnostic_result_full")
+                sessionStorage.removeItem("diagnostic_result")
+                localStorage.removeItem("diagnostic_result")
+                sessionStorage.removeItem("diagnostic_result_partial")
+                localStorage.removeItem("diagnostic_result_partial")
+                console.log("[DASHBOARD] Cleared scan data - existing user or stale scan")
+              }
+            }
+          } catch {}
                 sessionStorage.setItem("user_data", JSON.stringify(updated))
                 localStorage.setItem("company_id", resolvedCompanyId)
                 sessionStorage.setItem("company_id", resolvedCompanyId)
