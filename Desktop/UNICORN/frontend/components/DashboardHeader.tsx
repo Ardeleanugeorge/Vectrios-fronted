@@ -197,10 +197,12 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       try {
         const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
         const local = raw ? JSON.parse(raw) as any : {}
-        const needsProfileRefresh = !local?.company_id
-        if (!needsProfileRefresh) {
+        // Enterprise fix: always verify company_id from server
+        // localStorage is only used as optimistic UI, server is source of truth
+        const needsProfileRefresh = true
+        if (local?.company_id) {
           loadSubscriptionForCompany(String(local.company_id))
-          return
+          // Continue to server refresh to verify
         }
 
         const res = await apiFetch(`/account/profile`, {
