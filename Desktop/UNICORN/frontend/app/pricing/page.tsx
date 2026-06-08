@@ -395,6 +395,28 @@ export default function PricingPage() {
       router.replace("/login")
       return
     }
+    // Check if trial already used — redirect to checkout instead
+    try {
+      const companyIdCheck = localStorage.getItem("company_id") || sessionStorage.getItem("company_id")
+      if (companyIdCheck && token) {
+        const subCheck = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscription/${companyIdCheck}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        if (subCheck.ok) {
+          const subData = await subCheck.json()
+          if (subData?.plan === "scale" && subData?.billing_cycle !== "trial") {
+            // Already paid — redirect to dashboard
+            router.replace("/dashboard")
+            return
+          }
+          if (subData?.billing_cycle === null && subData?.plan === null) {
+            // Trial expired — redirect to checkout directly
+            window.location.href = "/pricing#upgrade"
+            return
+          }
+        }
+      }
+    } catch { /* ignore */ }
     let companyId = await resolveCompanyId(token)
     if (!companyId) {
       setIsProcessing(false)
