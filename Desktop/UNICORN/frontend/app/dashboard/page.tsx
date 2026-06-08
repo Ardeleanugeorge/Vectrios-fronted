@@ -851,7 +851,7 @@ export default function DashboardPage() {
     }
   }
 // Trial expired check
-  const isTrialExpired = (currentPlan === null || currentPlan === undefined) && !subscriptionLoading && subscriptionStatus !== "active"
+  const isTrialExpired = (currentPlan === null || subscriptionStatus === "cancelled") && !subscriptionLoading && monitoringStatus?.source !== undefined
 
   if (isTrialExpired) {
     return (

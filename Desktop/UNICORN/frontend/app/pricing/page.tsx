@@ -29,39 +29,6 @@ export default function PricingPage() {
   const [isRouteTransitioning, setIsRouteTransitioning] = useState(false)
   const [pendingActivationLabel, setPendingActivationLabel] = useState("")
   const [activePlanFromQuery, setActivePlanFromQuery] = useState<string | null>(null)
-  const [trialAlreadyUsed, setTrialAlreadyUsed] = useState(false)
-
-  useEffect(() => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    const companyId = localStorage.getItem("company_id") || sessionStorage.getItem("company_id")
-    if (!token || !companyId) return
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscription/${companyId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data && data.plan === null && data.billing_cycle === null) {
-          setTrialAlreadyUsed(true)
-        }
-      })
-      .catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    const companyId = localStorage.getItem("company_id") || sessionStorage.getItem("company_id")
-    if (!token || !companyId) return
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscription/${companyId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data && data.plan === null && data.billing_cycle === null) {
-          setTrialAlreadyUsed(true)
-        }
-      })
-      .catch(() => {})
-  }, [])
   const [showActivatedBanner, setShowActivatedBanner] = useState(false)
   const [preparingAutoResume, setPreparingAutoResume] = useState<boolean>(() => {
     if (typeof window === "undefined") return false
@@ -428,28 +395,6 @@ export default function PricingPage() {
       router.replace("/login")
       return
     }
-    // Check if trial already used — redirect to checkout instead
-    try {
-      const companyIdCheck = localStorage.getItem("company_id") || sessionStorage.getItem("company_id")
-      if (companyIdCheck && token) {
-        const subCheck = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscription/${companyIdCheck}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        if (subCheck.ok) {
-          const subData = await subCheck.json()
-          if (subData?.plan === "scale" && subData?.billing_cycle !== "trial") {
-            // Already paid — redirect to dashboard
-            router.replace("/dashboard")
-            return
-          }
-          if (subData?.billing_cycle === null && subData?.plan === null) {
-            // Trial expired — redirect to checkout directly
-            window.location.href = "/pricing#upgrade"
-            return
-          }
-        }
-      }
-    } catch { /* ignore */ }
     let companyId = await resolveCompanyId(token)
     if (!companyId) {
       setIsProcessing(false)
@@ -684,27 +629,15 @@ export default function PricingPage() {
             <p className="text-gray-200 text-sm mb-6">
               Every trial includes the full Scale playbook so you can see the complete recovery path — not a watered-down demo.
             </p>
-            {trialAlreadyUsed ? (
-              <button
-                onClick={() => { void handleSelectPlan("Scale") }}
-                disabled={isProcessing}
-                className={`px-10 py-3 font-semibold rounded-lg transition ${
-                  isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
-                }`}
-              >
-                Upgrade to Scale &mdash; $299/mo
-              </button>
-            ) : (
-              <button
-                onClick={handleTrial}
-                disabled={isProcessing}
-                className={`px-10 py-3 font-semibold rounded-lg transition ${
-                  isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
-                }`}
-              >
-                Start 14-day free trial
-              </button>
-            )}
+            <button
+              onClick={handleTrial}
+              disabled={isProcessing}
+              className={`px-10 py-3 font-semibold rounded-lg transition ${
+                isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
+              }`}
+            >
+              Start 14-day free trial
+            </button>
             <p className="text-xs text-gray-200 mt-3 font-medium">No charge today · cancel anytime · full access in under 10 minutes</p>
           </div>
         </div>
