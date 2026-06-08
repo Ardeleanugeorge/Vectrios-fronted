@@ -30,7 +30,39 @@ export default function PricingPage() {
   const [pendingActivationLabel, setPendingActivationLabel] = useState("")
   const [activePlanFromQuery, setActivePlanFromQuery] = useState<string | null>(null)
   const [trialAlreadyUsed, setTrialAlreadyUsed] = useState(false)
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    const companyId = localStorage.getItem("company_id") || sessionStorage.getItem("company_id")
+    if (!token || !companyId) return
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscription/${companyId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && data.plan === null && data.billing_cycle === null) {
+          setTrialAlreadyUsed(true)
+        }
+      })
+      .catch(() => {})
+  }, [])
   const [trialAlreadyUsed, setTrialAlreadyUsed] = useState(false)
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+    const companyId = localStorage.getItem("company_id") || sessionStorage.getItem("company_id")
+    if (!token || !companyId) return
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/subscription/${companyId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && data.plan === null && data.billing_cycle === null) {
+          setTrialAlreadyUsed(true)
+        }
+      })
+      .catch(() => {})
+  }, [])
   const [showActivatedBanner, setShowActivatedBanner] = useState(false)
   const [preparingAutoResume, setPreparingAutoResume] = useState<boolean>(() => {
     if (typeof window === "undefined") return false
