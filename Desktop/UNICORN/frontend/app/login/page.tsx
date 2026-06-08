@@ -199,7 +199,8 @@ export default function LoginPage() {
               sub?.has_full_access === true ||
               (!!plan &&
                 (sub?.has_active_subscription === true ||
-                  sub?.is_trial_active === true))
+                  sub?.is_trial_active === true)) ||
+              (!!companyIdForSub && sub !== null)
           }
         } catch {
           /* ignore */
