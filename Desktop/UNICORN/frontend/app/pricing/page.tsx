@@ -29,6 +29,8 @@ export default function PricingPage() {
   const [isRouteTransitioning, setIsRouteTransitioning] = useState(false)
   const [pendingActivationLabel, setPendingActivationLabel] = useState("")
   const [activePlanFromQuery, setActivePlanFromQuery] = useState<string | null>(null)
+  const [trialAlreadyUsed, setTrialAlreadyUsed] = useState(false)
+  const [trialAlreadyUsed, setTrialAlreadyUsed] = useState(false)
   const [showActivatedBanner, setShowActivatedBanner] = useState(false)
   const [preparingAutoResume, setPreparingAutoResume] = useState<boolean>(() => {
     if (typeof window === "undefined") return false
@@ -651,15 +653,27 @@ export default function PricingPage() {
             <p className="text-gray-200 text-sm mb-6">
               Every trial includes the full Scale playbook so you can see the complete recovery path — not a watered-down demo.
             </p>
-            <button
-              onClick={handleTrial}
-              disabled={isProcessing}
-              className={`px-10 py-3 font-semibold rounded-lg transition ${
-                isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
-              }`}
-            >
-              Start 14-day free trial
-            </button>
+            {trialAlreadyUsed ? (
+              <button
+                onClick={() => { void handleSelectPlan("Scale") }}
+                disabled={isProcessing}
+                className={`px-10 py-3 font-semibold rounded-lg transition ${
+                  isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
+                }`}
+              >
+                Upgrade to Scale &mdash; $299/mo
+              </button>
+            ) : (
+              <button
+                onClick={handleTrial}
+                disabled={isProcessing}
+                className={`px-10 py-3 font-semibold rounded-lg transition ${
+                  isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
+                }`}
+              >
+                Start 14-day free trial
+              </button>
+            )}
             <p className="text-xs text-gray-200 mt-3 font-medium">No charge today · cancel anytime · full access in under 10 minutes</p>
           </div>
         </div>
