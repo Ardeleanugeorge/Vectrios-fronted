@@ -863,9 +863,26 @@ export default function DashboardPage() {
               <p className="text-4xl mb-4">⏰</p>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">Your trial has ended</h2>
               <p className="text-gray-600 mb-8">Upgrade to continue monitoring your revenue architecture.</p>
-              <a href="/pricing?from=trial_expired" className="inline-block px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-xl transition">
+              <button
+                onClick={async () => {
+                  const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+                  const companyId = localStorage.getItem("company_id") || sessionStorage.getItem("company_id")
+                  if (!token || !companyId) { window.location.href = "/login"; return; }
+                  try {
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/billing/create-checkout-session`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                      body: JSON.stringify({ company_id: companyId, billing_cycle: "monthly" })
+                    })
+                    const data = await res.json()
+                    if (data?.checkout_url) { window.location.href = data.checkout_url; }
+                    else { window.location.href = "/pricing"; }
+                  } catch { window.location.href = "/pricing"; }
+                }}
+                className="inline-block px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-xl transition"
+              >
                 Upgrade to Scale — $299/mo →
-              </a>
+              </button>
               <p className="text-xs text-gray-400 mt-4">Your data is safe. Upgrade anytime to restore full access.</p>
             </div>
           </div>
