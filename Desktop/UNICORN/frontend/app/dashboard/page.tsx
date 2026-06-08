@@ -875,7 +875,7 @@ export default function DashboardPage() {
                       body: JSON.stringify({ company_id: companyId, billing_cycle: "monthly" })
                     })
                     const data = await res.json()
-                    if (data?.checkout_url) { window.location.href = data.checkout_url; }
+                    if (data?.checkout_url || data?.url) { window.location.href = data.checkout_url || data.url; }
                     else { window.location.href = "/pricing"; }
                   } catch { window.location.href = "/pricing"; }
                 }}
