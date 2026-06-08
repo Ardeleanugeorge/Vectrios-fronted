@@ -851,7 +851,7 @@ export default function DashboardPage() {
     }
   }
 // Trial expired check
-  const isTrialExpired = (currentPlan === null || subscriptionStatus === "cancelled") && !subscriptionLoading && monitoringStatus?.source !== undefined
+  const isTrialExpired = (currentPlan === null || currentPlan === undefined) && !subscriptionLoading
 
   if (isTrialExpired) {
     return (
@@ -863,7 +863,7 @@ export default function DashboardPage() {
               <p className="text-4xl mb-4">⏰</p>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">Your trial has ended</h2>
               <p className="text-gray-600 mb-8">Upgrade to continue monitoring your revenue architecture.</p>
-              <a href="/pricing" className="inline-block px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-xl transition">
+              <a href="/pricing?from=trial_expired" className="inline-block px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-xl transition">
                 Upgrade to Scale — $299/mo →
               </a>
               <p className="text-xs text-gray-400 mt-4">Your data is safe. Upgrade anytime to restore full access.</p>

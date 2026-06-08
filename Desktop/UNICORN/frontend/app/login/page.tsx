@@ -207,7 +207,8 @@ export default function LoginPage() {
       }
 
       // Existing paying / trial customer ? dashboard first (skip resume scan + scan-results nudge)
-      if (hasActivePlan) {
+      // Also send trial-expired users to dashboard (they see upgrade banner there)
+      if (hasActivePlan || companyIdForSub) {
         router.push("/dashboard")
         return
       }
