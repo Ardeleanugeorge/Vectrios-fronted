@@ -46,7 +46,6 @@ export default function PricingPage() {
       })
       .catch(() => {})
   }, [])
-  const [trialAlreadyUsed, setTrialAlreadyUsed] = useState(false)
 
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
