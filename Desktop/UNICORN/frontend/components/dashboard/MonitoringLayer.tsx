@@ -866,7 +866,6 @@ const delayTimer = setTimeout(() => {
         diagnostic={diagnostic}
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
         structuralScoresFallback={ss ?? undefined}
-        isFirstScan={isFirstScan}
       />
 
       {/* 7. RECENT STRUCTURAL SIGNALS — Growth+ */}
