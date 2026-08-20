@@ -531,6 +531,16 @@ export default function ActionableInsights({
           </ul>
         </div>
 
+        {/* GA4 not connected banner */}
+        {!first.behavioral_source && (
+          <div className="mb-4 px-4 py-3 rounded-lg bg-amber-950/20 border border-amber-700/40 flex items-start gap-3">
+            <span className="text-amber-400 text-lg mt-0.5">⚡</span>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-amber-400 mb-1">Connect GA4 for personalized fixes</p>
+              <p className="text-sm text-gray-400 leading-snug">These recommendations are based on structural analysis only. Connect Google Analytics 4 to unlock page-specific fixes with real exit rate and conversion data.</p>
+            </div>
+          </div>
+        )}
         {/* 3. Fix #1 — "Start here" callout + card */}
         <div className="mb-4">
           {/* START HERE banner */}
