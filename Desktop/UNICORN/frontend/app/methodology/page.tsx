@@ -132,7 +132,7 @@ export default function MethodologyPage() {
 
         {/* CTA */}
         <div className="text-center mb-16">
-          <Link href="/qualify" className="inline-block bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-8 py-4 rounded-xl text-base transition">
+          <Link href="/" className="inline-block bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-8 py-4 rounded-xl text-base transition">
             Detect hidden revenue loss →
           </Link>
           <p className="text-gray-400 text-sm mt-3">Automated scan · No credit card required</p>
