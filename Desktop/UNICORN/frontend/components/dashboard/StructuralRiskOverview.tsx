@@ -12,6 +12,7 @@ interface StructuralRiskOverviewProps {
   suppressTrend?: boolean
   /** True when volatility banner / critical alerts are active — reconciles trend copy with “structural volatility” */
   volatileSignalActive?: boolean
+  isFirstScan?: boolean
 }
 
 export default function StructuralRiskOverview({
@@ -23,6 +24,7 @@ export default function StructuralRiskOverview({
   riskDelta,
   suppressTrend = false,
   volatileSignalActive = false,
+  isFirstScan = false,
 }: StructuralRiskOverviewProps) {
   const getTrendColor = (trend: string) => {
     switch (trend) {
@@ -120,25 +122,35 @@ export default function StructuralRiskOverview({
         {!suppressTrend && (
           <div>
             <p className="text-sm text-gray-600 mb-2 uppercase tracking-wide">Trend Signal</p>
-            <p className={`text-2xl font-semibold ${getTrendColor(trendDirection)}`}>
-              {getTrendLabel(trendDirection)}
-              {riskDelta !== undefined && riskDelta !== null && riskDelta !== 0 && (
-                <span className="text-lg ml-2">
-                  ({riskDelta > 0 ? "+" : ""}{riskDelta.toFixed(1)})
-                </span>
-              )}
-            </p>
-            {getTrendSubtext(trendDirection) && (
-              <p className="text-xs text-gray-600 mt-1">{getTrendSubtext(trendDirection)}</p>
+            {isFirstScan ? (
+              <p className="text-sm text-gray-400 italic">Trend available after 24h monitoring — first scan complete.</p>
+            ) : (
+              <>
+                <p className={`text-2xl font-semibold ${getTrendColor(trendDirection)}`}>
+                  {getTrendLabel(trendDirection)}
+                  {riskDelta !== undefined && riskDelta !== null && riskDelta !== 0 && (
+                    <span className="text-lg ml-2">
+                      ({riskDelta > 0 ? "+" : ""}{riskDelta.toFixed(1)})
+                    </span>
+                  )}
+                </p>
+                {getTrendSubtext(trendDirection) && (
+                  <p className="text-xs text-gray-600 mt-1">{getTrendSubtext(trendDirection)}</p>
+                )}
+              </>
             )}
           </div>
         )}
 
         <div>
           <p className="text-sm text-gray-600 mb-2 uppercase tracking-wide">Drift Detection</p>
-          <p className={`text-2xl font-semibold ${getDriftColor(driftStatus)}`}>
-            {getDriftLabel(driftStatus)}
-          </p>
+          {isFirstScan ? (
+            <p className="text-sm text-gray-400 italic">Drift detection active — first comparison available after next scan.</p>
+          ) : (
+            <p className={`text-2xl font-semibold ${getDriftColor(driftStatus)}`}>
+              {getDriftLabel(driftStatus)}
+            </p>
+          )}
         </div>
       </div>
 

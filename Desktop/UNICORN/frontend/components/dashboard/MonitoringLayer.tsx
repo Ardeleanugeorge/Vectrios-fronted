@@ -308,6 +308,12 @@ export default function MonitoringLayer({
     ? ss.rii_score
     : diagnostic?.risk_score ?? ss?.rii_score ?? monitoringStatus.structural_health?.structural_health_score ?? null
   const riskDelta = monitoringStatus.risk_delta_since_last_scan || null
+  // Enterprise: detect first scan — no history to compare yet
+  const isFirstScan = (
+    monitoringStatus.risk_delta_since_last_scan === null &&
+    (monitoringStatus.recent_drift_events || []).length === 0 &&
+    monitoringStatus.baseline_assessment_id === monitoringStatus.last_assessment_id
+  )
   const uiState: UiState =
     monitoringStatus.ui_state_payload?.ui_state ??
     (rii !== null && rii < 40 ? "low" : rii !== null && rii < 70 ? "medium" : "high")
@@ -853,6 +859,7 @@ const delayTimer = setTimeout(() => {
         volatileSignalActive={monitoringStatus.volatility_classification === "high" || hasCriticalAlerts}
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
         suppressTrend={zeroDelta === true}
+        isFirstScan={isFirstScan}
       />
 
       {/* 6. REVENUE-STAGE ALIGNMENT MAP — Diagnostic breakdown (with backend structural_scores fallback) */}
@@ -860,6 +867,7 @@ const delayTimer = setTimeout(() => {
         diagnostic={diagnostic}
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
         structuralScoresFallback={ss ?? undefined}
+        isFirstScan={isFirstScan}
       />
 
       {/* 7. RECENT STRUCTURAL SIGNALS — Growth+ */}

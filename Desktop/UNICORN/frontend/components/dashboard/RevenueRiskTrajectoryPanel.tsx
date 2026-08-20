@@ -80,7 +80,7 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
     return (
       <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
         <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Revenue Risk Trajectory</h2>
-        <p className="text-sm text-gray-600">Insufficient data for trajectory calculation.</p>
+        <p className="text-sm text-gray-500 italic">Trajectory builds after 3+ monitoring cycles. Check back tomorrow for your first trend projection.</p>
       </div>
     )
   }
