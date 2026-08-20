@@ -311,8 +311,7 @@ export default function MonitoringLayer({
   // Enterprise: detect first scan — no history to compare yet
   const isFirstScan = (
     monitoringStatus.risk_delta_since_last_scan === null &&
-    (monitoringStatus.recent_drift_events || []).length === 0 &&
-    monitoringStatus.baseline_assessment_id === monitoringStatus.last_assessment_id
+    (monitoringStatus.recent_drift_events || []).length === 0
   )
   const uiState: UiState =
     monitoringStatus.ui_state_payload?.ui_state ??
