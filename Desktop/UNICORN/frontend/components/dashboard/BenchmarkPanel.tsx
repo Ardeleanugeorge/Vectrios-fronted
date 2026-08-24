@@ -84,7 +84,7 @@ function MetricRow({ label, data, higherIsBetter }: {
         <div className="flex items-center gap-2">
           <span className={`text-xs font-semibold ${rankColor}`}>{rankText}</span>
           <span className="text-[10px] text-gray-600 tabular-nums">
-            {ordinal(data.percentile_rank)} pct
+            Better than {ordinal(data.percentile_rank)} of companies
           </span>
         </div>
       </div>
