@@ -237,7 +237,7 @@ export default function Home() {
 
           {/* -- SCAN BOX -- */}
           <form onSubmit={handleScan} className="max-w-xl mx-auto mb-3">
-            <div className="flex flex-col sm:flex-row items-stretch bg-gray-50 border border-gray-200 rounded-xl overflow-hidden focus-within:border-indigo-600 transition">
+            <div className="flex flex-col sm:flex-row items-stretch bg-white border border-gray-300 rounded-xl overflow-hidden focus-within:border-indigo-600 transition shadow-sm">
               <div className="flex items-center flex-1">
                 <span className="pl-4 text-gray-500 text-sm select-none shrink-0">https://</span>
                 <input
