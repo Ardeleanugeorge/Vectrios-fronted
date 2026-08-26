@@ -67,11 +67,11 @@ const SAAS_MEDIAN_RII = 56   // benchmark reference shown to user
 
 function RiskBadge({ level }: { level: string }) {
   if (level?.includes("High"))
-    return <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-sm font-semibold border border-red-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
+    return <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold border border-red-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
   if (level?.includes("Moderate"))
-    return <span className="px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 text-sm font-semibold border border-orange-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
+    return <span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-semibold border border-orange-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
   if (level?.includes("Blocked"))
-    return <span className="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-sm font-semibold border border-red-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
+    return <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold border border-red-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
   return <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-semibold border border-emerald-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
 }
 
@@ -80,8 +80,8 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   if (status === "blocked") {
     const isRateLimited = reason === "rate_limit"
     return (
-      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20">
-        <p className="text-red-400 font-semibold text-sm mb-1">
+      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-gray-50 border border-gray-200">
+        <p className="text-gray-700 font-semibold text-sm mb-1">
           {isRateLimited ? "Scan rate-limited by the site" : "Blocked by site protection"}
         </p>
         <p className="text-xs text-gray-600">
@@ -115,8 +115,8 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   // Failed status
   if (status === "failed") {
     return (
-      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20">
-        <p className="text-red-400 font-semibold text-sm mb-1">
+      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-gray-50 border border-gray-200">
+        <p className="text-gray-700 font-semibold text-sm mb-1">
           Scan failed
         </p>
         <p className="text-xs text-gray-600">
@@ -912,7 +912,7 @@ function ScanResultsContent() {
   if (error) return (
     <div className="page-root flex items-center justify-center">
       <div className="text-center max-w-md">
-        <p className="text-red-400 mb-4">{error}</p>
+        <p className="text-gray-700 mb-4">{error}</p>
         <Link href={PUBLIC_HOME_URL} className="text-indigo-500 hover:text-blue-600">Run a new scan</Link>
       </div>
     </div>
@@ -1002,7 +1002,7 @@ function ScanResultsContent() {
           }`}
         >
           {!wideLayout && !isBlocked && financialImpact && (
-            <div className="mb-6 p-4 rounded-xl bg-orange-50 border border-orange-200 text-left">
+            <div className="mb-6 p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-left">
               <p className="text-lg font-semibold text-gray-900 leading-snug mb-2">
                 Baseline Architecture Scan Complete
               </p>
@@ -1012,7 +1012,7 @@ function ScanResultsContent() {
             </div>
           )}
           {!wideLayout && !isBlocked && !financialImpact && (
-            <div className="mb-6 p-4 rounded-xl bg-orange-50 border border-orange-200 text-left">
+            <div className="mb-6 p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-left">
               <p className="text-lg font-semibold text-gray-900 leading-snug">
                 Baseline Architecture Scan Complete
               </p>
