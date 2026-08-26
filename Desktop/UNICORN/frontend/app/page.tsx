@@ -327,7 +327,7 @@ export default function Home() {
             Your dashboard shows the result.
           </h2>
           <p className="text-2xl text-cyan-600 font-semibold mb-8">
-            Your GTM messaging is where it starts.
+            Your GTM messaging is where conversion starts.
           </p>
           <p className="text-xl text-gray-700 mb-6">Signals of Unmonitored Messaging Drift:</p>
           <ul className="space-y-4 text-lg text-gray-700 mb-8 ml-6">
