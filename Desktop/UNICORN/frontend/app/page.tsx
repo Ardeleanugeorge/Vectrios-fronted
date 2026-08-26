@@ -421,12 +421,12 @@ export default function Home() {
               <div className="bg-red-50 rounded-lg p-4 border border-red-200">
                 <p className="text-xs text-gray-500 mb-1">ARR at Risk</p>
                 <p className="text-2xl font-bold text-red-500">$287K</p>
-                <p className="text-xs text-gray-500 mt-1">Annual exposure estimate</p>
+                <p className="text-xs text-gray-700 mt-1">Annual exposure estimate</p>
               </div>
               <div className="bg-white rounded-lg p-4 border border-gray-200">
                 <p className="text-xs text-gray-500 mb-1">Close Rate Impact</p>
                 <p className="text-2xl font-bold text-orange-500">-1.4%</p>
-                <p className="text-xs text-gray-500 mt-1">Estimated compression</p>
+                <p className="text-xs text-gray-700 mt-1">Estimated compression</p>
               </div>
               <div className="bg-white rounded-lg p-4 border border-gray-200">
                 <p className="text-xs text-gray-500 mb-1">Primary Risk Driver</p>
@@ -546,7 +546,7 @@ export default function Home() {
             <p className="text-sm text-gray-500">
               Takes 30 seconds:
             </p>
-            <p className="text-sm text-gray-500 mt-3">
+            <p className="text-sm text-gray-600 mt-3">
               No credit card required
             </p>
           </div>
