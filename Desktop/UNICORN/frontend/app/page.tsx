@@ -355,8 +355,7 @@ export default function Home() {
             </li>
           </ul>
           <p className="text-lg text-gray-700 leading-relaxed mb-2">
-            None of this triggers alerts. It quietly reduces conversion every week.
-          </p>
+            Standard analytics tools have no visibility into structural messaging drift. VectriOS provides the monitoring layer that surfaces these patterns early.</p>
           <p className="text-lg text-cyan-600 font-semibold mt-4">
             VectriOS detects the structural cause — before it costs another quarter.
           </p>
@@ -514,11 +513,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4 text-slate-900">Continuous revenue monitoring</h2>
           <p className="text-lg text-gray-600 mb-8">
-            Messaging drift doesn&apos;t happen once.
-            It keeps happening as your product, market, and positioning evolve.
-            Without monitoring, it compounds silently for weeks before it shows in pipeline.
-            We catch it early.
-          </p>
+            Messaging structural drift is a continuous process. As products evolve, markets shift, and competitors reposition, structural integrity requires continuous monitoring — not periodic audits.</p>
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 mb-6">
             <ul className="space-y-4 text-lg text-gray-700">
               <li className="flex items-start gap-3">
