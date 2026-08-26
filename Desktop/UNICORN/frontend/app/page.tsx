@@ -357,8 +357,7 @@ export default function Home() {
           <p className="text-lg text-gray-700 leading-relaxed mb-2">
             Standard analytics tools have no visibility into structural messaging drift. VectriOS provides the monitoring layer that surfaces these patterns early.</p>
           <p className="text-lg text-cyan-600 font-semibold mt-4">
-            VectriOS detects the structural cause — before it costs another quarter.
-          </p>
+            
         </div>
       </section>
 
