@@ -1327,22 +1327,22 @@ function ScanResultsContent() {
                     </ul>
                   </div>
                   <div className="max-w-3xl mb-6">
-                    <p className="text-sm font-semibold text-red-300">
+                    <p className="text-sm font-semibold text-gray-700">
                       {impact && mLow !== null && mHigh !== null
                         ? `Unmonitored structural drift compounds into an estimated ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}.`
                         : "Structural messaging drift compounds into measurable pipeline compression over time."}
                     </p>
                     <p className="text-sm text-gray-600 mt-1">
-                      Most teams don&apos;t notice this until pipeline slows down.
+                      Structural monitoring provides early detection before pipeline metrics reflect the impact.
                     </p>
                   </div>
                   <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-1">Preview of your recovery model</p>
                     <p className="text-[11px] text-gray-600 mb-3">Based on 500+ SaaS revenue architectures</p>
                     <div className="grid sm:grid-cols-3 gap-3">
-                      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-                        <p className="text-[10px] uppercase tracking-wider text-red-600 mb-1">Annual revenue at risk</p>
-                        <p className="text-2xl font-bold text-red-600">
+                      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Annual revenue at risk</p>
+                        <p className="text-2xl font-bold text-gray-900">
                           {impact ? `~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year` : "Full modeled loss available after unlock"}
                         </p>
                         <p className="text-[11px] text-red-500 mt-1">Modeled annual downside</p>
