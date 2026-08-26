@@ -523,15 +523,15 @@ export default function Home() {
             <ul className="space-y-4 text-lg text-gray-700">
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-2 shrink-0" />
-                Your ICP becomes less clear
+                ICP targeting precision degrades as messaging evolves
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-2 shrink-0" />
-                Your positioning weakens
+                Positioning coherence drifts across pages and campaigns
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-2 shrink-0" />
-                Your proof stops converting
+                Conversion anchors lose alignment with current buyer expectations
               </li>
             </ul>
           </div>
