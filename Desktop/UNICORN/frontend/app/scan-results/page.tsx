@@ -1004,7 +1004,7 @@ function ScanResultsContent() {
           {!wideLayout && !isBlocked && financialImpact && (
             <div className="mb-6 p-4 rounded-xl bg-orange-50 border border-orange-200 text-left">
               <p className="text-lg font-semibold text-gray-900 leading-snug mb-2">
-                Your website is silently losing revenue right now
+                Baseline Architecture Scan Complete
               </p>
               <p className="text-base text-orange-700 font-semibold">
                 Estimated impact: {modeledAnnualLossLabel} at risk
@@ -1014,7 +1014,7 @@ function ScanResultsContent() {
           {!wideLayout && !isBlocked && !financialImpact && (
             <div className="mb-6 p-4 rounded-xl bg-orange-50 border border-orange-200 text-left">
               <p className="text-lg font-semibold text-gray-900 leading-snug">
-                Your website is silently losing revenue right now
+                Baseline Architecture Scan Complete
               </p>
               <p className="text-sm text-gray-600 mt-1">Loading model from your scan…</p>
             </div>
@@ -1192,11 +1192,11 @@ function ScanResultsContent() {
             </div>
             <div className="space-y-3">
               <LockedInsight label="Estimated ARR at Risk" />
-              <LockedInsight label="Close Rate Compression" />
-              <LockedInsight label="Recovery Potential (Annual)" />
+              <LockedInsight label="Algorithmic Close Rate Compression Estimate" />
+              <LockedInsight label="Velocity Recovery Target (12-Month Rolling)" />
               <LockedInsight label="Revenue Trajectory (12 months)" />
-              <LockedInsight label="Root Cause Analysis" />
-              <LockedInsight label="Benchmark vs. Industry Peers" />
+              <LockedInsight label="Structural Root Cause & Page-Level Breakdown" />
+              <LockedInsight label="SaaS Architecture Index Peer Comparison (Cohorts)" />
             </div>
           </div>
         )}
@@ -1260,7 +1260,7 @@ function ScanResultsContent() {
               onClick={handleUnlock}
               className="px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
             >
-              Unlock revenue compression analysis
+              Activate Continuous Drift Monitoring
             </button>
             <p className="text-xs text-gray-600 mt-3 max-w-md mx-auto text-center leading-relaxed">
               Revenue leakage compounds weekly without intervention · Takes 30 seconds
@@ -1553,7 +1553,7 @@ function ScanResultsContent() {
                       onClick={handleUnlock}
                       className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                     >
-                      Unlock revenue compression analysis
+                      Activate Continuous Drift Monitoring
                     </button>
                     <p className="text-xs text-gray-600 mt-3">
                       Takes 30 seconds – Instant access – No spam
