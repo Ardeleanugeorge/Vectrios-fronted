@@ -548,12 +548,7 @@ export default function Home() {
             <p className="text-sm text-gray-500">
               Takes 30 seconds:
             </p>
-            <ul className="mt-2 space-y-1 text-sm text-gray-500">
-              <li>Get your baseline risk score</li>
-              <li>See where revenue is leaking</li>
-              <li>Start tracking drift weekly</li>
-            </ul>
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-gray-500 mt-3">
               No credit card required
             </p>
           </div>
