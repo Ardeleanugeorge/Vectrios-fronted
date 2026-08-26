@@ -272,7 +272,7 @@ export default function Home() {
           <div className="mb-4">
             
             <p className="text-xs text-gray-500 mt-2">
-              Monitoring starts after baseline is created for your domain.
+              
             </p>
           </div>
           {scanning && (
@@ -285,7 +285,7 @@ export default function Home() {
               Takes 30 seconds. No signup required for baseline report.
             </p>
             <p className="text-gray-500 leading-relaxed border-t border-slate-200 dark:border-gray-200/80 pt-3">
-              Get your baseline risk score, identify conversion compression points, and track drift weekly.
+              
             </p>
           </div>
 
