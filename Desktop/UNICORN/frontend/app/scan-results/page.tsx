@@ -1295,7 +1295,7 @@ function ScanResultsContent() {
             className="p-6 sm:p-8 lg:p-10 bg-white rounded-xl border border-gray-200 shadow-sm mb-8"
           >
             <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 text-center lg:text-left">
-              Revenue recovery workspace initialized
+              Structural Diagnostic Complete
             </p>
             {(() => {
               const impact = financialImpact
@@ -1329,8 +1329,8 @@ function ScanResultsContent() {
                   <div className="max-w-3xl mb-6">
                     <p className="text-sm font-semibold text-red-300">
                       {impact && mLow !== null && mHigh !== null
-                        ? `Every month this goes unfixed, you're losing another ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}.`
-                        : "Every month this goes unfixed, revenue leakage continues to compound."}
+                        ? `Unmonitored structural drift compounds into an estimated ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}.`
+                        : "Structural messaging drift compounds into measurable pipeline compression over time."}
                     </p>
                     <p className="text-sm text-gray-600 mt-1">
                       Most teams don&apos;t notice this until pipeline slows down.
@@ -1499,7 +1499,7 @@ function ScanResultsContent() {
                 href="/pricing?from=scan&focus=recovery"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
-                  Start 14-day monitoring trial
+                  Activate Continuous Drift Monitoring
                 </Link>
               </div>
             ) : (
