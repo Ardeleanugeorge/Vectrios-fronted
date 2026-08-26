@@ -594,7 +594,7 @@ export default function PricingPage() {
       <main className="max-w-6xl mx-auto px-6 py-12">
         {scanMonthlyLoss && (
           <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-300 text-red-800 text-sm text-center font-medium">
-            Based on your scan, you&apos;re losing approximately{" "}
+            ✓ Baseline successfully established. Your 14-day tracking configuration is ready.{" "}
             <span className="font-bold text-red-700">
               {formatCurrency(scanMonthlyLoss.low)}–{formatCurrency(scanMonthlyLoss.high)}/month
             </span>
@@ -614,7 +614,7 @@ export default function PricingPage() {
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-3">Your recovery plan is ready</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Your scan identified structural revenue leakage. Start 14 days of continuous monitoring to validate, refine, and recover it.
+            Structural baseline complete. Activate continuous monitoring to track drift, detect compression, and recover pipeline velocity.
           </p>
         </div>
 
@@ -623,7 +623,7 @@ export default function PricingPage() {
         <div className="max-w-2xl mx-auto mb-12">
           <div className="p-7 bg-gradient-to-br from-cyan-950/40 to-[#111827] rounded-2xl border border-blue-200 text-center">
             <p className="text-cyan-200/90 font-semibold mb-2 text-lg">
-              Try risk-free — recover your first $50K in lost revenue
+              Activate Revenue Architecture Monitoring
             </p>
             <h2 className="text-2xl font-bold mb-2">14-day trial — full Scale access</h2>
             <p className="text-gray-200 text-sm mb-6">
@@ -638,7 +638,7 @@ export default function PricingPage() {
             >
               Start 14-day free trial
             </button>
-            <p className="text-xs text-gray-200 mt-3 font-medium">No charge today · cancel anytime · full access in under 10 minutes</p>
+            <p className="text-xs text-gray-300 mt-3 font-medium">No charge today · cancel anytime · full access in under 10 minutes</p>
           </div>
         </div>
 
