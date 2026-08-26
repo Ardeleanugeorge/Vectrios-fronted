@@ -225,7 +225,7 @@ export default function Home() {
           <h1 className="text-4xl md:text-6xl text-slate-900 dark:text-gray-900 mb-6 font-bold leading-tight">
             Revenue-Stage Monitoring for B2B SaaS.
             <br className="hidden md:block" />
-            <span className="text-cyan-600 text-3xl md:text-4xl font-semibold"> Continuously monitored. Benchmarked daily. Actionable.</span>
+            <p className="text-xl md:text-2xl text-cyan-600 font-medium mt-2"> Continuously monitored. Benchmarked daily. Actionable.</p>
           </h1>
           <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
             Track messaging alignment, ICP clarity, and conversion anchor density across your entire digital footprint.
