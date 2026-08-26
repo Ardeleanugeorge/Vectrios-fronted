@@ -1251,7 +1251,7 @@ function ScanResultsContent() {
                   <span className="block text-xs text-gray-500 mt-1">Modeled using your structural scan + peer conversion benchmarks. Refined further once CRM connects.</span>
             </p>
             {modeledAnnualLossLabel && (
-              <p className="text-sm text-amber-300 font-semibold mb-4">
+              <p className="text-sm text-gray-600 font-semibold mb-4">
                 Estimated impact: ~{modeledAnnualLossLabel} at risk
               </p>
             )}
