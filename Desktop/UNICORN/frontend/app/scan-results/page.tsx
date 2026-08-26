@@ -1092,7 +1092,7 @@ function ScanResultsContent() {
               >
                 <span>
                   {(data.percentile ?? 0) < 50
-                    ? "You're underperforming – this is actively leaking revenue"
+                    ? "Structural deficit detected against tier benchmarks"
                     : "You're performing above average – but still leaving revenue on the table"}
                 </span>
                 {(data.percentile ?? 0) >= 50 ? (
