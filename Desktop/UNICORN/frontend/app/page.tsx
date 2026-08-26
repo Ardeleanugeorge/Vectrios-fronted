@@ -227,10 +227,10 @@ export default function Home() {
             <br className="hidden md:block" />
             <span className="text-cyan-600 text-3xl md:text-4xl font-semibold"> Continuously monitored. Benchmarked daily. Actionable.</span>
           </h1>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
             Track messaging alignment, ICP clarity, and conversion anchor density across your entire digital footprint.
           </p>
-          <p className="text-sm md:text-base text-amber-700 font-medium mb-6 max-w-2xl mx-auto">
+          <p className="text-sm md:text-base text-amber-900 font-medium mb-6 max-w-2xl mx-auto">
             As products evolve and markets shift, messaging structural integrity degrades naturally. VectriOS provides continuous visibility into this drift — before it compounds into pipeline friction.
           </p>
 
@@ -334,7 +334,7 @@ export default function Home() {
             Your GTM messaging is where it starts.
           </p>
           <p className="text-xl text-gray-700 mb-6">Signals of Unmonitored Messaging Drift:</p>
-          <ul className="space-y-4 text-lg text-gray-600 mb-8 ml-6">
+          <ul className="space-y-4 text-lg text-gray-700 mb-8 ml-6">
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
               Pipeline fills with deals that stall before close
@@ -462,7 +462,7 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4 text-slate-900">Why High-Growth Pipelines Experience Conversion Decay</h2>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-lg text-gray-700 mb-8">
             In B2B SaaS, messaging structural integrity degrades naturally over time. Standard analytics tools create diagnostic blindspots — pipeline friction, value delay, and proof dilution go undetected until conversion drops.</p>
 
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
@@ -488,7 +488,7 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4 text-slate-900">How messaging gaps turn into lost revenue</h2>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-lg text-gray-700 mb-8">
             Incremental degradation in messaging clarity compounds into measurable conversion compression over 60-90 day cycles.</p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
@@ -509,7 +509,7 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4 text-slate-900">Continuous revenue monitoring</h2>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-lg text-gray-700 mb-8">
             Messaging structural drift is a continuous process. As products evolve, markets shift, and competitors reposition, structural integrity requires continuous monitoring — not periodic audits.</p>
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 mb-6">
             <ul className="space-y-4 text-lg text-gray-700">
@@ -538,7 +538,7 @@ export default function Home() {
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
             Establish continuous visibility into your revenue architecture.
           </h2>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-lg text-gray-700 mb-8">
             Scan your site to create a baseline in 30 seconds.
             Then track drift weekly so you catch problems while they&apos;re still small.
           </p>
