@@ -923,7 +923,7 @@ function ScanResultsContent() {
   const isBlocked = data.status === "blocked"
   const hasRii = data.rii !== null && data.rii !== undefined
   const rii = hasRii ? (data.rii as number) : null
-  const riiColor = (rii ?? 0) >= 70 ? "text-red-400" : (rii ?? 0) >= 40 ? "text-orange-400" : "text-emerald-400"
+  const riiColor = (rii ?? 0) >= 70 ? "text-red-500" : (rii ?? 0) >= 40 ? "text-amber-600" : "text-emerald-400"
   const benchmarkLabel = (() => {
     if (!hasRii || isBlocked) return null
     const diff = Math.round((rii as number) - SAAS_MEDIAN_RII)
@@ -1006,7 +1006,7 @@ function ScanResultsContent() {
               <p className="text-lg font-semibold text-gray-900 leading-snug mb-2">
                 Baseline Architecture Scan Complete
               </p>
-              <p className="text-base text-orange-700 font-semibold">
+              <p className="text-base text-gray-800 font-semibold">
                 Estimated impact: {modeledAnnualLossLabel} at risk
               </p>
             </div>
@@ -1087,7 +1087,7 @@ function ScanResultsContent() {
                     ? "bg-emerald-50 border-emerald-300 text-emerald-800"
                     : (data.percentile ?? 0) >= 40
                       ? "bg-amber-50 border-amber-300 text-amber-800"
-                      : "bg-red-50 border-red-300 text-red-800"
+                      : "bg-gray-50 border-gray-200 text-gray-800"
                 }`}
               >
                 <span>
@@ -1171,7 +1171,7 @@ function ScanResultsContent() {
         {!unlocked && (
           <div className="p-5 bg-gray-50 rounded-xl border border-orange-500/20 mb-6">
             <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">Primary signal</p>
-            <p className="text-orange-200 font-semibold text-lg mb-2 leading-snug">
+            <p className="text-gray-800 font-semibold text-lg mb-2 leading-snug">
               {primarySignalDisplay(data.primary_signal).headline}
             </p>
             <p className="text-sm text-gray-600">
