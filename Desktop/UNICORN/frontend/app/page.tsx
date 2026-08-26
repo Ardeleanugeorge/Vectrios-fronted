@@ -284,9 +284,7 @@ export default function Home() {
             <p className="font-medium text-gray-700">
               Takes 30 seconds. No signup required for baseline report.
             </p>
-            <p className="text-gray-500 leading-relaxed border-t border-slate-200 dark:border-gray-200/80 pt-3">
-              
-            </p>
+            
           </div>
 
           {/* -- Companies scanned counter (clickable -> leaderboard) -- */}
