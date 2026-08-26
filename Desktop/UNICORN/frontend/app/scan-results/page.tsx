@@ -72,7 +72,7 @@ function RiskBadge({ level }: { level: string }) {
     return <span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-semibold border border-orange-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
   if (level?.includes("Blocked"))
     return <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold border border-red-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
-  return <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-semibold border border-emerald-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
+  return <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold border border-emerald-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
 }
 
 function ScanStatusMessage({ status, reason, confidence }: { status?: string; reason?: string; confidence?: number | null }) {
@@ -143,7 +143,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   // Success with good confidence
   if (status === "success") {
     return (
-      <div className="mt-3 text-xs text-green-400 text-center">
+      <div className="mt-3 text-xs text-gray-600 text-center">
         Full analysis completed
       </div>
     )
@@ -1345,14 +1345,14 @@ function ScanResultsContent() {
                         <p className="text-2xl font-bold text-gray-900">
                           {impact ? `~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year` : "Full modeled loss available after unlock"}
                         </p>
-                        <p className="text-[11px] text-red-500 mt-1">Modeled annual downside</p>
+                        <p className="text-[11px] text-gray-600 mt-1">Modeled annual downside</p>
                       </div>
                       <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-                        <p className="text-[10px] uppercase tracking-wider text-emerald-700 mb-1">Recovery potential</p>
-                        <p className="text-2xl font-bold text-emerald-700">
+                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Recovery potential</p>
+                        <p className="text-2xl font-bold text-gray-900">
                           {impact ? `~${formatCurrency(impact.recovery_low)}–${formatCurrency(impact.recovery_high)}/year` : "Recovery range calculated (unlock to view)"}
                         </p>
-                        <p className="text-[11px] text-emerald-600 mt-1">If structural fixes are applied</p>
+                        <p className="text-[11px] text-gray-600 mt-1">If structural fixes are applied</p>
                       </div>
                       <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
                         <p className="text-[10px] uppercase tracking-wider text-gray-700 mb-1">Close-rate compression</p>
@@ -1422,7 +1422,7 @@ function ScanResultsContent() {
                             Start with this first – it drives the largest share of your modeled monthly loss.
                           </p>
                           <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-                            <p className="text-xs uppercase tracking-wider text-emerald-300/90 mb-1">Estimated recoverable from #1</p>
+                            <p className="text-xs uppercase tracking-wider text-gray-600 mb-1">Estimated recoverable from #1</p>
                             <p className="text-sm font-semibold text-emerald-200">
                               ~{formatCurrency(Number(drivers[0]?.monthly_low || 0))}–{formatCurrency(Number(drivers[0]?.monthly_high || 0))}/month
                             </p>
