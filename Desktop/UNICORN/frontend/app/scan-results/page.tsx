@@ -1230,7 +1230,7 @@ function ScanResultsContent() {
                 <li>Messaging shifts across key pages</li>
               </ul>
             </div>
-            <p className="text-xs font-semibold text-indigo-500/90 uppercase tracking-wider mb-3">We&apos;ve mapped exactly</p>
+            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">We&apos;ve mapped exactly</p>
             <div className="space-y-2.5 mb-4 text-left max-w-md mx-auto">
               {[
                 "Which pages are causing the loss",
@@ -1309,7 +1309,7 @@ function ScanResultsContent() {
                       ? `Unmonitored structural drift compounds into an estimated ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}/month`
                       : "Structural conversion loss confirmed"}
                   </h3>
-                  <p className="text-base font-semibold text-orange-600 mb-2 text-center lg:text-left">
+                  <p className="text-base font-semibold text-gray-800 mb-2 text-center lg:text-left">
                     {impact
                       ? `Modeled annual impact: ~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year`
                       : "Modeled annual impact based on structural analysis"}
@@ -1355,8 +1355,8 @@ function ScanResultsContent() {
                         <p className="text-[11px] text-emerald-600 mt-1">If structural fixes are applied</p>
                       </div>
                       <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
-                        <p className="text-[10px] uppercase tracking-wider text-orange-700 mb-1">Close-rate compression</p>
-                        <p className="text-2xl font-bold text-orange-700">{modeledCloseRateGapLabel || "-1.4%"}</p>
+                        <p className="text-[10px] uppercase tracking-wider text-gray-700 mb-1">Close-rate compression</p>
+                        <p className="text-2xl font-bold text-gray-800">{modeledCloseRateGapLabel || "-1.4%"}</p>
                         <p className="text-[11px] text-gray-600">Estimated structural compression</p>
                       </div>
                     </div>
@@ -1398,7 +1398,7 @@ function ScanResultsContent() {
                                 <p className="text-xs text-gray-600 mt-1 leading-relaxed">{d.description || ""}</p>
                               </div>
                               <div className="text-right shrink-0">
-                                <p className="text-sm font-bold text-orange-200 tabular-nums">
+                                <p className="text-sm font-bold text-gray-700 tabular-nums">
                                   ~{formatCurrency(Number(d.monthly_low || 0))}–{formatCurrency(Number(d.monthly_high || 0))}/mo
                                 </p>
                                 <p className="text-[11px] text-gray-600 mt-0.5">estimated impact</p>
