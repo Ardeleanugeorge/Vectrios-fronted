@@ -1093,7 +1093,7 @@ function ScanResultsContent() {
                 <span>
                   {(data.percentile ?? 0) < 50
                     ? "Structural deficit detected against tier benchmarks"
-                    : "You're performing above average – but still leaving revenue on the table"}
+                    : "Strong revenue architecture — conversion leakage still compounds over time"}
                 </span>
                 {(data.percentile ?? 0) >= 50 ? (
                   <span className="text-xs opacity-80">
