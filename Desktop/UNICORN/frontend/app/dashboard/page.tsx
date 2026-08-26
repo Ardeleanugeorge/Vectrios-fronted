@@ -879,7 +879,7 @@ export default function DashboardPage() {
                     else { window.location.href = "/pricing"; }
                   } catch { window.location.href = "/pricing"; }
                 }}
-                className="inline-block px-8 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-xl transition"
+                className="inline-block px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-black font-semibold rounded-xl transition"
               >
                 Upgrade to Scale — $299/mo →
               </button>
@@ -997,7 +997,7 @@ export default function DashboardPage() {
               </p>
               <Link
                 href={PUBLIC_HOME_URL}
-                className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition"
+                className="inline-block px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-black font-semibold rounded-lg transition"
               >
                 Run a Scan
               </Link>

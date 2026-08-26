@@ -107,7 +107,7 @@ export default function ApplyPage() {
           <p className="text-lg text-gray-600 mb-6">
             Our team will review your submission and respond within 3–5 business days.
           </p>
-          <a href={PUBLIC_HOME_URL} className="text-cyan-400 hover:text-cyan-300">
+          <a href={PUBLIC_HOME_URL} className="text-indigo-500 hover:text-cyan-300">
             Return to homepage
           </a>
         </div>
@@ -124,7 +124,7 @@ export default function ApplyPage() {
             Apply for Strategic Revenue Diagnostic
           </h1>
           <p className="text-xl text-gray-600 mb-6 leading-relaxed">
-            Vectri<span className="text-cyan-400">OS</span> runs a structural revenue scan for qualified B2B SaaS teams.
+            Vectri<span className="text-indigo-500">OS</span> runs a structural revenue scan for qualified B2B SaaS teams.
           </p>
           <p className="text-lg text-gray-600 mb-4">
             This is not an automated content audit.
@@ -144,9 +144,9 @@ export default function ApplyPage() {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
                     section < currentSection
-                      ? "bg-cyan-500 text-black"
+                      ? "bg-indigo-600 text-black"
                       : section === currentSection
-                      ? "bg-cyan-500 text-black"
+                      ? "bg-indigo-600 text-black"
                       : "bg-gray-800 text-gray-600"
                   }`}
                 >
@@ -155,7 +155,7 @@ export default function ApplyPage() {
                 {section < totalSections && (
                   <div
                     className={`flex-1 h-1 mx-2 ${
-                      section < currentSection ? "bg-cyan-500" : "bg-gray-800"
+                      section < currentSection ? "bg-indigo-600" : "bg-gray-800"
                     }`}
                   />
                 )}
@@ -198,7 +198,7 @@ export default function ApplyPage() {
             <h2 className="text-2xl font-bold mb-6">Who Should Apply</h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
-                <h3 className="text-lg font-semibold mb-3 text-cyan-400">This is a fit if:</h3>
+                <h3 className="text-lg font-semibold mb-3 text-indigo-500">This is a fit if:</h3>
                 <ul className="space-y-2 text-gray-700 text-sm">
                   <li>• You are a B2B SaaS company</li>
                   <li>• You have an active sales motion</li>
@@ -503,7 +503,7 @@ export default function ApplyPage() {
                   }
                 }}
                 disabled={!canProceed()}
-                className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition"
+                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition"
               >
                 Next
               </button>
@@ -511,7 +511,7 @@ export default function ApplyPage() {
               <button
                 type="submit"
                 disabled={submitting || !canProceed()}
-                className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
+                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
               >
                 {submitting ? "Submitting..." : "Submit Application"}
               </button>

@@ -172,7 +172,7 @@ export default function CompanyProfilePage() {
   if (loading) return (
     <div className="page-root flex items-center justify-center">
       <div className="text-center">
-        <div className="w-8 h-8 border border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin mx-auto mb-3" />
+        <div className="w-8 h-8 border border-indigo-600/30 border-t-cyan-400 rounded-full animate-spin mx-auto mb-3" />
         <p className="text-gray-600 text-sm">Loading profile…</p>
       </div>
     </div>
@@ -182,7 +182,7 @@ export default function CompanyProfilePage() {
     <div className="page-root flex items-center justify-center">
       <div className="text-center max-w-sm">
         <p className="text-gray-600 mb-4">{error || "Company not found."}</p>
-        <Link href="/saas-revenue-index" className="text-cyan-400 hover:underline text-sm">
+        <Link href="/saas-revenue-index" className="text-indigo-500 hover:underline text-sm">
           ← Back to index
         </Link>
       </div>
@@ -201,9 +201,9 @@ export default function CompanyProfilePage() {
       {/* Header */}
       <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between">
         <Link href={PUBLIC_HOME_URL} className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
           <span className="text-sm font-semibold text-gray-900 tracking-wide">
-            Vectri<span className="text-cyan-400">OS</span>
+            Vectri<span className="text-indigo-500">OS</span>
           </span>
         </Link>
         <Link href="/saas-revenue-index" className="text-xs text-gray-600 hover:text-gray-700 transition-colors">
@@ -232,7 +232,7 @@ export default function CompanyProfilePage() {
               href={`https://${data.domain}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-cyan-500 hover:text-cyan-400 transition-colors"
+              className="text-xs text-indigo-600 hover:text-indigo-500 transition-colors"
             >
               Visit site ↗
             </a>
@@ -242,10 +242,10 @@ export default function CompanyProfilePage() {
         {/* Revenue Impact Index (RII) + delta */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-cyan-500/80 mb-1">Core metric</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-indigo-600/80 mb-1">Core metric</p>
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">{RII_NAME}</p>
             <p className="text-[10px] text-gray-600 mb-2">
-              <abbr title={RII_TAGLINE} className="cursor-help text-cyan-400/90 border-b border-dotted border-cyan-500/50 font-semibold">
+              <abbr title={RII_TAGLINE} className="cursor-help text-indigo-500/90 border-b border-dotted border-indigo-600/50 font-semibold">
                 {RII_ABBREV}
               </abbr>
               <span> · current</span>
@@ -254,7 +254,7 @@ export default function CompanyProfilePage() {
             <p className={`text-sm mt-1 ${riiColor}`}>{latest.risk_level}</p>
             <Link
               href={METHODOLOGY_RII_HREF}
-              className="text-[10px] text-cyan-600 hover:text-cyan-400 hover:underline mt-2 inline-block"
+              className="text-[10px] text-indigo-700 hover:text-indigo-500 hover:underline mt-2 inline-block"
             >
               What is {RII_ABBREV}? →
             </Link>
@@ -299,7 +299,7 @@ export default function CompanyProfilePage() {
           <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Structural Breakdown (latest scan)</p>
           <p className="text-[11px] text-gray-600 mb-5">
             Sub-scores feed your headline {RII_ABBREV}.{" "}
-            <Link href={METHODOLOGY_RII_HREF} className="text-cyan-600 hover:text-cyan-400 hover:underline">
+            <Link href={METHODOLOGY_RII_HREF} className="text-indigo-700 hover:text-indigo-500 hover:underline">
               How they combine →
             </Link>
           </p>
@@ -375,7 +375,7 @@ export default function CompanyProfilePage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href={PUBLIC_HOME_URL}
-              className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-semibold text-sm transition-colors"
             >
               ⚡ Scan your website
             </Link>

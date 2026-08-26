@@ -20,7 +20,7 @@ export default function DataRetentionPage() {
         <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">Overview</h2>
           <p className="text-gray-600 leading-relaxed">
-            This policy defines how Vectri<span className="text-cyan-400">OS</span> retains and deletes data. Retention periods are designed to balance service functionality, compliance requirements, and user privacy.
+            This policy defines how Vectri<span className="text-indigo-500">OS</span> retains and deletes data. Retention periods are designed to balance service functionality, compliance requirements, and user privacy.
           </p>
         </section>
 
@@ -168,7 +168,7 @@ export default function DataRetentionPage() {
               For questions about data retention or deletion:
             </p>
             <p className="text-gray-600">
-              Email: <a href="mailto:privacy@vectrios.com" className="text-cyan-400 hover:text-cyan-300">privacy@vectrios.com</a>
+              Email: <a href="mailto:privacy@vectrios.com" className="text-indigo-500 hover:text-cyan-300">privacy@vectrios.com</a>
             </p>
           </div>
         </section>
@@ -176,13 +176,13 @@ export default function DataRetentionPage() {
         {/* Links */}
         <div className="pt-8 border-t border-gray-200">
           <div className="flex flex-wrap gap-6 text-sm">
-            <Link href="/security" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/security" className="text-indigo-500 hover:text-cyan-300">
               Security & Data Handling →
             </Link>
-            <Link href="/privacy" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/privacy" className="text-indigo-500 hover:text-cyan-300">
               Privacy Policy →
             </Link>
-            <Link href="/terms" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/terms" className="text-indigo-500 hover:text-cyan-300">
               Terms of Service →
             </Link>
           </div>

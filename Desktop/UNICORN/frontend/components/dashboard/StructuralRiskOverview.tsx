@@ -156,7 +156,7 @@ export default function StructuralRiskOverview({
 
       <p className="text-xs text-gray-600 mt-6">
         Breakdown by alignment, ICP, anchors, and positioning is in the{" "}
-        <a href="#revenue-alignment-map" className="text-cyan-600 hover:text-blue-600 hover:underline">
+        <a href="#revenue-alignment-map" className="text-indigo-700 hover:text-blue-600 hover:underline">
           Revenue-Stage Alignment Map
         </a>{" "}
         below — not duplicated here.

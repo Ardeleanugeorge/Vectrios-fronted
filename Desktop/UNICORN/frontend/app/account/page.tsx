@@ -871,7 +871,7 @@ export default function AccountPage() {
   const featureTier = (_f: typeof ALL_FEATURES[0]) => 0
 
   const featGroups = [
-    { label: "Scale", tier: 0, color: "text-cyan-400", dot: "bg-cyan-500" },
+    { label: "Scale", tier: 0, color: "text-indigo-500", dot: "bg-indigo-600" },
   ] as const
 
   // Smart dashboard redirect
@@ -924,7 +924,7 @@ export default function AccountPage() {
     return (
       <div className="page-root flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-gray-600 text-sm">Loading account…</p>
         </div>
       </div>
@@ -951,7 +951,7 @@ export default function AccountPage() {
             <div className="flex flex-wrap items-center gap-3 justify-end">
               <Link
                 href={getDashboardUrl()}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm transition"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm transition"
               >
                 {isOwner ? "Manager Console" : "Dashboard"}
               </Link>
@@ -1050,7 +1050,7 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={profileLoading}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {profileLoading ? "Saving…" : "Save changes"}
                 </button>
@@ -1070,7 +1070,7 @@ export default function AccountPage() {
                   {planLabel ? (
                     <div className="flex items-center justify-between flex-wrap gap-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-2xl">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-600/10 border border-indigo-600/20 flex items-center justify-center text-2xl">
                           {isTrial ? '⏱' : '⭐'}
                         </div>
                         <div>
@@ -1082,7 +1082,7 @@ export default function AccountPage() {
                               </span>
                             )}
                             {!isTrial && planName && (
-                              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">
+                              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-600/20 border border-indigo-600/30 text-cyan-300">
                                 Active
                               </span>
                             )}
@@ -1103,7 +1103,7 @@ export default function AccountPage() {
                       </div>
                       <Link
                         href="/upgrade"
-                        className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-medium text-sm transition border border-gray-200"
+                        className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-medium text-sm transition border border-gray-200"
                       >
                         {isTrial ? 'Upgrade to Scale →' : 'View plans →'}
                       </Link>
@@ -1116,7 +1116,7 @@ export default function AccountPage() {
                       </div>
                 <Link
                         href="/upgrade"
-                        className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm transition"
+                        className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm transition"
                 >
                         Start free trial →
                 </Link>
@@ -1135,7 +1135,7 @@ export default function AccountPage() {
                     </p>
                   </div>
                   {userTier < 0 && (
-                    <Link href="/pricing" className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition">
+                    <Link href="/pricing" className="text-xs font-semibold text-indigo-500 hover:text-cyan-300 transition">
                       Start Scale ?
                     </Link>
                   )}
@@ -1173,7 +1173,7 @@ export default function AccountPage() {
                               key={feat.key}
                               className={`flex items-start gap-3 px-4 py-3 rounded-xl border ${
                                 groupEnabled
-                                      ? "border-cyan-500/20 bg-cyan-500/5"
+                                      ? "border-indigo-600/20 bg-indigo-600/5"
                                   : "border-gray-200/40 bg-gray-100"
                               }`}
                             >
@@ -1184,7 +1184,7 @@ export default function AccountPage() {
                                     {feat.label}
                                   </span>
                                   {groupEnabled && (
-                                    <span className="text-[10px] font-bold text-cyan-400" aria-hidden>✓</span>
+                                    <span className="text-[10px] font-bold text-indigo-500" aria-hidden>✓</span>
                                   )}
                                 </div>
                                 <p className={`text-xs mt-0.5 leading-relaxed ${groupEnabled ? "text-gray-600" : "text-gray-700"}`}>
@@ -1202,7 +1202,7 @@ export default function AccountPage() {
                 {/* Subscribe CTA if no active plan */}
                 {userTier < 0 && (
                   <div className="px-6 pb-5 pt-2">
-                    <div className="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 flex items-center justify-between gap-4 flex-wrap">
+                    <div className="p-4 rounded-xl border border-indigo-600/20 bg-indigo-600/5 flex items-center justify-between gap-4 flex-wrap">
                       <div>
                         <p className="text-sm font-semibold text-cyan-300">
                           Activate Scale — $99/month
@@ -1213,7 +1213,7 @@ export default function AccountPage() {
                       </div>
                       <Link
                         href="/pricing"
-                        className="shrink-0 px-4 py-2 rounded-xl font-bold text-xs transition bg-cyan-500 hover:bg-cyan-400 text-black"
+                        className="shrink-0 px-4 py-2 rounded-xl font-bold text-xs transition bg-indigo-600 hover:bg-indigo-500 text-black"
                       >
                         Start Scale ?
                       </Link>
@@ -1352,8 +1352,8 @@ export default function AccountPage() {
                   </div>
                   {/* Impact preview */}
                   {calibrationArr && calibrationCurrentCloseRate && calibrationTargetCloseRate && (
-                    <div className="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
-                      <p className="text-xs text-cyan-400 font-medium uppercase tracking-wider mb-1">Model preview</p>
+                    <div className="p-4 rounded-xl bg-indigo-600/5 border border-indigo-600/20">
+                      <p className="text-xs text-indigo-500 font-medium uppercase tracking-wider mb-1">Model preview</p>
                       <p className="text-sm text-gray-700">
                         Closing gap:{" "}
                         <span className="text-slate-900 dark:text-gray-900 font-semibold">
@@ -1376,7 +1376,7 @@ export default function AccountPage() {
                   <button
                     type="submit"
                     disabled={calibrationLoading || !companyId}
-                    className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                    className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                   >
                     {calibrationLoading ? "Saving…" : "Save calibration"}
                   </button>
@@ -1448,7 +1448,7 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={passwordLoading}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {passwordLoading ? "Updating…" : "Change password"}
                 </button>
@@ -1521,7 +1521,7 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={generalContactLoading || !(profileEmail || user?.email)}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {generalContactLoading ? "Sending…" : "Send message"}
                 </button>
@@ -1593,7 +1593,7 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={supportLoading}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {supportLoading ? "Creating ticket..." : "Open support ticket"}
                 </button>
@@ -1617,7 +1617,7 @@ export default function AccountPage() {
                           }}
                           className={`w-full text-left p-3 rounded-lg border transition ${
                             selectedTicketId === t.ticket_id
-                              ? "border-cyan-500/40 bg-cyan-500/10"
+                              ? "border-indigo-600/40 bg-indigo-600/10"
                               : "border-gray-200 bg-gray-100"
                           }`}
                         >
@@ -1652,7 +1652,7 @@ export default function AccountPage() {
                               key={`${m.created_at || i}-${i}`}
                               className={`p-3 rounded-lg border ${
                                 m.author === "support"
-                                  ? "bg-cyan-500/10 border-cyan-500/20"
+                                  ? "bg-indigo-600/10 border-indigo-600/20"
                                   : "bg-gray-100"
                               }`}
                             >
@@ -1677,7 +1677,7 @@ export default function AccountPage() {
                           <button
                             type="submit"
                             disabled={supportThreadLoading || !selectedTicketId}
-                            className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-xs transition"
+                            className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-xs transition"
                           >
                             Send follow-up
                           </button>
@@ -1696,11 +1696,11 @@ export default function AccountPage() {
             <div className="space-y-6">
 
               {/* Header */}
-              <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-6">
+              <div className="rounded-2xl border border-indigo-600/20 bg-indigo-600/5 p-6">
                 <div className="flex items-center gap-3 mb-1">
                   <span className="text-2xl">??</span>
                   <h2 className="text-lg font-bold text-cyan-300">RII Auto-Calibration</h2>
-                  <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest">Owner only</span>
+                  <span className="px-2 py-0.5 rounded-full bg-indigo-600/20 text-indigo-500 text-xs font-bold uppercase tracking-widest">Owner only</span>
                 </div>
                 <p className="text-gray-600 text-sm mt-1">
                   Re-calibrates the RII scoring model using all scan results in the database.
@@ -1872,7 +1872,7 @@ export default function AccountPage() {
                       <div className="text-xs text-gray-600 mt-1">MAE (lower = better)</div>
                     </div>
                     <div className="rounded-xl bg-gray-100">
-                      <div className={`text-2xl font-bold ${calibStatus.state === "done" ? "text-emerald-400" : calibStatus.state === "running" ? "text-cyan-400" : calibStatus.state === "error" ? "text-red-400" : "text-amber-400"}`}>
+                      <div className={`text-2xl font-bold ${calibStatus.state === "done" ? "text-emerald-400" : calibStatus.state === "running" ? "text-indigo-500" : calibStatus.state === "error" ? "text-red-400" : "text-amber-400"}`}>
                         {calibStatus.state === "done" ? "?" : calibStatus.state === "running" ? "?" : calibStatus.state === "error" ? "?" : "?"}
                       </div>
                       <div className="text-xs text-gray-600 mt-1">
@@ -1900,8 +1900,8 @@ export default function AccountPage() {
                       <span className="text-xs text-red-300 font-medium">Bad: {calibStatus.label_distribution.bad ?? 0}</span>
                     </div>
                     {(calibStatus.label_distribution.anchors ?? 0) > 0 && (
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
-                        <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600/10 border border-indigo-600/20">
+                        <span className="w-2 h-2 rounded-full bg-indigo-500" />
                         <span className="text-xs text-cyan-300 font-medium">Anchors: {calibStatus.label_distribution.anchors} (locked)</span>
                       </div>
                     )}
@@ -1966,7 +1966,7 @@ export default function AccountPage() {
                   <button
                     onClick={handleRunCalibration}
                     disabled={calibRunning}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                   >
                     {calibRunning ? (
                       <>
@@ -1980,7 +1980,7 @@ export default function AccountPage() {
                   <button
                     onClick={loadCalibStatus}
                     disabled={calibRunning}
-                    className="px-4 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-sm font-medium transition disabled:opacity-50"
+                    className="px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black text-sm font-medium transition disabled:opacity-50"
                   >
                     Refresh status
                   </button>
@@ -1993,7 +1993,7 @@ export default function AccountPage() {
                       ? "bg-red-500/10 border-red-500/20 text-red-300"
                       : /^(Done!|Candidate ready|Candidate accepted|Rolled back|Candidate discarded)/.test(calibMsg)
                         ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
-                        : "bg-cyan-500/10 border-cyan-500/20 text-cyan-300"
+                        : "bg-indigo-600/10 border-indigo-600/20 text-cyan-300"
                   }`}>
                     {calibMsg}
                   </div>
@@ -2004,12 +2004,12 @@ export default function AccountPage() {
               <div className="rounded-2xl border border-gray-200 bg-gray-100">
                 <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">What happens when you click Run</h3>
                 <ol className="space-y-2 text-sm text-gray-600">
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">1.</span> Loads all successful scans from the database</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">2.</span> Auto-labels each scan as good / mid / bad based on current RII</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">4.</span> Runs per-segment (Developer, Marketing, Product, Support)</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">5.</span> Saves candidate to <code className="text-cyan-400">calibration_results_candidate.json</code></li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">6.</span> Click <strong>Accept and activate</strong> to promote candidate to active weights</li>
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">1.</span> Loads all successful scans from the database</li>
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">2.</span> Auto-labels each scan as good / mid / bad based on current RII</li>
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">4.</span> Runs per-segment (Developer, Marketing, Product, Support)</li>
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">5.</span> Saves candidate to <code className="text-indigo-500">calibration_results_candidate.json</code></li>
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">6.</span> Click <strong>Accept and activate</strong> to promote candidate to active weights</li>
                 </ol>
               </div>
 
@@ -2033,7 +2033,7 @@ export default function AccountPage() {
                           }}
                           className={`w-full text-left p-3 rounded-lg border transition ${
                             adminSelectedTicketId === t.ticket_id
-                              ? "border-cyan-500/40 bg-cyan-500/10"
+                              ? "border-indigo-600/40 bg-indigo-600/10"
                               : "border-gray-200 bg-gray-100/40 hover:border-gray-200"
                           }`}
                         >
@@ -2064,7 +2064,7 @@ export default function AccountPage() {
                         </div>
                         <div className="space-y-2 max-h-52 overflow-auto pr-1">
                           {(adminSelectedTicket.messages || []).map((m, i) => (
-                            <div key={`${m.created_at || i}-${i}`} className={`p-3 rounded-lg border ${m.author === "support" ? "bg-cyan-500/10 border-cyan-500/20" : "bg-gray-100/40 border-gray-200"}`}>
+                            <div key={`${m.created_at || i}-${i}`} className={`p-3 rounded-lg border ${m.author === "support" ? "bg-indigo-600/10 border-indigo-600/20" : "bg-gray-100/40 border-gray-200"}`}>
                               <p className="text-xs text-gray-600 mb-1">{m.author === "support" ? "Support" : "Client"}</p>
                               <p className="text-sm text-gray-700 whitespace-pre-wrap">{m.message}</p>
                             </div>
@@ -2078,12 +2078,12 @@ export default function AccountPage() {
                             maxLength={5000}
                             placeholder="Write support reply..."
                             disabled={adminSupportLoading}
-                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-indigo-600 transition disabled:opacity-50"
                           />
                           <button
                             type="submit"
                             disabled={adminSupportLoading || !adminSelectedTicketId}
-                            className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-xs transition"
+                            className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-xs transition"
                           >
                             Send admin reply
                           </button>

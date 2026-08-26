@@ -61,7 +61,7 @@ export default function SecurityPage() {
             <div>
               <h3 className="font-semibold mb-2">Data Collection</h3>
               <p className="text-gray-600 mb-2">
-                Vectri<span className="text-cyan-400">OS</span> collects the following data:
+                Vectri<span className="text-indigo-500">OS</span> collects the following data:
               </p>
               <ul className="list-disc list-inside space-y-1 text-gray-600 ml-4">
                 <li>Company profile information (name, website, ICP description, revenue objectives)</li>
@@ -71,7 +71,7 @@ export default function SecurityPage() {
                 <li>Monitoring configuration and drift events</li>
               </ul>
               <p className="text-gray-600 mt-4 font-semibold">
-                Vectri<span className="text-cyan-400">OS</span> does not access customer CRM data unless explicitly provided.
+                Vectri<span className="text-indigo-500">OS</span> does not access customer CRM data unless explicitly provided.
               </p>
             </div>
             <div>
@@ -83,13 +83,13 @@ export default function SecurityPage() {
             <div>
               <h3 className="font-semibold mb-2">Data Retention</h3>
               <p className="text-gray-600">
-                Structural assessments are retained for the duration of active monitoring plus 90 days after account closure. Risk history is retained for 2 years for trend analysis. See our <Link href="/data-retention" className="text-cyan-400 hover:text-cyan-300 underline">Data Retention & Deletion Policy</Link> for details.
+                Structural assessments are retained for the duration of active monitoring plus 90 days after account closure. Risk history is retained for 2 years for trend analysis. See our <Link href="/data-retention" className="text-indigo-500 hover:text-cyan-300 underline">Data Retention & Deletion Policy</Link> for details.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-2">Data Deletion</h3>
               <p className="text-gray-600">
-                Account deletion triggers immediate soft delete. Hard delete occurs after 90 days. All associated data (assessments, risk history, monitoring data) is permanently removed. See our <Link href="/data-retention" className="text-cyan-400 hover:text-cyan-300 underline">Data Retention & Deletion Policy</Link> for complete deletion procedures.
+                Account deletion triggers immediate soft delete. Hard delete occurs after 90 days. All associated data (assessments, risk history, monitoring data) is permanently removed. See our <Link href="/data-retention" className="text-indigo-500 hover:text-cyan-300 underline">Data Retention & Deletion Policy</Link> for complete deletion procedures.
               </p>
             </div>
           </div>
@@ -102,7 +102,7 @@ export default function SecurityPage() {
             <div>
               <h3 className="font-semibold mb-2">Lawful Basis for Processing</h3>
               <p className="text-gray-600">
-                Vectri<span className="text-cyan-400">OS</span> processes personal data based on contractual necessity (service provision) and legitimate interest (monitoring and analysis). Consent is obtained during account creation.
+                Vectri<span className="text-indigo-500">OS</span> processes personal data based on contractual necessity (service provision) and legitimate interest (monitoring and analysis). Consent is obtained during account creation.
               </p>
             </div>
             <div>
@@ -155,7 +155,7 @@ export default function SecurityPage() {
           <h2 className="text-2xl font-bold mb-6">Compliance Roadmap</h2>
           <div className="space-y-4 text-gray-700">
             <p className="text-gray-600">
-              Vectri<span className="text-cyan-400">OS</span> is committed to enterprise-grade security and compliance. SOC 2 Type II certification is planned for Q3 2025. Current security practices align with SOC 2 requirements.
+              Vectri<span className="text-indigo-500">OS</span> is committed to enterprise-grade security and compliance. SOC 2 Type II certification is planned for Q3 2025. Current security practices align with SOC 2 requirements.
             </p>
             <p className="text-gray-600">
               For specific compliance requirements or security questionnaires, contact security@vectrios.com.
@@ -166,13 +166,13 @@ export default function SecurityPage() {
         {/* Links */}
         <div className="pt-8 border-t border-gray-200">
           <div className="flex flex-wrap gap-6 text-sm">
-            <Link href="/privacy" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/privacy" className="text-indigo-500 hover:text-cyan-300">
               Privacy Policy →
             </Link>
-            <Link href="/data-retention" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/data-retention" className="text-indigo-500 hover:text-cyan-300">
               Data Retention Policy →
             </Link>
-            <Link href="/terms" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/terms" className="text-indigo-500 hover:text-cyan-300">
               Terms of Service →
             </Link>
           </div>

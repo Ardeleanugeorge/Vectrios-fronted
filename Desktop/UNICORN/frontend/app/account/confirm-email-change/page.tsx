@@ -57,7 +57,7 @@ export default function ConfirmEmailChangePage() {
           </Link>
           <Link
             href="/login"
-            className="inline-flex items-center rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-black hover:bg-cyan-400"
+            className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-black hover:bg-indigo-500"
           >
             Go to login
           </Link>

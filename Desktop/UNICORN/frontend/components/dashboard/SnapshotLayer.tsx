@@ -62,7 +62,7 @@ function LockedCard({ title, description, ctaLabel }: {
           <p className="text-xs text-gray-600 mb-3">{description}</p>
           <Link
             href="/upgrade"
-            className="inline-block px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-xs text-center leading-snug"
+            className="inline-block px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-black font-semibold rounded-lg transition text-xs text-center leading-snug"
           >
             {ctaLabel}
           </Link>
@@ -170,7 +170,7 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
       </div>
 
       {/* ══ CTA PRINCIPAL ══ */}
-      <div className="p-8 rounded-lg border border-cyan-200 bg-cyan-50">
+      <div className="p-8 rounded-lg border border-cyan-200 bg-indigo-50">
         <h3 className="text-lg font-bold text-gray-900 mb-2">
           Your diagnostic is ready—see how much you can recover.
         </h3>
@@ -180,7 +180,7 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
             href="/upgrade"
-            className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-sm text-center"
+            className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-sm text-center"
           >
             View plans & recover revenue
           </Link>

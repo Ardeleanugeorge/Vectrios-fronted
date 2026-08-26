@@ -163,7 +163,7 @@ export default function UpgradePage() {
     return (
       <div className="page-root flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-gray-600 text-sm">Loading plan status…</p>
         </div>
       </div>
@@ -178,7 +178,7 @@ export default function UpgradePage() {
           
           {/* -- Header ------------------------------------------------------- */}
           <div className="text-center mb-14 pt-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-5 uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-600/10 border border-indigo-600/20 text-indigo-500 text-xs font-medium mb-5 uppercase tracking-widest">
               Scale — one plan
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r text-slate-900">
@@ -202,8 +202,8 @@ export default function UpgradePage() {
           {currentPlanName && (
             <div className="mb-10 p-5 rounded-2xl border border-gray-200/50 bg-gray-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
-                  <span className="text-cyan-400 text-lg" aria-hidden>✓</span>
+                <div className="w-10 h-10 rounded-full bg-indigo-600/10 border border-indigo-600/30 flex items-center justify-center">
+                  <span className="text-indigo-500 text-lg" aria-hidden>✓</span>
                 </div>
                   <div>
                   <div className="text-xs text-gray-600 uppercase tracking-widest mb-0.5">Current plan</div>
@@ -215,7 +215,7 @@ export default function UpgradePage() {
                       </span>
                     )}
                     {isScale && (
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-600/20 border border-indigo-600/30 text-cyan-300">
                         Active
                       </span>
                     )}
@@ -223,7 +223,7 @@ export default function UpgradePage() {
                 </div>
               </div>
               {isScale && (
-                <Link href="/dashboard" className="text-sm text-cyan-400 hover:text-cyan-300 transition">
+                <Link href="/dashboard" className="text-sm text-indigo-500 hover:text-cyan-300 transition">
                   Back to dashboard
                 </Link>
               )}
@@ -239,14 +239,14 @@ export default function UpgradePage() {
 
           {/* -- Scale locked message ------------------------------------------- */}
           {isScale ? (
-            <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-b from-cyan-500/5 to-transparent p-10 text-center mb-12">
+            <div className="rounded-2xl border border-indigo-600/20 bg-gradient-to-b from-cyan-500/5 to-transparent p-10 text-center mb-12">
               <div className="text-5xl mb-4 text-emerald-400" aria-hidden>✓</div>
               <h2 className="text-2xl font-bold mb-3 text-gray-900">You're on Scale — the highest plan</h2>
               <p className="text-gray-600 mb-6 max-w-lg mx-auto">
                 Downgrade is not available. Scale includes continuous monitoring, delta engine, and behavioral intelligence. For billing or account help, use Account → Support.
               </p>
               <div className="flex items-center justify-center gap-4 flex-wrap">
-                <Link href="/dashboard" className="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl transition">
+                <Link href="/dashboard" className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-xl transition">
                   Go to dashboard
                 </Link>
                 <Link href="/account?tab=support" className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-700 font-medium rounded-xl transition">
@@ -285,12 +285,12 @@ export default function UpgradePage() {
                       key={planName}
                       className={`relative rounded-2xl border p-8 flex flex-col transition-all ${
                         isCurrent
-                          ? 'border-cyan-500/40 bg-cyan-500/5'
-                          : 'border-cyan-500/50 bg-gradient-to-b from-cyan-500/8 to-transparent shadow-[0_0_32px_-4px_rgba(34,211,238,0.25)]'
+                          ? 'border-indigo-600/40 bg-indigo-600/5'
+                          : 'border-indigo-600/50 bg-gradient-to-b from-cyan-500/8 to-transparent shadow-[0_0_32px_-4px_rgba(34,211,238,0.25)]'
                       }`}
                     >
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500 text-black uppercase tracking-wider">
+                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-600 text-black uppercase tracking-wider">
                           Everything included
                         </span>
                       </div>
@@ -299,7 +299,7 @@ export default function UpgradePage() {
                         <div className="flex items-center justify-between mb-1">
                           <h3 className="text-lg font-bold capitalize">{planName}</h3>
                           {isCurrent && (
-                            <span className="px-2 py-0.5 rounded-full text-xs bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">
+                            <span className="px-2 py-0.5 rounded-full text-xs bg-indigo-600/20 border border-indigo-600/30 text-cyan-300">
                               {isTrial ? 'Trial' : 'Current'}
                             </span>
                           )}
@@ -318,7 +318,7 @@ export default function UpgradePage() {
                       <ul className="space-y-2 mb-6 flex-1">
                         {PLAN_FEATURES[planName].map((f, i) => (
                           <li key={i} className="flex items-start gap-2 text-sm">
-                            <span className="mt-0.5 text-xs text-cyan-400" aria-hidden>✓</span>
+                            <span className="mt-0.5 text-xs text-indigo-500" aria-hidden>✓</span>
                             <span className="text-gray-700">{f}</span>
                           </li>
                         ))}
@@ -332,7 +332,7 @@ export default function UpgradePage() {
                         <button
                           onClick={() => handleActivate(planName)}
                           disabled={isActivating}
-                          className="w-full py-3 rounded-xl text-sm font-bold transition bg-cyan-500 hover:bg-cyan-400 text-black disabled:opacity-60 disabled:cursor-not-allowed"
+                          className="w-full py-3 rounded-xl text-sm font-bold transition bg-indigo-600 hover:bg-indigo-500 text-black disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                           {isActivating && activatingPlan === planName
                             ? 'Activating…'
@@ -356,7 +356,7 @@ export default function UpgradePage() {
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="text-left p-4 text-gray-600 font-medium">Feature</th>
-                    <th className="p-4 text-center font-semibold text-cyan-400">Scale</th>
+                    <th className="p-4 text-center font-semibold text-indigo-500">Scale</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -380,7 +380,7 @@ export default function UpgradePage() {
                     <tr key={i} className="border-b border-gray-200/50 hover:bg-gray-800/20 transition">
                       <td className="p-4 text-gray-600">{label}</td>
                       <td className="p-4 text-center">
-                        <span className="text-cyan-400 font-bold" aria-hidden>✓</span>
+                        <span className="text-indigo-500 font-bold" aria-hidden>✓</span>
                       </td>
                     </tr>
                   ))}
@@ -393,7 +393,7 @@ export default function UpgradePage() {
             Have a question?{" "}
             <Link
               href="/pricing#contact"
-              className="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline"
+              className="text-indigo-500 hover:text-cyan-300 underline-offset-2 hover:underline"
             >
               Send us a message
             </Link>

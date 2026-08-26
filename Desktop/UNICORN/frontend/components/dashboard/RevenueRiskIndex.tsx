@@ -68,14 +68,14 @@ export default function RevenueRiskIndex({
   return (
     <div className="p-10 bg-gray-50 rounded-lg border-2 border-cyan-900/40 mb-8 shadow-[0_0_40px_rgba(34,211,238,0.06)]">
       <div className="text-center">
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-500/90 mb-2">
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-indigo-600/90 mb-2">
           Core metric
         </p>
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 tracking-tight">
           {RII_NAME}
         </h2>
         <p className="text-sm text-gray-600 mb-3">
-          <abbr title={RII_TAGLINE} className="cursor-help font-semibold text-blue-600/90 border-b border-dotted border-cyan-500/50">
+          <abbr title={RII_TAGLINE} className="cursor-help font-semibold text-blue-600/90 border-b border-dotted border-indigo-600/50">
             {RII_ABBREV}
           </abbr>
           <span className="text-gray-600"> · </span>
@@ -85,7 +85,7 @@ export default function RevenueRiskIndex({
           {RII_INTRO}{" "}
           <Link
             href={METHODOLOGY_RII_HREF}
-            className="text-cyan-500 hover:text-blue-600 underline-offset-2 hover:underline whitespace-nowrap"
+            className="text-indigo-600 hover:text-blue-600 underline-offset-2 hover:underline whitespace-nowrap"
           >
             How RII is calculated →
           </Link>

@@ -10,7 +10,7 @@ export default function MethodologyPage() {
 
         {/* Hero */}
         <div className="mb-12">
-          <p className="text-xs font-bold tracking-widest uppercase text-cyan-500 mb-3">Methodology</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-indigo-600 mb-3">Methodology</p>
           <h1 className="text-4xl font-bold mb-4">Revenue-Stage Monitoring Infrastructure</h1>
           <p className="text-lg text-gray-600 leading-relaxed">
             A layered risk modeling framework for B2B SaaS — built for revenue leaders who govern structural integrity, not just performance metrics.
@@ -80,7 +80,7 @@ export default function MethodologyPage() {
               { label: "Google Analytics 4", desc: "Session conversion rate calibrates the behavioral layer. Conversion compression below benchmark activates a structural drag modifier on the final RII." },
               { label: "HubSpot CRM", desc: "Close rate computed from actual deal data replaces benchmark estimates with company-specific conversion reality, making financial exposure modeling significantly more accurate." },
             ].map(item => (
-              <div key={item.label} className="p-5 border-l-4 border-cyan-500 bg-cyan-50 rounded-r-xl">
+              <div key={item.label} className="p-5 border-l-4 border-indigo-600 bg-indigo-50 rounded-r-xl">
                 <p className="font-semibold text-gray-900 mb-2">{item.label}</p>
                 <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
               </div>
@@ -95,10 +95,10 @@ export default function MethodologyPage() {
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
             <p className="text-gray-600 leading-relaxed mb-4">Traditional systems average signals. VectriOS does not.</p>
             <ul className="space-y-2 text-gray-600">
-              <li className="flex items-start gap-2"><span className="text-cyan-500 font-bold mt-0.5">→</span>Critical misalignment cannot be offset by secondary strength</li>
-              <li className="flex items-start gap-2"><span className="text-cyan-500 font-bold mt-0.5">→</span>ICP absence activates structural floors</li>
-              <li className="flex items-start gap-2"><span className="text-cyan-500 font-bold mt-0.5">→</span>Severe gaps escalate classification regardless of other signals</li>
-              <li className="flex items-start gap-2"><span className="text-cyan-500 font-bold mt-0.5">→</span>Signal contradictions trigger override mechanisms</li>
+              <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span>Critical misalignment cannot be offset by secondary strength</li>
+              <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span>ICP absence activates structural floors</li>
+              <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span>Severe gaps escalate classification regardless of other signals</li>
+              <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span>Signal contradictions trigger override mechanisms</li>
             </ul>
             <p className="text-gray-600 leading-relaxed mt-4 font-medium">Risk is determined by hierarchy, not arithmetic blending.</p>
           </div>
@@ -125,14 +125,14 @@ export default function MethodologyPage() {
 
         {/* Dark CTA */}
         <section className="mb-12 bg-slate-900 rounded-2xl p-8">
-          <p className="text-xs font-bold tracking-widest uppercase text-cyan-400 mb-3">Monitoring Infrastructure</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-indigo-500 mb-3">Monitoring Infrastructure</p>
           <p className="text-white text-lg font-semibold mb-2">Analytics detect decline. VectriOS detects directional compression before analytics.</p>
           <p className="text-slate-400 leading-relaxed">Revenue-Stage Monitoring Infrastructure operates upstream from performance dashboards — quantifying revenue exposure before it becomes visible in metrics.</p>
         </section>
 
         {/* CTA */}
         <div className="text-center mb-16">
-          <Link href="/" className="inline-block bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-8 py-4 rounded-xl text-base transition">
+          <Link href="/" className="inline-block bg-indigo-600 hover:bg-indigo-500 text-black font-bold px-8 py-4 rounded-xl text-base transition">
             Detect hidden revenue loss →
           </Link>
           <p className="text-gray-400 text-sm mt-3">Automated scan · No credit card required</p>

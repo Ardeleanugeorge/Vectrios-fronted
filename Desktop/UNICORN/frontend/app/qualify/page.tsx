@@ -83,7 +83,7 @@ export default function QualifyPage() {
             Before You Apply
           </h1>
           <p className="text-xl text-gray-600 mb-2">
-            Vectri<span className="text-cyan-400">OS</span> performs structural revenue risk assessments for B2B SaaS companies with an active sales motion.
+            Vectri<span className="text-indigo-500">OS</span> performs structural revenue risk assessments for B2B SaaS companies with an active sales motion.
           </p>
           <p className="text-lg text-gray-600">
             To preserve diagnostic integrity, we onboard only companies that meet the following baseline criteria.
@@ -103,7 +103,7 @@ export default function QualifyPage() {
                 onClick={() => handleAnswer("b2b_saas", true)}
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.b2b_saas === true
-                    ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
+                    ? "border-indigo-600 bg-indigo-600/10 text-indigo-500"
                     : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
@@ -135,7 +135,7 @@ export default function QualifyPage() {
                 onClick={() => handleAnswer("active_sales_motion", true)}
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.active_sales_motion === true
-                    ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
+                    ? "border-indigo-600 bg-indigo-600/10 text-indigo-500"
                     : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
@@ -167,7 +167,7 @@ export default function QualifyPage() {
                 onClick={() => handleAnswer("publishing_content", true)}
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.publishing_content === true
-                    ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
+                    ? "border-indigo-600 bg-indigo-600/10 text-indigo-500"
                     : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
@@ -199,7 +199,7 @@ export default function QualifyPage() {
                 onClick={() => handleAnswer("close_rate_matters", true)}
                 className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
                   answers.close_rate_matters === true
-                    ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
+                    ? "border-indigo-600 bg-indigo-600/10 text-indigo-500"
                     : "border-gray-200 hover:border-gray-600 text-gray-700"
                 }`}
               >
@@ -243,7 +243,7 @@ export default function QualifyPage() {
             disabled={!isQualified || checking}
             className={`px-10 py-4 rounded-lg font-bold transition text-lg ${
               isQualified
-                ? "bg-cyan-500 hover:bg-cyan-400 text-black cursor-pointer"
+                ? "bg-indigo-600 hover:bg-indigo-500 text-black cursor-pointer"
                 : "bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-200"
             }`}
           >

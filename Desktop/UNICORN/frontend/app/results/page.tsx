@@ -96,7 +96,7 @@ export default function ResultsPage() {
           <ul className="space-y-3">
             {data.recommendations.map((rec: string, i: number) => (
               <li key={i} className="flex items-start">
-                <span className="text-cyan-500 mr-3">•</span>
+                <span className="text-indigo-600 mr-3">•</span>
                 <span className="text-gray-700">{rec}</span>
               </li>
             ))}

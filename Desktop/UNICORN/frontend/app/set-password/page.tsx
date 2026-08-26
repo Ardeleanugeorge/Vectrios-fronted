@@ -114,7 +114,7 @@ export default function SetPasswordPage() {
       <main className="flex items-center justify-center px-6 py-12">
         <div className="max-w-md w-full">
           <h1 className="text-3xl font-bold mb-3">
-            Set your Vectri<span className="text-cyan-400">OS</span> password
+            Set your Vectri<span className="text-indigo-500">OS</span> password
           </h1>
           <p className="text-sm text-gray-600 mb-6">
             Secure your account. After this step you&apos;ll continue to plans — no extra sign-in if you open the link in the same browser.
@@ -150,13 +150,13 @@ export default function SetPasswordPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black font-bold rounded-lg"
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-black font-bold rounded-lg"
               >
                 {loading ? "Setting password..." : "Set password"}
               </button>
               <p className="text-xs text-gray-600 text-center">
                 Need another link?{" "}
-                <Link href="/login" className="text-cyan-400 hover:text-cyan-300">
+                <Link href="/login" className="text-indigo-500 hover:text-cyan-300">
                   Go to sign in
                 </Link>
               </p>

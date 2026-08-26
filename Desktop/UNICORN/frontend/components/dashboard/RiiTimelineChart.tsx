@@ -122,8 +122,8 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
         {/* Empty state — honest message */}
         <div className="flex flex-col items-center justify-center py-10 text-center">
           {/* Mini baseline indicator */}
-          <div className="w-10 h-10 rounded-full border-2 border-cyan-500/40 flex items-center justify-center mb-4">
-            <div className="w-2 h-2 rounded-full bg-cyan-400" />
+          <div className="w-10 h-10 rounded-full border-2 border-indigo-600/40 flex items-center justify-center mb-4">
+            <div className="w-2 h-2 rounded-full bg-indigo-500" />
           </div>
           <p className="text-sm text-gray-700 font-medium mb-1">
             Baseline Recorded — Awaiting Subsequent Structural Delta
@@ -292,7 +292,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
       {/* Legend */}
       <div className="mt-3 flex items-center gap-5 text-[10px] text-gray-600">
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 rounded bg-cyan-500 inline-block"/>
+          <span className="w-3 h-0.5 rounded bg-indigo-600 inline-block"/>
           RII score
         </span>
         <span className="flex items-center gap-1.5">

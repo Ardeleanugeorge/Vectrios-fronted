@@ -77,7 +77,7 @@ export default function StructuralBreakdownWithDelta({
         These four dimensions feed your headline {RII_NAME} ({RII_ABBREV}). They explain <em>where</em> structural risk concentrates — not dollar impact (see model below).
       </p>
       <p className="text-xs text-gray-600 mb-6">
-        <Link href={METHODOLOGY_RII_HREF} className="text-cyan-600 hover:text-blue-600 hover:underline">
+        <Link href={METHODOLOGY_RII_HREF} className="text-indigo-700 hover:text-blue-600 hover:underline">
           How {RII_ABBREV} combines these signals →
         </Link>
       </p>
@@ -150,7 +150,7 @@ export default function StructuralBreakdownWithDelta({
           <ul className="space-y-2">
             {diagnostic.detected_signals.map((signal, idx) => (
               <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
-                <span className="mt-1 text-cyan-500 shrink-0">•</span>
+                <span className="mt-1 text-indigo-600 shrink-0">•</span>
                 <span>{signal}</span>
               </li>
             ))}

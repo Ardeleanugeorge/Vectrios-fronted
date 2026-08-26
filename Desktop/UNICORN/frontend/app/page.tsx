@@ -225,7 +225,7 @@ export default function Home() {
           <h1 className="text-4xl md:text-6xl text-slate-900 dark:text-gray-900 mb-6 font-bold leading-tight">
             Revenue-Stage Monitoring for B2B SaaS.
             <br className="hidden md:block" />
-            <p className="text-xl md:text-2xl text-cyan-600 font-medium mt-2"> Continuously monitored. Benchmarked daily. Actionable.</p>
+            <p className="text-xl md:text-2xl text-indigo-700 font-medium mt-2"> Continuously monitored. Benchmarked daily. Actionable.</p>
           </h1>
           <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
             Track messaging alignment, ICP clarity, and conversion anchor density across your entire digital footprint.
@@ -237,7 +237,7 @@ export default function Home() {
 
           {/* -- SCAN BOX -- */}
           <form onSubmit={handleScan} className="max-w-xl mx-auto mb-3">
-            <div className="flex flex-col sm:flex-row items-stretch bg-gray-50 border border-gray-200 rounded-xl overflow-hidden focus-within:border-cyan-500 transition">
+            <div className="flex flex-col sm:flex-row items-stretch bg-gray-50 border border-gray-200 rounded-xl overflow-hidden focus-within:border-indigo-600 transition">
               <div className="flex items-center flex-1">
                 <span className="pl-4 text-gray-500 text-sm select-none shrink-0">https://</span>
                 <input
@@ -252,7 +252,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={scanning || !scanUrl.trim()}
-                className="sm:m-1.5 sm:ml-0 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold transition text-sm whitespace-nowrap rounded-none sm:rounded-lg w-full sm:w-auto mt-2 sm:mt-0"
+                className="sm:m-1.5 sm:ml-0 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold transition text-sm whitespace-nowrap rounded-none sm:rounded-lg w-full sm:w-auto mt-2 sm:mt-0"
               >
                 {scanning ? (
                   <span className="flex items-center justify-center gap-2">
@@ -276,7 +276,7 @@ export default function Home() {
             </p>
           </div>
           {scanning && (
-            <div className="mb-4 text-xs text-cyan-600 flex flex-col items-center gap-1">
+            <div className="mb-4 text-xs text-indigo-700 flex flex-col items-center gap-1">
               <p>{scanPhases.current[scanPhase]}</p>
             </div>
           )}
@@ -292,13 +292,13 @@ export default function Home() {
             <div className="flex items-center justify-center">
               <Link
                 href="/saas-revenue-index"
-                className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 border border-slate-200 hover:border-cyan-500/40 hover:bg-cyan-50/30 transition-all text-sm text-gray-600"
+                className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 border border-slate-200 hover:border-indigo-600/40 hover:bg-indigo-50/30 transition-all text-sm text-gray-600"
               >
                 <span className="font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
                   {scanCount.toLocaleString("en-US")}+
                 </span>
                 <span className="text-gray-500">revenue architectures analyzed</span>
-                <span className="text-cyan-600 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-indigo-700 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                   View index &rarr;
                 </span>
               </Link>
@@ -312,7 +312,7 @@ export default function Home() {
           <span className="text-sm text-gray-700 uppercase tracking-widest font-semibold shrink-0">Built for</span>
           {["B2B SaaS ($500K-$10M ARR)", "CROs protecting close rates", "RevOps tracking pipeline weekly", "Product Marketing tracking positioning drift"].map(r => (
             <span key={r} className="flex items-center gap-1.5 text-base text-gray-800 font-medium">
-              <span className="text-cyan-600 font-bold text-xs">&#10003;</span>
+              <span className="text-indigo-700 font-bold text-xs">&#10003;</span>
               {r}
             </span>
           ))}
@@ -324,7 +324,7 @@ export default function Home() {
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
             Your dashboard shows the result.
           </h2>
-          <p className="text-2xl text-cyan-600 font-semibold mb-8">
+          <p className="text-2xl text-indigo-700 font-semibold mb-8">
             Your GTM messaging is where conversion starts.
           </p>
           <p className="text-xl text-gray-700 mb-6">Signals of Unmonitored Messaging Drift:</p>
@@ -462,15 +462,15 @@ export default function Home() {
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
             <ul className="space-y-4 text-lg text-gray-700">
               <li className="flex items-center gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
                 Your homepage attracts buyers your pricing page fails to convert
               </li>
               <li className="flex items-center gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
                 Your proof arrives too late to stop comparison shopping
               </li>
               <li className="flex items-center gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
                 Deals stall silently — no objection, no reply, no close
               </li>
             </ul>
@@ -491,7 +491,7 @@ export default function Home() {
               { metric: "Misalignment", desc: "Lower close rates when buyers compare alternatives" },
             ].map(item => (
               <div key={item.metric} className="p-5 bg-gray-50 rounded-lg border border-gray-200">
-                <p className="text-cyan-600 font-semibold mb-2">{item.metric}</p>
+                <p className="text-indigo-700 font-semibold mb-2">{item.metric}</p>
                 <p className="text-sm text-gray-600">{item.desc}</p>
               </div>
             ))}
@@ -508,15 +508,15 @@ export default function Home() {
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 mb-6">
             <ul className="space-y-4 text-lg text-gray-700">
               <li className="flex items-start gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-2 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
                 ICP targeting precision degrades as messaging evolves
               </li>
               <li className="flex items-start gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-2 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
                 Positioning coherence drifts across pages and campaigns
               </li>
               <li className="flex items-start gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-2 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
                 Conversion anchors lose alignment with current buyer expectations
               </li>
             </ul>
@@ -538,7 +538,7 @@ export default function Home() {
           </p>
           <Link
             href="/signup"
-            className="inline-block px-12 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-lg"
+            className="inline-block px-12 py-5 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-lg"
           >
             Establish Domain Baseline
           </Link>
@@ -556,7 +556,7 @@ export default function Home() {
       {/* -- FOOTER -------------------------------------------------------- */}
       <footer className="max-w-6xl mx-auto px-6 py-12 border-t border-slate-200 dark:border-gray-200">
         <div className="text-center">
-          <h3 className="text-2xl font-bold mb-2 text-slate-900">Vectri<span className="text-cyan-600">OS</span></h3>
+          <h3 className="text-2xl font-bold mb-2 text-slate-900">Vectri<span className="text-indigo-700">OS</span></h3>
           <p className="text-gray-500 mb-4">
             Revenue-Stage Monitoring Infrastructure for B2B SaaS
           </p>
@@ -566,7 +566,7 @@ export default function Home() {
             <Link href="/data-retention" className="text-gray-500 hover:text-gray-700">Data Retention</Link>
           </div>
           <p className="text-sm text-gray-500">
-            &copy; 2026 Vectri<span className="text-cyan-600">OS</span>. All rights reserved.
+            &copy; 2026 Vectri<span className="text-indigo-700">OS</span>. All rights reserved.
           </p>
         </div>
       </footer>
@@ -577,7 +577,7 @@ export default function Home() {
             <div className="p-4 sm:p-5">
               <p className="text-sm text-gray-700 leading-relaxed">
                 <span className="font-semibold text-gray-900">Our site uses cookies.</span>{" "}
-                Like most websites, Vectri<span className="text-cyan-600">OS</span> uses cookies to make the site work, improve experience, analyze usage,
+                Like most websites, Vectri<span className="text-indigo-700">OS</span> uses cookies to make the site work, improve experience, analyze usage,
                 and support marketing. Choose &ldquo;Allow All&rdquo; to accept all categories, or use &ldquo;Manage Consent
                 Preferences&rdquo; to customize.
               </p>
@@ -588,7 +588,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setShowCookiePreferences((v) => !v)}
-                  className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:border-cyan-500/50 hover:text-gray-900 text-sm"
+                  className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:border-indigo-600/50 hover:text-gray-900 text-sm"
                 >
                   Manage Consent Preferences
                 </button>
@@ -602,7 +602,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={acceptAllCookies}
-                  className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm"
+                  className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-black font-semibold text-sm"
                 >
                   Allow All
                 </button>
@@ -659,7 +659,7 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={confirmCookieChoices}
-                      className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm"
+                      className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-black font-semibold text-sm"
                     >
                       Confirm My Choices
                     </button>

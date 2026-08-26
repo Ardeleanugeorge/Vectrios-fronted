@@ -191,7 +191,7 @@ function DiagnosticNudge({ companyId, monitoringSource, lastEvaluated }: {
   )
 
   return (
-    <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-500/30 bg-cyan-950/10">
+    <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-indigo-600/30 bg-cyan-950/10">
       <div>
         <p className="text-sm font-semibold text-cyan-300">
           Activate continuous revenue monitoring
@@ -204,7 +204,7 @@ function DiagnosticNudge({ companyId, monitoringSource, lastEvaluated }: {
       <button
         onClick={handleRun}
         disabled={scanning}
-        className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black rounded-lg transition whitespace-nowrap"
+        className="shrink-0 px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-black rounded-lg transition whitespace-nowrap"
       >
         {scanning ? "Scanning…" : "Run monitoring scan →"}
       </button>
@@ -749,7 +749,7 @@ const delayTimer = setTimeout(() => {
 
             {/* Plan */}
             <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 ml-auto">
-              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-blue-600 font-semibold text-xs tracking-wide">
+              <span className="px-2.5 py-0.5 rounded-full bg-indigo-600/10 border border-indigo-600/20 text-blue-600 font-semibold text-xs tracking-wide">
                 {planLabel}{trialLabel}
               </span>
             </div>

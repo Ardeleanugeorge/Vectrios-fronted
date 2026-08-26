@@ -19,7 +19,7 @@
 
   .input {
     @apply w-full p-4 rounded-lg border bg-white border-gray-200 text-gray-900 placeholder-gray-400;
-    @apply focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500;
+    @apply focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600;
   }
 
   .input:disabled {

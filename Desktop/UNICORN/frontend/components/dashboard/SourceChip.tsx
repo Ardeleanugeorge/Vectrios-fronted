@@ -11,7 +11,7 @@ export default function SourceChip({ label, title, tone = "gray" }: SourceChipPr
     tone === "emerald"
       ? "text-emerald-600 bg-emerald-400/10 border-emerald-400/20"
       : tone === "cyan"
-      ? "text-blue-600 bg-cyan-400/10 border-cyan-400/20"
+      ? "text-blue-600 bg-indigo-500/10 border-indigo-500/20"
       : tone === "indigo"
       ? "text-indigo-300 bg-indigo-400/10 border-indigo-400/20"
       : "text-gray-700 bg-gray-400/10 border-gray-400/20"

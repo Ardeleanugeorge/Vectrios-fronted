@@ -183,7 +183,7 @@ export default function SignUpPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
+            className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
           >
             {submitting ? "Creating Account..." : "Create Free Account"}
           </button>
@@ -215,7 +215,7 @@ export default function SignUpPage() {
 
           <p className="text-center text-sm text-gray-600 mt-6">
             Already have an account?{" "}
-            <Link href="/login" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/login" className="text-indigo-500 hover:text-cyan-300">
               Sign in
             </Link>
           </p>

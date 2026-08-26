@@ -900,7 +900,7 @@ function ScanResultsContent() {
   if (loading) return (
     <div className="page-root flex items-center justify-center">
       <div className="text-center">
-        <svg className="animate-spin w-10 h-10 text-cyan-500 mx-auto mb-4" viewBox="0 0 24 24" fill="none">
+        <svg className="animate-spin w-10 h-10 text-indigo-600 mx-auto mb-4" viewBox="0 0 24 24" fill="none">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
         </svg>
@@ -913,7 +913,7 @@ function ScanResultsContent() {
     <div className="page-root flex items-center justify-center">
       <div className="text-center max-w-md">
         <p className="text-red-400 mb-4">{error}</p>
-        <Link href={PUBLIC_HOME_URL} className="text-cyan-400 hover:text-blue-600">Run a new scan</Link>
+        <Link href={PUBLIC_HOME_URL} className="text-indigo-500 hover:text-blue-600">Run a new scan</Link>
       </div>
     </div>
   )
@@ -968,7 +968,7 @@ function ScanResultsContent() {
       ) : (
         <div className="border-b border-gray-200 px-6 py-4 flex items-center max-w-4xl mx-auto">
           <Link href={PUBLIC_HOME_URL} className="text-xl font-bold">
-            Vectri<span className="text-cyan-400">OS</span>
+            Vectri<span className="text-indigo-500">OS</span>
           </Link>
         </div>
       )}
@@ -983,7 +983,7 @@ function ScanResultsContent() {
 
         {/* Domain + badge */}
         <div className={`flex items-center gap-3 mb-8 ${wideLayout ? "flex-wrap lg:mb-10" : ""}`}>
-          <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-xs font-bold text-cyan-400 border border-gray-200">
+          <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-xs font-bold text-indigo-500 border border-gray-200">
             {data.domain.charAt(0).toUpperCase()}
           </div>
           <div>
@@ -1070,7 +1070,7 @@ function ScanResultsContent() {
                 }`}
               >
                 <div className={`h-1.5 bg-gray-50 rounded-full overflow-hidden ${wideLayout ? "w-24 sm:w-32" : "w-24"}`}>
-                  <div className="h-full bg-cyan-500/60 rounded-full" style={{ width: `${data.confidence}%` }} />
+                  <div className="h-full bg-indigo-600/60 rounded-full" style={{ width: `${data.confidence}%` }} />
                 </div>
                 <span>Confidence: {Math.round(data.confidence)}%</span>
               </div>
@@ -1129,13 +1129,13 @@ function ScanResultsContent() {
           <div className="flex items-center justify-center mb-6">
             <Link
               href="/saas-revenue-index"
-              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 hover:border-cyan-500/30 hover:bg-white/[0.06] transition-all text-sm text-gray-600"
+              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 hover:border-indigo-600/30 hover:bg-white/[0.06] transition-all text-sm text-gray-600"
             >
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shrink-0" />
               <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
                 Benchmarked against 500+ SaaS companies — structural analysis, not content grading
               </span>
-              <span className="text-cyan-500 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-indigo-600 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                 View index
               </span>
             </Link>
@@ -1188,7 +1188,7 @@ function ScanResultsContent() {
           <div className="p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <p className="text-xs text-gray-600 uppercase tracking-widest">Full Diagnostic</p>
-              <span className="px-2 py-0.5 text-xs bg-cyan-500/10 text-cyan-400 rounded border border-gray-200">Locked</span>
+              <span className="px-2 py-0.5 text-xs bg-indigo-600/10 text-indigo-500 rounded border border-gray-200">Locked</span>
             </div>
             <div className="space-y-3">
               <LockedInsight label="Estimated ARR at Risk" />
@@ -1205,7 +1205,7 @@ function ScanResultsContent() {
         {!unlocked && (
           <div className="text-center p-8 bg-white rounded-xl border border-gray-200 mb-6">
             <div className="mb-4">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-gray-200 text-cyan-400 text-xs font-medium">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-600/10 border border-gray-200 text-indigo-500 text-xs font-medium">
                 Full Diagnostic
               </span>
             </div>
@@ -1231,7 +1231,7 @@ function ScanResultsContent() {
                 <li>Messaging shifts across key pages</li>
               </ul>
             </div>
-            <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-3">We&apos;ve mapped exactly</p>
+            <p className="text-xs font-semibold text-indigo-500/90 uppercase tracking-wider mb-3">We&apos;ve mapped exactly</p>
             <div className="space-y-2.5 mb-4 text-left max-w-md mx-auto">
               {[
                 "Which pages are causing the loss",
@@ -1240,7 +1240,7 @@ function ScanResultsContent() {
                 "How much you can recover (modeled)",
               ].map((line) => (
                 <div key={line} className="flex items-start gap-2 text-sm text-gray-700">
-                  <svg className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>{line}</span>
@@ -1258,7 +1258,7 @@ function ScanResultsContent() {
             )}
             <button
               onClick={handleUnlock}
-              className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
+              className="px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
             >
               Unlock revenue compression analysis
             </button>
@@ -1281,7 +1281,7 @@ function ScanResultsContent() {
               </p>
               <Link
                 href={token ? `/dashboard?token=${encodeURIComponent(token)}` : "/dashboard"}
-                className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg transition whitespace-nowrap"
+                className="shrink-0 px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-black rounded-lg transition whitespace-nowrap"
               >
                 Back to Dashboard
               </Link>
@@ -1318,7 +1318,7 @@ function ScanResultsContent() {
                   <p className="text-sm text-gray-600 mb-6 max-w-3xl text-center lg:text-left">
                     Modeled using benchmark-adjusted close-rate compression vs 500+ SaaS peer set.
                   </p>
-                  <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-cyan-500/[0.04] p-4">
+                  <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-indigo-600/[0.04] p-4">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-2">We&apos;ve built a full revenue model for your business</p>
                     <ul className="space-y-1.5 text-sm text-gray-700">
                       <li>Annual revenue at risk</li>
@@ -1411,7 +1411,7 @@ function ScanResultsContent() {
                     </div>
 
                     <div className="lg:col-span-5 p-4 sm:p-5 rounded-xl bg-gray-50 border border-gray-200/80">
-                      <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
+                      <p className="text-xs font-semibold text-indigo-500/90 uppercase tracking-wider mb-2">
                         What to fix first
                       </p>
                       {drivers.length > 0 ? (
@@ -1469,7 +1469,7 @@ function ScanResultsContent() {
                 </ul>
                 <Link
                   href={token ? `/dashboard?token=${encodeURIComponent(token)}` : "/dashboard"}
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
                   Back to Dashboard
                 </Link>
@@ -1498,7 +1498,7 @@ function ScanResultsContent() {
                 </ul>
                 <Link
                 href="/pricing?from=scan&focus=recovery"
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+                  className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
                   Start 14-day monitoring trial
                 </Link>
@@ -1506,7 +1506,7 @@ function ScanResultsContent() {
             ) : (
               /* -- STATE C: Unauthenticated ? continue to login/plans (not a second signup) -- */
               <div className="p-5 sm:p-6 rounded-xl bg-gray-50 border border-gray-200/80">
-                <p className="text-xs font-semibold text-cyan-400/90 uppercase tracking-wider mb-2">
+                <p className="text-xs font-semibold text-indigo-500/90 uppercase tracking-wider mb-2">
                   {returningAccountHint ? "Next step" : "Full recovery plan locked"}
                 </p>
                 <p className="text-sm text-gray-700 mb-3">
@@ -1531,7 +1531,7 @@ function ScanResultsContent() {
                   <div className="flex flex-col sm:flex-row gap-3 mb-2">
                     <Link
                       href="/pricing?from=scan&focus=recovery"
-                      className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto text-center"
+                      className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto text-center"
                     >
                       View plans
                     </Link>
@@ -1551,7 +1551,7 @@ function ScanResultsContent() {
                     <button
                       type="button"
                       onClick={handleUnlock}
-                      className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
+                      className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                     >
                       Unlock revenue compression analysis
                     </button>
@@ -1570,7 +1570,7 @@ function ScanResultsContent() {
                             ? `/login?email=${encodeURIComponent(savedWorkEmail)}&reason=resume_scan`
                             : "/login?reason=resume_scan"
                         }
-                        className="text-cyan-400 hover:text-blue-600 underline-offset-2 hover:underline"
+                        className="text-indigo-500 hover:text-blue-600 underline-offset-2 hover:underline"
                       >
                         Sign in
                       </Link>
@@ -1585,7 +1585,7 @@ function ScanResultsContent() {
                   ) : (
                     <>
                       Already have an account?{" "}
-                      <Link href="/login" className="text-cyan-400 hover:text-blue-600 underline-offset-2 hover:underline">
+                      <Link href="/login" className="text-indigo-500 hover:text-blue-600 underline-offset-2 hover:underline">
                         Sign in
                       </Link>
                       {" – "}
@@ -1606,7 +1606,7 @@ function ScanResultsContent() {
               <p className="text-sm text-gray-700">You&apos;re on Scale Trial. Upgrade anytime to keep full access.</p>
               <Link
                 href="/upgrade"
-                className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition shadow-cyan-500/15"
+                className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-black font-semibold text-sm transition shadow-cyan-500/15"
               >
                 Upgrade to Scale
               </Link>
@@ -1628,7 +1628,7 @@ function ScanResultsContent() {
                 ) : (
                   <>
                     Check your inbox — we sent a 6-digit code to{" "}
-                    <span className="text-cyan-600">{email}</span>
+                    <span className="text-indigo-700">{email}</span>
                     <span className="block text-gray-600 text-xs mt-3 leading-relaxed">
                       New workspace: you&apos;ll get a second email with a secure link to create your password when
                       you&apos;re ready (separate from the sign-in code).
@@ -1647,7 +1647,7 @@ function ScanResultsContent() {
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your@email.com"
                         required
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:border-cyan-500"
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:border-indigo-600"
                         disabled={capturing}
                       />
                     </div>
@@ -1669,7 +1669,7 @@ function ScanResultsContent() {
                       <button
                         type="submit"
                         disabled={capturing || !email.trim()}
-                        className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
+                        className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
                       >
                         {capturing ? "Sending code…" : "See full analysis"}
                       </button>
@@ -1692,7 +1692,7 @@ function ScanResultsContent() {
                         placeholder="123456"
                         required
                         maxLength={6}
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:border-cyan-500 text-center text-2xl tracking-widest font-mono"
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:border-indigo-600 text-center text-2xl tracking-widest font-mono"
                         disabled={otpVerifying}
                         autoFocus
                       />
@@ -1714,7 +1714,7 @@ function ScanResultsContent() {
                       <button
                         type="submit"
                         disabled={otpVerifying || otpCode.length < 6}
-                        className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
+                        className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
                       >
                         {otpVerifying ? "Verifying…" : "Verify code"}
                       </button>
@@ -1729,7 +1729,7 @@ function ScanResultsContent() {
                         setOtpCode("")
                         setOtpError("")
                       }}
-                      className="text-cyan-400 hover:text-blue-600 bg-transparent border-0 p-0 cursor-pointer"
+                      className="text-indigo-500 hover:text-blue-600 bg-transparent border-0 p-0 cursor-pointer"
                     >
                       Try again
                     </button>
@@ -1746,7 +1746,7 @@ function ScanResultsContent() {
       {unlockTransitioning && (
         <div className="fixed inset-0 z-[60] bg-white/95 backdrop-blur-sm flex items-center justify-center">
           <div className="text-center">
-            <svg className="animate-spin w-8 h-8 text-cyan-500 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
+            <svg className="animate-spin w-8 h-8 text-indigo-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
@@ -1762,7 +1762,7 @@ export default function ScanResultsPage() {
   return (
     <Suspense fallback={
       <div className="page-root flex items-center justify-center">
-        <svg className="animate-spin w-10 h-10 text-cyan-500" viewBox="0 0 24 24" fill="none">
+        <svg className="animate-spin w-10 h-10 text-indigo-600" viewBox="0 0 24 24" fill="none">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
         </svg>

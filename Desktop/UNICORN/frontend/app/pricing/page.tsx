@@ -633,7 +633,7 @@ export default function PricingPage() {
               onClick={handleTrial}
               disabled={isProcessing}
               className={`px-10 py-3 font-semibold rounded-lg transition ${
-                isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
+                isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-500 text-black"
               }`}
             >
               Start 14-day free trial
@@ -646,13 +646,13 @@ export default function PricingPage() {
           <div className="inline-flex items-center gap-4 p-1 bg-gray-50 rounded-lg border border-gray-200">
             <button
               onClick={() => setBillingCycle("monthly")}
-              className={`px-6 py-2 rounded-md transition ${billingCycle === "monthly" ? "bg-cyan-500 text-black font-medium" : "text-gray-600 hover:text-gray-900"}`}
+              className={`px-6 py-2 rounded-md transition ${billingCycle === "monthly" ? "bg-indigo-600 text-black font-medium" : "text-gray-600 hover:text-gray-900"}`}
             >
               Monthly
             </button>
             <button
               onClick={() => setBillingCycle("annual")}
-              className={`px-6 py-2 rounded-md transition ${billingCycle === "annual" ? "bg-cyan-500 text-black font-medium" : "text-gray-600 hover:text-gray-900"}`}
+              className={`px-6 py-2 rounded-md transition ${billingCycle === "annual" ? "bg-indigo-600 text-black font-medium" : "text-gray-600 hover:text-gray-900"}`}
             >
               Annual <span className="text-[10px] ml-1 opacity-70">Save 20%</span>
             </button>
@@ -668,7 +668,7 @@ export default function PricingPage() {
                 className={`relative p-8 bg-gray-50 rounded-2xl border flex flex-col transition ${
                   isActivePlan
                     ? "border-emerald-500/80 shadow-[0_0_24px_-4px_rgba(16,185,129,0.35)]"
-                    : "border-cyan-500/80 shadow-[0_0_32px_-4px_rgba(34,211,238,0.3)]"
+                    : "border-indigo-600/80 shadow-[0_0_32px_-4px_rgba(34,211,238,0.3)]"
                 }`}
               >
                 {isActivePlan && (
@@ -676,7 +676,7 @@ export default function PricingPage() {
                     Active
                   </span>
                 )}
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide text-center leading-tight">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-black text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide text-center leading-tight">
                   Everything included
                 </span>
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-blue-600/80 mb-1">
@@ -713,7 +713,7 @@ export default function PricingPage() {
                       ? "bg-gray-700 text-gray-600 cursor-not-allowed"
                       : isActivePlan
                         ? "bg-emerald-600 text-gray-900 cursor-default"
-                        : "bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20"
+                        : "bg-indigo-600 hover:bg-indigo-500 text-black shadow-lg shadow-cyan-500/20"
                   }`}
                 >
                   {isActivePlan ? "Activated" : "Start 14-day free trial"}
@@ -740,14 +740,14 @@ export default function PricingPage() {
               <details key={q} className="group rounded-xl border border-gray-200 bg-gray-50 p-5 cursor-pointer">
                 <summary className="flex items-center justify-between font-medium text-gray-900 list-none">
                   {q}
-                  <span className="ml-4 text-cyan-600">&#8964;</span>
+                  <span className="ml-4 text-indigo-700">&#8964;</span>
                 </summary>
                 <p className="mt-3 text-sm text-gray-600 leading-relaxed">{a}</p>
               </details>
             ))}
           </div>
           <div className="text-center mt-8">
-            <p className="text-sm text-gray-500">Still have questions? <a href="mailto:support@vectrios.com" className="text-cyan-600 hover:underline">Email us</a></p>
+            <p className="text-sm text-gray-500">Still have questions? <a href="mailto:support@vectrios.com" className="text-indigo-700 hover:underline">Email us</a></p>
           </div>
         </div>
       </main>
@@ -755,7 +755,7 @@ export default function PricingPage() {
       {(isRouteTransitioning || (preparingAutoResume && !resumeTriggered)) && (
         <div className="fixed inset-0 z-[80] bg-white/95 backdrop-blur-sm flex items-center justify-center">
           <div className="text-center">
-            <svg className="animate-spin w-8 h-8 text-cyan-500 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
+            <svg className="animate-spin w-8 h-8 text-indigo-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>

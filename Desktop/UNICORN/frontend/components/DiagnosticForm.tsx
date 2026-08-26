@@ -159,7 +159,7 @@ export default function DiagnosticForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-medium rounded-lg transition"
+        className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-medium rounded-lg transition"
       >
         {loading ? "Analyzing..." : "Analyze My Close Rate Risk"}
       </button>

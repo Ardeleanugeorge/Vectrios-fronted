@@ -408,12 +408,12 @@ export default function LoginPage() {
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-4">Sign In</h1>
             <p className="text-gray-600">
-              Access your Vectri<span className="text-cyan-400">OS</span> dashboard.
+              Access your Vectri<span className="text-indigo-500">OS</span> dashboard.
             </p>
           </div>
 
           {infoMessage && (
-            <div className="mb-6 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-300 text-sm">
+            <div className="mb-6 p-4 bg-indigo-600/10 border border-indigo-600/30 rounded-xl text-cyan-300 text-sm">
               {infoMessage}
             </div>
           )}
@@ -447,7 +447,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
               >
                 {submitting ? "Sending…" : "Email me a sign-in code"}
               </button>
@@ -500,7 +500,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={submitting || otpCode.length !== 6}
-                className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
               >
                 {submitting ? "Signing in…" : "Verify & sign in"}
               </button>
@@ -521,7 +521,7 @@ export default function LoginPage() {
                   type="button"
                   disabled={submitting}
                   onClick={() => void sendOtpCode()}
-                  className="text-cyan-400 hover:text-cyan-300 disabled:opacity-50"
+                  className="text-indigo-500 hover:text-cyan-300 disabled:opacity-50"
                 >
                   Resend code
                 </button>
@@ -570,7 +570,7 @@ export default function LoginPage() {
                   <span className="text-gray-700">No account yet?</span>
                   <Link
                     href="/signup"
-                    className="inline-flex items-center rounded-md bg-cyan-500 hover:bg-cyan-400 px-3 py-1.5 text-black font-semibold transition"
+                    className="inline-flex items-center rounded-md bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-black font-semibold transition"
                   >
                     Create account
                   </Link>
@@ -585,7 +585,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
               >
                 {submitting ? "Signing In..." : "Sign In"}
               </button>
@@ -616,7 +616,7 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-gray-600 mt-8">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/signup" className="text-indigo-500 hover:text-cyan-300">
               Sign up
             </Link>
           </p>

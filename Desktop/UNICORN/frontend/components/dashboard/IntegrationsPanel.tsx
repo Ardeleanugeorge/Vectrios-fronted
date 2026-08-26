@@ -135,7 +135,7 @@ export default function IntegrationsPanel() {
               <button
                 onClick={connectGoogle}
                 disabled={connecting === "google"}
-                className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black text-xs font-semibold transition-colors"
+                className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-black text-xs font-semibold transition-colors"
               >
                 {connecting === "google" ? "Connecting..." : "Connect"}
               </button>
@@ -177,7 +177,7 @@ export default function IntegrationsPanel() {
               <button
                 onClick={connectHubspot}
                 disabled={connecting === "hubspot"}
-                className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black text-xs font-semibold transition-colors"
+                className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-black text-xs font-semibold transition-colors"
               >
                 {connecting === "hubspot" ? "Connecting..." : "Connect"}
               </button>

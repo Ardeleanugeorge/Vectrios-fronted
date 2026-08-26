@@ -116,7 +116,7 @@ function QuestionBlock({
           onClick={() => onAnswer(true)}
           className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
             value === true
-              ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
+              ? "border-indigo-600 bg-indigo-600/10 text-indigo-500"
               : "border-gray-200 hover:border-gray-600 text-gray-700"
           }`}
         >
@@ -598,9 +598,9 @@ export default function OnboardingPage() {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
                     step < currentStep
-                      ? "bg-cyan-500 text-black"
+                      ? "bg-indigo-600 text-black"
                       : step === currentStep
-                      ? "bg-cyan-500 text-black"
+                      ? "bg-indigo-600 text-black"
                       : "bg-gray-800 text-gray-600"
                   }`}
                 >
@@ -609,7 +609,7 @@ export default function OnboardingPage() {
                 {step < totalSteps && (
                   <div
                     className={`flex-1 h-1 mx-2 ${
-                      step < currentStep ? "bg-cyan-500" : "bg-gray-800"
+                      step < currentStep ? "bg-indigo-600" : "bg-gray-800"
                     }`}
                   />
                 )}
@@ -625,7 +625,7 @@ export default function OnboardingPage() {
         {currentStep === 1 && (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <div className="mb-4 p-3 rounded-lg border border-cyan-500/30 bg-cyan-950/25 max-w-2xl mx-auto">
+              <div className="mb-4 p-3 rounded-lg border border-indigo-600/30 bg-cyan-950/25 max-w-2xl mx-auto">
                 <p className="text-sm text-cyan-200 font-medium">
                   To unlock accurate revenue-risk results and activate your selected plan/trial, complete these fields first.
                 </p>
@@ -638,7 +638,7 @@ export default function OnboardingPage() {
                 We'll calculate exact ARR at risk, close rate impact, and recovery potential
               </p>
               {cameFromInstantScan && (
-                <p className="text-sm text-cyan-500/90 mt-4 max-w-lg mx-auto">
+                <p className="text-sm text-indigo-600/90 mt-4 max-w-lg mx-auto">
                   Website and ARR band below are carried from your instant scan (and unlock flow). Confirm or tweak –{" "}
                   <span className="text-gray-600">Step 2 only asks for current vs. target close rates.</span>
                 </p>
@@ -925,7 +925,7 @@ export default function OnboardingPage() {
               disabled={!canProceed()}
               className={`px-6 py-3 rounded-lg transition ${
                 canProceed()
-                  ? "bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
+                  ? "bg-indigo-600 hover:bg-indigo-500 text-black font-semibold"
                   : "bg-gray-800 text-gray-600 cursor-not-allowed"
               }`}
             >
@@ -934,11 +934,11 @@ export default function OnboardingPage() {
           ) : (
             <div className="flex flex-col items-end gap-3">
               {isSubmitting && (
-                <div className="flex items-center gap-2 text-xs text-cyan-400/80 animate-pulse">
+                <div className="flex items-center gap-2 text-xs text-indigo-500/80 animate-pulse">
                   <div className="flex gap-1">
-                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
                   <span>{submitPhases[submitPhase]}</span>
                 </div>
@@ -948,7 +948,7 @@ export default function OnboardingPage() {
                 disabled={!canProceed() || isSubmitting}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg transition ${
                   canProceed() && !isSubmitting
-                    ? "bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
+                    ? "bg-indigo-600 hover:bg-indigo-500 text-black font-semibold"
                     : "bg-gray-800 text-gray-600 cursor-not-allowed"
                 }`}
               >
@@ -968,7 +968,7 @@ export default function OnboardingPage() {
       {isRouteTransitioning && (
         <div className="fixed inset-0 z-[80] bg-white/95 backdrop-blur-sm flex items-center justify-center">
           <div className="text-center">
-            <svg className="animate-spin w-8 h-8 text-cyan-500 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
+            <svg className="animate-spin w-8 h-8 text-indigo-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>

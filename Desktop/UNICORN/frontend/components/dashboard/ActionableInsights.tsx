@@ -246,7 +246,7 @@ function CopyButton({ text, onCopied }: { text: string; onCopied?: () => void })
       className={`flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-md border transition-all duration-150 ${
         copied
           ? "text-emerald-600 border-emerald-600/40 bg-emerald-950/30"
-          : "text-blue-600 border-cyan-700/30 bg-cyan-950/10 hover:bg-cyan-950/30 hover:border-cyan-500/40"
+          : "text-blue-600 border-cyan-700/30 bg-cyan-950/10 hover:bg-cyan-950/30 hover:border-indigo-600/40"
       }`}
     >
       {copied ? (
@@ -321,7 +321,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
     >
       {/* Header */}
       <div className="px-4 pt-4 pb-3 border-b border-gray-200/60">
-        <p className="text-xs font-semibold uppercase tracking-wide text-cyan-500/90">
+        <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600/90">
           Fix #{index} — {fix.title}
         </p>
         {monthlyChip && monthlyChip !== "—" && (
@@ -524,7 +524,7 @@ export default function ActionableInsights({
           <ul className="space-y-1.5">
             {effectiveLayer.affected_areas?.map((area) => (
               <li key={area} className="text-sm text-gray-700 flex items-start gap-2">
-                <span className="text-cyan-500 mt-0.5">•</span>
+                <span className="text-indigo-600 mt-0.5">•</span>
                 <span>{area}</span>
               </li>
             ))}

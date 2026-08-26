@@ -207,7 +207,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
       {/* Legend */}
       <div className="px-8 py-3 bg-white border-b border-gray-200 flex items-center gap-5 text-[10px] text-gray-600">
         <div className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-full bg-cyan-400 border-2 border-white inline-block" />
+          <span className="w-3 h-3 rounded-full bg-indigo-500 border-2 border-white inline-block" />
           Your score
         </div>
         <div className="flex items-center gap-1.5">

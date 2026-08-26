@@ -40,7 +40,7 @@ export default function PrivacyPage() {
             <div>
               <h3 className="font-semibold mb-3">Content URLs</h3>
               <p className="text-gray-600">
-                URLs to content assets (landing pages, sales pages, marketing materials) provided for structural analysis. Vectri<span className="text-cyan-400">OS</span> accesses publicly available content at these URLs. We do not access password-protected or private content unless explicitly granted access.
+                URLs to content assets (landing pages, sales pages, marketing materials) provided for structural analysis. Vectri<span className="text-indigo-500">OS</span> accesses publicly available content at these URLs. We do not access password-protected or private content unless explicitly granted access.
               </p>
             </div>
             <div>
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
           <h2 className="text-2xl font-bold mb-6">What We Do NOT Collect</h2>
           <div className="space-y-4 text-gray-700">
             <p className="text-gray-600 font-semibold">
-              Vectri<span className="text-cyan-400">OS</span> does not access customer CRM data unless explicitly provided.
+              Vectri<span className="text-indigo-500">OS</span> does not access customer CRM data unless explicitly provided.
             </p>
             <p className="text-gray-600">
               We do not collect:
@@ -127,7 +127,7 @@ export default function PrivacyPage() {
           <h2 className="text-2xl font-bold mb-6">Data Sharing</h2>
           <div className="space-y-4 text-gray-700">
             <p className="text-gray-600">
-              Vectri<span className="text-cyan-400">OS</span> does not sell, rent, or trade your data. We share data only in the following circumstances:
+              Vectri<span className="text-indigo-500">OS</span> does not sell, rent, or trade your data. We share data only in the following circumstances:
             </p>
             <ul className="list-disc list-inside space-y-2 text-gray-600 ml-4">
               <li><strong>Service Providers:</strong> With trusted third-party services (hosting, payment processing) under strict confidentiality agreements</li>
@@ -152,7 +152,7 @@ export default function PrivacyPage() {
               <li><strong>Audit Logs:</strong> Retained for 1 year for security and compliance</li>
             </ul>
             <p className="text-gray-600 mt-4">
-              See our <Link href="/data-retention" className="text-cyan-400 hover:text-cyan-300 underline">Data Retention & Deletion Policy</Link> for complete details.
+              See our <Link href="/data-retention" className="text-indigo-500 hover:text-cyan-300 underline">Data Retention & Deletion Policy</Link> for complete details.
             </p>
           </div>
         </section>
@@ -186,7 +186,7 @@ export default function PrivacyPage() {
               For privacy-related questions or requests:
             </p>
             <p className="text-gray-600">
-              Email: <a href="mailto:privacy@vectrios.com" className="text-cyan-400 hover:text-cyan-300">privacy@vectrios.com</a>
+              Email: <a href="mailto:privacy@vectrios.com" className="text-indigo-500 hover:text-cyan-300">privacy@vectrios.com</a>
             </p>
           </div>
         </section>
@@ -194,13 +194,13 @@ export default function PrivacyPage() {
         {/* Links */}
         <div className="pt-8 border-t border-gray-200">
           <div className="flex flex-wrap gap-6 text-sm">
-            <Link href="/security" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/security" className="text-indigo-500 hover:text-cyan-300">
               Security & Data Handling →
             </Link>
-            <Link href="/data-retention" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/data-retention" className="text-indigo-500 hover:text-cyan-300">
               Data Retention Policy →
             </Link>
-            <Link href="/terms" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/terms" className="text-indigo-500 hover:text-cyan-300">
               Terms of Service →
             </Link>
           </div>

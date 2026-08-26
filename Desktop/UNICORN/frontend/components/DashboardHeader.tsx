@@ -10,8 +10,8 @@ import Link from "next/link"
 
 const PLAN_COLORS: Record<string, string> = {
   starter: "text-gray-500 bg-gray-800 border-gray-200",
-  growth: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
-  scale: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
+  growth: "text-indigo-500 bg-indigo-600/10 border-indigo-600/30",
+  scale: "text-indigo-500 bg-indigo-600/10 border-indigo-600/30",
   trial: "text-amber-400 bg-amber-500/10 border-amber-500/30",
 }
 
@@ -418,8 +418,8 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link href="/account" className="text-2xl font-bold text-gray-900 hover:text-cyan-400 transition">
-            Vectri<span className="text-cyan-400">OS</span>
+          <Link href="/account" className="text-2xl font-bold text-gray-900 hover:text-indigo-500 transition">
+            Vectri<span className="text-indigo-500">OS</span>
           </Link>
 
           {/* Right side */}
@@ -447,8 +447,8 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                   <p className="text-xs text-gray-500">{user.email}</p>
                 )}
               </div>
-              <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
-                <span className="text-cyan-400 font-semibold">{headerPrimaryInitial}</span>
+              <div className="w-10 h-10 rounded-full bg-indigo-600/20 border border-indigo-600/30 flex items-center justify-center">
+                <span className="text-indigo-500 font-semibold">{headerPrimaryInitial}</span>
               </div>
               <svg
                 className={`w-5 h-5 text-gray-500 transition-transform ${showMenu ? "rotate-180" : ""}`}

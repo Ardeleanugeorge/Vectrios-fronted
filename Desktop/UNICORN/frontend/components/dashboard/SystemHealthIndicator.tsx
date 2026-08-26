@@ -136,7 +136,7 @@ export default function SystemHealthIndicator({
               <span>{primaryRiskDriver}</span>
             </div>
             <p className="text-[10px] text-gray-600 mt-1">
-              <a href="#revenue-alignment-map" className="text-cyan-600 hover:text-blue-600 hover:underline">
+              <a href="#revenue-alignment-map" className="text-indigo-700 hover:text-blue-600 hover:underline">
                 Open Alignment Map
               </a>
             </p>
