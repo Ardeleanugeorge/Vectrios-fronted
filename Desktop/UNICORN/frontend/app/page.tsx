@@ -270,10 +270,7 @@ export default function Home() {
             )}
           </form>
           <div className="mb-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-amber-50 px-3 py-1 text-xs sm:text-sm text-amber-800">
-              <span className="font-semibold">No data yet</span>
-              <span className="text-amber-700">Run your first scan to create your baseline</span>
-            </div>
+            
             <p className="text-xs text-gray-500 mt-2">
               Monitoring starts after baseline is created for your domain.
             </p>
@@ -340,15 +337,15 @@ export default function Home() {
               Pipeline fills with deals that stall before close
             </li>
             <li className="flex items-center gap-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
+              
               Value proposition takes too long to register
             </li>
             <li className="flex items-center gap-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
+              
               Buyers go quiet — no objection, no decision
             </li>
             <li className="flex items-center gap-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
+              
               Close rates drop with no obvious cause
             </li>
           </ul>
