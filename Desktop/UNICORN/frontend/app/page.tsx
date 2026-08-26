@@ -230,7 +230,7 @@ export default function Home() {
           <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
             Track messaging alignment, ICP clarity, and conversion anchor density across your entire digital footprint.
           </p>
-          <p className="text-sm md:text-base text-amber-900 font-medium mb-6 max-w-2xl mx-auto">
+          <p className="text-sm md:text-base text-gray-900 font-medium mb-6 max-w-2xl mx-auto">
             As products evolve and markets shift, messaging structural integrity degrades naturally. VectriOS provides continuous visibility into this drift — before it compounds into pipeline friction.
           </p>
 
@@ -315,9 +315,9 @@ export default function Home() {
 {/* -- QUALIFICATION STRIP ----------------------------------------- */}
       <section className="border-t border-b border-slate-200 bg-slate-50">
         <div className="max-w-6xl mx-auto px-6 py-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-          <span className="text-xs text-gray-500 uppercase tracking-widest font-medium shrink-0">Built for</span>
+          <span className="text-sm text-gray-700 uppercase tracking-widest font-semibold shrink-0">Built for</span>
           {["B2B SaaS ($500K-$10M ARR)", "CROs protecting close rates", "RevOps tracking pipeline weekly", "Product Marketing tracking positioning drift"].map(r => (
-            <span key={r} className="flex items-center gap-1.5 text-sm text-gray-700">
+            <span key={r} className="flex items-center gap-1.5 text-base text-gray-800 font-medium">
               <span className="text-cyan-600 font-bold text-xs">&#10003;</span>
               {r}
             </span>
