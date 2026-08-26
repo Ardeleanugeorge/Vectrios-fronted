@@ -1210,8 +1210,7 @@ function ScanResultsContent() {
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold mb-2 text-gray-900 max-w-xl mx-auto leading-snug">
-              You&apos;re losing {modeledMonthlyLossLabel ? `~${modeledMonthlyLossLabel}` : "~$13K-$25K/month"}
-            </h2>
+              Address Structural Messaging Drift Before It Restricts Pipeline Velocity.</h2>
             <p className="text-gray-600 mb-5 text-sm max-w-2xl mx-auto leading-relaxed">
               Modeled using benchmark-adjusted close-rate compression vs 500+ SaaS peer set.
             </p>
