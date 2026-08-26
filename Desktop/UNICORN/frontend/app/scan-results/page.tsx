@@ -102,7 +102,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   if (status === "partial") {
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-        <p className="text-yellow-400 font-semibold text-sm mb-1">
+        <p className="text-gray-700 font-semibold text-sm mb-1">
           Partial scan
         </p>
         <p className="text-xs text-gray-600">
@@ -130,7 +130,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   if (status === "success" && confidence !== null && confidence !== undefined && confidence < 50) {
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-        <p className="text-yellow-400 font-semibold text-sm mb-1">
+        <p className="text-gray-700 font-semibold text-sm mb-1">
           Low confidence (limited content)
         </p>
         <p className="text-xs text-gray-600">
@@ -153,7 +153,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   if (!status && confidence !== null && confidence !== undefined && confidence < 50) {
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-        <p className="text-yellow-400 font-semibold text-sm mb-1">
+        <p className="text-gray-700 font-semibold text-sm mb-1">
           Low confidence (limited content)
         </p>
         <p className="text-xs text-gray-600">
@@ -1307,7 +1307,7 @@ function ScanResultsContent() {
                 <>
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-3 text-center lg:text-left max-w-4xl">
                     {impact && mLow !== null && mHigh !== null
-                      ? `You're losing ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}/month`
+                      ? `Unmonitored structural drift compounds into an estimated ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}/month`
                       : "Structural conversion loss confirmed"}
                   </h3>
                   <p className="text-base font-semibold text-orange-600 mb-2 text-center lg:text-left">
@@ -1477,7 +1477,7 @@ function ScanResultsContent() {
             ) : isAuthenticated && !hasActivePlan ? (
               /* -- STATE B: Authenticated but no active plan ? upgrade CTA -- */
               <div className="p-5 sm:p-6 rounded-xl bg-gray-50 border border-amber-800/40">
-                <p className="text-xs font-semibold text-amber-400/90 uppercase tracking-wider mb-2">
+                <p className="text-xs font-semibold text-gray-700/90 uppercase tracking-wider mb-2">
                   Stop the leakage before it compounds further
                 </p>
                 <p className="text-sm text-gray-700 mb-3">
@@ -1491,7 +1491,7 @@ function ScanResultsContent() {
                     "24h automated monitoring",
                   ].map((line) => (
                     <li key={line} className="flex items-start gap-2">
-                      <span className="text-amber-400 mt-0.5 shrink-0" aria-hidden>✓</span>
+                      <span className="text-gray-700 mt-0.5 shrink-0" aria-hidden>✓</span>
                       <span>{line}</span>
                     </li>
                   ))}
