@@ -493,9 +493,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4 text-slate-900">How messaging gaps turn into lost revenue</h2>
           <p className="text-lg text-gray-600 mb-8">
-            Even small drops in clarity can quietly cost $3K&ndash;$10K/month.
-            Most teams don&apos;t notice until pipeline slows.
-          </p>
+            Incremental degradation in messaging clarity compounds into measurable conversion compression over 60-90 day cycles.</p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
               { metric: "Lower clarity", desc: "Fewer qualified opportunities reach the next step" },
