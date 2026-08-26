@@ -290,7 +290,7 @@ export default function Home() {
               Takes 30 seconds &mdash; No signup &mdash; Instant baseline
             </p>
             <p className="text-gray-500 leading-relaxed border-t border-slate-200 dark:border-gray-200/80 pt-3">
-              Get your baseline risk score, see where revenue leaks, then track drift weekly.
+              Get your baseline risk score, identify conversion compression points, and track drift weekly.
             </p>
           </div>
 
@@ -335,7 +335,7 @@ export default function Home() {
           <p className="text-2xl text-cyan-600 font-semibold mb-8">
             Your GTM messaging is where it starts.
           </p>
-          <p className="text-xl text-gray-700 mb-6">It happens when:</p>
+          <p className="text-xl text-gray-700 mb-6">Signals of Unmonitored Messaging Drift:</p>
           <ul className="space-y-4 text-lg text-gray-600 mb-8 ml-6">
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
