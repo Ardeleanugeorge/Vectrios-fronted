@@ -310,7 +310,7 @@ export default function Home() {
       </section>
 {/* -- QUALIFICATION STRIP ----------------------------------------- */}
       <section className="border-t border-b border-slate-200 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-6 py-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+        <div className="max-w-6xl mx-auto px-6 py-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 px-4">
           <span className="text-sm text-gray-700 uppercase tracking-widest font-semibold shrink-0">Built for</span>
           {["B2B SaaS ($500K-$10M ARR)", "CROs protecting close rates", "RevOps tracking pipeline weekly", "Product Marketing tracking positioning drift"].map(r => (
             <span key={r} className="flex items-center gap-1.5 text-base text-gray-800 font-medium">
