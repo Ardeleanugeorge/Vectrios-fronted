@@ -594,7 +594,7 @@ export default function PricingPage() {
       <main className="max-w-6xl mx-auto px-6 py-12">
         {scanMonthlyLoss && (
           <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-300 text-red-800 text-sm text-center font-medium">
-            ✓ Baseline successfully established. Your 14-day tracking configuration is ready.{" "}
+            ✓ Baseline successfully established. Your 14-day tracking configuration is ready." "}
             <span className="font-bold text-red-700">
               {formatCurrency(scanMonthlyLoss.low)}–{formatCurrency(scanMonthlyLoss.high)}/month
             </span>
@@ -622,11 +622,11 @@ export default function PricingPage() {
 
         <div className="max-w-2xl mx-auto mb-12">
           <div className="p-7 bg-gradient-to-br from-cyan-950/40 to-[#111827] rounded-2xl border border-blue-200 text-center">
-            <p className="text-cyan-200/90 font-semibold mb-2 text-lg">
+            <p className="text-white font-semibold mb-2 text-lg">
               Activate Revenue Architecture Monitoring
             </p>
             <h2 className="text-2xl font-bold mb-2">14-day trial — full Scale access</h2>
-            <p className="text-gray-200 text-sm mb-6">
+            <p className="text-slate-200 text-sm mb-6">
               Every trial includes the full Scale playbook so you can see the complete recovery path — not a watered-down demo.
             </p>
             <button
@@ -638,7 +638,7 @@ export default function PricingPage() {
             >
               Start 14-day free trial
             </button>
-            <p className="text-xs text-gray-300 mt-3 font-medium">No charge today · cancel anytime · full access in under 10 minutes</p>
+            <p className="text-xs text-slate-200 mt-3 font-medium">No charge today · cancel anytime · full access in under 10 minutes</p>
           </div>
         </div>
 
@@ -759,7 +759,7 @@ export default function PricingPage() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            <p className="text-sm text-gray-700">ContinuingΓÇª</p>
+            <p className="text-sm text-gray-900">ContinuingΓÇª</p>
             {(selectedPlanName || pendingActivationLabel) && (
               <p className="text-xs text-blue-700 mt-2">
                 Activating {selectedPlanName || pendingActivationLabel}...
