@@ -296,7 +296,6 @@ export default function Home() {
                 href="/saas-revenue-index"
                 className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 border border-slate-200 hover:border-cyan-500/40 hover:bg-cyan-50/30 transition-all text-sm text-gray-600"
               >
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 <span className="font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
                   {scanCount.toLocaleString("en-US")}+
                 </span>
