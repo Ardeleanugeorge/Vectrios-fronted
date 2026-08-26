@@ -26,13 +26,13 @@ export interface Plan {
 export const PLANS: Plan[] = [
   {
     name: "Scale",
-    headline: "Stop the leakage. Recover the revenue.",
+    headline: "Govern messaging integrity. Stabilize pipeline velocity.",
     ctaLabel: "Start 14-day free trial",
     priceMonthly: 299,
     priceAnnual: 239, // per month when billed annually (~$2,868/year, save $720)
     maxUsers: 20,
     features: [
-      "Exact pages causing revenue leakage",
+      "Exact pages causing conversion compression",
       "Prioritized recovery playbook with dollar impact per fix",
       "Before/after copy fixes with modeled revenue recovery",
       "ARR at risk + close-rate compression modeling",
