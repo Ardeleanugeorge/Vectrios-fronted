@@ -287,7 +287,7 @@ export default function Home() {
           )}
           <div className="text-xs sm:text-sm text-gray-500 mb-8 space-y-3 max-w-lg mx-auto">
             <p className="font-medium text-gray-700">
-              Takes 30 seconds &mdash; No signup &mdash; Instant baseline
+              Takes 30 seconds. No signup required for baseline report.
             </p>
             <p className="text-gray-500 leading-relaxed border-t border-slate-200 dark:border-gray-200/80 pt-3">
               Get your baseline risk score, identify conversion compression points, and track drift weekly.
