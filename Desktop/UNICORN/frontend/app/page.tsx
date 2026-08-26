@@ -318,7 +318,7 @@ export default function Home() {
       <section className="border-t border-b border-slate-200 bg-slate-50">
         <div className="max-w-6xl mx-auto px-6 py-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
           <span className="text-xs text-gray-500 uppercase tracking-widest font-medium shrink-0">Built for</span>
-          {["B2B SaaS ($500K-$10M ARR)", "CROs protecting close rates", "RevOps tracking pipeline weekly", "Founders losing deals silently"].map(r => (
+          {["B2B SaaS ($500K-$10M ARR)", "CROs protecting close rates", "RevOps tracking pipeline weekly", "Product Marketing tracking positioning drift"].map(r => (
             <span key={r} className="flex items-center gap-1.5 text-sm text-gray-700">
               <span className="text-cyan-600 font-bold text-xs">&#10003;</span>
               {r}
@@ -465,11 +465,9 @@ export default function Home() {
       {/* -- 4. WHAT IT DOES ----------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">Why deals slow down (without you noticing)</h2>
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">Why High-Growth Pipelines Experience Conversion Decay</h2>
           <p className="text-lg text-gray-600 mb-8">
-            Buyers don&apos;t say no. They just don&apos;t move forward.
-            Nothing looks broken. But conversion quietly drops.
-          </p>
+            In B2B SaaS, messaging structural integrity degrades naturally over time. Standard analytics tools create diagnostic blindspots — pipeline friction, value delay, and proof dilution go undetected until conversion drops.</p>
 
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
             <ul className="space-y-4 text-lg text-gray-700">
@@ -548,7 +546,7 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
-            Your pipeline is already affected. Find out by how much.
+            Establish continuous visibility into your revenue architecture.
           </h2>
           <p className="text-lg text-gray-600 mb-8">
             Scan your site to create a baseline in 30 seconds.
@@ -558,7 +556,7 @@ export default function Home() {
             href="/signup"
             className="inline-block px-12 py-5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-lg"
           >
-            Detect hidden revenue loss
+            Establish Domain Baseline
           </Link>
           <div className="mt-4">
             <p className="text-sm text-gray-500">
