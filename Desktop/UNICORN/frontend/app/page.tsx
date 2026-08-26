@@ -376,7 +376,7 @@ export default function Home() {
             and <span className="text-gray-700 font-medium">weak proof delaying decisions</span>
           </p>
           <p className="text-center text-sm md:text-base text-gray-500 mb-10 max-w-xl mx-auto leading-relaxed">
-            Often nobody notices until the pipeline slows.
+            Structural misalignment typically surfaces 60-90 days after onset — after pipeline has already been affected.
           </p>
 
           {/* Mock Dashboard */}
