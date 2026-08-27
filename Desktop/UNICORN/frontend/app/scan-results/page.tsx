@@ -1438,6 +1438,7 @@ function ScanResultsContent() {
                       Structural monitoring provides early detection before pipeline metrics reflect the impact.
                     </p>
                   </div>
+                  {canShowFinancials && (
                   <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-1">Preview of your recovery model</p>
                     <p className="text-[11px] text-gray-600 mb-3">Based on 500+ SaaS revenue architectures</p>
