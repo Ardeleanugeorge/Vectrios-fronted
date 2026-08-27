@@ -1176,10 +1176,9 @@ function ScanResultsContent() {
                   </span>
                 ) : (
                   <span className="text-xs opacity-80">
-                    Estimated preventable loss:{" "}
-                    {financialImpact
-                      ? `${formatCurrency(financialImpact.arr_at_risk_low)}–${formatCurrency(financialImpact.arr_at_risk_high)}/year`
-                      : "modeled range loading"}
+                    {hasHighConfidence && canShowFinancials && financialImpact
+                      ? `Estimated preventable loss: ${formatCurrency(financialImpact.arr_at_risk_low)}–${formatCurrency(financialImpact.arr_at_risk_high)}/year`
+                      : "Calibrate your metrics above to model financial exposure"}
                   </span>
                 )}
               </div>
