@@ -1302,7 +1302,7 @@ function ScanResultsContent() {
               </ul>
             </div>
             {canShowFinancials && <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">We&apos;ve mapped exactly</p>}
-            <div className="space-y-2.5 mb-4 text-left max-w-md mx-auto">
+{canShowFinancials && (            <div className="space-y-2.5 mb-4 text-left max-w-md mx-auto">
               {[
                 "Which pages are causing the loss",
                 "Where conversion breaks",
@@ -1314,7 +1314,7 @@ function ScanResultsContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <span>{line}</span>
-                </div>
+                </div>)}
               ))}
             </div>
             {canShowFinancials && (
