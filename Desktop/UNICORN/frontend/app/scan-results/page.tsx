@@ -1400,9 +1400,9 @@ function ScanResultsContent() {
               Structural Diagnostic Complete
             </p>
             {(() => {
-              const impact = financialImpact
-              const mLow = impact?.monthly_loss_low ?? null
-              const mHigh = impact?.monthly_loss_high ?? null
+              const impact = canShowFinancials ? financialImpact : null
+              const mLow = canShowFinancials ? (financialImpact?.monthly_loss_low ?? null) : null
+              const mHigh = canShowFinancials ? (financialImpact?.monthly_loss_high ?? null) : null
               const drivers = driverImpacts
               return (
                 <>
