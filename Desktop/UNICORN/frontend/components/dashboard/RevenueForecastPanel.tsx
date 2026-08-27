@@ -87,7 +87,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
 
       {/* -- PRIMARY: Annual Revenue at Risk --------------------------- */}
       {hasRevenueDelta && (
-        <div className={`p-5 rounded-lg border ${uiState === "low" ? "bg-emerald-950/20 border-emerald-900/30" : "bg-red-50"}`}>
+        <div className={`p-5 rounded-lg border ${uiState === "low" ? "bg-gray-50 border-gray-200" : "bg-red-50"}`}>
           <div className={`text-xs uppercase tracking-wide mb-2 font-medium ${uiState === "low" ? "text-emerald-600/80" : "text-red-600/80"}`}>
             {uiState === "low" ? "Optimization Potential" : "Estimated ARR at Risk"}
           </div>
@@ -124,7 +124,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
 
       {/* -- RECOVERY POTENTIAL ---------------------------------------- */}
       {hasRecovery && (
-        <div className="p-5 bg-green-50">
+        <div className="p-5 bg-gray-50">
           <div className="text-xs text-green-600/80 uppercase tracking-wide mb-2 font-medium">
             Recovery Potential
           </div>
