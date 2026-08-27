@@ -1014,7 +1014,7 @@ function ScanResultsContent() {
               </p>
               {canShowFinancials && financialImpact ? (
                 <p className="text-base text-gray-800 font-semibold">
-                  Estimated impact: {modeledAnnualLossLabel} at risk
+                  {canShowFinancials ? `Estimated impact: ${modeledAnnualLossLabel} at risk` : "Financial model requires calibration above"}
                 </p>
               ) : hasHighConfidence ? (
                 <div className="mt-3 space-y-3">
@@ -1321,7 +1321,7 @@ function ScanResultsContent() {
               Companies at your level typically recover $80K-$220K/year.
                   <span className="block text-xs text-gray-500 mt-1">Modeled using your structural scan + peer conversion benchmarks. Refined further once CRM connects.</span>
             </p>
-            {modeledAnnualLossLabel && (
+            {modeledAnnualLossLabel && canShowFinancials && (
               <p className="text-sm text-gray-600 font-semibold mb-4">
                 Estimated impact: ~{modeledAnnualLossLabel} at risk
               </p>
