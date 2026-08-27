@@ -1419,7 +1419,7 @@ function ScanResultsContent() {
                   <p className="text-sm text-gray-600 mb-6 max-w-3xl text-center lg:text-left">
                     Modeled using benchmark-adjusted close-rate compression vs 500+ SaaS peer set.
                   </p>
-                  <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-indigo-600/[0.04] p-4">
+                  {canShowFinancials && <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-indigo-600/[0.04] p-4">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-2">We&apos;ve built a full revenue model for your business</p>
                     <ul className="space-y-1.5 text-sm text-gray-700">
                       <li>Annual revenue at risk</li>
@@ -1429,7 +1429,7 @@ function ScanResultsContent() {
                     </ul>
                   </div>
                   <div className="max-w-3xl mb-6">
-                    <p className="text-sm font-semibold text-gray-700">
+                    {canShowFinancials && <p className="text-sm font-semibold text-gray-700">
                       {impact && mLow !== null && mHigh !== null
                         ? `Unmonitored structural drift compounds into an estimated ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}.`
                         : "Structural messaging drift compounds into measurable pipeline compression over time."}
@@ -1438,7 +1438,7 @@ function ScanResultsContent() {
                       Structural monitoring provides early detection before pipeline metrics reflect the impact.
                     </p>
                   </div>
-                  <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
+                  {canShowFinancials && <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-1">Preview of your recovery model</p>
                     <p className="text-[11px] text-gray-600 mb-3">Based on 500+ SaaS revenue architectures</p>
                     <div className="grid sm:grid-cols-3 gap-3">
