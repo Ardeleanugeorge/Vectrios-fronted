@@ -1470,10 +1470,14 @@ function ScanResultsContent() {
                       </div>
                     )}
                   </div>
+                  )}
+                  {canShowFinancials && (
+                  
                   <p className="text-xs text-gray-600 mb-6">
                     Companies at your level typically recover $80K-$220K/year.
                   <span className="block text-xs text-gray-500 mt-1">Modeled using your structural scan + peer conversion benchmarks. Refined further once CRM connects.</span>
                   </p>
+                  )}
 
                   <div className="grid lg:grid-cols-12 gap-6 mb-8">
                     <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-white border border-gray-200/70">
