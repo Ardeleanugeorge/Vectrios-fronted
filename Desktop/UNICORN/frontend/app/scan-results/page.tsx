@@ -1169,10 +1169,9 @@ function ScanResultsContent() {
                 </span>
                 {(data.percentile ?? 0) >= 50 ? (
                   <span className="text-xs opacity-80">
-                    You're still missing{" "}
-                    {financialImpact
-                      ? `~${formatCurrency(financialImpact.recovery_low)}–${formatCurrency(financialImpact.recovery_high)}/year`
-                      : "a modeled recovery range"}
+                    {canShowFinancials && financialImpact
+                      ? `Opportunity: ~${formatCurrency(financialImpact.recovery_low)}–${formatCurrency(financialImpact.recovery_high)}/year recoverable`
+                      : "Calibrate your metrics above to model recovery potential"}
                   </span>
                 ) : (
                   <span className="text-xs opacity-80">
