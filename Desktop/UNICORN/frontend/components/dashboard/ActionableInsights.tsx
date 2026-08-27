@@ -343,7 +343,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
             href={fix.page_url}
             target="_blank"
             rel="noreferrer"
-            className="block text-[11px] text-blue-600 hover:text-cyan-200 mt-1.5"
+            className="block text-[11px] text-indigo-600 hover:text-indigo-500 mt-1.5"
             onClick={() => trackPlaybookFixPageClick(analyticsPayload)}
           >
             Open page →
@@ -501,7 +501,7 @@ export default function ActionableInsights({
           }`}
         >
           <p className={`text-sm font-bold ${isHigh ? "text-orange-600" : "text-gray-700"}`}>
-            {isHigh ? "🔥 HIGH IMPACT (optional)" : "⚡ IMPACT"} — {pri.level}
+            {isHigh ? "🔥 HIGH IMPACT (optional)" : "IMPACT"} — {pri.level}
           </p>
           <p className="text-xs text-gray-600 mt-1">{pri.display_line || pri.reason}</p>
           <p className="text-[11px] text-gray-600 mt-1">Low risk ≠ zero upside at scale — highest ROI comes from targeted fixes.</p>
@@ -559,7 +559,7 @@ export default function ActionableInsights({
           {effectiveLayer.behavioral_insight && effectiveLayer.behavioral_insight.exit_pct >= 25 && (
             <div className="mb-3 px-4 py-3 rounded-lg bg-cyan-950/30 border border-cyan-700/40 flex flex-col gap-1">
               <p className="text-[10px] font-bold uppercase tracking-widest text-blue-600 mb-0.5">
-                ⚡ Behavioral signal detected — GA4 + GSC
+                Behavioral signal detected — GA4 + GSC
               </p>
               <p className="text-sm text-cyan-100 leading-snug">
                 Page{" "}
