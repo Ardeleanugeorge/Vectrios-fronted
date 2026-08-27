@@ -333,8 +333,12 @@ function ScanResultsContent() {
   const [otpVerifying, setOtpVerifying] = useState(false)
   const [unlocked, setUnlocked] = useState(false)
   const [showFinancialImpact, setShowFinancialImpact] = useState(false)
-  const [arrRange, setArrRange] = useState("")
-  const [trafficRange, setTrafficRange] = useState("")
+  const [arrRange, setArrRange] = useState(() => {
+    try { return sessionStorage.getItem("vectrios_arr_range") || "" } catch { return "" }
+  })
+  const [trafficRange, setTrafficRange] = useState(() => {
+    try { return sessionStorage.getItem("vectrios_traffic_range") || "" } catch { return "" }
+  })
   const [isCalibrated, setIsCalibrated] = useState(false)
   const [calibratedImpact, setCalibratedImpact] = useState<any>(null)
   const [calibrating, setCalibrating] = useState(false)
@@ -1050,7 +1054,7 @@ function ScanResultsContent() {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Annual ARR</label>
-                      <select value={arrRange} onChange={e => setArrRange(e.target.value)}
+                      <select value={arrRange} onChange={e => { setArrRange(e.target.value); try { sessionStorage.setItem('vectrios_arr_range', e.target.value) } catch {} }}
                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
                         <option value="">Select range</option>
                         <option value="under-500k">Under $500K</option>
@@ -1061,7 +1065,7 @@ function ScanResultsContent() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Monthly Visitors</label>
-                      <select value={trafficRange} onChange={e => setTrafficRange(e.target.value)}
+                      <select value={trafficRange} onChange={e => { setTrafficRange(e.target.value); try { sessionStorage.setItem('vectrios_traffic_range', e.target.value) } catch {} }}
                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
                         <option value="">Select volume</option>
                         <option value="under-10k">Under 10,000</option>
@@ -1082,7 +1086,7 @@ function ScanResultsContent() {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Annual ARR</label>
-                      <select value={arrRange} onChange={e => setArrRange(e.target.value)}
+                      <select value={arrRange} onChange={e => { setArrRange(e.target.value); try { sessionStorage.setItem('vectrios_arr_range', e.target.value) } catch {} }}
                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
                         <option value="">Select range</option>
                         <option value="under-500k">Under $500K</option>
@@ -1093,7 +1097,7 @@ function ScanResultsContent() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Monthly Visitors</label>
-                      <select value={trafficRange} onChange={e => setTrafficRange(e.target.value)}
+                      <select value={trafficRange} onChange={e => { setTrafficRange(e.target.value); try { sessionStorage.setItem('vectrios_traffic_range', e.target.value) } catch {} }}
                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
                         <option value="">Select volume</option>
                         <option value="under-10k">Under 10,000</option>
