@@ -1328,6 +1328,7 @@ function ScanResultsContent() {
                 <li>Messaging shifts across key pages</li>
               </ul>
             </div>
+                  )}
             {canShowFinancials && <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">We&apos;ve mapped exactly</p>}
             {canShowFinancials && (
               <div className="space-y-2.5 mb-4 text-left max-w-md mx-auto">
@@ -1483,6 +1484,7 @@ function ScanResultsContent() {
                   </p>
                   )}
 
+                  {canShowFinancials && (
                   <div className="grid lg:grid-cols-12 gap-6 mb-8">
                     <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-white border border-gray-200/70">
                       <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-3">Where your revenue is leaking most</p>
