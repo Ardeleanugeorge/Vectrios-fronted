@@ -11,8 +11,8 @@ interface DashboardSummaryCardProps {
 export default function DashboardSummaryCard({ companyName, monthlyLoss, riiScore, benchmarkPct, riskLevel }: DashboardSummaryCardProps) {
   if (!riiScore && !monthlyLoss) return null
   const lossStr = monthlyLoss ? `$${Math.round(monthlyLoss / 1000)}K` : null
-  const riskColor = !riiScore ? "text-gray-900" : riiScore < 30 ? "text-green-600" : riiScore < 60 ? "text-amber-600" : "text-red-600"
-  const riskBg = !riiScore ? "bg-gray-50" : riiScore < 30 ? "bg-green-50 border-green-200" : riiScore < 60 ? "bg-amber-50 border-amber-200" : "bg-red-50 border-red-200"
+  const riskColor = "text-gray-900"
+  const riskBg = "bg-gray-50 border-gray-200"
 
   return (
     <div className={`mb-6 p-5 rounded-xl border ${riskBg} flex items-center justify-between gap-6 flex-wrap`}>
