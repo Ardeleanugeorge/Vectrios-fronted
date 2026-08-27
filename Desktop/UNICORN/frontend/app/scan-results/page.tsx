@@ -1150,7 +1150,7 @@ function ScanResultsContent() {
                   {!unlocked
                     ? "Revenue impact detected – full breakdown after unlock"
                     : financialImpact
-                      ? `Modeled impact: ~${modeledMonthlyLossLabel}`
+                      ? (modeledMonthlyLossLabel ? `Modeled impact: ~${modeledMonthlyLossLabel}` : "Revenue impact detected")
                       : "Revenue impact detected"}
                 </p>
                 {typeof data.percentile === "number" && (
