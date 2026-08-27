@@ -970,7 +970,7 @@ function ScanResultsContent() {
 
   const wideLayout = unlocked
 
-  const modeledMonthlyLossLabel = (() => {
+  const modeledMonthlyLossLabel = !canShowFinancials ? null : (() => {
     if (!financialImpact) return null
     return `${formatCurrency(financialImpact.monthly_loss_low)}–${formatCurrency(financialImpact.monthly_loss_high)}/month`
   })()
@@ -1403,7 +1403,7 @@ function ScanResultsContent() {
               const impact = canShowFinancials ? financialImpact : null
               const mLow = canShowFinancials ? (financialImpact?.monthly_loss_low ?? null) : null
               const mHigh = canShowFinancials ? (financialImpact?.monthly_loss_high ?? null) : null
-              const drivers = driverImpacts
+              const drivers = canShowFinancials ? driverImpacts : []
               return (
                 <>
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-3 text-center lg:text-left max-w-4xl">
