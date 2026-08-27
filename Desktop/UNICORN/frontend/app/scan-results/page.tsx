@@ -1301,7 +1301,7 @@ function ScanResultsContent() {
                 <li>Messaging shifts across key pages</li>
               </ul>
             </div>
-            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">We&apos;ve mapped exactly</p>
+            {canShowFinancials && <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">We&apos;ve mapped exactly</p>}
             <div className="space-y-2.5 mb-4 text-left max-w-md mx-auto">
               {[
                 "Which pages are causing the loss",
