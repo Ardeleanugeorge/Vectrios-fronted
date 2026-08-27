@@ -87,24 +87,24 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
 
       {/* -- PRIMARY: Annual Revenue at Risk --------------------------- */}
       {hasRevenueDelta && (
-        <div className={`p-5 rounded-lg border ${uiState === "low" ? "bg-gray-50 border-gray-200" : "bg-red-50"}`}>
-          <div className={`text-xs uppercase tracking-wide mb-2 font-medium ${uiState === "low" ? "text-emerald-600/80" : "text-red-600/80"}`}>
+        <div className={`p-5 rounded-lg border ${uiState === "low" ? "bg-gray-50 border-gray-200" : "bg-gray-50 border-gray-200"}`}>
+          <div className={`text-xs uppercase tracking-wide mb-2 font-medium ${uiState === "low" ? "text-gray-600" : "text-gray-600"}`}>
             {uiState === "low" ? "Optimization Potential" : "Estimated ARR at Risk"}
           </div>
-          <div className={`text-4xl font-bold ${uiState === "low" ? "text-emerald-600" : "text-red-600"}`}>
+          <div className={`text-4xl font-bold ${uiState === "low" ? "text-gray-800" : "text-gray-900"}`}>
             {uiState === "low" ? "+" : ""}{formatCurrency(forecast.annual_revenue_delta!)}
-            <span className={`text-lg font-normal ml-2 ${uiState === "low" ? "text-emerald-600/60" : "text-red-600/60"}`}>/ year</span>
+            <span className={`text-lg font-normal ml-2 ${uiState === "low" ? "text-gray-500" : "text-gray-500"}`}>/ year</span>
           </div>
           {forecast.primary_stage && (
             <div className={`mt-2 text-sm ${uiState === "low" ? "text-emerald-600/70" : "text-red-600/70"}`}>
               {uiState === "low" ? "Primary optimization gap: " : "Primary compression stage: "}
-              <span className={`font-medium ${uiState === "low" ? "text-emerald-600" : "text-red-600"}`}>{forecast.primary_stage}</span>
+              <span className={`font-medium ${uiState === "low" ? "text-gray-800" : "text-gray-900"}`}>{forecast.primary_stage}</span>
             </div>
           )}
           {forecast.close_rate_compression !== undefined && (
             <div className="mt-1 text-xs text-gray-600">
               {uiState === "low" ? "Performance improvement available: " : "Modeled close-rate impact: "}
-              <span className={uiState === "low" ? "text-emerald-600" : "text-red-600"}>
+              <span className={uiState === "low" ? "text-gray-800" : "text-gray-900"}>
                 {uiState === "low" ? "+" : "-"}{Math.abs(forecast.close_rate_compression).toFixed(1)}%
               </span>
               {forecast.lost_deals_annual !== undefined && forecast.lost_deals_annual > 0 && (
