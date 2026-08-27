@@ -1419,6 +1419,7 @@ function ScanResultsContent() {
                   <p className="text-sm text-gray-600 mb-6 max-w-3xl text-center lg:text-left">
                     Modeled using benchmark-adjusted close-rate compression vs 500+ SaaS peer set.
                   </p>
+                  {canShowFinancials && (
                   <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-indigo-600/[0.04] p-4">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-2">We&apos;ve built a full revenue model for your business</p>
                     <ul className="space-y-1.5 text-sm text-gray-700">
@@ -1428,6 +1429,8 @@ function ScanResultsContent() {
                       <li>Revenue trajectory over time</li>
                     </ul>
                   </div>
+                  )}
+                  {canShowFinancials && (
                   <div className="max-w-3xl mb-6">
                     <p className="text-sm font-semibold text-gray-700">
                       {impact && mLow !== null && mHigh !== null
@@ -1438,6 +1441,7 @@ function ScanResultsContent() {
                       Structural monitoring provides early detection before pipeline metrics reflect the impact.
                     </p>
                   </div>
+                  )}
                   {canShowFinancials && (
                   <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-1">Preview of your recovery model</p>
