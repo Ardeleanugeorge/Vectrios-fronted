@@ -366,7 +366,6 @@ function ScanResultsContent() {
   const confidenceScore = data?.confidence ?? 0
   const hasHighConfidence = confidenceScore >= 60
   const canShowFinancials = hasHighConfidence && arrRange !== "" && isCalibrated
-  const effectiveImpact = calibratedImpact || financialImpact
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   /** true = has active trial or paid plan ? full paywall bypass */
   const [hasActivePlan, setHasActivePlan] = useState(false)
@@ -562,6 +561,7 @@ function ScanResultsContent() {
   }
 
   const financialImpact = data?.financial_impact || null
+  const effectiveImpact = calibratedImpact || financialImpact
   const driverImpacts = Array.isArray(data?.driver_impacts) ? (data?.driver_impacts as any[]) : []
 
   const readStoredUserEmail = (): string => {
