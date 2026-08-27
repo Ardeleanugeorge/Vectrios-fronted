@@ -336,9 +336,37 @@ function ScanResultsContent() {
   const [arrRange, setArrRange] = useState("")
   const [trafficRange, setTrafficRange] = useState("")
   const [isCalibrated, setIsCalibrated] = useState(false)
+  const [calibratedImpact, setCalibratedImpact] = useState<any>(null)
+  const [calibrating, setCalibrating] = useState(false)
+
+  const handleCalibrate = async () => {
+    if (!arrRange) return
+    setCalibrating(true)
+    try {
+      const res = await apiFetch("/calculate-exposure", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rii: data?.rii ?? 50,
+          arr_range: arrRange,
+          traffic_range: trafficRange,
+        }),
+      })
+      if (res.ok) {
+        const result = await res.json()
+        setCalibratedImpact(result)
+        setIsCalibrated(true)
+      }
+    } catch (e) {
+      console.error("Calibration failed", e)
+    } finally {
+      setCalibrating(false)
+    }
+  }
   const confidenceScore = data?.confidence ?? 0
   const hasHighConfidence = confidenceScore >= 60
-  const canShowFinancials = hasHighConfidence && arrRange !== ""
+  const canShowFinancials = hasHighConfidence && arrRange !== "" && isCalibrated
+  const effectiveImpact = calibratedImpact || financialImpact
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   /** true = has active trial or paid plan ? full paywall bypass */
   const [hasActivePlan, setHasActivePlan] = useState(false)
@@ -1043,7 +1071,7 @@ function ScanResultsContent() {
                       </select>
                     </div>
                   </div>
-                  <button onClick={() => setIsCalibrated(true)} disabled={!arrRange}
+                  <button onClick={handleCalibrate} disabled={!arrRange}
                     className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg py-2 text-sm font-semibold transition">
                     Calibrate Revenue Model →
                   </button>
@@ -1075,7 +1103,7 @@ function ScanResultsContent() {
                       </select>
                     </div>
                   </div>
-                  <button onClick={() => setIsCalibrated(true)} disabled={!arrRange}
+                  <button onClick={handleCalibrate} disabled={!arrRange}
                     className="w-full mt-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg py-2 text-sm font-semibold transition">
                     Calibrate Revenue Model →
                   </button>
