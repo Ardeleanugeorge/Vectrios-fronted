@@ -333,15 +333,9 @@ function ScanResultsContent() {
   const [otpVerifying, setOtpVerifying] = useState(false)
   const [unlocked, setUnlocked] = useState(false)
   const [showFinancialImpact, setShowFinancialImpact] = useState(false)
-  const [arrRange, setArrRange] = useState(() => {
-    try { return sessionStorage.getItem("vectrios_arr_range") || "" } catch { return "" }
-  })
-  const [trafficRange, setTrafficRange] = useState(() => {
-    try { return sessionStorage.getItem("vectrios_traffic_range") || "" } catch { return "" }
-  })
-  const [isCalibrated, setIsCalibrated] = useState(() => {
-    try { return sessionStorage.getItem("vectrios_calibrated") === "1" } catch { return false }
-  })
+  const [arrRange, setArrRange] = useState("")
+  const [trafficRange, setTrafficRange] = useState("")
+  const [isCalibrated, setIsCalibrated] = useState(false)
   const [calibratedImpact, setCalibratedImpact] = useState<any>(null)
   const [calibrating, setCalibrating] = useState(false)
 
@@ -361,7 +355,7 @@ function ScanResultsContent() {
       if (res.ok) {
         const result = await res.json()
         setCalibratedImpact(result)
-        setIsCalibrated(true); try { sessionStorage.setItem('vectrios_calibrated', '1') } catch {}
+        setIsCalibrated(true)
       }
     } catch (e) {
       console.error("Calibration failed", e)
@@ -1056,7 +1050,7 @@ function ScanResultsContent() {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Annual ARR</label>
-                      <select value={arrRange} onChange={e => { setArrRange(e.target.value); try { sessionStorage.setItem('vectrios_arr_range', e.target.value) } catch {} }}
+                      <select value={arrRange} onChange={e => setArrRange(e.target.value)}
                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
                         <option value="">Select range</option>
                         <option value="under-500k">Under $500K</option>
@@ -1067,7 +1061,7 @@ function ScanResultsContent() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Monthly Visitors</label>
-                      <select value={trafficRange} onChange={e => { setTrafficRange(e.target.value); try { sessionStorage.setItem('vectrios_traffic_range', e.target.value) } catch {} }}
+                      <select value={trafficRange} onChange={e => setTrafficRange(e.target.value)}
                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
                         <option value="">Select volume</option>
                         <option value="under-10k">Under 10,000</option>
@@ -1088,7 +1082,7 @@ function ScanResultsContent() {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Annual ARR</label>
-                      <select value={arrRange} onChange={e => { setArrRange(e.target.value); try { sessionStorage.setItem('vectrios_arr_range', e.target.value) } catch {} }}
+                      <select value={arrRange} onChange={e => setArrRange(e.target.value)}
                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
                         <option value="">Select range</option>
                         <option value="under-500k">Under $500K</option>
@@ -1099,7 +1093,7 @@ function ScanResultsContent() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Monthly Visitors</label>
-                      <select value={trafficRange} onChange={e => { setTrafficRange(e.target.value); try { sessionStorage.setItem('vectrios_traffic_range', e.target.value) } catch {} }}
+                      <select value={trafficRange} onChange={e => setTrafficRange(e.target.value)}
                         className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
                         <option value="">Select volume</option>
                         <option value="under-10k">Under 10,000</option>
@@ -1425,7 +1419,7 @@ function ScanResultsContent() {
                   <p className="text-sm text-gray-600 mb-6 max-w-3xl text-center lg:text-left">
                     Modeled using benchmark-adjusted close-rate compression vs 500+ SaaS peer set.
                   </p>
-                  {canShowFinancials && <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-indigo-600/[0.04] p-4">
+                  <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-indigo-600/[0.04] p-4">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-2">We&apos;ve built a full revenue model for your business</p>
                     <ul className="space-y-1.5 text-sm text-gray-700">
                       <li>Annual revenue at risk</li>
@@ -1435,7 +1429,7 @@ function ScanResultsContent() {
                     </ul>
                   </div>
                   <div className="max-w-3xl mb-6">
-                    {canShowFinancials && <p className="text-sm font-semibold text-gray-700">
+                    <p className="text-sm font-semibold text-gray-700">
                       {impact && mLow !== null && mHigh !== null
                         ? `Unmonitored structural drift compounds into an estimated ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}.`
                         : "Structural messaging drift compounds into measurable pipeline compression over time."}
@@ -1444,7 +1438,7 @@ function ScanResultsContent() {
                       Structural monitoring provides early detection before pipeline metrics reflect the impact.
                     </p>
                   </div>
-                  {canShowFinancials && <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
+                  <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-1">Preview of your recovery model</p>
                     <p className="text-[11px] text-gray-600 mb-3">Based on 500+ SaaS revenue architectures</p>
                     <div className="grid sm:grid-cols-3 gap-3">
