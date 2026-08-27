@@ -339,7 +339,9 @@ function ScanResultsContent() {
   const [trafficRange, setTrafficRange] = useState(() => {
     try { return sessionStorage.getItem("vectrios_traffic_range") || "" } catch { return "" }
   })
-  const [isCalibrated, setIsCalibrated] = useState(false)
+  const [isCalibrated, setIsCalibrated] = useState(() => {
+    try { return sessionStorage.getItem("vectrios_calibrated") === "1" } catch { return false }
+  })
   const [calibratedImpact, setCalibratedImpact] = useState<any>(null)
   const [calibrating, setCalibrating] = useState(false)
 
@@ -359,7 +361,7 @@ function ScanResultsContent() {
       if (res.ok) {
         const result = await res.json()
         setCalibratedImpact(result)
-        setIsCalibrated(true)
+        setIsCalibrated(true); try { sessionStorage.setItem('vectrios_calibrated', '1') } catch {}
       }
     } catch (e) {
       console.error("Calibration failed", e)
