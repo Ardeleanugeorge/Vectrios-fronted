@@ -23,10 +23,10 @@ export default function DashboardSummaryCard({ companyName, monthlyLoss, riiScor
           {lossStr ? (
             <>is losing <span className="text-red-600 font-bold">{lossStr}/month</span> in pipeline</>
           ) : (
-            <>revenue risk detected</>
+            <>Architecture drift detected — structural monitoring active</>
           )}
         </h2>
-        <p className="text-sm text-gray-600 mt-1">Fix the playbook below to recover revenue.</p>
+        <p className="text-sm text-gray-600 mt-1">Baseline established. Playbook generated from live structural analysis.</p>
       </div>
       <div className="flex gap-4 flex-wrap">
         {riiScore && (
