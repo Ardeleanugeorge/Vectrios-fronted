@@ -1392,6 +1392,7 @@ function ScanResultsContent() {
 
         {/* Dupa email: single Page 4 experience (uses backend numbers when available, safe fallbacks otherwise). */}
         {unlocked && showFinancialImpact && !isBlocked && (
+          {canShowFinancials ? (
           <div
             id="financial-impact-instant"
             className="p-6 sm:p-8 lg:p-10 bg-white rounded-xl border border-gray-200 shadow-sm mb-8"
@@ -1580,6 +1581,11 @@ function ScanResultsContent() {
                   Back to Dashboard
                 </Link>
               </div>
+          ) : (
+          <div className="p-6 sm:p-8 bg-white rounded-xl border border-gray-200 mb-8">
+            <p className="text-sm text-gray-700 mb-4 font-medium">Calibrate your metrics above to model financial exposure for this domain.</p>
+          </div>
+          )}
             ) : isAuthenticated && !hasActivePlan ? (
               /* -- STATE B: Authenticated but no active plan ? upgrade CTA -- */
               <div className="p-5 sm:p-6 rounded-xl bg-gray-50 border border-amber-800/40">
