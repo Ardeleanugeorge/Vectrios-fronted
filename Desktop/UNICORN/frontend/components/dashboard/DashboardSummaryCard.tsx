@@ -12,7 +12,7 @@ export default function DashboardSummaryCard({ companyName, monthlyLoss, riiScor
   if (!riiScore && !monthlyLoss) return null
   const lossStr = monthlyLoss ? `$${Math.round(monthlyLoss / 1000)}K` : null
   const riskColor = "text-gray-900"
-  const riskBg = "bg-gray-50 border-gray-200"
+  const riskBg = "bg-indigo-50 border-indigo-100"
 
   return (
     <div className={`mb-6 p-5 rounded-xl border ${riskBg} flex items-center justify-between gap-6 flex-wrap`}>
