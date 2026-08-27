@@ -515,7 +515,7 @@ const delayTimer = setTimeout(() => {
       
       {/* ALERTS FIRST — Critical alerts at top */}
       {hasCriticalAlerts && (
-        <div className={`p-4 rounded border-l-4 ${ (rii !== null && rii < 40) ? "bg-amber-500/10 border-amber-500" : "bg-red-500/10 border-red-500" }`}>
+        <div className={`p-4 rounded border-l-4 ${ (rii !== null && rii < 40) ? "bg-gray-100 border-gmber-500" : "bg-red-500/10 border-red-500" }`}>
           <p className={`text-sm font-semibold mb-1 ${ (rii !== null && rii < 40) ? "text-amber-600" : "text-red-600" }`}>Recent critical structural events detected</p>
           <p className="text-xs text-gray-600">
             {criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? 's' : ''} require immediate attention.
@@ -524,7 +524,7 @@ const delayTimer = setTimeout(() => {
       )}
 
       {hasInconsistency && (
-        <div className="p-3 rounded border border-amber-600/30 bg-amber-900/10">
+        <div className="p-3 rounded border border-gray-200 bg-gray-50">
           <p className="text-xs text-amber-600 font-semibold">In review</p>
           <p className="text-xs text-amber-200/90">We detected mixed signals; numbers are correct, display emphasizes positives while monitoring risks separately.</p>
         </div>
@@ -624,9 +624,9 @@ const delayTimer = setTimeout(() => {
 
           {/* Fix this first — delta + action combo (killer UX) */}
           {revenueDelta.direction === "worse" && diagnostic?.action_layer?.fixes?.[0] && (
-            <div className="mx-4 mb-4 px-4 py-3 rounded-lg bg-orange-50">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-orange-600 mb-1.5">
-                🔴 Fix this first
+            <div className="mx-4 mb-4 px-4 py-3 rounded-lg bg-indigo-50 border border-indigo-100">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 mb-1.5">
+                Priority Fix
               </p>
               <p className="text-sm font-semibold text-gray-900">
                 {diagnostic.action_layer.fixes[0].title}
@@ -644,7 +644,7 @@ const delayTimer = setTimeout(() => {
 
       <div className={`p-5 lg:p-6 rounded-lg border ${
         uiState === "low" ? "border-emerald-700/40 bg-emerald-950/10"
-        : uiState === "medium" ? "border-amber-700/40 bg-amber-950/10"
+        : uiState === "medium" ? "border-gray-200 bg-gray-50"
         : "border-red-700/40 bg-red-50"
       }`}>
         <p className="text-lg font-semibold text-gray-900">{headline}</p>
@@ -736,7 +736,7 @@ const delayTimer = setTimeout(() => {
                 const cls = band === "on-track"
                   ? "text-emerald-600 bg-emerald-400/10 border-emerald-400/20"
                   : band === "warning"
-                  ? "text-amber-600 bg-amber-400/10 border-amber-400/20"
+                  ? "text-indigo-600 bg-indigo-50 border-indigo-200"
                   : "text-red-600 bg-red-400/10 border-red-400/20"
                 const label = band === "on-track" ? "SLA On Track" : band === "warning" ? "SLA Warning" : band === "breach" ? "SLA Breach" : "SLA"
                 return (
