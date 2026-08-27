@@ -338,7 +338,7 @@ function ScanResultsContent() {
   const [isCalibrated, setIsCalibrated] = useState(false)
   const confidenceScore = data?.confidence ?? 0
   const hasHighConfidence = confidenceScore >= 60
-  const canShowFinancials = hasHighConfidence && (isCalibrated || arrRange !== "")
+  const canShowFinancials = hasHighConfidence && arrRange !== ""
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   /** true = has active trial or paid plan ? full paywall bypass */
   const [hasActivePlan, setHasActivePlan] = useState(false)
