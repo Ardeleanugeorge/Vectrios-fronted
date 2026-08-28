@@ -1483,20 +1483,21 @@ function ScanResultsContent() {
                   </p>
                   )}
 
-                  <div className="grid lg:grid-cols-12 gap-6 mb-8">
-                    <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-white border border-gray-200/70">
-                      <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-3">Where your revenue is leaking most</p>
-                      <p className="text-xs text-gray-600 mb-3">
-                        This loss is not visible in your dashboard. It appears as slower deal cycles, lower close rates, and unqualified pipeline.
-                      </p>
-                      <div className="rounded-lg border border-white/10 bg-white/[0.02] p-3 mb-3">
-                        <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Why this is happening</p>
-                        <ul className="space-y-1.5 text-xs text-gray-700">
-                          <li>Your ICP is too broad -&gt; wrong buyers enter funnel</li>
-                          <li>Proof is not strong at decision stage</li>
-                          <li>Messaging shifts across key pages</li>
-                        </ul>
-                      </div>
+                  {canShowFinancials && (
+  <div className="grid lg:grid-cols-12 gap-6 mb-8">
+    <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-white border border-gray-200/70">
+      <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-3">Where your revenue is leaking most</p>
+      <p className="text-xs text-gray-600 mb-3">
+        This loss is not visible in your dashboard. It appears as slower deal cycles, lower close rates, and unqualified pipeline.
+      </p>
+      <div className="rounded-lg border border-white/10 bg-white/[0.02] p-3 mb-3">
+        <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Why this is happening</p>
+        <ul className="space-y-1.5 text-xs text-gray-700">
+          <li>Your ICP is too broad -&gt; wrong buyers enter funnel</li>
+          <li>Proof is not strong at decision stage</li>
+          <li>Messaging shifts across key pages</li>
+        </ul>
+      </div>
                       <div className="space-y-3">
                         {drivers.map((d: any, idx: number) => (
                           <div key={String(d.key || d.title)} className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
@@ -1550,7 +1551,7 @@ function ScanResultsContent() {
                         </p>
                       )}
                     </div>
-                  </div>
+                  </div>)}
                 </>
               )
             })()}
