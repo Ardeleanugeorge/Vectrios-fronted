@@ -532,6 +532,7 @@ export default function DashboardPage() {
           console.log("[DASHBOARD] Setting currentPlan to:", data.plan || null)
           setCurrentPlan(data.plan || null)
           setTrialDaysLeft(null)
+          setHasFullAccess(data.has_full_access === true)
         }
       } else {
         console.error("[DASHBOARD] Failed to load subscription:", response.status, response.statusText)
