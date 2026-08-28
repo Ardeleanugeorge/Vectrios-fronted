@@ -129,6 +129,7 @@ export default function DashboardPage() {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
+  const [hasFullAccess, setHasFullAccess] = useState<boolean | null>(null)
   const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null)
   const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
@@ -525,6 +526,7 @@ export default function DashboardPage() {
         if (data.billing_cycle === "trial") {
           console.log("[DASHBOARD] Setting currentPlan to 'scale' (trial has full access)")
           setCurrentPlan("scale")
+          setHasFullAccess(true)
           setTrialDaysLeft(typeof data.trial_days_left === "number" ? data.trial_days_left : null)
         } else {
           console.log("[DASHBOARD] Setting currentPlan to:", data.plan || null)
@@ -851,7 +853,7 @@ export default function DashboardPage() {
     }
   }
 // Trial expired check
-  const isTrialExpired = (currentPlan === null || currentPlan === undefined) && !subscriptionLoading
+  const isTrialExpired = hasFullAccess === false && !subscriptionLoading
 
   if (isTrialExpired) {
     return (
