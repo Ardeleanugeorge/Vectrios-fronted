@@ -69,9 +69,15 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
   )
 
   if (!forecast) return (
-    <div id="revenue-optimization-model" className="p-8 bg-gray-50 rounded-lg border border-gray-200 scroll-mt-24">
+    <div id="revenue-optimization-model" className="p-8 bg-white rounded-lg border border-indigo-100 scroll-mt-24">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Optimization Model</h2>
-      <p className="text-sm text-gray-600">Insufficient data for revenue calculation.</p>
+      <p className="text-sm font-medium text-gray-800 mb-2">Calibration Required</p>
+      <p className="text-xs text-gray-600 mb-4 leading-relaxed">
+        Financial exposure modeling requires your operational metrics. Add your ARR and deal size to generate a personalized revenue compression model.
+      </p>
+      <a href="/onboarding" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
+        Add Revenue Metrics →
+      </a>
     </div>
   )
 
