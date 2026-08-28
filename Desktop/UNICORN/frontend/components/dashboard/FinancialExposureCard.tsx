@@ -107,10 +107,16 @@ export default function FinancialExposureCard({
   // ── Fallback: forecast not yet available ──
   if (!forecast) {
     return (
-      <div className="relative z-0 p-8 bg-gray-50 rounded-lg border border-gray-200">
-        <p className="text-xs text-gray-600 uppercase tracking-wide mb-3">{sectionTitle}</p>
-        <p className="text-sm text-gray-600">Forecast not available yet.</p>
-        <p className="text-xs text-gray-600 mt-1">Run an assessment to see financial impact.</p>
+      <div className="relative z-0 p-8 bg-white rounded-lg border border-indigo-100">
+        <p className="text-xs text-gray-600 uppercase tracking-wider font-semibold mb-4">{sectionTitle}</p>
+        <p className="text-sm font-medium text-gray-800 mb-2">Revenue Exposure Model — Calibration Required</p>
+        <p className="text-xs text-gray-600 mb-4 leading-relaxed">
+          To generate a personalized financial exposure model, add your operational metrics in the onboarding settings.
+          This ensures all projections reflect your actual business scale.
+        </p>
+        <a href="/onboarding" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
+          Add Revenue Metrics →
+        </a>
       </div>
     )
   }
