@@ -1040,11 +1040,12 @@ function ScanResultsContent() {
               <p className="text-lg font-semibold text-gray-900 leading-snug mb-2">
                 Baseline Architecture Scan Complete
               </p>
-              {canShowFinancials && financialImpact ? (
-                <p className="text-base text-gray-800 font-semibold">
-                  {canShowFinancials ? `Estimated impact: ${modeledAnnualLossLabel} at risk` : "Financial model requires calibration above"}
+              {canShowFinancials && financialImpact && (
+                <p className="text-base text-gray-800 font-semibold mb-3">
+                  Estimated impact: {modeledAnnualLossLabel} at risk
                 </p>
-              ) : hasHighConfidence ? (
+              )}
+              {hasHighConfidence ? (
                 <div className="mt-3 space-y-3">
                   <p className="text-sm text-gray-600">Calibrate with your metrics for a personalized revenue exposure model.</p>
                   <div className="grid grid-cols-2 gap-3">
