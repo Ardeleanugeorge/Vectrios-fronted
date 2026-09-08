@@ -1041,75 +1041,13 @@ function ScanResultsContent() {
                 Baseline Architecture Scan Complete
               </p>
               {canShowFinancials && financialImpact && (
-                <p className="text-base text-gray-800 font-semibold mb-3">
+                <p className="text-base text-gray-800 font-semibold mb-2">
                   Estimated impact: {modeledAnnualLossLabel} at risk
                 </p>
               )}
-              {hasHighConfidence ? (
-                <div className="mt-3 space-y-3">
-                  <p className="text-sm text-gray-600">Calibrate with your metrics for a personalized revenue exposure model.</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Annual ARR</label>
-                      <select value={arrRange} onChange={e => setArrRange(e.target.value)}
-                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
-                        <option value="">Select range</option>
-                        <option value="under-500k">Under $500K</option>
-                        <option value="500k-2m">$500K – $2M</option>
-                        <option value="2m-10m">$2M – $10M</option>
-                        <option value="10m-plus">$10M+</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Monthly Visitors</label>
-                      <select value={trafficRange} onChange={e => setTrafficRange(e.target.value)}
-                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
-                        <option value="">Select volume</option>
-                        <option value="under-10k">Under 10,000</option>
-                        <option value="10k-50k">10,000 – 50,000</option>
-                        <option value="50k-200k">50,000 – 200,000</option>
-                        <option value="200k-plus">200,000+</option>
-                      </select>
-                    </div>
-                  </div>
-                  <button onClick={handleCalibrate} disabled={!arrRange}
-                    className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg py-2 text-sm font-semibold transition">
-                    Calibrate Revenue Model →
-                  </button>
-                </div>
-              ) : (
-                <div className="mt-3">
-                  <p className="text-sm text-gray-600 mb-3">Financial modeling requires higher content coverage ({confidenceScore}% confidence detected).</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Annual ARR</label>
-                      <select value={arrRange} onChange={e => setArrRange(e.target.value)}
-                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
-                        <option value="">Select range</option>
-                        <option value="under-500k">Under $500K</option>
-                        <option value="500k-2m">$500K – $2M</option>
-                        <option value="2m-10m">$2M – $10M</option>
-                        <option value="10m-plus">$10M+</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-semibold text-gray-600 uppercase tracking-wide mb-1">Monthly Visitors</label>
-                      <select value={trafficRange} onChange={e => setTrafficRange(e.target.value)}
-                        className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600">
-                        <option value="">Select volume</option>
-                        <option value="under-10k">Under 10,000</option>
-                        <option value="10k-50k">10,000 – 50,000</option>
-                        <option value="50k-200k">50,000 – 200,000</option>
-                        <option value="200k-plus">200,000+</option>
-                      </select>
-                    </div>
-                  </div>
-                  <button onClick={handleCalibrate} disabled={!arrRange}
-                    className="w-full mt-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg py-2 text-sm font-semibold transition">
-                    Calibrate Revenue Model →
-                  </button>
-                </div>
-              )}
+              <p className="text-sm text-gray-600 mt-2">
+                Financial exposure modeling available after activation. Activate monitoring to unlock your personalized revenue model.
+              </p>
             </div>
           )}
           {!wideLayout && !isBlocked && !financialImpact && (
