@@ -1045,7 +1045,7 @@ function ScanResultsContent() {
                   Estimated impact: {modeledAnnualLossLabel} at risk
                 </p>
               )}
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-sm text-gray-700 mt-2">
                 Financial exposure modeling available after activation. Activate monitoring to unlock your personalized revenue model.
               </p>
             </div>
@@ -1138,7 +1138,7 @@ function ScanResultsContent() {
                   <span className="text-xs opacity-80">
                     {canShowFinancials && financialImpact
                       ? `Opportunity: ~${formatCurrency(financialImpact.recovery_low)}–${formatCurrency(financialImpact.recovery_high)}/year recoverable`
-                      : "Calibrate your metrics above to model recovery potential"}
+                      : "Unlock the full simulation inside your secure console."}
                   </span>
                 ) : (
                   <span className="text-xs opacity-80">
