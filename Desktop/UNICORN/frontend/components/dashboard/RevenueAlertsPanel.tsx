@@ -107,16 +107,16 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
 
   const getSeverityColor = (severity: string, isHistorical: boolean) => {
     if (isHistorical && (riiScore !== null && riiScore < 40)) {
-      return "bg-amber-500/20 text-amber-300 border-amber-500/30"
+      return "bg-amber-500/20 text-amber-600 border-amber-500/30"
     }
     switch (severity) {
       case "critical":
       case "high":
-        return "bg-red-500/20 text-red-400 border-red-500/30"
+        return "bg-red-500/20 text-red-600 border-red-500/30"
       case "medium":
-        return "bg-amber-500/20 text-amber-400 border-amber-500/30"
+        return "bg-amber-500/20 text-amber-600 border-amber-500/30"
       default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30"
+        return "bg-gray-500/20 text-gray-600 border-gray-500/30"
     }
   }
 
@@ -154,27 +154,27 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
 
   if (loading) {
     return (
-      <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
-        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Active Alerts</h2>
-        <p className="text-sm text-gray-500">Loading alerts...</p>
+      <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
+        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Active Alerts</h2>
+        <p className="text-sm text-gray-600">Loading alerts...</p>
       </div>
     )
   }
 
   if (alerts.length === 0) {
     return (
-      <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
-        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Active Alerts</h2>
-        <p className="text-sm text-gray-500">No active alerts. All systems operational.</p>
+      <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
+        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Active Alerts</h2>
+        <p className="text-sm text-gray-600">No active alerts. All systems operational.</p>
       </div>
     )
   }
 
   return (
-    <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
+    <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold uppercase tracking-wide">Active Alerts</h2>
-        <span className="text-xs text-gray-500">{alerts.length} unread</span>
+        <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Active Alerts</h2>
+        <span className="text-xs text-gray-600">{alerts.length} unread</span>
       </div>
       
       <div className="space-y-0">
@@ -185,17 +185,17 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
           return (
           <div 
             key={alert.id || index}
-            className="flex items-start md:items-center gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0 group hover:bg-gray-800/30 transition"
+            className="flex items-start md:items-center gap-4 py-3 px-0 border-b border-gray-200 last:border-b-0 group hover:bg-gray-100"
           >
             <span className={`h-5 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded border flex-shrink-0 ${getSeverityColor(alert.severity, isHistorical)}`}>
               {isHistorical ? "HISTORICAL" : getSeverityLabel(alert.severity)}
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-300 leading-relaxed">
+              <p className="text-sm text-gray-700 leading-relaxed">
                 {alert.message}
               </p>
               {alert.timestamp && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   {formatTimeAgo(alert.timestamp)}
                 </p>
               )}
@@ -203,7 +203,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
             {!alert.is_read && (
               <button
                 onClick={() => handleMarkRead(alert.id)}
-                className="self-center text-xs text-gray-500 hover:text-gray-300 opacity-0 group-hover:opacity-100 transition"
+                className="self-center text-xs text-gray-600 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition"
                 title="Mark as read"
               >
                 –

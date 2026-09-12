@@ -49,9 +49,11 @@ interface PublicStats {
 function getRiskColor(risk: string | null) {
   if (!risk) return { bg: "bg-gray-500/10", text: "text-gray-600", dot: "bg-gray-500" };
   const r = risk.toLowerCase();
-  if (r.includes("high"))     return { bg: "bg-red-500/10",    text: "text-red-400",    dot: "bg-red-500" };
-  if (r.includes("moderate")) return { bg: "bg-yellow-500/10", text: "text-yellow-400", dot: "bg-yellow-500" };
-  return                             { bg: "bg-green-500/10",  text: "text-green-400",  dot: "bg-green-500" };
+  if (r.includes("inefficiency") || r.includes("high") || r.includes("critical"))
+    return { bg: "bg-red-500/10", text: "text-red-400", dot: "bg-red-500" };
+  if (r.includes("moderate") || r.includes("compression") || r.includes("detected"))
+    return { bg: "bg-yellow-500/10", text: "text-yellow-400", dot: "bg-yellow-500" };
+  return { bg: "bg-green-500/10", text: "text-green-400", dot: "bg-green-500" };
 }
 
 function RiiBar({ value }: { value: number | null }) {
@@ -144,9 +146,9 @@ export default function SaaSRevenueIndex() {
       {/* Header */}
       <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between">
         <Link href={PUBLIC_HOME_URL} className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
           <span className="text-sm font-semibold text-gray-900 tracking-wide">
-            Vectri<span className="text-cyan-400">OS</span>
+            Vectri<span className="text-indigo-500">OS</span>
           </span>
         </Link>
         <div className="flex items-center gap-4">
@@ -159,7 +161,7 @@ export default function SaaSRevenueIndex() {
           </button>
           <Link
             href={PUBLIC_HOME_URL}
-            className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+            className="text-xs text-indigo-500 hover:text-cyan-300 transition-colors"
           >
             Run your own scan
           </Link>
@@ -176,18 +178,21 @@ export default function SaaSRevenueIndex() {
           <p className="text-gray-700 text-lg max-w-2xl mx-auto mb-2">
             Most SaaS companies are losing {displayLossMin}–{displayLossMax}/month from messaging gaps they don&apos;t see.
           </p>
-          <p className="text-gray-600 text-sm max-w-2xl mx-auto">
+          <p className="text-gray-600 text-sm max-w-2xl mx-auto mb-6">
             This index shows how clearly each company&apos;s story supports revenue — so you can see where you stand.
           </p>
+          <a href="/" className="inline-block px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-sm">
+            Scan your site — see your RII
+          </a>
         </div>
 
         {/* Stats bar — real numbers */}
         <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
           {[
             { label: "Companies Analyzed", value: displayTotal.toLocaleString("en-US"), color: "text-gray-900" },
-            { label: "Average RII (lower = better)", value: displayAvgRii, color: "text-yellow-400" },
+            { label: "Average RII (lower = better)", value: displayAvgRii, color: "text-orange-600" },
           ].map(stat => (
-            <div key={stat.label} className="rounded-xl bg-white/[0.03] border border-white/5 p-5 text-center">
+            <div key={stat.label} className="rounded-xl bg-gray-50 border border-gray-200 p-5 text-center">
               <div className={`text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
               <div className="text-xs text-gray-600">{stat.label}</div>
             </div>
@@ -196,9 +201,9 @@ export default function SaaSRevenueIndex() {
 
         <p className="text-xs sm:text-sm text-gray-600 mb-10 max-w-3xl mx-auto text-center">
           Companies in this dataset quietly lose an estimated
-          <span className="text-amber-300 font-semibold"> {displayLossMin}–{displayLossMax}/month</span>{" "}
+          <span className="text-amber-700 font-semibold"> {displayLossMin}–{displayLossMax}/month</span>{" "}
           from messaging gaps that never show up in dashboards.{" "}
-          <span className="text-gray-600 text-xs">({displayBasis})</span>{" "}
+          <span className="text-gray-500 text-xs">({displayBasis})</span>{" "}
           Use this benchmark to understand how risky your own revenue architecture might be — then run your scan to see your exact exposure.
         </p>
 
@@ -293,7 +298,7 @@ export default function SaaSRevenueIndex() {
                 onClick={() => setFilter(f)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
                   filter === f
-                    ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300"
+                    ? "bg-indigo-600/20 border-indigo-600/40 text-cyan-300"
                     : "bg-white/[0.03] border-white/10 text-gray-600 hover:border-white/20"
                 }`}
               >
@@ -308,7 +313,7 @@ export default function SaaSRevenueIndex() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search domain..."
-            className="sm:ml-auto bg-white/[0.03] border border-white/10 rounded-lg px-4 py-1.5 text-sm text-gray-900 placeholder:text-gray-600 focus:outline-none focus:border-cyan-500/40 w-full sm:w-56"
+            className="sm:ml-auto bg-white/[0.03] border border-white/10 rounded-lg px-4 py-1.5 text-sm text-gray-900 placeholder:text-gray-600 focus:outline-none focus:border-indigo-600/40 w-full sm:w-56"
           />
         </div>
 
@@ -327,7 +332,7 @@ export default function SaaSRevenueIndex() {
 
           {loading && (
             <div className="py-20 text-center text-gray-600 text-sm">
-              <div className="w-5 h-5 border border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin mx-auto mb-3" />
+              <div className="w-5 h-5 border border-indigo-600/30 border-t-cyan-400 rounded-full animate-spin mx-auto mb-3" />
               Loading index...
             </div>
           )}
@@ -335,7 +340,7 @@ export default function SaaSRevenueIndex() {
           {!loading && filtered.length === 0 && (
             <div className="py-20 text-center">
               <p className="text-gray-600 text-sm">No companies scanned yet.</p>
-              <Link href={PUBLIC_HOME_URL} className="mt-3 inline-block text-cyan-400 text-sm hover:underline">
+              <Link href={PUBLIC_HOME_URL} className="mt-3 inline-block text-indigo-500 text-sm hover:underline">
                 Run the first scan
               </Link>
             </div>
@@ -407,7 +412,7 @@ export default function SaaSRevenueIndex() {
           </h3>
           <Link
             href={PUBLIC_HOME_URL}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-semibold text-sm transition-colors"
           >
             Run Free Revenue Scan
           </Link>
@@ -416,7 +421,7 @@ export default function SaaSRevenueIndex() {
       </main>
 
       <footer className="border-t border-white/5 px-6 py-6 text-center text-gray-600 text-xs">
-        Vectri<span className="text-cyan-400">OS</span> Revenue Architecture Index — data sourced from anonymous public website scans.
+        Vectri<span className="text-indigo-500">OS</span> Revenue Architecture Index — data sourced from anonymous public website scans.
         All scores based on structural messaging analysis only.
       </footer>
     </div>

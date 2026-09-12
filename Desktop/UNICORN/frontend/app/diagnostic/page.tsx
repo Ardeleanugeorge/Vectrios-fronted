@@ -5,7 +5,7 @@ export default function DiagnosticPage() {
     <main className="page-root p-8">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-3xl font-semibold mb-2">Close Rate Diagnostic</h2>
-        <p className="text-gray-400 mb-8">
+        <p className="text-gray-600 mb-8">
           Analyze your content to identify revenue leaks in your conversion system.
         </p>
         <DiagnosticForm />

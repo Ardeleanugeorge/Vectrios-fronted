@@ -1,6 +1,6 @@
 "use client"
 import { computeRevenueTruth, type AlertLite } from "./RevenueTruth"
-
+import { apiFetch } from "@/lib/api"
 import { API_URL } from '@/lib/config'
 
 import { useState, useEffect } from "react"
@@ -48,6 +48,7 @@ interface MonitoringStatus {
   monitoring_active: boolean
   created_at?: string
   last_evaluated_at?: string
+  source?: string
   data_coverage_pct?: number | null
   revenue_truth?: {
     headline: string
@@ -147,6 +148,70 @@ interface MonitoringLayerProps {
 
 type UiState = "low" | "medium" | "high"
 
+
+function DiagnosticNudge({ companyId, monitoringSource, lastEvaluated }: { 
+  companyId: string | null
+  monitoringSource?: string
+  lastEvaluated?: string | null
+}): JSX.Element | null {
+  const [scanning, setScanning] = useState(false)
+  const [scanComplete, setScanComplete] = useState(false)
+  const [error, setError] = useState("")
+
+  // Hide if monitoring has real data
+  const hasRealMonitoring = !!lastEvaluated || (monitoringSource && monitoringSource !== "fallback")
+  if (hasRealMonitoring || scanComplete) return null
+
+  const handleRun = async () => {
+    if (!companyId || scanning) return
+    setScanning(true)
+    setError("")
+    try {
+      const { apiFetch } = await import("@/lib/api")
+      const res = await apiFetch(`/company/${companyId}/run-diagnostic`, { method: "POST" })
+      if (res.ok) {
+        setScanComplete(true)
+        // Reload after 3 seconds to show fresh data
+        setTimeout(() => window.location.reload(), 3000)
+      } else {
+        setError("Scan failed. Please try again.")
+      }
+    } catch {
+      setError("Network error. Please try again.")
+    } finally {
+      setScanning(false)
+    }
+  }
+
+  if (scanComplete) return (
+    <div className="px-5 py-4 rounded-xl border border-emerald-500/40 bg-emerald-50 text-sm text-emerald-800 font-medium flex items-center gap-3">
+      <span className="text-emerald-600">&#10003;</span>
+      Baseline scan complete — monitoring activated. Dashboard refreshing...
+    </div>
+  )
+
+  return (
+    <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-indigo-600/30 bg-cyan-950/10">
+      <div>
+        <p className="text-sm font-semibold text-cyan-300">
+          Activate continuous revenue monitoring
+        </p>
+        <p className="text-xs text-gray-400 mt-0.5">
+          Run your baseline scan — monitoring then runs automatically every 24h and alerts you to drift.
+        </p>
+        {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
+      </div>
+      <button
+        onClick={handleRun}
+        disabled={scanning}
+        className="shrink-0 px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-black rounded-lg transition whitespace-nowrap"
+      >
+        {scanning ? "Scanning…" : "Run monitoring scan →"}
+      </button>
+    </div>
+  )
+}
+
 export default function MonitoringLayer({ 
   monitoringStatus, 
   diagnostic, 
@@ -239,8 +304,15 @@ export default function MonitoringLayer({
   const lastScan = monitoringStatus.last_evaluated_at || monitoringStatus.created_at || new Date().toISOString()
 
   // Extract RII for health indicator — diagnostic first, then monitoring structural scores fallback
-  const rii = diagnostic?.risk_score ?? ss?.rii_score ?? monitoringStatus.structural_health?.structural_health_score ?? null
+  const rii = (monitoringStatus.source === "monitoring" && ss?.rii_score != null)
+    ? ss.rii_score
+    : diagnostic?.risk_score ?? ss?.rii_score ?? monitoringStatus.structural_health?.structural_health_score ?? null
   const riskDelta = monitoringStatus.risk_delta_since_last_scan || null
+  // Enterprise: detect first scan — no history to compare yet
+  const isFirstScan = (
+    monitoringStatus.risk_delta_since_last_scan === null &&
+    (monitoringStatus.recent_drift_events || []).length === 0
+  )
   const uiState: UiState =
     monitoringStatus.ui_state_payload?.ui_state ??
     (rii !== null && rii < 40 ? "low" : rii !== null && rii < 70 ? "medium" : "high")
@@ -341,22 +413,23 @@ export default function MonitoringLayer({
       setPlaybookFetchDone(true)
       return
     }
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) {
-      setPlaybookFetchDone(true)
-      return
-    }
-    const diagFixesLen = diagnostic?.action_layer?.fixes?.length ?? 0
-    if (diagFixesLen > 0) {
-      setPlaybookFetchDone(true)
-    } else {
-      setPlaybookFetchDone(false)
-    }
-    let cancelled = false
-    fetch(`${API_URL}/playbook/${companyId}`, {
-      headers: { Authorization: `Bearer ${token}` },
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token") || ""
+    setPlaybookFetchDone(false)
+let cancelled = false
+const delayTimer = setTimeout(() => {
+
+
+
+
+
+
+
+
+
+    apiFetch(`/playbook/${companyId}`, {
+
+
     }).then(async (r) => {
-      if (!r.ok || cancelled) return
       const data = await r.json()
       const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 3) : []
       if (!fixesArr.length) return
@@ -389,11 +462,11 @@ export default function MonitoringLayer({
       const al: ActionLayerPayload = {
         issue_type: "general",
         primary_issue: { title: primary.title, description: primary.why },
-        affected_areas: [
-          "Homepage hero → top section (hero + headline)",
-          "Pricing page → headline + plan cards",
-          "Product page → hero + value props",
-        ],
+        affected_areas: newFixes.map((f: any) => { const labels: Record<string,string> = {"": "Homepage", "/": "Homepage", "pricing": "Pricing page", "product": "Product page", "about": "About page", "features": "Features page", "blog": "Blog", "demo": "Demo page"}; try { const u = new URL(f.page_url || "/"); const p = u.pathname.replace(/^\//, ""); return labels[p] ?? labels["/"+p] ?? (p ? p.charAt(0).toUpperCase() + p.slice(1) : "Homepage") } catch { return labels[f.page_url] ?? f.page_url ?? "Homepage" } }),
+
+
+
+
         fixes: mergedFixes,
         expected_impact: { close_rate_improvement: "", arr_recovery: "" },
         priority: { level: primary.impact_level, reason: primary.badges?.join(" · ") || "", display_line: undefined },
@@ -403,11 +476,13 @@ export default function MonitoringLayer({
       if (!cancelled) setPlaybookActionLayer(al)
     })
       .catch(() => {})
-      .finally(() => {
+  .finally(() => {
         if (!cancelled) setPlaybookFetchDone(true)
       })
+    }, 2000)
     return () => {
       cancelled = true
+      clearTimeout(delayTimer)
     }
   }, [companyId, diagnostic?.action_layer])
 
@@ -440,17 +515,17 @@ export default function MonitoringLayer({
       
       {/* ALERTS FIRST — Critical alerts at top */}
       {hasCriticalAlerts && (
-        <div className={`p-4 rounded border-l-4 ${ (rii !== null && rii < 40) ? "bg-amber-500/10 border-amber-500" : "bg-red-500/10 border-red-500" }`}>
-          <p className={`text-sm font-semibold mb-1 ${ (rii !== null && rii < 40) ? "text-amber-400" : "text-red-400" }`}>Recent critical structural events detected</p>
-          <p className="text-xs text-gray-400">
+        <div className={`p-4 rounded border-l-4 ${ (rii !== null && rii < 40) ? "bg-gray-100 border-gmber-500" : "bg-red-500/10 border-red-500" }`}>
+          <p className={`text-sm font-semibold mb-1 ${ (rii !== null && rii < 40) ? "text-amber-600" : "text-red-600" }`}>Recent critical structural events detected</p>
+          <p className="text-xs text-gray-600">
             {criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? 's' : ''} require immediate attention.
           </p>
         </div>
       )}
 
       {hasInconsistency && (
-        <div className="p-3 rounded border border-amber-600/30 bg-amber-900/10">
-          <p className="text-xs text-amber-300 font-semibold">In review</p>
+        <div className="p-3 rounded border border-gray-200 bg-gray-50">
+          <p className="text-xs text-amber-600 font-semibold">In review</p>
           <p className="text-xs text-amber-200/90">We detected mixed signals; numbers are correct, display emphasizes positives while monitoring risks separately.</p>
         </div>
       )}
@@ -466,50 +541,29 @@ export default function MonitoringLayer({
 
       {/* REVENUE TRUTH BANNER — unified semantic layer */}
       <div className="p-5 rounded-lg border border-cyan-700/30 bg-cyan-950/10">
-        <p className="text-sm font-semibold text-cyan-300">{truth.headline}</p>
-        <p className="text-xs text-gray-300 mt-1">{truth.subtext}{truthLossPct ? ` — ${truthLossPct}` : ""}</p>
-        <p className="text-xs text-gray-500 mt-1">{truth.explanation}</p>
+        <p className="text-sm font-semibold text-blue-600">{truth.headline}</p>
+        <p className="text-xs text-gray-700 mt-1">{truth.subtext}{truthLossPct ? ` — ${truthLossPct}` : ""}</p>
+        <p className="text-xs text-gray-600 mt-1">{truth.explanation}</p>
       </div>
-
-      {/* FULL DIAGNOSTIC NUDGE — shown only when monitoring has NEVER run
-           (no last_evaluated_at = no monitoring cycle completed yet).
-           Once monitoring runs even once, banner disappears permanently. */}
-      {!monitoringStatus.last_evaluated_at && !monitoringStatus.created_at && (
-        <div className="flex items-center justify-between gap-4 px-5 py-4 rounded-xl border border-cyan-800/40 bg-cyan-950/10">
-          <div>
-            <p className="text-sm font-semibold text-cyan-300">
-              Run your first diagnostic to activate monitoring
-            </p>
-            <p className="text-xs text-gray-500 mt-0.5">
-              One scan creates your baseline — monitoring then runs automatically every 24h.
-            </p>
-          </div>
-          <Link
-            href={companyDomain ? `/?url=${encodeURIComponent(companyDomain)}` : "/"}
-            className="shrink-0 px-4 py-2 text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg transition whitespace-nowrap"
-          >
-            Run Diagnostic →
-          </Link>
-        </div>
-      )}
+      <DiagnosticNudge companyId={companyId} monitoringSource={monitoringStatus.source} lastEvaluated={monitoringStatus.last_evaluated_at} />
 
       {/* REVENUE DELTA — +$/-$/stable vs last scan */}
   {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
         <div className={`rounded-xl border overflow-hidden ${
           revenueDelta.direction === "worse"
-            ? "border-red-700/40 bg-red-950/10"
+            ? "border-red-700/40 bg-red-50"
             : revenueDelta.direction === "better"
             ? "border-emerald-700/40 bg-emerald-950/10"
-            : "border-gray-700/40 bg-[#0B0F19]"
+            : "border-gray-200/40 bg-white"
         }`}>
           {/* Header row */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
-            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Revenue Change (last scan)</p>
+            <p className="text-xs text-gray-600 uppercase tracking-wide font-medium">Revenue Change (last scan)</p>
             {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (typeof revenueDelta.delta_monthly_loss === "number" && revenueDelta.delta_monthly_loss !== 0) && (
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                revenueDelta.trend_last_4 === "worsening" ? "text-red-400 bg-red-400/10" :
-                revenueDelta.trend_last_4 === "improving" ? "text-emerald-400 bg-emerald-400/10" :
-                "text-gray-400 bg-gray-800"
+                revenueDelta.trend_last_4 === "worsening" ? "text-red-600 bg-red-400/10" :
+                revenueDelta.trend_last_4 === "improving" ? "text-emerald-600 bg-emerald-400/10" :
+                "text-gray-600 bg-gray-800"
               }`}>
                 {revenueDelta.trend_last_4 === "worsening" ? "🔺 Worsening" :
                  revenueDelta.trend_last_4 === "improving" ? "🔻 Improving" : "→ Stable"}
@@ -520,8 +574,8 @@ export default function MonitoringLayer({
           {/* Main number */}
           <div className="px-5 py-4">
             <p className={`text-2xl font-bold ${
-              revenueDelta.direction === "worse" ? "text-red-400" :
-              revenueDelta.direction === "better" ? "text-emerald-400" : "text-gray-300"
+              revenueDelta.direction === "worse" ? "text-red-600" :
+              revenueDelta.direction === "better" ? "text-emerald-600" : "text-gray-700"
             }`}>
               {revenueDelta.delta_monthly_loss > 0
                 ? `+$${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month worse`
@@ -530,7 +584,7 @@ export default function MonitoringLayer({
                 : "No change vs last scan"}
             </p>
             {typeof revenueDelta.delta_rii === "number" && revenueDelta.delta_rii !== 0 && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-600 mt-1">
                 RII {revenueDelta.delta_rii > 0 ? `+${revenueDelta.delta_rii}` : revenueDelta.delta_rii} pts since last scan
               </p>
             )}
@@ -541,11 +595,11 @@ export default function MonitoringLayer({
             <div className="px-5 pb-4 border-t border-white/5 pt-3">
               {revenueDelta.direction === "better" && posCount > 0 && (
                 <>
-                  <p className="text-xs text-gray-500 mb-2">Driven by:</p>
+                  <p className="text-xs text-gray-600 mb-2">Driven by:</p>
                   <ul className="space-y-1">
                     {(revenueDelta.drivers?.positives || []).map((d:any, i:number) => (
-                      <li key={`pos-${i}`} className="flex items-start gap-2 text-xs text-gray-300">
-                        <span className="mt-0.5 shrink-0 text-emerald-400">•</span>
+                      <li key={`pos-${i}`} className="flex items-start gap-2 text-xs text-gray-700">
+                        <span className="mt-0.5 shrink-0 text-emerald-600">•</span>
                         {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
                       </li>
                     ))}
@@ -554,11 +608,11 @@ export default function MonitoringLayer({
               )}
               {riskCount > 0 && (
                 <div className="mt-3">
-                  <p className="text-xs text-gray-500 mb-2">Risks to monitor:</p>
+                  <p className="text-xs text-gray-600 mb-2">Risks to monitor:</p>
                   <ul className="space-y-1">
                     {(revenueDelta.drivers?.risks || []).map((d:any, i:number) => (
-                      <li key={`risk-${i}`} className="flex items-start gap-2 text-xs text-gray-300">
-                        <span className="mt-0.5 shrink-0 text-red-400">•</span>
+                      <li key={`risk-${i}`} className="flex items-start gap-2 text-xs text-gray-700">
+                        <span className="mt-0.5 shrink-0 text-red-600">•</span>
                         {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
                       </li>
                     ))}
@@ -570,16 +624,16 @@ export default function MonitoringLayer({
 
           {/* Fix this first — delta + action combo (killer UX) */}
           {revenueDelta.direction === "worse" && diagnostic?.action_layer?.fixes?.[0] && (
-            <div className="mx-4 mb-4 px-4 py-3 rounded-lg bg-orange-950/20 border border-orange-500/20">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-orange-400 mb-1.5">
-                🔴 Fix this first
+            <div className="mx-4 mb-4 px-4 py-3 rounded-lg bg-indigo-50 border border-indigo-100">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-600 mb-1.5">
+                Priority Fix
               </p>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-gray-900">
                 {diagnostic.action_layer.fixes[0].title}
               </p>
               {diagnostic.action_layer.fixes[0].impact_contribution?.monthly_impact &&
                diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact !== "—" && (
-                <p className="text-xs text-emerald-400 mt-1">
+                <p className="text-xs text-emerald-600 mt-1">
                   → expected recovery: <span className="font-bold">{diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact}</span>
                 </p>
               )}
@@ -590,22 +644,22 @@ export default function MonitoringLayer({
 
       <div className={`p-5 lg:p-6 rounded-lg border ${
         uiState === "low" ? "border-emerald-700/40 bg-emerald-950/10"
-        : uiState === "medium" ? "border-amber-700/40 bg-amber-950/10"
-        : "border-red-700/40 bg-red-950/10"
+        : uiState === "medium" ? "border-gray-200 bg-gray-50"
+        : "border-red-700/40 bg-red-50"
       }`}>
-        <p className="text-lg font-semibold text-white">{headline}</p>
-        <p className="text-sm text-gray-300 mt-1">{subtext}</p>
+        <p className="text-lg font-semibold text-gray-900">{headline}</p>
+        <p className="text-sm text-gray-700 mt-1">{subtext}</p>
         {uiState === "low" && (
-          <p className="text-xs text-emerald-300/80 mt-2">
+          <p className="text-xs text-emerald-600/80 mt-2">
             Your system is structurally healthy, but small inefficiencies still create measurable upside.
           </p>
         )}
         {improvementsDetected > 0 && (
-          <p className="text-xs text-cyan-300/80 mt-2">
+          <p className="text-xs text-blue-600/80 mt-2">
             +{improvementsDetected} improvement{improvementsDetected > 1 ? "s" : ""} detected since last scan.
           </p>
         )}
-        <p className="text-xs text-gray-500 mt-2">{effectiveTrendText}</p>
+        <p className="text-xs text-gray-600 mt-2">{effectiveTrendText}</p>
       </div>
 
       {/* MONITORING STATUS STRIP */}
@@ -641,36 +695,36 @@ export default function MonitoringLayer({
         const trialLabel = trialDays ? ` · Trial day ${trialDays}` : ""
 
         return (
-          <div className="flex flex-wrap items-center gap-px rounded-2xl overflow-hidden border border-gray-800 bg-[#0d1117] text-sm">
+          <div className="flex flex-wrap items-center gap-px rounded-2xl overflow-hidden border border-gray-200 bg-white text-sm">
             {/* Status dot */}
-            <div className="flex items-center gap-2.5 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+            <div className="flex items-center gap-2.5 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span className="text-emerald-400 font-medium text-xs uppercase tracking-wide">Live</span>
+              <span className="text-emerald-600 font-medium text-xs uppercase tracking-wide">Live</span>
             </div>
 
             {/* Last scan */}
-            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               <span className="text-gray-600 text-xs">Last scan</span>
-              <span className="text-white font-semibold text-xs">{lastScanLabel}</span>
+              <span className="text-gray-900 font-semibold text-xs">{lastScanLabel}</span>
             </div>
 
             {/* Next scan */}
-            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               <span className="text-gray-600 text-xs">Next</span>
-              <span className="text-cyan-400 font-semibold text-xs">{nextScanLabel}</span>
+              <span className="text-blue-600 font-semibold text-xs">{nextScanLabel}</span>
             </div>
 
             {/* Cadence */}
-            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               <span className="text-gray-600 text-xs">Cadence</span>
-              <span className="text-gray-300 font-medium text-xs">24h auto</span>
+              <span className="text-gray-700 font-medium text-xs">24h auto</span>
             </div>
 
             {/* SLA band */}
-            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] border-r border-gray-800/70">
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 border-r border-gray-200/70">
               {(() => {
                 const band = (() => {
                   if (!lastEval) return "unknown"
@@ -680,10 +734,10 @@ export default function MonitoringLayer({
                   return "breach"
                 })()
                 const cls = band === "on-track"
-                  ? "text-emerald-300 bg-emerald-400/10 border-emerald-400/20"
+                  ? "text-emerald-600 bg-emerald-400/10 border-emerald-400/20"
                   : band === "warning"
-                  ? "text-amber-300 bg-amber-400/10 border-amber-400/20"
-                  : "text-red-300 bg-red-400/10 border-red-400/20"
+                  ? "text-indigo-600 bg-indigo-50 border-indigo-200"
+                  : "text-red-600 bg-red-400/10 border-red-400/20"
                 const label = band === "on-track" ? "SLA On Track" : band === "warning" ? "SLA Warning" : band === "breach" ? "SLA Breach" : "SLA"
                 return (
                   <span className={`px-2.5 py-0.5 rounded-full border text-xs font-semibold ${cls}`}>
@@ -694,8 +748,8 @@ export default function MonitoringLayer({
             </div>
 
             {/* Plan */}
-            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#111827] ml-auto">
-              <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-semibold text-xs tracking-wide">
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 ml-auto">
+              <span className="px-2.5 py-0.5 rounded-full bg-indigo-600/10 border border-indigo-600/20 text-blue-600 font-semibold text-xs tracking-wide">
                 {planLabel}{trialLabel}
               </span>
             </div>
@@ -796,7 +850,7 @@ export default function MonitoringLayer({
 
       {/* 5. REVENUE ALIGNMENT STATUS — System state explanation */}
       <StructuralRiskOverview
-        riskScore={diagnostic?.risk_score || null}
+        riskScore={rii}
         alignmentScore={alignmentScore}
         riskLevel={diagnostic?.risk_level || "MODERATE"}
         trendDirection={monitoringStatus.trend_direction || "unstable"}
@@ -804,6 +858,7 @@ export default function MonitoringLayer({
         volatileSignalActive={monitoringStatus.volatility_classification === "high" || hasCriticalAlerts}
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
         suppressTrend={zeroDelta === true}
+        isFirstScan={isFirstScan}
       />
 
       {/* 6. REVENUE-STAGE ALIGNMENT MAP — Diagnostic breakdown (with backend structural_scores fallback) */}
@@ -820,12 +875,12 @@ export default function MonitoringLayer({
 
       {/* 8. ACTIVE ALERTS — Growth+ */}
       <FeatureGate feature="Revenue Alerts" planRequired="growth" currentPlan={currentPlan}>
-        <RevenueAlertsPanel companyId={companyId} />
+        {monitoringStatus.source !== "fallback" && <RevenueAlertsPanel companyId={companyId} />}
       </FeatureGate>
 
       {/* 9. REVENUE INCIDENTS — Growth+ */}
       <FeatureGate feature="Revenue Incidents" planRequired="growth" currentPlan={currentPlan}>
-        <RevenueIncidentsPanel companyId={companyId} />
+        {monitoringStatus.source !== "fallback" && <RevenueIncidentsPanel companyId={companyId} />}
       </FeatureGate>
 
       {/* 10. REVENUE SYSTEM ACTIVITY — Growth+ */}
@@ -861,14 +916,14 @@ export default function MonitoringLayer({
       />
 
       {/* STRUCTURAL ALERTS PANEL (drift/volatility/trend) */}
-      {alerts.length > 0 && (
+      {alerts.length > 0 && monitoringStatus.source !== "fallback" && (
         <AlertPanel alerts={alerts} onMarkAlertRead={onMarkAlertRead} />
       )}
 
       {uiState === "low" && annualDelta !== null && annualDelta > 0 && (
         <div className="p-6 bg-emerald-950/10 border border-emerald-700/30 rounded-lg">
           <p className="text-sm font-semibold text-emerald-200">Summary</p>
-          <p className="text-sm text-gray-300 mt-1">
+          <p className="text-sm text-gray-700 mt-1">
             Your revenue system is strong. Addressing the 2–3 remaining gaps could unlock ~${Math.round(annualDelta / 1000) * 1000} annually.
           </p>
         </div>

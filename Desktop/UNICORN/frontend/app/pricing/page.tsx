@@ -593,9 +593,9 @@ export default function PricingPage() {
 
       <main className="max-w-6xl mx-auto px-6 py-12">
         {scanMonthlyLoss && (
-          <div className="mb-6 p-4 rounded-lg bg-amber-950/40 border border-amber-500/40 text-amber-200 text-sm text-center">
-            Based on your scan, you&apos;re losing approximately{" "}
-            <span className="font-semibold text-amber-300">
+          <div className="mb-6 p-4 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-800 text-sm text-center font-medium">
+            ✓ Baseline successfully established. Your 14-day tracking configuration is ready.
+            <span className="font-bold text-indigo-700">
               {formatCurrency(scanMonthlyLoss.low)}–{formatCurrency(scanMonthlyLoss.high)}/month
             </span>
           </div>
@@ -606,61 +606,53 @@ export default function PricingPage() {
           </div>
         )}
         {isProcessing && (
-          <div className="mb-6 p-4 rounded-lg bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-sm">
+          <div className="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 text-sm">
             Activating <span className="font-semibold">{selectedPlanName}</span>...
           </div>
         )}
 
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold mb-3">Recover revenue'not features</h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            One plan — Scale: find what&apos;s leaking, fix it, and quantify what you get back. Start with a 14-day full-access trial.
+          <h1 className="text-4xl font-bold mb-3">Your recovery plan is ready</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Structural baseline complete. Activate continuous monitoring to track drift, detect compression, and recover pipeline velocity.
           </p>
         </div>
 
-        {/* ROI anchor — makes dollar price feel small vs. problem size */}
-        <div className="max-w-3xl mx-auto mb-10 p-6 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/25 to-[#111827]">
-          <p className="text-center text-lg sm:text-xl font-semibold text-white mb-2">
-            Companies like yours typically lose{" "}
-            <span className="text-amber-300">$120K–$300K/year</span>
-          </p>
-          <p className="text-center text-sm text-gray-400">
-            Vectri<span className="text-cyan-400">OS</span> helps recover a significant portion of that'before you spend more on traffic or headcount.
-          </p>
-        </div>
+
 
         <div className="max-w-2xl mx-auto mb-12">
-          <div className="p-7 bg-gradient-to-br from-cyan-950/40 to-[#111827] rounded-2xl border border-cyan-500/40 text-center">
-            <p className="text-cyan-200/90 font-semibold mb-2 text-lg">
-              Try risk-free — recover your first $50K in lost revenue
+          <div className="p-7 bg-gradient-to-br from-cyan-950/40 to-[#111827] rounded-2xl border border-blue-200 text-center">
+            <p className="text-white font-semibold mb-2 text-lg">
+              Activate Revenue Architecture Monitoring
             </p>
             <h2 className="text-2xl font-bold mb-2">14-day trial — full Scale access</h2>
-            <p className="text-gray-400 text-sm mb-6">
-              Every trial includes the full Scale playbook so you can see the complete recovery path'not a watered-down demo.
+            <p className="text-slate-200 text-sm mb-6">
+              Every trial includes the full Scale playbook so you can see the complete recovery path — not a watered-down demo.
             </p>
             <button
               onClick={handleTrial}
               disabled={isProcessing}
               className={`px-10 py-3 font-semibold rounded-lg transition ${
-                isProcessing ? "bg-gray-700 text-gray-500 cursor-not-allowed" : "bg-cyan-500 hover:bg-cyan-400 text-black"
+                isProcessing ? "bg-gray-700 text-gray-600 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-500 text-black"
               }`}
             >
-              Start 14-day trial — full access
+              Start 14-day free trial
             </button>
+            <p className="text-xs text-slate-200 mt-3 font-medium">No charge today · cancel anytime · full access in under 10 minutes</p>
           </div>
         </div>
 
         <div className="flex justify-center mb-8">
-          <div className="inline-flex items-center gap-4 p-1 bg-[#111827] rounded-lg border border-gray-800">
+          <div className="inline-flex items-center gap-4 p-1 bg-gray-50 rounded-lg border border-gray-200">
             <button
               onClick={() => setBillingCycle("monthly")}
-              className={`px-6 py-2 rounded-md transition ${billingCycle === "monthly" ? "bg-cyan-500 text-black font-medium" : "text-gray-400 hover:text-white"}`}
+              className={`px-6 py-2 rounded-md transition ${billingCycle === "monthly" ? "bg-indigo-600 text-black font-medium" : "text-gray-600 hover:text-gray-900"}`}
             >
               Monthly
             </button>
             <button
               onClick={() => setBillingCycle("annual")}
-              className={`px-6 py-2 rounded-md transition ${billingCycle === "annual" ? "bg-cyan-500 text-black font-medium" : "text-gray-400 hover:text-white"}`}
+              className={`px-6 py-2 rounded-md transition ${billingCycle === "annual" ? "bg-indigo-600 text-black font-medium" : "text-gray-600 hover:text-gray-900"}`}
             >
               Annual <span className="text-[10px] ml-1 opacity-70">Save 20%</span>
             </button>
@@ -673,10 +665,10 @@ export default function PricingPage() {
             return (
               <div
                 key={plan.name}
-                className={`relative p-8 bg-[#111827] rounded-2xl border flex flex-col transition ${
+                className={`relative p-8 bg-gray-50 rounded-2xl border flex flex-col transition ${
                   isActivePlan
                     ? "border-emerald-500/80 shadow-[0_0_24px_-4px_rgba(16,185,129,0.35)]"
-                    : "border-cyan-500/80 shadow-[0_0_32px_-4px_rgba(34,211,238,0.3)]"
+                    : "border-indigo-600/80 shadow-[0_0_32px_-4px_rgba(34,211,238,0.3)]"
                 }`}
               >
                 {isActivePlan && (
@@ -684,10 +676,10 @@ export default function PricingPage() {
                     Active
                   </span>
                 )}
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide text-center leading-tight">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-black text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wide text-center leading-tight">
                   Everything included
                 </span>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-cyan-400/80 mb-1">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-blue-600/80 mb-1">
                   {plan.name}
                 </p>
                 <h3 className="text-xl font-bold mb-4 leading-snug">{plan.headline}</h3>
@@ -695,19 +687,20 @@ export default function PricingPage() {
                   <span className="text-5xl font-bold">
                     ${billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly}
                   </span>
-                  <span className="text-gray-400">/month</span>
+                  <span className="text-gray-600">/month</span>
+                  <p className="text-xs text-emerald-700 mt-1 font-medium">vs. modeled $600K+ annual exposure</p>
                   {billingCycle === "annual" ? (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-600 mt-1">
                       Billed annually (${plan.priceAnnual * 12}/year) — save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year
                     </p>
                   ) : (
-                    <p className="text-xs text-gray-500 mt-1">Switch to annual and save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year</p>
+                    <p className="text-xs text-gray-600 mt-1">Switch to annual and save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year</p>
                   )}
                 </div>
-                <ul className="space-y-2 mb-7 text-sm text-gray-300 flex-1">
+                <ul className="space-y-2 mb-7 text-sm text-gray-700 flex-1">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex gap-2">
-                      <span className="text-cyan-400 shrink-0" aria-hidden>✓</span>
+                      <span className="text-blue-600 shrink-0" aria-hidden>✓</span>
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -717,133 +710,58 @@ export default function PricingPage() {
                   disabled={isProcessing || isActivePlan}
                   className={`w-full py-3 font-semibold rounded-lg transition text-base ${
                     isProcessing
-                      ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+                      ? "bg-gray-700 text-gray-600 cursor-not-allowed"
                       : isActivePlan
-                        ? "bg-emerald-600 text-white cursor-default"
-                        : "bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20"
+                        ? "bg-emerald-600 text-gray-900 cursor-default"
+                        : "bg-indigo-600 hover:bg-indigo-500 text-black shadow-lg shadow-cyan-500/20"
                   }`}
                 >
-                  {isActivePlan ? "Activated" : plan.ctaLabel}
+                  {isActivePlan ? "Activated" : "Start 14-day free trial"}
                 </button>
               </div>
             )
           })}
         </div>
 
-        <div id="contact" className="border-t border-gray-800 pt-12 mt-4 scroll-mt-24">
+                <div id="faq" className="border-t border-gray-200 pt-12 mt-4">
           <div className="text-center mb-8 max-w-xl mx-auto">
-            <h2 className="text-2xl font-bold mb-2">Questions?</h2>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Ask anything about Scale, the trial, or how monitoring works — we&apos;ll reply by email.
-            </p>
+            <h2 className="text-2xl font-bold mb-2">Common questions</h2>
+            <p className="text-gray-600 text-sm">Everything you need to know before starting.</p>
           </div>
-
-          <div className="max-w-lg mx-auto p-8 bg-[#111827] rounded-lg border border-gray-800 space-y-5">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm text-gray-300 mb-2">Name</label>
-                <input
-                  type="text"
-                  value={contactName}
-                  onChange={(e) => setContactName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500"
-                  placeholder="Your name"
-                  autoComplete="name"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-300 mb-2">Email</label>
-                <input
-                  type="email"
-                  value={contactEmail}
-                  onChange={(e) => setContactEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500"
-                  placeholder="you@company.com"
-                  autoComplete="email"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-300 mb-2">Company (optional)</label>
-              <input
-                type="text"
-                value={contactCompany}
-                onChange={(e) => setContactCompany(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500"
-                placeholder="Company name"
-                autoComplete="organization"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-300 mb-2">Message</label>
-              <textarea
-                value={contactMessage}
-                onChange={(e) => setContactMessage(e.target.value)}
-                rows={5}
-                className="w-full px-4 py-3 rounded-lg bg-[#0B0F19] border border-gray-700 text-white outline-none focus:border-cyan-500 resize-y min-h-[120px]"
-                placeholder="What would you like to know?"
-              />
-            </div>
-
-            {contactSuccess && (
-              <div className="w-full px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm text-center">
-                {contactSuccess}
-              </div>
-            )}
-
-            {contactError && (
-              <div className="w-full px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
-                {contactError}
-              </div>
-            )}
-
-            {!contactSuccess && (
-              <>
-                <button
-                  type="button"
-                  onClick={handleContactQuestion}
-                  disabled={!canSendContact || contactLoading}
-                  className={`w-full py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 ${
-                    canSendContact && !contactLoading
-                      ? "bg-cyan-500 hover:bg-cyan-400 text-black"
-                      : "bg-gray-700 text-gray-500 cursor-not-allowed"
-                  }`}
-                >
-                  {contactLoading ? (
-                    <>
-                      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                      </svg>
-                      Sending…
-                    </>
-                  ) : (
-                    "Send message"
-                  )}
-                </button>
-                {!canSendContact && (
-                  <p className="text-xs text-gray-500 text-center -mt-2">
-                    Add your name, email, and a message to send.
-                  </p>
-                )}
-              </>
-            )}
+          <div className="max-w-2xl mx-auto space-y-3">
+            {[
+              { q: "What happens after the 14-day trial?", a: "After 14 days, your plan continues at $299/month. You can cancel anytime before the trial ends — no charge." },
+              { q: "Do I need HubSpot or Google Analytics?", a: "No. VectriOS works without integrations. Connecting HubSpot and Google refines the model with your real close rates and behavioral data." },
+              { q: "How long does setup take?", a: "Under 10 minutes. Scan your domain, enter your email, and monitoring starts automatically. No onboarding call required." },
+              { q: "How accurate are the revenue estimates?", a: "Estimates are modeled from your structural scan + 500+ SaaS peer benchmarks. They become more precise once CRM and analytics connect." },
+              { q: "Can my team use it?", a: "Yes. All plans include unlimited team seats." },
+              { q: "Is this a content audit or SEO tool?", a: "Neither. VectriOS measures revenue-stage messaging architecture — not content quality or SEO." },
+            ].map(({ q, a }) => (
+              <details key={q} className="group rounded-xl border border-gray-200 bg-gray-50 p-5 cursor-pointer">
+                <summary className="flex items-center justify-between font-medium text-gray-900 list-none">
+                  {q}
+                  <span className="ml-4 text-indigo-700">&#8964;</span>
+                </summary>
+                <p className="mt-3 text-sm text-gray-600 leading-relaxed">{a}</p>
+              </details>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <p className="text-sm text-gray-500">Still have questions? <a href="mailto:support@vectrios.com" className="text-indigo-700 hover:underline">Email us</a></p>
           </div>
         </div>
       </main>
       <SiteFooter />
       {(isRouteTransitioning || (preparingAutoResume && !resumeTriggered)) && (
-        <div className="fixed inset-0 z-[80] bg-[#0B0F19]/95 backdrop-blur-sm flex items-center justify-center">
+        <div className="fixed inset-0 z-[80] bg-white/95 backdrop-blur-sm flex items-center justify-center">
           <div className="text-center">
-            <svg className="animate-spin w-8 h-8 text-cyan-500 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
+            <svg className="animate-spin w-8 h-8 text-indigo-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            <p className="text-sm text-gray-300">Continuing…</p>
+            <p className="text-sm text-gray-900">ContinuingΓÇª</p>
             {(selectedPlanName || pendingActivationLabel) && (
-              <p className="text-xs text-cyan-300 mt-2">
+              <p className="text-xs text-blue-700 mt-2">
                 Activating {selectedPlanName || pendingActivationLabel}...
               </p>
             )}

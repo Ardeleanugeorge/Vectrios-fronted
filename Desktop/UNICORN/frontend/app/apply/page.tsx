@@ -101,13 +101,13 @@ export default function ApplyPage() {
       <main className="page-root flex items-center justify-center px-6">
         <div className="max-w-2xl text-center">
           <h1 className="text-4xl font-bold mb-6">Application Received</h1>
-          <p className="text-xl text-gray-300 mb-4">
+          <p className="text-xl text-gray-700 mb-4">
             We've received your diagnostic application.
           </p>
-          <p className="text-lg text-gray-400 mb-6">
+          <p className="text-lg text-gray-600 mb-6">
             Our team will review your submission and respond within 3–5 business days.
           </p>
-          <a href={PUBLIC_HOME_URL} className="text-cyan-400 hover:text-cyan-300">
+          <a href={PUBLIC_HOME_URL} className="text-indigo-500 hover:text-cyan-300">
             Return to homepage
           </a>
         </div>
@@ -123,10 +123,10 @@ export default function ApplyPage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Apply for Strategic Revenue Diagnostic
           </h1>
-          <p className="text-xl text-gray-400 mb-6 leading-relaxed">
-            Vectri<span className="text-cyan-400">OS</span> runs a structural revenue scan for qualified B2B SaaS teams.
+          <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+            Vectri<span className="text-indigo-500">OS</span> runs a structural revenue scan for qualified B2B SaaS teams.
           </p>
-          <p className="text-lg text-gray-500 mb-4">
+          <p className="text-lg text-gray-600 mb-4">
             This is not an automated content audit.
             <br />
             Each diagnostic is reviewed before delivery.
@@ -144,10 +144,10 @@ export default function ApplyPage() {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
                     section < currentSection
-                      ? "bg-cyan-500 text-black"
+                      ? "bg-indigo-600 text-black"
                       : section === currentSection
-                      ? "bg-cyan-500 text-black"
-                      : "bg-gray-800 text-gray-500"
+                      ? "bg-indigo-600 text-black"
+                      : "bg-gray-800 text-gray-600"
                   }`}
                 >
                   {section}
@@ -155,24 +155,24 @@ export default function ApplyPage() {
                 {section < totalSections && (
                   <div
                     className={`flex-1 h-1 mx-2 ${
-                      section < currentSection ? "bg-cyan-500" : "bg-gray-800"
+                      section < currentSection ? "bg-indigo-600" : "bg-gray-800"
                     }`}
                   />
                 )}
               </div>
             ))}
           </div>
-          <p className="text-sm text-gray-500 text-center">
+          <p className="text-sm text-gray-600 text-center">
             Estimated time: 6–8 minutes
           </p>
         </div>
 
         {/* EXPECTATION SETTING */}
         {currentSection === 1 && (
-          <div className="mb-12 space-y-8 border-t border-gray-800 pt-8">
+          <div className="mb-12 space-y-8 border-t border-gray-200 pt-8">
             <div>
               <h2 className="text-2xl font-bold mb-4">What This Diagnostic Is</h2>
-              <ul className="space-y-2 text-gray-300">
+              <ul className="space-y-2 text-gray-700">
                 <li>• A structural revenue risk analysis</li>
                 <li>• A close-rate impact assessment</li>
                 <li>• A strategic alignment evaluation</li>
@@ -180,13 +180,13 @@ export default function ApplyPage() {
             </div>
             <div>
               <h2 className="text-2xl font-bold mb-4">What This Is Not</h2>
-              <ul className="space-y-2 text-gray-500">
+              <ul className="space-y-2 text-gray-600">
                 <li>• A content critique</li>
                 <li>• A style review</li>
                 <li>• A marketing audit</li>
               </ul>
             </div>
-            <p className="text-lg text-gray-400 italic">
+            <p className="text-lg text-gray-600 italic">
               We evaluate how your content architecture affects revenue performance.
             </p>
           </div>
@@ -194,12 +194,12 @@ export default function ApplyPage() {
 
         {/* WHO SHOULD APPLY */}
         {currentSection === 1 && (
-          <div className="mb-12 border-t border-gray-800 pt-8">
+          <div className="mb-12 border-t border-gray-200 pt-8">
             <h2 className="text-2xl font-bold mb-6">Who Should Apply</h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
-                <h3 className="text-lg font-semibold mb-3 text-cyan-400">This is a fit if:</h3>
-                <ul className="space-y-2 text-gray-300 text-sm">
+                <h3 className="text-lg font-semibold mb-3 text-indigo-500">This is a fit if:</h3>
+                <ul className="space-y-2 text-gray-700 text-sm">
                   <li>• You are a B2B SaaS company</li>
                   <li>• You have an active sales motion</li>
                   <li>• You publish content consistently</li>
@@ -207,8 +207,8 @@ export default function ApplyPage() {
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-semibold mb-3 text-gray-500">This is not a fit if:</h3>
-                <ul className="space-y-2 text-gray-500 text-sm">
+                <h3 className="text-lg font-semibold mb-3 text-gray-600">This is not a fit if:</h3>
+                <ul className="space-y-2 text-gray-600 text-sm">
                   <li>• You are pre-revenue without sales</li>
                   <li>• You rely purely on self-serve PLG</li>
                   <li>• You are an agency offering services</li>
@@ -246,7 +246,7 @@ export default function ApplyPage() {
                   className="input"
                   placeholder="https://yourcompany.com"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   We analyze public-facing content architecture.
                 </p>
               </div>
@@ -316,7 +316,7 @@ export default function ApplyPage() {
                   className="input"
                   placeholder="e.g., 18% or leave blank"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   If unknown, estimate.
                 </p>
               </div>
@@ -350,7 +350,7 @@ export default function ApplyPage() {
                   className="input h-32"
                   placeholder="e.g., Series A SaaS founders between $50k-$200k MRR who struggle with pricing-stage conversions"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   Specificity matters. Broad market descriptions reduce diagnostic accuracy.
                 </p>
               </div>
@@ -426,10 +426,10 @@ export default function ApplyPage() {
                   className="input h-32"
                   placeholder="Paste URLs, one per line:&#10;https://linkedin.com/posts/...&#10;https://yourblog.com/post/...&#10;https://..."
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   {form.content_urls.split("\n").filter(url => url.trim()).length} URLs provided
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   The diagnostic requires sufficient signal volume.
                 </p>
               </div>
@@ -452,7 +452,7 @@ export default function ApplyPage() {
                   className="input h-40"
                   placeholder="This helps us understand your strategic intent and ensures we work with companies that are serious about revenue alignment."
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-600 mt-1">
                   This is your seriousness filter. {form.why_applying.length}/50 minimum characters.
                 </p>
                 {form.why_applying.length > 0 && form.why_applying.length < 50 && (
@@ -466,27 +466,27 @@ export default function ApplyPage() {
 
           {/* WHAT HAPPENS NEXT (only on last section) */}
           {currentSection === 5 && (
-            <div className="mb-8 border-t border-gray-800 pt-8">
+            <div className="mb-8 border-t border-gray-200 pt-8">
               <h2 className="text-2xl font-bold mb-4">What Happens Next</h2>
-              <ul className="space-y-3 text-gray-300">
+              <ul className="space-y-3 text-gray-700">
                 <li>• We run a structural scan using our diagnostic engine</li>
                 <li>• Findings are reviewed internally</li>
                 <li>• You receive a preliminary risk assessment</li>
                 <li>• If relevant, we schedule a strategic review call</li>
               </ul>
-              <p className="mt-4 text-gray-400">
+              <p className="mt-4 text-gray-600">
                 Turnaround time: 3–5 business days.
               </p>
             </div>
           )}
 
           {/* NAVIGATION BUTTONS */}
-          <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-800">
+          <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200">
             {currentSection > 1 ? (
               <button
                 type="button"
                 onClick={() => setCurrentSection(currentSection - 1)}
-                className="px-8 py-3 border border-gray-700 hover:border-gray-600 text-gray-300 font-medium rounded-lg transition"
+                className="px-8 py-3 border border-gray-200 hover:border-gray-600 text-gray-700 font-medium rounded-lg transition"
               >
                 Previous
               </button>
@@ -503,7 +503,7 @@ export default function ApplyPage() {
                   }
                 }}
                 disabled={!canProceed()}
-                className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition"
+                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition"
               >
                 Next
               </button>
@@ -511,14 +511,14 @@ export default function ApplyPage() {
               <button
                 type="submit"
                 disabled={submitting || !canProceed()}
-                className="px-8 py-3 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
+                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
               >
                 {submitting ? "Submitting..." : "Submit Application"}
               </button>
             )}
           </div>
 
-          <p className="mt-6 text-sm text-gray-500 text-center">
+          <p className="mt-6 text-sm text-gray-600 text-center">
             Applications are reviewed manually.
             <br />
             Not all submissions are accepted.

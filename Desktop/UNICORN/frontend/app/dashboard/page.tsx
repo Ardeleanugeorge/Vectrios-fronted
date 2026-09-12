@@ -8,6 +8,8 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import DashboardHeader from "@/components/DashboardHeader"
+import IntegrationsPanel from "@/components/dashboard/IntegrationsPanel"
+import DashboardSummaryCard from "@/components/dashboard/DashboardSummaryCard"
 import SiteFooter from "@/components/SiteFooter"
 import SnapshotLayer from "@/components/dashboard/SnapshotLayer"
 import MonitoringLayer from "@/components/dashboard/MonitoringLayer"
@@ -127,10 +129,12 @@ export default function DashboardPage() {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [companyId, setCompanyId] = useState<string | null>(null)
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
+  const [hasFullAccess, setHasFullAccess] = useState<boolean | null>(null)
   const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null)
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(true)
   const [monitoringLoading, setMonitoringLoading] = useState(true)
-  // Company domain — used for "Run Full Diagnostic" link pre-fill
+  // Company domain ΓÇö used for "Run Full Diagnostic" link pre-fill
   const [companyDomain, setCompanyDomain] = useState<string | null>(() => {
     if (typeof window === "undefined") return null
     try {
@@ -180,7 +184,7 @@ export default function DashboardPage() {
           }
           setUser(parsed)
           if (parsed.company_id) {
-            setCompanyId(parsed.company_id)
+            // setCompanyId(parsed.company_id) -- loaded from server profile below
           }
         } catch (e) {
           console.error("Error parsing user data:", e)
@@ -286,7 +290,7 @@ export default function DashboardPage() {
         loadAlerts(companyId)
         loadSubscription(companyId)
       } else {
-        // No company ID yet — don't keep spinner spinning
+        // No company ID yet ΓÇö don't keep spinner spinning
         setMonitoringLoading(false)
         setSubscriptionLoading(false)
       }
@@ -295,7 +299,7 @@ export default function DashboardPage() {
     }
   }, [companyId, router])
 
-  // Server is source of truth for company_id (avoids stale localStorage / wrong workspace → stuck spinners).
+  // Server is source of truth for company_id (avoids stale localStorage / wrong workspace ΓåÆ stuck spinners).
   useEffect(() => {
     let cancelled = false
     void (async () => {
@@ -316,6 +320,32 @@ export default function DashboardPage() {
             company_name: p.company_name ?? parsed.company_name ?? "",
           }
           localStorage.setItem("user_data", JSON.stringify(updated))
+          // Enterprise fix: prevent stale anonymous scan from overriding existing user company
+          try {
+            const SCAN_TTL_MS = 30 * 60 * 1000
+            const scanRaw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+            if (scanRaw) {
+              const scan = JSON.parse(scanRaw)
+              const createdAt = Number(scan?.prefill_created_at || 0)
+              const isFresh = createdAt > 0 && Date.now() - createdAt < SCAN_TTL_MS
+              // Check if user already had a company BEFORE this login
+              const prevUserRaw = localStorage.getItem("user_data")
+              const prevCompanyId = prevUserRaw ? (JSON.parse(prevUserRaw)?.company_id || null) : null
+              const isExistingUser = !!prevCompanyId
+              // Clear if: user is existing (has company) OR scan is stale
+              if (isExistingUser || !isFresh) {
+                sessionStorage.removeItem("scan_data")
+                localStorage.removeItem("scan_data")
+                sessionStorage.removeItem("diagnostic_result_full")
+                localStorage.removeItem("diagnostic_result_full")
+                sessionStorage.removeItem("diagnostic_result")
+                localStorage.removeItem("diagnostic_result")
+                sessionStorage.removeItem("diagnostic_result_partial")
+                localStorage.removeItem("diagnostic_result_partial")
+                console.log("[DASHBOARD] Cleared scan data - existing user or stale scan")
+              }
+            }
+          } catch {}
           sessionStorage.setItem("user_data", JSON.stringify(updated))
           localStorage.setItem("company_id", cid)
           sessionStorage.setItem("company_id", cid)
@@ -434,7 +464,7 @@ export default function DashboardPage() {
       // Reload monitoring status and subscription to reflect activation
       const activeScanToken = params.get("token")
       // Immediate reload - subscription first to set currentPlan
-      loadSubscription(companyId, true)  // ← Critical: force reload subscription FIRST
+      loadSubscription(companyId, true)  // ΓåÉ Critical: force reload subscription FIRST
       loadMonitoringStatus(companyId, activeScanToken)
       loadAlerts(companyId)
 
@@ -459,9 +489,7 @@ export default function DashboardPage() {
   const loadMonitoringStatus = async (companyId: string, scanToken?: string | null) => {
     setMonitoringLoading(true)
     try {
-      const path = scanToken
-        ? `/monitoring/status/${companyId}?scan_token=${encodeURIComponent(scanToken)}`
-        : `/monitoring/status/${companyId}`
+      const path = `/monitoring/status/${companyId}`
       const response = await apiFetch(path)
       
       if (response.ok) {
@@ -494,14 +522,17 @@ export default function DashboardPage() {
         const data = await response.json()
         console.log("[DASHBOARD] Subscription data:", { plan: data.plan, billing_cycle: data.billing_cycle })
         // Trial users should have full access equivalent to Scale.
+        setSubscriptionStatus(data.status || null)
         if (data.billing_cycle === "trial") {
           console.log("[DASHBOARD] Setting currentPlan to 'scale' (trial has full access)")
           setCurrentPlan("scale")
+          setHasFullAccess(true)
           setTrialDaysLeft(typeof data.trial_days_left === "number" ? data.trial_days_left : null)
         } else {
           console.log("[DASHBOARD] Setting currentPlan to:", data.plan || null)
           setCurrentPlan(data.plan || null)
           setTrialDaysLeft(null)
+          setHasFullAccess(data.has_full_access === true)
         }
       } else {
         console.error("[DASHBOARD] Failed to load subscription:", response.status, response.statusText)
@@ -584,6 +615,32 @@ export default function DashboardPage() {
                   email: p.email ?? parsed.email,
                 }
                 localStorage.setItem("user_data", JSON.stringify(updated))
+          // Enterprise fix: prevent stale anonymous scan from overriding existing user company
+          try {
+            const SCAN_TTL_MS = 30 * 60 * 1000
+            const scanRaw = sessionStorage.getItem("scan_data") || localStorage.getItem("scan_data")
+            if (scanRaw) {
+              const scan = JSON.parse(scanRaw)
+              const createdAt = Number(scan?.prefill_created_at || 0)
+              const isFresh = createdAt > 0 && Date.now() - createdAt < SCAN_TTL_MS
+              // Check if user already had a company BEFORE this login
+              const prevUserRaw = localStorage.getItem("user_data")
+              const prevCompanyId = prevUserRaw ? (JSON.parse(prevUserRaw)?.company_id || null) : null
+              const isExistingUser = !!prevCompanyId
+              // Clear if: user is existing (has company) OR scan is stale
+              if (isExistingUser || !isFresh) {
+                sessionStorage.removeItem("scan_data")
+                localStorage.removeItem("scan_data")
+                sessionStorage.removeItem("diagnostic_result_full")
+                localStorage.removeItem("diagnostic_result_full")
+                sessionStorage.removeItem("diagnostic_result")
+                localStorage.removeItem("diagnostic_result")
+                sessionStorage.removeItem("diagnostic_result_partial")
+                localStorage.removeItem("diagnostic_result_partial")
+                console.log("[DASHBOARD] Cleared scan data - existing user or stale scan")
+              }
+            }
+          } catch {}
                 sessionStorage.setItem("user_data", JSON.stringify(updated))
                 localStorage.setItem("company_id", resolvedCompanyId)
                 sessionStorage.setItem("company_id", resolvedCompanyId)
@@ -707,7 +764,7 @@ export default function DashboardPage() {
     return (
       <div className="page-root flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-gray-400">Loading...</p>
+          <p className="text-xl text-gray-600">Loading...</p>
         </div>
       </div>
     )
@@ -718,7 +775,7 @@ export default function DashboardPage() {
     return (
       <div className="page-root flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-gray-400">Please log in</p>
+          <p className="text-xl text-gray-600">Please log in</p>
         </div>
       </div>
     )
@@ -732,12 +789,12 @@ export default function DashboardPage() {
   const driftStatus = monitoringStatus?.drift_status || "stable"
 
   // Calculate derived metrics from diagnostic
-  // Suportă atât câmpurile noi (din engine actual) cât și cele vechi (legacy)
+  // Suport─â at├ót c├ómpurile noi (din engine actual) c├ót ╚Öi cele vechi (legacy)
   const riskLevel = diagnostic?.risk_level || "MODERATE"
   // Confidence priority:
-  // 1. monitoring structural_scores.confidence_score (most up-to-date — refreshed on every rescan)
+  // 1. monitoring structural_scores.confidence_score (most up-to-date ΓÇö refreshed on every rescan)
   // 2. diagnostic.confidence (from original scan stored in localStorage)
-  // 3. 0 — genuinely no data, show Low honestly
+  // 3. 0 ΓÇö genuinely no data, show Low honestly
   const confidence =
     (monitoringStatus?.structural_scores?.confidence_score ?? null) ??
     (diagnostic?.confidence && diagnostic.confidence > 0 ? diagnostic.confidence : null) ??
@@ -773,7 +830,7 @@ export default function DashboardPage() {
       case "orange": return "text-orange-400"
       case "yellow": return "text-yellow-400"
       case "green": return "text-green-400"
-      default: return "text-gray-400"
+      default: return "text-gray-600"
     }
   }
 
@@ -796,32 +853,81 @@ export default function DashboardPage() {
       default: return "UNKNOWN"
     }
   }
+// Trial expired check
+  const isTrialExpired = hasFullAccess === false && !subscriptionLoading
 
+  if (isTrialExpired) {
+    return (
+      <div className="page-root bg-white">
+        <DashboardHeader />
+        <main className="py-12">
+          <div className="max-w-3xl mx-auto px-6 text-center">
+            <div className="rounded-2xl border border-amber-500/40 bg-amber-50 p-10">
+              <p className="text-4xl mb-4">⏰</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">Your trial has ended</h2>
+              <p className="text-gray-600 mb-8">Upgrade to continue monitoring your revenue architecture.</p>
+              <button
+                onClick={async () => {
+                  const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
+                  const companyId = localStorage.getItem("company_id") || sessionStorage.getItem("company_id")
+                  if (!token || !companyId) { window.location.href = "/login"; return; }
+                  try {
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/billing/create-checkout-session`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                      body: JSON.stringify({ company_id: companyId, billing_cycle: "monthly" })
+                    })
+                    const data = await res.json()
+                    if (data?.checkout_url || data?.url) { window.location.href = data.checkout_url || data.url; }
+                    else { window.location.href = "/pricing"; }
+                  } catch { window.location.href = "/pricing"; }
+                }}
+                className="inline-block px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-black font-semibold rounded-xl transition"
+              >
+                Upgrade to Scale — $299/mo →
+              </button>
+              <p className="text-xs text-gray-400 mt-4">Your data is safe. Upgrade anytime to restore full access.</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
   return (
-    <div className="page-root">
+    <div className="page-root bg-white">
       <DashboardHeader />
       <main className="py-12">
         <div className="max-w-7xl mx-auto px-6">
           
           {/* TOP BAR - Infrastructure Header */}
-          <div className="mb-6 pb-4 border-b border-gray-800">
+          <div className="mb-6 pb-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-semibold text-gray-300">Revenue Monitoring Console</h1>
+                <h1 className="text-2xl font-semibold text-gray-900">Revenue Monitoring Console</h1>
               </div>
             </div>
           </div>
 
+          <DashboardSummaryCard
+            companyName={user?.company_name || null}
+            monthlyLoss={null}
+            riiScore={monitoringLoading ? null : (monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null) ? monitoringStatus.structural_scores.rii_score : diagnostic?.risk_score ?? monitoringStatus?.structural_scores?.rii_score ?? null}
+            riskLevel={diagnostic?.risk_level || null}
+          />
           {/* REVENUE RISK INDEX - Visible when diagnostic OR monitoring structural scores exist */}
           {(() => {
             const riiScore =
-              diagnostic?.risk_score ??
-              monitoringStatus?.structural_scores?.rii_score ??
-              monitoringStatus?.structural_health?.structural_health_score ??
-              null
+              (monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null)
+                ? monitoringStatus.structural_scores.rii_score
+                : diagnostic?.risk_score ??
+                  monitoringStatus?.structural_scores?.rii_score ??
+                  monitoringStatus?.structural_health?.structural_health_score ??
+                  null
             const shouldShowRII =
-              (hasDiagnostic && diagnostic) ||
-              (isMonitoringActive && riiScore !== null && riiScore !== undefined)
+              !monitoringLoading && (
+                (hasDiagnostic && diagnostic) ||
+                (isMonitoringActive && riiScore !== null && riiScore !== undefined)
+              )
             if (!shouldShowRII) return null
             return (
               <RevenueRiskIndex
@@ -848,12 +954,12 @@ export default function DashboardPage() {
           })()}
 
           {/* While monitoring status is loading from API, show spinner */}
-          {monitoringLoading && companyId ? (
-            <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
-              <p className="text-sm text-gray-400 animate-pulse">Loading revenue monitoring status…</p>
+          {monitoringLoading || !companyId ? (
+            <div className="p-8 border border-gray-200 rounded-lg bg-gray-50">
+              <p className="text-sm text-gray-600 animate-pulse">Loading revenue monitoring status...</p>
             </div>
           ) : isMonitoringActive && monitoringStatus ? (
-            /* STATE 3 — CONTINUOUS MONITORING ACTIVE */
+            /* STATE 3 ΓÇö CONTINUOUS MONITORING ACTIVE */
             <MonitoringLayer 
               monitoringStatus={monitoringStatus}
               diagnostic={
@@ -886,33 +992,36 @@ export default function DashboardPage() {
               companyDomain={companyDomain}
             />
           ) : !hasDiagnostic && !monitoringLoading ? (
-            /* STATE 1 — NO DIAGNOSTIC & monitoring confirmed off */
-            <div className="p-12 border border-gray-800 rounded-lg bg-[#111827] text-center">
-              <h2 className="text-2xl font-bold mb-4 text-gray-300">Revenue Monitoring Not Yet Active</h2>
-              <p className="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
+            /* STATE 1 ΓÇö NO DIAGNOSTIC & monitoring confirmed off */
+            <div className="p-12 border border-gray-200 rounded-lg bg-gray-50 text-center">
+              <h2 className="text-2xl font-bold mb-4 text-gray-900">Revenue Monitoring Not Yet Active</h2>
+              <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
                 Run a scan first to quantify your revenue-stage exposure and identify compression risk.
               </p>
               <Link
                 href={PUBLIC_HOME_URL}
-                className="inline-block px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition"
+                className="inline-block px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-black font-semibold rounded-lg transition"
               >
                 Run a Scan
               </Link>
             </div>
           ) : subscriptionLoading ? (
-            <div className="p-8 border border-gray-800 rounded-lg bg-[#111827]">
-              <p className="text-sm text-gray-400 animate-pulse">Loading subscription status…</p>
+            <div className="p-8 border border-gray-200 rounded-lg bg-gray-50">
+              <p className="text-sm text-gray-600 animate-pulse">Loading subscription status...</p>
             </div>
           ) : diagnostic?.is_partial ? (
-            /* STATE 2 — PARTIAL DIAGNOSTIC (from scan), monitoring not active */
+            /* STATE 2 ΓÇö PARTIAL DIAGNOSTIC (from scan), monitoring not active */
             <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
           ) : (
-            /* STATE 2 — FREE SNAPSHOT (full diagnostic, no monitoring) */
+            /* STATE 2 ΓÇö FREE SNAPSHOT (full diagnostic, no monitoring) */
             diagnostic && (
               <SnapshotLayer diagnostic={diagnostic} companyId={companyId} />
             )
           )}
 
+        </div>
+        <div className="mt-8 max-w-4xl mx-auto px-6">
+          <IntegrationsPanel />
         </div>
       </main>
       <SiteFooter />

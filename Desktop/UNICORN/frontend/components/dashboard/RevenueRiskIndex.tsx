@@ -39,15 +39,15 @@ export default function RevenueRiskIndex({
   const scoreClass = classifyFromScore(displayScore)
 
   const getRiskColor = () => {
-    if (scoreClass === "HIGH") return "text-red-400"
+    if (scoreClass === "HIGH") return "text-red-600"
     if (scoreClass === "MODERATE") return "text-yellow-400"
-    return "text-green-400"
+    return "text-green-600"
   }
 
   const getRiskLabel = () => {
-    if (scoreClass === "HIGH") return "High Revenue Risk"
-    if (scoreClass === "MODERATE") return "Moderate Revenue Risk"
-    return "Low Revenue Risk"
+    if (scoreClass === "HIGH") return "Revenue Inefficiency Detected"
+    if (scoreClass === "MODERATE") return "Moderate Revenue Compression"
+    return "Efficient Revenue Structure"
   }
 
   /** Avoid “strong messaging” + “moderate risk” contradiction — copy tracks score band */
@@ -66,26 +66,26 @@ export default function RevenueRiskIndex({
         : "Large dollar exposure can reflect scale as much as urgency — use model inputs below for context."
 
   return (
-    <div className="p-10 bg-[#111827] rounded-lg border-2 border-cyan-900/40 mb-8 shadow-[0_0_40px_rgba(34,211,238,0.06)]">
+    <div className="p-10 bg-gray-50 rounded-lg border-2 border-cyan-900/40 mb-8 shadow-[0_0_40px_rgba(34,211,238,0.06)]">
       <div className="text-center">
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-500/90 mb-2">
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-indigo-600/90 mb-2">
           Core metric
         </p>
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-1 tracking-tight">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 tracking-tight">
           {RII_NAME}
         </h2>
-        <p className="text-sm text-gray-400 mb-3">
-          <abbr title={RII_TAGLINE} className="cursor-help font-semibold text-cyan-400/90 border-b border-dotted border-cyan-500/50">
+        <p className="text-sm text-gray-600 mb-3">
+          <abbr title={RII_TAGLINE} className="cursor-help font-semibold text-blue-600/90 border-b border-dotted border-indigo-600/50">
             {RII_ABBREV}
           </abbr>
-          <span className="text-gray-500"> · </span>
+          <span className="text-gray-600"> · </span>
           <span title={RII_TAGLINE}>0–100 scale · lower is stronger architecture</span>
         </p>
-        <p className="text-xs text-gray-500 max-w-2xl mx-auto leading-relaxed mb-4">
+        <p className="text-xs text-gray-600 max-w-2xl mx-auto leading-relaxed mb-4">
           {RII_INTRO}{" "}
           <Link
             href={METHODOLOGY_RII_HREF}
-            className="text-cyan-500 hover:text-cyan-400 underline-offset-2 hover:underline whitespace-nowrap"
+            className="text-indigo-600 hover:text-blue-600 underline-offset-2 hover:underline whitespace-nowrap"
           >
             How RII is calculated →
           </Link>
@@ -111,47 +111,37 @@ export default function RevenueRiskIndex({
           </div>
           <p className={`text-2xl font-bold mb-1 ${getRiskColor()}`} title={RII_TAGLINE}>
             {getRiskLabel()}
-            {scoreClass === "LOW" && <span className="ml-2 text-emerald-400 text-xl" aria-hidden>✓</span>}
+            {scoreClass === "LOW" && <span className="ml-2 text-emerald-600 text-xl" aria-hidden>✓</span>}
           </p>
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-gray-700">
             {heroBodyPrimary}
           </p>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-gray-600 mt-2">
             {heroBodySecondary}
           </p>
           </>
         ) : (
-          <p className="text-2xl font-bold text-gray-500 mb-4">Initializing</p>
+          <p className="text-2xl font-bold text-gray-600 mb-4">Initializing</p>
         )}
         {/* Visual legend — flex + separators so bands never read as one word */}
-        <div className="text-[11px] text-gray-500 mb-4 mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 max-w-xl mx-auto">
-          <span>0–30: <span className="text-emerald-400">Excellent</span></span>
-          <span className="text-gray-700" aria-hidden>
-            ·
-          </span>
-          <span>30–50: <span className="text-emerald-300">Strong</span></span>
-          <span className="text-gray-700" aria-hidden>
-            ·
-          </span>
-          <span>50–70: <span className="text-amber-400">Inefficient</span></span>
-          <span className="text-gray-700" aria-hidden>
-            ·
-          </span>
-          <span>70+: <span className="text-red-400">Critical</span></span>
-          <span className="text-gray-700 px-1" aria-hidden>
-            ·
-          </span>
+        <div className="text-[11px] text-gray-600 mb-4 mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 max-w-xl mx-auto">
+          <span>0–40: <span className="text-emerald-600">Excellent</span></span>
+          <span className="text-gray-700" aria-hidden>·</span>
+          <span>40–70: <span className="text-amber-600">Moderate</span></span>
+          <span className="text-gray-700" aria-hidden>·</span>
+          <span>70+: <span className="text-red-600">High Risk</span></span>
+          <span className="text-gray-700" aria-hidden>·</span>
           <span className="text-gray-600">Lower is better</span>
         </div>
         {effectiveConfidence < 50 && (
-          <p className="text-xs text-amber-300 mb-4">
+          <p className="text-xs text-amber-600 mb-4">
             Limited content detected - results may be less accurate.
           </p>
         )}
         <div className="flex items-center justify-center gap-6 text-sm flex-wrap">
           <div>
-            <span className="text-gray-400">Data Coverage: </span>
-            <span className="font-semibold text-gray-300">
+            <span className="text-gray-600">Data Coverage: </span>
+            <span className="font-semibold text-gray-700">
               {(() => {
                 const cov = typeof coveragePct === "number" ? coveragePct : confidence
                 return <>
@@ -161,12 +151,12 @@ export default function RevenueRiskIndex({
             </span>
           </div>
           <div>
-            <span className="text-gray-400">Monitoring Coverage: </span>
-            <span className="font-semibold text-gray-300">Revenue-Stage Messaging</span>
+            <span className="text-gray-600">Monitoring Coverage: </span>
+            <span className="font-semibold text-gray-700">Revenue-Stage Messaging</span>
           </div>
           <div>
-            <span className="text-gray-400">Assessment Date: </span>
-            <span className="font-semibold text-gray-300">
+            <span className="text-gray-600">Assessment Date: </span>
+            <span className="font-semibold text-gray-700">
               {assessmentDate
                 ? new Date(assessmentDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
                 : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}

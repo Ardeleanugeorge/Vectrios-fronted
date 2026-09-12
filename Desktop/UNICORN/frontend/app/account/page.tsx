@@ -142,6 +142,8 @@ export default function AccountPage() {
   const [calibrationArr, setCalibrationArr] = useState("")
   const [calibrationCurrentCloseRate, setCalibrationCurrentCloseRate] = useState("")
   const [calibrationTargetCloseRate, setCalibrationTargetCloseRate] = useState("")
+  const [calibrationAcv, setCalibrationAcv] = useState("")
+  const [calibrationPipeline, setCalibrationPipeline] = useState("")
   const [calibrationLoading, setCalibrationLoading] = useState(false)
   const [calibrationError, setCalibrationError] = useState("")
   const [calibrationSuccess, setCalibrationSuccess] = useState("")
@@ -414,6 +416,8 @@ export default function AccountPage() {
       setCalibrationArr(typeof data.arr === "number" ? String(Math.round(data.arr)) : "")
       setCalibrationCurrentCloseRate(typeof data.current_close_rate === "number" ? String(data.current_close_rate) : "")
       setCalibrationTargetCloseRate(typeof data.target_close_rate === "number" ? String(data.target_close_rate) : "")
+      setCalibrationAcv(typeof data.average_deal_size === "number" ? String(data.average_deal_size) : "")
+      setCalibrationPipeline(typeof data.pipeline_deals === "number" ? String(data.pipeline_deals) : "")
     } catch {}
   }
 
@@ -428,9 +432,11 @@ export default function AccountPage() {
         arr: calibrationArr.trim() ? Number(calibrationArr) : null,
         current_close_rate: calibrationCurrentCloseRate.trim() ? Number(calibrationCurrentCloseRate) : null,
         target_close_rate: calibrationTargetCloseRate.trim() ? Number(calibrationTargetCloseRate) : null,
+        average_deal_size: calibrationAcv.trim() ? Number(calibrationAcv) : null,
+        pipeline_deals: calibrationPipeline.trim() ? Number(calibrationPipeline) : null,
       }
       const res = await apiFetch(`/calibration/${companyId}`, {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       })
@@ -853,7 +859,7 @@ export default function AccountPage() {
     { icon: "•", key: "delta",        label: "Revenue Delta Engine",      desc: "+$X/month worse vs last scan — with WHY drivers (ICP, alignment–)",  minPlan: "scale" },
     { icon: "•", key: "delta_action", label: "Delta + Action Combo",      desc: "'Fix this first' shown instantly when revenue leak increases",       minPlan: "scale" },
     { icon: "•", key: "trajectory",   label: "Risk Trajectory",           desc: "30/60/90-day forward-looking risk projections",                      minPlan: "scale" },
-    { icon: "?", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale" },
+    { icon: "⚡", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale" },
     { icon: "•", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Compare vs 500+ SaaS companies in your revenue tier",               minPlan: "scale" },
     { icon: "•", key: "arr_sim",      label: "12-Month ARR Simulation",   desc: "Model revenue trajectory with vs without fixes applied",             minPlan: "scale" },
     { icon: "•", key: "apis",         label: "GSC + GA4 Modifiers",       desc: "Real search + behavior data applied to revenue model",               minPlan: "scale" },
@@ -865,7 +871,7 @@ export default function AccountPage() {
   const featureTier = (_f: typeof ALL_FEATURES[0]) => 0
 
   const featGroups = [
-    { label: "Scale", tier: 0, color: "text-cyan-400", dot: "bg-cyan-500" },
+    { label: "Scale", tier: 0, color: "text-indigo-500", dot: "bg-indigo-600" },
   ] as const
 
   // Smart dashboard redirect
@@ -918,8 +924,8 @@ export default function AccountPage() {
     return (
       <div className="page-root flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-400 text-sm">Loading account…</p>
+          <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-600 text-sm">Loading account…</p>
         </div>
       </div>
     )
@@ -934,24 +940,24 @@ export default function AccountPage() {
           {/* -- Page header ---------------------------------------------------- */}
           <div className="flex items-start justify-between mb-10 gap-4 flex-wrap">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-200 border border-slate-300 text-slate-600 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 text-xs font-medium mb-3 uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-medium mb-3 uppercase tracking-widest">
                 Account Settings
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-slate-900">
                 {isOwner ? "VectriOS" : (user?.company_name || "Your Account")}
               </h1>
-              <p className="text-gray-500 text-sm mt-1">{user?.email}</p>
+              <p className="text-gray-600 text-sm mt-1">{user?.email}</p>
             </div>
             <div className="flex flex-wrap items-center gap-3 justify-end">
               <Link
                 href={getDashboardUrl()}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm transition"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm transition"
               >
                 {isOwner ? "Manager Console" : "Dashboard"}
               </Link>
               <button
                 onClick={handleSignOut}
-                className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 font-medium text-sm transition"
+                className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-medium text-sm transition border border-slate-300"
               >
                 Sign out
               </button>
@@ -965,7 +971,7 @@ export default function AccountPage() {
                 <p className="text-red-300 font-semibold">Your trial has expired</p>
                 <p className="text-red-400/70 text-sm">Upgrade to keep your monitoring active.</p>
               </div>
-              <Link href="/upgrade" className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-400 text-white font-bold text-sm transition">
+              <Link href="/upgrade" className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-400 text-gray-900 font-bold text-sm transition">
                 Upgrade now ?
               </Link>
             </div>
@@ -985,15 +991,15 @@ export default function AccountPage() {
           )}
 
           {/* -- Tabs -------------------------------------------------------- */}
-          <div className="flex gap-1 mb-8 p-1 bg-slate-200/90 border border-slate-300 rounded-2xl w-fit dark:bg-gray-900/60 dark:border-gray-800">
+          <div className="flex gap-1 mb-8 p-1 bg-slate-200/90 border border-slate-300 rounded-2xl w-fit dark:bg-gray-100">
             {TABS.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition ${
                   activeTab === tab.id
-                    ? 'bg-white text-slate-900 shadow-sm border border-slate-200 dark:bg-gray-800 dark:text-white dark:border-transparent'
-                    : 'text-slate-600 hover:text-slate-900 dark:text-gray-500 dark:hover:text-gray-300'
+                    ? 'bg-slate-800 text-white shadow-sm border border-slate-700'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-gray-600 dark:hover:text-gray-700'
                 }`}
               >
                 <span className="text-base">{tab.icon}</span>
@@ -1004,33 +1010,33 @@ export default function AccountPage() {
                 
           {/* -- PROFILE TAB ------------------------------------------------- */}
           {activeTab === 'profile' && (
-            <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/40 dark:shadow-none overflow-hidden">
-              <div className="p-6 border-b border-slate-200 dark:border-gray-800">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Profile information</h2>
-                <p className="text-gray-500 text-sm mt-0.5">Update your email and company name.</p>
+            <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-200 dark:bg-gray-100">
+              <div className="p-6 border-b border-slate-200 dark:border-gray-200">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Profile information</h2>
+                <p className="text-gray-600 text-sm mt-0.5">Update your email and company name.</p>
               </div>
               <form onSubmit={handleProfileSave} className="p-6 space-y-5">
                 <div className="grid md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Email address</label>
+                    <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Email address</label>
                     <input
                       type="email"
                       value={profileEmail}
                       onChange={e => setProfileEmail(e.target.value)}
                       disabled={profileLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                       placeholder="you@company.com"
                     />
                     <p className="text-xs text-gray-600 mt-1">Changing email sends a verification link first.</p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Company name</label>
+                    <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Company name</label>
                     <input
                       type="text"
                       value={profileCompanyName}
                       onChange={e => setProfileCompanyName(e.target.value)}
                       disabled={profileLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                       placeholder="Acme Corp"
                     />
                   </div>
@@ -1044,7 +1050,7 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={profileLoading}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {profileLoading ? "Saving…" : "Save changes"}
                 </button>
@@ -1056,16 +1062,16 @@ export default function AccountPage() {
           {activeTab === 'plan' && (
             <div className="space-y-5">
               {/* Current plan card */}
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-                <div className="p-6 border-b border-slate-200 dark:border-gray-800">
-                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Current plan</h2>
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                <div className="p-6 border-b border-slate-200 dark:border-gray-200">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Current plan</h2>
                 </div>
                 <div className="p-6">
                   {planLabel ? (
                     <div className="flex items-center justify-between flex-wrap gap-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-2xl">
-                          {isTrial ? '?' : '?'}
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-600/10 border border-indigo-600/20 flex items-center justify-center text-2xl">
+                          {isTrial ? '⏱' : '⭐'}
                         </div>
                         <div>
                           <div className="flex items-center gap-2 mb-1">
@@ -1076,13 +1082,13 @@ export default function AccountPage() {
                               </span>
                             )}
                             {!isTrial && planName && (
-                              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-500/20 border border-cyan-500/30 text-cyan-300">
+                              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-600/20 border border-indigo-600/30 text-cyan-300">
                                 Active
                               </span>
                             )}
                           </div>
                           {subscription?.next_billing && !isTrial && (
-                            <p className="text-gray-500 text-sm">
+                            <p className="text-gray-600 text-sm">
                               Next billing: {new Date(subscription.next_billing).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                             </p>
                           )}
@@ -1097,22 +1103,22 @@ export default function AccountPage() {
                       </div>
                       <Link
                         href="/upgrade"
-                        className="px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 font-medium text-sm transition border border-gray-700"
+                        className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-medium text-sm transition border border-gray-200"
                       >
-                        {isTrial ? 'Upgrade plan ?' : 'View plans ?'}
+                        {isTrial ? 'Upgrade to Scale →' : 'View plans →'}
                       </Link>
               </div>
             ) : (
                     <div className="flex items-center justify-between flex-wrap gap-4">
                       <div>
-                        <p className="text-gray-400 mb-1">No active subscription</p>
+                        <p className="text-gray-600 mb-1">No active subscription</p>
                         <p className="text-gray-600 text-sm">Start a free trial to unlock monitoring.</p>
                       </div>
                 <Link
                         href="/upgrade"
-                        className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-sm transition"
+                        className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm transition"
                 >
-                        Start free trial ?
+                        Start free trial →
                 </Link>
               </div>
             )}
@@ -1120,16 +1126,16 @@ export default function AccountPage() {
           </div>
 
               {/* Included features — always visible, grouped by plan tier */}
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-                <div className="px-6 py-5 border-b border-slate-200 dark:border-gray-800 flex items-center justify-between">
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                <div className="px-6 py-5 border-b border-slate-200 dark:border-gray-200 flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Included features</h2>
-                    <p className="text-gray-500 text-sm mt-0.5">
+                    <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Included features</h2>
+                    <p className="text-gray-600 text-sm mt-0.5">
                       {planLabel ? `What's active on your ${planLabel} plan` : "Start a plan to unlock features"}
                     </p>
                   </div>
                   {userTier < 0 && (
-                    <Link href="/pricing" className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition">
+                    <Link href="/pricing" className="text-xs font-semibold text-indigo-500 hover:text-cyan-300 transition">
                       Start Scale ?
                     </Link>
                   )}
@@ -1154,7 +1160,7 @@ export default function AccountPage() {
                           ) : (
                             <Link
                               href="/upgrade"
-                              className="ml-auto text-[10px] font-bold text-gray-500 bg-gray-800 border border-gray-700 px-2 py-0.5 rounded-full hover:text-gray-300 transition"
+                              className="ml-auto text-[10px] font-bold text-gray-600 bg-gray-800 border border-gray-200 px-2 py-0.5 rounded-full hover:text-gray-700 transition"
                             >
                               Upgrade ?
                             </Link>
@@ -1167,21 +1173,21 @@ export default function AccountPage() {
                               key={feat.key}
                               className={`flex items-start gap-3 px-4 py-3 rounded-xl border ${
                                 groupEnabled
-                                      ? "border-cyan-500/20 bg-cyan-500/5"
-                                  : "border-gray-800/40 bg-gray-900/10"
+                                      ? "border-indigo-600/20 bg-indigo-600/5"
+                                  : "border-gray-200/40 bg-gray-100"
                               }`}
                             >
                               <span className="text-base mt-0.5 shrink-0">{feat.icon}</span>
                               <div className="min-w-0">
                                 <div className="flex items-center gap-1.5">
-                                  <span className={`text-sm font-medium ${groupEnabled ? "text-gray-200" : "text-gray-600"}`}>
+                                  <span className={`text-sm font-medium ${groupEnabled ? "text-gray-700" : "text-gray-600"}`}>
                                     {feat.label}
                                   </span>
                                   {groupEnabled && (
-                                    <span className="text-[10px] font-bold text-cyan-400" aria-hidden>✓</span>
+                                    <span className="text-[10px] font-bold text-indigo-500" aria-hidden>✓</span>
                                   )}
                                 </div>
-                                <p className={`text-xs mt-0.5 leading-relaxed ${groupEnabled ? "text-gray-500" : "text-gray-700"}`}>
+                                <p className={`text-xs mt-0.5 leading-relaxed ${groupEnabled ? "text-gray-600" : "text-gray-700"}`}>
                                   {feat.desc}
                                 </p>
                               </div>
@@ -1196,18 +1202,18 @@ export default function AccountPage() {
                 {/* Subscribe CTA if no active plan */}
                 {userTier < 0 && (
                   <div className="px-6 pb-5 pt-2">
-                    <div className="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 flex items-center justify-between gap-4 flex-wrap">
+                    <div className="p-4 rounded-xl border border-indigo-600/20 bg-indigo-600/5 flex items-center justify-between gap-4 flex-wrap">
                       <div>
                         <p className="text-sm font-semibold text-cyan-300">
                           Activate Scale — $99/month
                         </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="text-xs text-gray-600 mt-0.5">
                           Unlock 24h monitoring, full playbook, ARR at risk, incidents, benchmark, and team access.
                         </p>
                       </div>
                       <Link
                         href="/pricing"
-                        className="shrink-0 px-4 py-2 rounded-xl font-bold text-xs transition bg-cyan-500 hover:bg-cyan-400 text-black"
+                        className="shrink-0 px-4 py-2 rounded-xl font-bold text-xs transition bg-indigo-600 hover:bg-indigo-500 text-black"
                       >
                         Start Scale ?
                       </Link>
@@ -1217,20 +1223,21 @@ export default function AccountPage() {
               </div>
 
               {/* Billing card */}
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-                <div className="p-6 border-b border-slate-200 dark:border-gray-800">
-                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Payment & billing</h2>
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                <div className="p-6 border-b border-slate-200 dark:border-gray-200">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Payment & billing</h2>
                 </div>
                 <div className="p-6 flex items-center justify-between flex-wrap gap-4">
                   <div>
-                    <p className="text-gray-400 text-sm">Stripe billing portal — update card, view invoices, cancel.</p>
+                    <p className="text-gray-600 text-sm">Stripe billing portal — update card, view invoices, cancel.</p>
                   </div>
                   <button
                     disabled
-                    className="px-5 py-2.5 rounded-xl bg-gray-800 text-gray-600 font-medium text-sm border border-gray-800 cursor-not-allowed"
-                    title="Coming soon with Stripe integration"
+                    className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-sm border border-slate-200 transition"
+                    title="Contact support to manage billing"
+                    onClick={() => {}}
                   >
-                    Manage payment (coming soon)
+                    Manage billing → contact support
                   </button>
                 </div>
               </div>
@@ -1240,34 +1247,34 @@ export default function AccountPage() {
           {/* -- REVENUE MODEL TAB ------------------------------------------- */}
           {activeTab === 'revenue' && (
             <div className="space-y-5">
-              <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/40 dark:shadow-none overflow-hidden">
-                <div className="p-6 border-b border-slate-200 dark:border-gray-800">
-                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Financial calibration</h2>
-                  <p className="text-gray-500 text-sm mt-0.5">
+              <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-200 dark:bg-gray-100">
+                <div className="p-6 border-b border-slate-200 dark:border-gray-200">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Financial calibration</h2>
+                  <p className="text-gray-600 text-sm mt-0.5">
                     Set your real business numbers to improve financial impact estimates. Structural risk is derived from website scan signals — these values calibrate the dollar output.
                   </p>
                 </div>
                 <form onSubmit={handleCalibrationSave} className="p-6 space-y-6">
                   <div className="grid md:grid-cols-3 gap-5">
                     <div>
-                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
                         Annual Recurring Revenue
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm">$</span>
                         <input
                           type="number"
                           min={1}
                           value={calibrationArr}
                           onChange={e => setCalibrationArr(e.target.value)}
                           placeholder="1000000"
-                          className="w-full pl-8 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                          className="w-full pl-8 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                         />
                       </div>
                       <p className="text-xs text-gray-600 mt-1.5">Your current ARR in USD</p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
                         Current close rate
                       </label>
                       <div className="relative">
@@ -1279,14 +1286,14 @@ export default function AccountPage() {
                           value={calibrationCurrentCloseRate}
                           onChange={e => setCalibrationCurrentCloseRate(e.target.value)}
                           placeholder="12.5"
-                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                         />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">%</span>
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm">%</span>
                       </div>
                       <p className="text-xs text-gray-600 mt-1.5">Trial-to-paid or lead-to-close</p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
                         Target close rate
                       </label>
                       <div className="relative">
@@ -1298,24 +1305,61 @@ export default function AccountPage() {
                           value={calibrationTargetCloseRate}
                           onChange={e => setCalibrationTargetCloseRate(e.target.value)}
                           placeholder="18.0"
-                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition"
+                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                         />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">%</span>
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm">%</span>
                       </div>
                       <p className="text-xs text-gray-600 mt-1.5">What you're aiming to reach</p>
                     </div>
                   </div>
 
+
+                  {/* ACV + Pipeline */}
+                  <div className="grid md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
+                        Average Contract Value (ACV)
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                        <input
+                          type="number"
+                          min={0}
+                          step="1000"
+                          value={calibrationAcv}
+                          onChange={e => setCalibrationAcv(e.target.value)}
+                          placeholder="20000"
+                          className="w-full pl-8 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1.5">Average deal size in USD</p>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
+                        Pipeline deals / year
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        step="1"
+                        value={calibrationPipeline}
+                        onChange={e => setCalibrationPipeline(e.target.value)}
+                        placeholder="50"
+                        className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500"
+                      />
+                      <p className="text-xs text-gray-600 mt-1.5">Active deals in pipeline per year</p>
+                    </div>
+                  </div>
                   {/* Impact preview */}
                   {calibrationArr && calibrationCurrentCloseRate && calibrationTargetCloseRate && (
-                    <div className="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
-                      <p className="text-xs text-cyan-400 font-medium uppercase tracking-wider mb-1">Model preview</p>
-                      <p className="text-sm text-gray-300">
+                    <div className="p-4 rounded-xl bg-indigo-600/5 border border-indigo-600/20">
+                      <p className="text-xs text-indigo-500 font-medium uppercase tracking-wider mb-1">Model preview</p>
+                      <p className="text-sm text-gray-700">
                         Closing gap:{" "}
-                        <span className="text-slate-900 dark:text-white font-semibold">
+                        <span className="text-slate-900 dark:text-gray-900 font-semibold">
                           +{(Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)).toFixed(1)}pp
                         </span>
-                        {" "}on ${(Number(calibrationArr) / 1_000_000).toFixed(1)}M ARR ?{" "}
+                        {" "}on ${(Number(calibrationArr) / 1_000_000).toFixed(1)}M ARR —{" "}
                         <span className="text-cyan-300 font-bold">
                           ~${Math.round(Number(calibrationArr) * (Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)) / 100 / 1000)}K recoverable
                         </span>
@@ -1332,7 +1376,7 @@ export default function AccountPage() {
                   <button
                     type="submit"
                     disabled={calibrationLoading || !companyId}
-                    className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                    className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                   >
                     {calibrationLoading ? "Saving…" : "Save calibration"}
                   </button>
@@ -1340,8 +1384,8 @@ export default function AccountPage() {
               </div>
 
               {/* Info card */}
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/20 p-5">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">How it works</p>
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                <p className="text-xs font-medium text-gray-600 uppercase tracking-wider mb-3">How it works</p>
                 <div className="grid sm:grid-cols-3 gap-4">
                   {[
                     { icon: "•", title: "Structural scan", desc: "RII and risk drivers come from crawling your site — always accurate." },
@@ -1351,7 +1395,7 @@ export default function AccountPage() {
                     <div key={item.title} className="flex gap-3">
                       <span className="text-xl mt-0.5">{item.icon}</span>
                       <div>
-                        <p className="text-sm font-medium text-gray-300">{item.title}</p>
+                        <p className="text-sm font-medium text-gray-700">{item.title}</p>
                         <p className="text-xs text-gray-600 mt-0.5">{item.desc}</p>
                       </div>
                     </div>
@@ -1363,14 +1407,14 @@ export default function AccountPage() {
 
           {/* -- SECURITY TAB ------------------------------------------------ */}
           {activeTab === 'security' && (
-            <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-              <div className="p-6 border-b border-slate-200 dark:border-gray-800">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Change password</h2>
-                <p className="text-gray-500 text-sm mt-0.5">Use a strong password of at least 8 characters.</p>
+            <div className="rounded-2xl border border-gray-200 bg-gray-100">
+              <div className="p-6 border-b border-slate-200 dark:border-gray-200">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Change password</h2>
+                <p className="text-gray-600 text-sm mt-0.5">Use a strong password of at least 8 characters.</p>
               </div>
               <form onSubmit={handleChangePassword} className="p-6 space-y-5 max-w-md">
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">New password</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">New password</label>
                   <input
                     type="password"
                     value={newPassword}
@@ -1378,12 +1422,12 @@ export default function AccountPage() {
                     disabled={passwordLoading}
                     minLength={8}
                     required
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                     placeholder="At least 8 characters"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Confirm new password</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Confirm new password</label>
                   <input
                     type="password"
                     value={confirmPassword}
@@ -1391,7 +1435,7 @@ export default function AccountPage() {
                     disabled={passwordLoading}
                     minLength={8}
                     required
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                     placeholder="Repeat new password"
                   />
                 </div>
@@ -1404,14 +1448,14 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={passwordLoading}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {passwordLoading ? "Updating…" : "Change password"}
                 </button>
               </form>
 
               {/* Danger zone */}
-              <div className="px-6 pb-6 pt-2 border-t border-gray-800 mt-4">
+              <div className="px-6 pb-6 pt-2 border-t border-gray-200 mt-4">
                 <p className="text-xs text-gray-600 uppercase tracking-widest font-medium mb-3">Session</p>
                 <button
                   onClick={handleSignOut}
@@ -1426,37 +1470,37 @@ export default function AccountPage() {
           {/* -- SUPPORT TAB ------------------------------------------------- */}
           {activeTab === 'support' && (
             <div className="space-y-8">
-            <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-              <div className="p-6 border-b border-slate-200 dark:border-gray-800">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Ask a question</h2>
-                <p className="text-gray-500 text-sm mt-0.5">
+            <div className="rounded-2xl border border-gray-200 bg-gray-100">
+              <div className="p-6 border-b border-slate-200 dark:border-gray-200">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Ask a question</h2>
+                <p className="text-gray-600 text-sm mt-0.5">
                   Billing, trial, Scale features, or how something works — same as the form on the pricing page. We&apos;ll email you back.
                 </p>
               </div>
               <form onSubmit={handleGeneralContactSubmit} className="p-6 space-y-5">
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Your name</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Your name</label>
                   <input
                     type="text"
                     value={generalContactName}
                     onChange={(e) => setGeneralContactName(e.target.value)}
                     disabled={generalContactLoading}
                     placeholder={profileCompanyName || "Your name"}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Email</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Email</label>
                   <input
                     type="email"
                     value={profileEmail || user?.email || ""}
                     readOnly
-                    className="w-full px-4 py-3 rounded-xl bg-gray-950 border border-gray-800 text-gray-400 cursor-not-allowed"
+                    className="w-full px-4 py-3 rounded-xl bg-gray-100 border border-gray-200 text-gray-600 cursor-not-allowed"
                   />
                   <p className="text-xs text-gray-600 mt-1.5">From your account. Change it on the Profile tab if needed.</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Message</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Message</label>
                   <textarea
                     value={generalContactMessage}
                     onChange={(e) => setGeneralContactMessage(e.target.value)}
@@ -1465,7 +1509,7 @@ export default function AccountPage() {
                     required
                     disabled={generalContactLoading}
                     placeholder="What would you like to know?"
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                   />
                 </div>
                 {generalContactError && (
@@ -1477,24 +1521,24 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={generalContactLoading || !(profileEmail || user?.email)}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {generalContactLoading ? "Sending…" : "Send message"}
                 </button>
               </form>
             </div>
 
-            <div className="rounded-2xl border border-gray-800 bg-gray-900/40 overflow-hidden">
-              <div className="p-6 border-b border-slate-200 dark:border-gray-800">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Technical support ticket</h2>
-                <p className="text-gray-500 text-sm mt-0.5">
+            <div className="rounded-2xl border border-gray-200 bg-gray-100">
+              <div className="p-6 border-b border-slate-200 dark:border-gray-200">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Technical support ticket</h2>
+                <p className="text-gray-600 text-sm mt-0.5">
                   For bugs or product issues — opens a tracked thread with technical context attached automatically.
                 </p>
               </div>
               <form onSubmit={handleSupportSubmit} className="p-6 space-y-5">
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Subject</label>
+                    <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Subject</label>
                     <input
                       type="text"
                       value={supportSubject}
@@ -1502,17 +1546,17 @@ export default function AccountPage() {
                       maxLength={160}
                       required
                       disabled={supportLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                       placeholder="Briefly describe the issue"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Priority</label>
+                    <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Priority</label>
                     <select
                       value={supportPriority}
                       onChange={e => setSupportPriority(e.target.value)}
                       disabled={supportLoading}
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 dark:bg-gray-100"
                     >
                       <option value="low">Low</option>
                       <option value="normal">Normal</option>
@@ -1523,7 +1567,7 @@ export default function AccountPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Message</label>
+                  <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">Message</label>
                   <textarea
                     value={supportMessage}
                     onChange={e => setSupportMessage(e.target.value)}
@@ -1531,7 +1575,7 @@ export default function AccountPage() {
                     maxLength={5000}
                     required
                     disabled={supportLoading}
-                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                     placeholder="What happened, what you expected, and any steps to reproduce."
                   />
                   <p className="text-xs text-gray-600 mt-1.5">
@@ -1549,19 +1593,19 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={supportLoading}
-                  className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                  className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                 >
                   {supportLoading ? "Creating ticket..." : "Open support ticket"}
                 </button>
               </form>
 
-              <div className="px-6 pb-6 border-t border-gray-800/80">
+              <div className="px-6 pb-6 border-t border-gray-200/80">
                 <div className="grid md:grid-cols-3 gap-5">
-                  <div className="rounded-xl border border-gray-800 bg-gray-950/40 p-4 md:col-span-1">
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">My tickets</p>
+                  <div className="rounded-xl border border-gray-200 bg-gray-100/40 p-4 md:col-span-1">
+                    <p className="text-xs font-medium text-gray-600 uppercase tracking-wider mb-3">My tickets</p>
                     <div className="space-y-2 max-h-80 overflow-auto pr-1">
                       {supportTickets.length === 0 && (
-                        <p className="text-sm text-gray-500">No tickets yet.</p>
+                        <p className="text-sm text-gray-600">No tickets yet.</p>
                       )}
                       {supportTickets.map(t => (
                         <button
@@ -1573,12 +1617,12 @@ export default function AccountPage() {
                           }}
                           className={`w-full text-left p-3 rounded-lg border transition ${
                             selectedTicketId === t.ticket_id
-                              ? "border-cyan-500/40 bg-cyan-500/10"
-                              : "border-gray-800 bg-gray-900/30 hover:border-gray-700"
+                              ? "border-indigo-600/40 bg-indigo-600/10"
+                              : "border-gray-200 bg-gray-100"
                           }`}
                         >
-                          <p className="text-sm font-medium text-gray-200 truncate">{t.subject}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">
+                          <p className="text-sm font-medium text-gray-700 truncate">{t.subject}</p>
+                          <p className="text-xs text-gray-600 mt-0.5">
                             {t.ticket_id} — {t.priority}
                           </p>
                         </button>
@@ -1586,19 +1630,19 @@ export default function AccountPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-gray-800 bg-gray-950/40 p-4 md:col-span-2">
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Ticket thread</p>
+                  <div className="rounded-xl border border-gray-200 bg-gray-100/40 p-4 md:col-span-2">
+                    <p className="text-xs font-medium text-gray-600 uppercase tracking-wider mb-3">Ticket thread</p>
                     {supportThreadLoading && (
-                      <p className="text-sm text-gray-500">Loading thread...</p>
+                      <p className="text-sm text-gray-600">Loading thread...</p>
                     )}
                     {!supportThreadLoading && !selectedTicket && (
-                      <p className="text-sm text-gray-500">Select a ticket to view conversation.</p>
+                      <p className="text-sm text-gray-600">Select a ticket to view conversation.</p>
                     )}
                     {!supportThreadLoading && selectedTicket && (
                       <div className="space-y-3">
-                        <div className="pb-2 border-b border-slate-200 dark:border-gray-800">
-                          <p className="text-sm font-semibold text-gray-200">{selectedTicket.subject}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">
+                        <div className="pb-2 border-b border-slate-200 dark:border-gray-200">
+                          <p className="text-sm font-semibold text-gray-700">{selectedTicket.subject}</p>
+                          <p className="text-xs text-gray-600 mt-0.5">
                             {selectedTicket.ticket_id} — {selectedTicket.priority} — {selectedTicket.status}
                           </p>
                         </div>
@@ -1608,16 +1652,16 @@ export default function AccountPage() {
                               key={`${m.created_at || i}-${i}`}
                               className={`p-3 rounded-lg border ${
                                 m.author === "support"
-                                  ? "bg-cyan-500/10 border-cyan-500/20"
-                                  : "bg-gray-900/40 border-gray-800"
+                                  ? "bg-indigo-600/10 border-indigo-600/20"
+                                  : "bg-gray-100"
                               }`}
                             >
-                              <p className="text-xs text-gray-500 mb-1">{m.author === "support" ? "Support" : "You"}</p>
-                              <p className="text-sm text-gray-200 whitespace-pre-wrap">{m.message}</p>
+                              <p className="text-xs text-gray-600 mb-1">{m.author === "support" ? "Support" : "You"}</p>
+                              <p className="text-sm text-gray-700 whitespace-pre-wrap">{m.message}</p>
                             </div>
                           ))}
                           {(selectedTicket.messages || []).length === 0 && (
-                            <p className="text-sm text-gray-500">No messages yet.</p>
+                            <p className="text-sm text-gray-600">No messages yet.</p>
                           )}
                         </div>
                         <form onSubmit={handleSupportFollowup} className="pt-2 space-y-2">
@@ -1628,12 +1672,12 @@ export default function AccountPage() {
                             maxLength={5000}
                             placeholder="Add a follow-up message"
                             disabled={supportThreadLoading}
-                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
                           />
                           <button
                             type="submit"
                             disabled={supportThreadLoading || !selectedTicketId}
-                            className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-xs transition"
+                            className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-xs transition"
                           >
                             Send follow-up
                           </button>
@@ -1652,13 +1696,13 @@ export default function AccountPage() {
             <div className="space-y-6">
 
               {/* Header */}
-              <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-6">
+              <div className="rounded-2xl border border-indigo-600/20 bg-indigo-600/5 p-6">
                 <div className="flex items-center gap-3 mb-1">
                   <span className="text-2xl">??</span>
                   <h2 className="text-lg font-bold text-cyan-300">RII Auto-Calibration</h2>
-                  <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest">Owner only</span>
+                  <span className="px-2 py-0.5 rounded-full bg-indigo-600/20 text-indigo-500 text-xs font-bold uppercase tracking-widest">Owner only</span>
                 </div>
-                <p className="text-gray-400 text-sm mt-1">
+                <p className="text-gray-600 text-sm mt-1">
                   Re-calibrates the RII scoring model using all scan results in the database.
                   No terminal, no Excel — one click.
                 </p>
@@ -1666,35 +1710,35 @@ export default function AccountPage() {
 
               {/* Platform Ops snapshot */}
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">System Health</h3>
+                <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">System Health</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">DB: <span className={adminSystemHealth?.db_connected ? "text-emerald-300" : "text-red-300"}>{adminSystemHealth?.db_connected ? "Connected" : "Down"}</span></p>
-                    <p className="text-gray-300">Companies: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.companies_total ?? "–"}</span></p>
-                    <p className="text-gray-300">Monitoring active: <span className="text-slate-900 dark:text-white font-semibold">{adminSystemHealth?.counts?.monitoring_active ?? "–"}</span></p>
-                    <p className="text-gray-500 text-xs">Last monitoring: {adminSystemHealth?.minutes_since_last_monitoring != null ? `${adminSystemHealth.minutes_since_last_monitoring} min ago` : "—"}</p>
+                    <p className="text-gray-700">DB: <span className={adminSystemHealth?.db_connected ? "text-emerald-300" : "text-red-300"}>{adminSystemHealth?.db_connected ? "Connected" : "Down"}</span></p>
+                    <p className="text-gray-700">Companies: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminSystemHealth?.counts?.companies_total ?? "–"}</span></p>
+                    <p className="text-gray-700">Monitoring active: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminSystemHealth?.counts?.monitoring_active ?? "–"}</span></p>
+                    <p className="text-gray-600 text-xs">Last monitoring: {adminSystemHealth?.minutes_since_last_monitoring != null ? `${adminSystemHealth.minutes_since_last_monitoring} min ago` : "—"}</p>
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pipeline Metrics</h3>
+                <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Pipeline Metrics</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">Scans 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "–"}</span></p>
-                    <p className="text-gray-300">Success 24h: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "–"}%</span></p>
-                    <p className="text-gray-300">Scans 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "–"}</span></p>
-                    <p className="text-gray-300">No-evidence 7d: <span className="text-slate-900 dark:text-white font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "–"}%</span></p>
+                    <p className="text-gray-700">Scans 24h: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.window_24h?.total ?? "–"}</span></p>
+                    <p className="text-gray-700">Success 24h: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.window_24h?.success_rate_pct ?? "–"}%</span></p>
+                    <p className="text-gray-700">Scans 7d: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.window_7d?.total ?? "–"}</span></p>
+                    <p className="text-gray-700">No-evidence 7d: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminPipelineMetrics?.monitoring_7d?.no_evidence_rate_pct ?? "–"}%</span></p>
                     <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(noEvidenceStatus)}`}>
                       No-evidence status: {noEvidenceStatus === "good" ? "healthy" : noEvidenceStatus === "warn" ? "watch" : "critical"}
                     </span>
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">RII Consistency Guard</h3>
+                <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">RII Consistency Guard</h3>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">Checked: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.checked_companies ?? "–"}</span></p>
-                    <p className="text-gray-300">Mismatches: <span className={`${(adminRiiConsistency?.mismatch_count || 0) > 0 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{adminRiiConsistency?.mismatch_count ?? "–"}</span></p>
-                    <p className="text-gray-300">Mismatch rate: <span className="text-slate-900 dark:text-white font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "–"}%</span></p>
+                    <p className="text-gray-700">Checked: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminRiiConsistency?.checked_companies ?? "–"}</span></p>
+                    <p className="text-gray-700">Mismatches: <span className={`${(adminRiiConsistency?.mismatch_count || 0) > 0 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{adminRiiConsistency?.mismatch_count ?? "–"}</span></p>
+                    <p className="text-gray-700">Mismatch rate: <span className="text-slate-900 dark:text-gray-900 font-semibold">{adminRiiConsistency?.mismatch_rate_pct ?? "–"}%</span></p>
                     <span className={`inline-flex mt-1 text-[11px] px-2 py-1 rounded-full border ${statusPillClass(mismatchStatus)}`}>
                       Consistency status: {mismatchStatus === "good" ? "healthy" : mismatchStatus === "warn" ? "watch" : "critical"}
                     </span>
@@ -1703,72 +1747,72 @@ export default function AccountPage() {
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Top Scan Failure Reasons (7d)</h3>
+                <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Top Scan Failure Reasons (7d)</h3>
                   <div className="space-y-2">
                     {(adminPipelineMetrics?.window_7d?.top_reasons || []).slice(0, 5).map((r) => (
-                      <div key={`${r.reason}-${r.count}`} className="text-sm text-gray-300 flex items-center justify-between">
+                      <div key={`${r.reason}-${r.count}`} className="text-sm text-gray-700 flex items-center justify-between">
                         <span>{r.reason}</span>
-                        <span className="text-slate-900 dark:text-white font-semibold">{r.count}</span>
+                        <span className="text-slate-900 dark:text-gray-900 font-semibold">{r.count}</span>
                       </div>
                     ))}
                     {(!adminPipelineMetrics?.window_7d?.top_reasons || adminPipelineMetrics.window_7d.top_reasons.length === 0) && (
-                      <p className="text-sm text-gray-500">No recent scan reason data.</p>
+                      <p className="text-sm text-gray-600">No recent scan reason data.</p>
                     )}
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-5">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Top RII Mismatches</h3>
+                <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Top RII Mismatches</h3>
                   <div className="space-y-2">
                     {(adminRiiConsistency?.items || []).slice(0, 5).map((it) => (
-                      <div key={it.company_id} className="text-sm text-gray-300 flex items-center justify-between gap-3">
+                      <div key={it.company_id} className="text-sm text-gray-700 flex items-center justify-between gap-3">
                         <span className="truncate">{it.company_name}</span>
                         <span className={`${Math.abs(it.delta) > 0.2 ? "text-red-300" : "text-emerald-300"} font-semibold`}>{it.delta > 0 ? "+" : ""}{it.delta}</span>
                       </div>
                     ))}
                     {(!adminRiiConsistency?.items || adminRiiConsistency.items.length === 0) && (
-                      <p className="text-sm text-gray-500">No no-evidence consistency rows yet.</p>
+                      <p className="text-sm text-gray-600">No no-evidence consistency rows yet.</p>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Monitoring Coverage (24h)</h3>
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Monitoring Coverage (24h)</h3>
                 <div className="grid md:grid-cols-4 gap-3 mb-4">
-                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
-                    <p className="text-xs text-gray-500">Active companies</p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.active_companies ?? "–"}</p>
+                  <div className="rounded-xl bg-gray-100">
+                    <p className="text-xs text-gray-600">Active companies</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.active_companies ?? "–"}</p>
                   </div>
-                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
-                    <p className="text-xs text-gray-500">Scanned in 24h</p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.companies_scanned_in_window ?? "–"}</p>
+                  <div className="rounded-xl bg-gray-100">
+                    <p className="text-xs text-gray-600">Scanned in 24h</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.companies_scanned_in_window ?? "–"}</p>
                   </div>
-                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
-                    <p className="text-xs text-gray-500">Coverage</p>
+                  <div className="rounded-xl bg-gray-100">
+                    <p className="text-xs text-gray-600">Coverage</p>
                     <p className={`text-lg font-semibold ${coverageStatus === "good" ? "text-emerald-300" : coverageStatus === "warn" ? "text-amber-300" : "text-red-300"}`}>
                       {adminCoverage?.coverage_pct ?? "–"}%
                     </p>
                   </div>
-                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3">
-                    <p className="text-xs text-gray-500">Cycles</p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.total_cycles ?? "–"}</p>
+                  <div className="rounded-xl bg-gray-100">
+                    <p className="text-xs text-gray-600">Cycles</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.cycles_breakdown?.total_cycles ?? "–"}</p>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-3 mb-4">
                   <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3">
                     <p className="text-xs text-emerald-300">Success cycles</p>
-                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.success_cycles ?? "–"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.cycles_breakdown?.success_cycles ?? "–"}</p>
                   </div>
                   <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
                     <p className="text-xs text-amber-300">No-evidence cycles</p>
-                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.no_evidence_cycles ?? "–"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.cycles_breakdown?.no_evidence_cycles ?? "–"}</p>
                   </div>
                   <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
                     <p className="text-xs text-red-300">Failed-like cycles</p>
-                    <p className="text-base font-semibold text-slate-900 dark:text-white">{adminCoverage?.cycles_breakdown?.failed_like_cycles ?? "–"}</p>
+                    <p className="text-base font-semibold text-slate-900 dark:text-gray-900">{adminCoverage?.cycles_breakdown?.failed_like_cycles ?? "–"}</p>
                   </div>
                 </div>
 
@@ -1778,13 +1822,13 @@ export default function AccountPage() {
                       Coverage status: {coverageStatus === "good" ? "healthy" : coverageStatus === "warn" ? "watch" : "critical"}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Missing companies (not scanned in 24h)</p>
+                  <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">Missing companies (not scanned in 24h)</p>
                   <div className="space-y-2 max-h-56 overflow-auto pr-1">
                     {(adminCoverage?.missing_companies || []).slice(0, 30).map((m) => (
-                      <div key={m.company_id} className="p-2 rounded-lg border border-gray-800 bg-gray-950/40 flex items-center justify-between gap-3">
+                      <div key={m.company_id} className="p-2 rounded-lg border border-gray-200 bg-gray-100/40 flex items-center justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-sm text-gray-200 truncate">{m.company_name || m.company_id}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-sm text-gray-700 truncate">{m.company_name || m.company_id}</p>
+                          <p className="text-xs text-gray-600">
                             Last: {m.last_monitoring_at ? new Date(m.last_monitoring_at).toLocaleString() : "never"}
                           </p>
                         </div>
@@ -1800,44 +1844,44 @@ export default function AccountPage() {
                       </div>
                     ))}
                     {(!adminCoverage?.missing_companies || adminCoverage.missing_companies.length === 0) && (
-                      <p className="text-sm text-gray-500">No missing companies in the last 24h window.</p>
+                      <p className="text-sm text-gray-600">No missing companies in the last 24h window.</p>
                     )}
                   </div>
                 </div>
               </div>
 
               {/* Current DB stats */}
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Current Status</h3>
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Current Status</h3>
                 {calibStatus ? (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-                    <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.total_scans_in_db ?? "–"}</div>
-                      <div className="text-xs text-gray-500 mt-1">Total scans in DB</div>
+                    <div className="rounded-xl bg-gray-100">
+                      <div className="text-2xl font-bold text-slate-900 dark:text-gray-900">{calibStatus.total_scans_in_db ?? "–"}</div>
+                      <div className="text-xs text-gray-600 mt-1">Total scans in DB</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">incl. monitoring cycles</div>
                     </div>
-                    <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{calibStatus.n_scans || "–"}</div>
-                      <div className="text-xs text-gray-500 mt-1">Last calibration scans</div>
+                    <div className="rounded-xl bg-gray-100">
+                      <div className="text-2xl font-bold text-slate-900 dark:text-gray-900">{calibStatus.n_scans || "–"}</div>
+                      <div className="text-xs text-gray-600 mt-1">Last calibration scans</div>
                       <div className="text-[10px] text-gray-600 mt-0.5">unique companies used</div>
                     </div>
-                    <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
+                    <div className="rounded-xl bg-gray-100">
                       <div className={`text-2xl font-bold ${calibStatus.mae && calibStatus.mae < 6 ? "text-emerald-400" : "text-amber-400"}`}>
                         {calibStatus.mae ? `${calibStatus.mae.toFixed(1)} pts` : "—"}
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">MAE (lower = better)</div>
+                      <div className="text-xs text-gray-600 mt-1">MAE (lower = better)</div>
                     </div>
-                    <div className="rounded-xl bg-gray-900 border border-gray-800 p-4 text-center">
-                      <div className={`text-2xl font-bold ${calibStatus.state === "done" ? "text-emerald-400" : calibStatus.state === "running" ? "text-cyan-400" : calibStatus.state === "error" ? "text-red-400" : "text-amber-400"}`}>
+                    <div className="rounded-xl bg-gray-100">
+                      <div className={`text-2xl font-bold ${calibStatus.state === "done" ? "text-emerald-400" : calibStatus.state === "running" ? "text-indigo-500" : calibStatus.state === "error" ? "text-red-400" : "text-amber-400"}`}>
                         {calibStatus.state === "done" ? "?" : calibStatus.state === "running" ? "?" : calibStatus.state === "error" ? "?" : "?"}
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-gray-600 mt-1">
                         {calibStatus.state === "done" ? "Done" : calibStatus.state === "running" ? "Running…" : calibStatus.state === "error" ? "Error" : "Ready"}
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm mb-5">No calibration has been run yet. Click below to run the first one.</p>
+                  <p className="text-gray-600 text-sm mb-5">No calibration has been run yet. Click below to run the first one.</p>
                 )}
 
                 {/* Label distribution */}
@@ -1856,8 +1900,8 @@ export default function AccountPage() {
                       <span className="text-xs text-red-300 font-medium">Bad: {calibStatus.label_distribution.bad ?? 0}</span>
                     </div>
                     {(calibStatus.label_distribution.anchors ?? 0) > 0 && (
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
-                        <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600/10 border border-indigo-600/20">
+                        <span className="w-2 h-2 rounded-full bg-indigo-500" />
                         <span className="text-xs text-cyan-300 font-medium">Anchors: {calibStatus.label_distribution.anchors} (locked)</span>
                       </div>
                     )}
@@ -1866,12 +1910,12 @@ export default function AccountPage() {
 
                 {/* Optimal global weights */}
                 {calibStatus?.global_weights && (
-                  <div className="p-4 rounded-xl bg-gray-900 border border-gray-800 mb-5">
-                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Calibrated Weights (active)</p>
+                  <div className="p-4 rounded-xl bg-gray-100">
+                    <p className="text-xs text-gray-600 uppercase tracking-wider mb-3">Calibrated Weights (active)</p>
                     <div className="flex flex-wrap gap-3">
                       {Object.entries(calibStatus.global_weights).map(([k, v]) => (
                         <div key={k} className="text-xs font-mono bg-gray-800 rounded-lg px-3 py-1.5 text-cyan-300">
-                          {k}: <span className="text-slate-900 dark:text-white font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
+                          {k}: <span className="text-slate-900 dark:text-gray-900 font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
                         </div>
                       ))}
                     </div>
@@ -1882,7 +1926,7 @@ export default function AccountPage() {
                 {calibStatus?.candidate?.present && (
                   <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-5">
                     <p className="text-xs text-amber-300 uppercase tracking-wider mb-2">Candidate Calibration (pending review)</p>
-                    <div className="text-sm text-gray-300 mb-3">
+                    <div className="text-sm text-gray-700 mb-3">
                       <span className="mr-4">MAE: <span className="font-semibold">{calibStatus.candidate?.mae?.toFixed?.(1) ?? "–"} pts</span></span>
                       <span className="mr-4">Scans: <span className="font-semibold">{calibStatus.candidate?.n_scans ?? "–"}</span></span>
                       <span>Calibrated at: <span className="font-semibold">{calibStatus.candidate?.calibrated_at ? new Date(calibStatus.candidate.calibrated_at).toLocaleString() : "—"}</span></span>
@@ -1891,7 +1935,7 @@ export default function AccountPage() {
                       <div className="flex flex-wrap gap-3 mb-3">
                         {Object.entries(calibStatus.candidate.weights).map(([k, v]) => (
                           <div key={k} className="text-xs font-mono bg-gray-800 rounded-lg px-3 py-1.5 text-amber-300">
-                            {k}: <span className="text-slate-900 dark:text-white font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
+                            {k}: <span className="text-slate-900 dark:text-gray-900 font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
                           </div>
                         ))}
                       </div>
@@ -1900,10 +1944,10 @@ export default function AccountPage() {
                       <button onClick={handleAcceptCandidate} className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition">
                         Accept and activate
                       </button>
-                      <button onClick={handleRejectCandidate} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium text-sm transition">
+                      <button onClick={handleRejectCandidate} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-100 text-gray-700 font-medium text-sm transition">
                         Reject
                       </button>
-                      <button onClick={handleRollback} className="px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 hover:border-gray-600 text-gray-300 font-medium text-sm transition">
+                      <button onClick={handleRollback} className="px-4 py-2 rounded-lg bg-gray-100">
                         Rollback to Previous
                       </button>
                     </div>
@@ -1922,7 +1966,7 @@ export default function AccountPage() {
                   <button
                     onClick={handleRunCalibration}
                     disabled={calibRunning}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-sm transition"
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
                   >
                     {calibRunning ? (
                       <>
@@ -1936,7 +1980,7 @@ export default function AccountPage() {
                   <button
                     onClick={loadCalibStatus}
                     disabled={calibRunning}
-                    className="px-4 py-3 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm font-medium transition disabled:opacity-50"
+                    className="px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black text-sm font-medium transition disabled:opacity-50"
                   >
                     Refresh status
                   </button>
@@ -1949,7 +1993,7 @@ export default function AccountPage() {
                       ? "bg-red-500/10 border-red-500/20 text-red-300"
                       : /^(Done!|Candidate ready|Candidate accepted|Rolled back|Candidate discarded)/.test(calibMsg)
                         ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
-                        : "bg-cyan-500/10 border-cyan-500/20 text-cyan-300"
+                        : "bg-indigo-600/10 border-indigo-600/20 text-cyan-300"
                   }`}>
                     {calibMsg}
                   </div>
@@ -1957,27 +2001,27 @@ export default function AccountPage() {
               </div>
 
               {/* How it works */}
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">What happens when you click Run</h3>
-                <ol className="space-y-2 text-sm text-gray-400">
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">1.</span> Loads all successful scans from the database</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">2.</span> Auto-labels each scan as good / mid / bad based on current RII</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">4.</span> Runs per-segment (Developer, Marketing, Product, Support)</li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">5.</span> Saves candidate to <code className="text-cyan-400">calibration_results_candidate.json</code></li>
-                  <li className="flex gap-3"><span className="text-cyan-400 font-bold">6.</span> Click <strong>Accept and activate</strong> to promote candidate to active weights</li>
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">What happens when you click Run</h3>
+                <ol className="space-y-2 text-sm text-gray-600">
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">1.</span> Loads all successful scans from the database</li>
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">2.</span> Auto-labels each scan as good / mid / bad based on current RII</li>
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">4.</span> Runs per-segment (Developer, Marketing, Product, Support)</li>
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">5.</span> Saves candidate to <code className="text-indigo-500">calibration_results_candidate.json</code></li>
+                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">6.</span> Click <strong>Accept and activate</strong> to promote candidate to active weights</li>
                 </ol>
               </div>
 
               {/* Admin Support Console */}
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Admin Support Inbox</h3>
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Admin Support Inbox</h3>
                 <div className="grid md:grid-cols-3 gap-4">
-                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3 md:col-span-1">
-                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Tickets (all companies)</p>
+                  <div className="rounded-xl bg-gray-100">
+                    <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">Tickets (all companies)</p>
                     <div className="space-y-2 max-h-80 overflow-auto pr-1">
                       {adminTickets.length === 0 && (
-                        <p className="text-xs text-gray-500">No tickets found.</p>
+                        <p className="text-xs text-gray-600">No tickets found.</p>
                       )}
                       {adminTickets.map(t => (
                         <button
@@ -1989,12 +2033,12 @@ export default function AccountPage() {
                           }}
                           className={`w-full text-left p-3 rounded-lg border transition ${
                             adminSelectedTicketId === t.ticket_id
-                              ? "border-cyan-500/40 bg-cyan-500/10"
-                              : "border-gray-800 bg-gray-950/40 hover:border-gray-700"
+                              ? "border-indigo-600/40 bg-indigo-600/10"
+                              : "border-gray-200 bg-gray-100/40 hover:border-gray-200"
                           }`}
                         >
-                          <p className="text-sm text-gray-200 truncate">{t.subject}</p>
-                          <p className="text-xs text-gray-500 mt-0.5 truncate">{t.company_name || t.owner_email || "unknown"}</p>
+                          <p className="text-sm text-gray-700 truncate">{t.subject}</p>
+                          <p className="text-xs text-gray-600 mt-0.5 truncate">{t.company_name || t.owner_email || "unknown"}</p>
                           <p className="text-[11px] text-gray-600 mt-1">
                             {t.ticket_id} — {t.priority} — {t.status}
                             {adminSelectedTicketId === t.ticket_id ? " — selected" : ""}
@@ -2004,25 +2048,25 @@ export default function AccountPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl bg-gray-900 border border-gray-800 p-3 md:col-span-2">
-                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Selected ticket</p>
-                    {adminSupportLoading && <p className="text-sm text-gray-500">Loading...</p>}
+                  <div className="rounded-xl bg-gray-100">
+                    <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">Selected ticket</p>
+                    {adminSupportLoading && <p className="text-sm text-gray-600">Loading...</p>}
                     {!adminSupportLoading && !adminSelectedTicket && (
-                      <p className="text-sm text-gray-500">Select a ticket to read and reply.</p>
+                      <p className="text-sm text-gray-600">Select a ticket to read and reply.</p>
                     )}
                     {!adminSupportLoading && adminSelectedTicket && (
                       <div className="space-y-3">
-                        <div className="pb-2 border-b border-slate-200 dark:border-gray-800">
-                          <p className="text-sm font-semibold text-gray-200">{adminSelectedTicket.subject}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">
+                        <div className="pb-2 border-b border-slate-200 dark:border-gray-200">
+                          <p className="text-sm font-semibold text-gray-700">{adminSelectedTicket.subject}</p>
+                          <p className="text-xs text-gray-600 mt-0.5">
                             {adminSelectedTicket.ticket_id} — {adminSelectedTicket.company_name || "Unknown company"} — {adminSelectedTicket.status}
                           </p>
                         </div>
                         <div className="space-y-2 max-h-52 overflow-auto pr-1">
                           {(adminSelectedTicket.messages || []).map((m, i) => (
-                            <div key={`${m.created_at || i}-${i}`} className={`p-3 rounded-lg border ${m.author === "support" ? "bg-cyan-500/10 border-cyan-500/20" : "bg-gray-950/40 border-gray-800"}`}>
-                              <p className="text-xs text-gray-500 mb-1">{m.author === "support" ? "Support" : "Client"}</p>
-                              <p className="text-sm text-gray-200 whitespace-pre-wrap">{m.message}</p>
+                            <div key={`${m.created_at || i}-${i}`} className={`p-3 rounded-lg border ${m.author === "support" ? "bg-indigo-600/10 border-indigo-600/20" : "bg-gray-100/40 border-gray-200"}`}>
+                              <p className="text-xs text-gray-600 mb-1">{m.author === "support" ? "Support" : "Client"}</p>
+                              <p className="text-sm text-gray-700 whitespace-pre-wrap">{m.message}</p>
                             </div>
                           ))}
                         </div>
@@ -2034,12 +2078,12 @@ export default function AccountPage() {
                             maxLength={5000}
                             placeholder="Write support reply..."
                             disabled={adminSupportLoading}
-                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-950 dark:border-gray-700 dark:text-white dark:placeholder-gray-600 focus:outline-none focus:border-cyan-500 transition disabled:opacity-50"
+                            className="w-full px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100 dark:border-gray-200 dark:text-gray-900 dark:placeholder-gray-600 focus:outline-none focus:border-indigo-600 transition disabled:opacity-50"
                           />
                           <button
                             type="submit"
                             disabled={adminSupportLoading || !adminSelectedTicketId}
-                            className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:bg-gray-700 disabled:cursor-not-allowed text-black font-bold text-xs transition"
+                            className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-xs transition"
                           >
                             Send admin reply
                           </button>
@@ -2051,14 +2095,14 @@ export default function AccountPage() {
               </div>
 
               {/* Runtime feature flags */}
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Runtime Feature Flags</h3>
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Runtime Feature Flags</h3>
                 <div className="flex flex-wrap gap-2">
                   {Object.keys(adminFlags).length === 0 && (
-                    <p className="text-sm text-gray-500">No flags loaded.</p>
+                    <p className="text-sm text-gray-600">No flags loaded.</p>
                   )}
                   {Object.entries(adminFlags).map(([k, v]) => (
-                    <div key={k} className={`text-xs rounded-lg px-3 py-1.5 border ${v ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300" : "bg-gray-800 border-gray-700 text-gray-400"}`}>
+                    <div key={k} className={`text-xs rounded-lg px-3 py-1.5 border ${v ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300" : "bg-gray-100 border-gray-200 text-gray-600"}`}>
                       {k}: <span className="font-bold">{v ? "ON" : "OFF"}</span>
                     </div>
                   ))}
@@ -2066,16 +2110,16 @@ export default function AccountPage() {
               </div>
 
               {/* Audit preview */}
-              <div className="rounded-2xl border border-gray-800 bg-gray-900/40 p-6">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">Audit Log Preview (selected ticket company)</h3>
+              <div className="rounded-2xl border border-gray-200 bg-gray-100">
+                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Audit Log Preview (selected ticket company)</h3>
                 <div className="space-y-2">
                   {adminAuditPreview.length === 0 && (
-                    <p className="text-sm text-gray-500">Select a ticket to load recent logs.</p>
+                    <p className="text-sm text-gray-600">Select a ticket to load recent logs.</p>
                   )}
                   {adminAuditPreview.map((log, i) => (
-                    <div key={`${log.created_at || i}-${i}`} className="p-2 rounded-lg border border-gray-800 bg-gray-950/40 text-xs text-gray-300 flex items-center justify-between">
+                    <div key={`${log.created_at || i}-${i}`} className="p-2 rounded-lg border border-gray-200 bg-gray-100/40 text-xs text-gray-700 flex items-center justify-between">
                       <span>{log.action_type}</span>
-                      <span className="text-gray-500">{log.created_at ? new Date(log.created_at).toLocaleString() : "—"}</span>
+                      <span className="text-gray-600">{log.created_at ? new Date(log.created_at).toLocaleString() : "—"}</span>
                     </div>
                   ))}
                 </div>

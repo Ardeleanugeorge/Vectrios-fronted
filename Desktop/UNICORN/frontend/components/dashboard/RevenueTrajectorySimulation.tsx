@@ -80,16 +80,16 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
   }, [companyId])
 
   if (loading) return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Trajectory</h2>
-      <p className="text-sm text-gray-500">Simulating trajectories...</p>
+    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Trajectory</h2>
+      <p className="text-sm text-gray-600">Simulating trajectories...</p>
     </div>
   )
 
   if (!data) return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Trajectory</h2>
-      <p className="text-sm text-gray-500">Run an assessment to generate trajectory simulation.</p>
+    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Trajectory</h2>
+      <p className="text-sm text-gray-600">Run an assessment to generate trajectory simulation.</p>
     </div>
   )
 
@@ -110,26 +110,26 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
   const hoveredX = hovered !== null ? toX(hovered, 13, W, PAD) : null
 
   return (
-    <div className="bg-[#111827] rounded-lg border border-gray-800 overflow-hidden">
+    <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
       {/* Header */}
       <div className="px-8 pt-7 pb-4">
-        <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Trajectory Simulation</h2>
-        <p className="text-xs text-gray-500 mt-1">12-month ARR projection — no action vs. messaging fix</p>
+        <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Trajectory Simulation</h2>
+        <p className="text-xs text-gray-600 mt-1">12-month ARR projection — no action vs. messaging fix</p>
       </div>
 
       {/* Summary pills */}
       <div className="px-8 pb-5 flex flex-wrap gap-4">
         <div className="flex items-center gap-2">
           <span className="w-3 h-1 rounded-full bg-red-500 inline-block" />
-          <span className="text-xs text-gray-400">
-            No action: <span className="text-red-400 font-semibold">{fmt(data.no_action[12])}</span>
+          <span className="text-xs text-gray-600">
+            No action: <span className="text-red-600 font-semibold">{fmt(data.no_action[12])}</span>
             <span className="text-gray-600 ml-1">(−{fmt(data.annual_exposure)})</span>
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-1 rounded-full bg-green-500 inline-block" />
-          <span className="text-xs text-gray-400">
-            With fix: <span className="text-green-400 font-semibold">{fmt(data.with_fix[12])}</span>
+          <span className="text-xs text-gray-600">
+            With fix: <span className="text-green-600 font-semibold">{fmt(data.with_fix[12])}</span>
             <span className="text-gray-600 ml-1">(+{fmt(data.recovery_potential)})</span>
           </span>
         </div>
@@ -152,7 +152,7 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
             return (
               <g key={i}>
                 <line x1={PAD} y1={y} x2={W - PAD} y2={y}
-                  stroke="#1f2937" strokeWidth="1" strokeDasharray="4,4" />
+                  stroke="#e5e7eb" strokeWidth="1" strokeDasharray="4,4" />
                 <text x={PAD - 6} y={y + 4} textAnchor="end"
                   fill="#4b5563" fontSize="10">{fmt(tick)}</text>
               </g>
@@ -181,7 +181,7 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
           {/* Hover line */}
           {hoveredX !== null && (
             <line x1={hoveredX} y1={PAD} x2={hoveredX} y2={H - PAD}
-              stroke="#374151" strokeWidth="1" />
+              stroke="#e5e7eb" strokeWidth="1" />
           )}
 
           {/* No Action path */}
@@ -205,7 +205,7 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
                 <circle cx={x} cy={toY(data.with_fix[hovered],  minV, maxV, H, PAD)}
                   r={3} fill="#22c55e" />
                 <rect x={boxX} y={PAD} width={120} height={56}
-                  rx={4} fill="#1f2937" stroke="#374151" strokeWidth="1" />
+                  rx={4} fill="#f3f4f6" stroke="#e5e7eb" strokeWidth="1" />
                 <text x={boxX + 8} y={PAD + 16} fill="#9ca3af" fontSize="10">
                   Month {hovered}
                 </text>
@@ -222,7 +222,7 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
       </div>
 
       {/* Footer */}
-      <div className="px-8 pb-6 pt-2 border-t border-gray-800 text-xs text-gray-600">
+      <div className="px-8 pb-6 pt-2 border-t border-gray-200 text-xs text-gray-600">
         Simulation based on current {RII_NAME} ({RII_ABBREV} {data.rii.toFixed(0)}), ARR, ACV, and close-rate inputs.
         Recovery assumes gradual messaging alignment over 12 months.
       </div>

@@ -71,21 +71,21 @@ export default function StructuralBreakdownWithDelta({
     Math.min((alignmentMean as number) + 10, 100)
 
   return (
-    <div id="revenue-alignment-map" className="p-8 bg-[#111827] rounded-lg border border-gray-800 scroll-mt-24">
-      <h2 className="text-xl font-bold mb-2 uppercase tracking-wide">Revenue-Stage Alignment Map</h2>
-      <p className="text-xs text-gray-500 mb-2 leading-relaxed">
+    <div id="revenue-alignment-map" className="p-8 bg-gray-50 rounded-lg border border-gray-200 scroll-mt-24">
+      <h2 className="text-xl font-bold mb-2 uppercase tracking-wide text-gray-900">Revenue-Stage Alignment Map</h2>
+      <p className="text-xs text-gray-600 mb-2 leading-relaxed">
         These four dimensions feed your headline {RII_NAME} ({RII_ABBREV}). They explain <em>where</em> structural risk concentrates — not dollar impact (see model below).
       </p>
       <p className="text-xs text-gray-600 mb-6">
-        <Link href={METHODOLOGY_RII_HREF} className="text-cyan-600 hover:text-cyan-400 hover:underline">
+        <Link href={METHODOLOGY_RII_HREF} className="text-indigo-700 hover:text-blue-600 hover:underline">
           How {RII_ABBREV} combines these signals →
         </Link>
       </p>
       <div className="grid md:grid-cols-2 gap-6">
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-300">Alignment</span>
-            <span className="text-lg font-bold text-gray-300">{alignmentMean.toFixed(0)}</span>
+            <span className="text-sm font-medium text-gray-700">Alignment</span>
+            <span className="text-lg font-bold text-gray-700">{alignmentMean.toFixed(0)}</span>
           </div>
           <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
             <div 
@@ -97,8 +97,8 @@ export default function StructuralBreakdownWithDelta({
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-300">ICP Clarity</span>
-            <span className="text-lg font-bold text-gray-300">{icpClarity.toFixed(0)}</span>
+            <span className="text-sm font-medium text-gray-700">ICP Clarity</span>
+            <span className="text-lg font-bold text-gray-700">{icpClarity.toFixed(0)}</span>
           </div>
           <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
             <div 
@@ -110,8 +110,8 @@ export default function StructuralBreakdownWithDelta({
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-300">Anchor Density</span>
-            <span className="text-lg font-bold text-gray-300">{anchorDensity.toFixed(0)}</span>
+            <span className="text-sm font-medium text-gray-700">Anchor Density</span>
+            <span className="text-lg font-bold text-gray-700">{anchorDensity.toFixed(0)}</span>
           </div>
           <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
             <div 
@@ -123,8 +123,8 @@ export default function StructuralBreakdownWithDelta({
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-300">Positioning Coherence</span>
-            <span className="text-lg font-bold text-gray-300">{positioningCoherence.toFixed(0)}</span>
+            <span className="text-sm font-medium text-gray-700">Positioning Coherence</span>
+            <span className="text-lg font-bold text-gray-700">{positioningCoherence.toFixed(0)}</span>
           </div>
           <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
             <div 
@@ -136,21 +136,21 @@ export default function StructuralBreakdownWithDelta({
       </div>
       
       {/* Primary Risk Driver */}
-      <div className="mt-8 pt-6 border-t border-gray-800">
-        <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide">Primary Risk Driver</p>
-        <p className="text-base font-semibold text-gray-300">
+      <div className="mt-8 pt-6 border-t border-gray-200">
+        <p className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Primary Risk Driver</p>
+        <p className="text-base font-semibold text-gray-700">
           {diagnostic?.primary_risk_driver || diagnostic?.primary_fault || sf?.primary_risk_driver || "Messaging Architecture Misalignment"}
         </p>
       </div>
 
       {/* Detected Signals */}
       {diagnostic?.detected_signals && diagnostic.detected_signals.length > 0 && (
-        <div className="mt-6 pt-6 border-t border-gray-800">
-          <p className="text-xs text-gray-500 mb-3 uppercase tracking-wide">Detected Signals</p>
+        <div className="mt-6 pt-6 border-t border-gray-200">
+          <p className="text-xs text-gray-600 mb-3 uppercase tracking-wide">Detected Signals</p>
           <ul className="space-y-2">
             {diagnostic.detected_signals.map((signal, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-sm text-gray-400">
-                <span className="mt-1 text-cyan-500 shrink-0">•</span>
+              <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
+                <span className="mt-1 text-indigo-600 shrink-0">•</span>
                 <span>{signal}</span>
               </li>
             ))}

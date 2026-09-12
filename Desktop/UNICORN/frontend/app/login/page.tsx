@@ -89,6 +89,18 @@ export default function LoginPage() {
         })
         localStorage.setItem("user_data", ud)
         sessionStorage.setItem("user_data", ud)
+        // Enterprise: existing user (has company_id from server) -> clear anonymous scan data
+        // New user (no company_id) -> keep scan_data for onboarding flow
+        if (data.company_id) {
+          sessionStorage.removeItem("scan_data")
+          localStorage.removeItem("scan_data")
+          sessionStorage.removeItem("diagnostic_result_full")
+          localStorage.removeItem("diagnostic_result_full")
+          sessionStorage.removeItem("diagnostic_result")
+          localStorage.removeItem("diagnostic_result")
+          sessionStorage.removeItem("diagnostic_result_partial")
+          localStorage.removeItem("diagnostic_result_partial")
+        }
       }
       const em = String(data.email || resolvedEmail || "")
         .trim()
@@ -195,7 +207,8 @@ export default function LoginPage() {
       }
 
       // Existing paying / trial customer ? dashboard first (skip resume scan + scan-results nudge)
-      if (hasActivePlan) {
+      // Also send trial-expired users to dashboard (they see upgrade banner there)
+      if (hasActivePlan || companyIdForSub) {
         router.push("/dashboard")
         return
       }
@@ -394,13 +407,13 @@ export default function LoginPage() {
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-4">Sign In</h1>
-            <p className="text-gray-400">
-              Access your Vectri<span className="text-cyan-400">OS</span> dashboard.
+            <p className="text-gray-600">
+              Access your Vectri<span className="text-indigo-500">OS</span> dashboard.
             </p>
           </div>
 
           {infoMessage && (
-            <div className="mb-6 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-xl text-cyan-300 text-sm">
+            <div className="mb-6 p-4 bg-indigo-600/10 border border-indigo-600/30 rounded-xl text-cyan-300 text-sm">
               {infoMessage}
             </div>
           )}
@@ -434,11 +447,11 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
               >
                 {submitting ? "Sending…" : "Email me a sign-in code"}
               </button>
-              <p className="text-center text-sm text-gray-500">
+              <p className="text-center text-sm text-gray-700">
                 We email a 6-digit code only if this address is already registered. Check Spam/Junk (iCloud/Gmail).
                 Sessions stay signed in for a long time — you won&apos;t need a code every visit.
               </p>
@@ -449,7 +462,7 @@ export default function LoginPage() {
                   setError("")
                   setOtpInfo("")
                 }}
-                className="w-full text-sm text-gray-400 hover:text-cyan-300 transition"
+                className="w-full text-sm text-gray-600 hover:text-cyan-300 transition"
               >
                 Sign in with password instead
               </button>
@@ -459,9 +472,8 @@ export default function LoginPage() {
           {!usePassword && otpStep === "code" && (
             <form onSubmit={handleVerifyOtp} className="space-y-6">
               <div>
-                <p className="text-sm text-gray-400 mb-2">
-                  Use the code for <span className="text-white font-medium">{email}</span> (inbox + Spam/Junk +
-                  Promotions). Nothing there? Confirm the email matches your account or use password below.
+                <p className="text-sm text-gray-700 mb-2">
+                  Use the code for <span className="text-gray-900 font-medium">{email}</span> — check inbox, Spam/Junk and Promotions. Nothing there? Confirm the email matches your account or use password below.
                 </p>
                 {otpInfo && (
                   <div className="mb-3 p-3 bg-emerald-500/10 border border-emerald-500/25 rounded-lg text-emerald-200 text-sm">
@@ -488,7 +500,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={submitting || otpCode.length !== 6}
-                className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
               >
                 {submitting ? "Signing in…" : "Verify & sign in"}
               </button>
@@ -501,7 +513,7 @@ export default function LoginPage() {
                     setError("")
                     setOtpInfo("")
                   }}
-                  className="text-gray-400 hover:text-cyan-300"
+                  className="text-gray-600 hover:text-cyan-300"
                 >
                   Use a different email
                 </button>
@@ -509,7 +521,7 @@ export default function LoginPage() {
                   type="button"
                   disabled={submitting}
                   onClick={() => void sendOtpCode()}
-                  className="text-cyan-400 hover:text-cyan-300 disabled:opacity-50"
+                  className="text-indigo-500 hover:text-cyan-300 disabled:opacity-50"
                 >
                   Resend code
                 </button>
@@ -554,11 +566,11 @@ export default function LoginPage() {
                 <div className="p-4 bg-red-500/10 border border-red-500 rounded-lg text-red-400 text-sm">{error}</div>
               )}
               {showCreateAccountCta && (
-                <div className="p-4 bg-[#111827] border border-gray-700 rounded-lg text-sm flex items-center justify-between gap-3">
-                  <span className="text-gray-300">No account yet?</span>
+                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm flex items-center justify-between gap-3">
+                  <span className="text-gray-700">No account yet?</span>
                   <Link
                     href="/signup"
-                    className="inline-flex items-center rounded-md bg-cyan-500 hover:bg-cyan-400 px-3 py-1.5 text-black font-semibold transition"
+                    className="inline-flex items-center rounded-md bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 text-black font-semibold transition"
                   >
                     Create account
                   </Link>
@@ -573,7 +585,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-lg"
               >
                 {submitting ? "Signing In..." : "Sign In"}
               </button>
@@ -586,7 +598,7 @@ export default function LoginPage() {
                   setError("")
                   setPassword("")
                 }}
-                className="w-full text-sm text-gray-400 hover:text-cyan-300 transition"
+                className="w-full text-sm text-gray-600 hover:text-cyan-300 transition"
               >
                 Sign in with email code instead
               </button>
@@ -595,16 +607,16 @@ export default function LoginPage() {
                 type="button"
                 onClick={handleSendReset}
                 disabled={sendingReset}
-                className="w-full mt-3 text-sm text-gray-400 hover:text-cyan-300 transition"
+                className="w-full mt-3 text-sm text-gray-600 hover:text-cyan-300 transition"
               >
                 {sendingReset ? "Sending reset link..." : "Forgot password? Send secure setup link"}
               </button>
             </form>
           )}
 
-          <p className="text-center text-sm text-gray-500 mt-8">
+          <p className="text-center text-sm text-gray-600 mt-8">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-cyan-400 hover:text-cyan-300">
+            <Link href="/signup" className="text-indigo-500 hover:text-cyan-300">
               Sign up
             </Link>
           </p>

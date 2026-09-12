@@ -40,10 +40,10 @@ const METRICS = [
 
 function rankLabel(rank: number, higherIsBetter: boolean): { text: string; color: string } {
   const r = higherIsBetter ? rank : (100 - rank)
-  if (r >= 75) return { text: "Top 25%",  color: "text-green-400" }
-  if (r >= 50) return { text: "Above median", color: "text-cyan-400" }
-  if (r >= 25) return { text: "Below median", color: "text-amber-400" }
-  return { text: "Bottom 25%", color: "text-red-400" }
+  if (r >= 75) return { text: "Top 25%",  color: "text-green-600" }
+  if (r >= 50) return { text: "Above median", color: "text-blue-600" }
+  if (r >= 25) return { text: "Below median", color: "text-amber-600" }
+  return { text: "Bottom 25%", color: "text-red-600" }
 }
 
 function ordinal(n: number): string {
@@ -77,14 +77,14 @@ function MetricRow({ label, data, higherIsBetter }: {
   const bandWidth = `${topPos - botPos}%`
 
   return (
-    <div className="py-5 border-b border-gray-800/60 last:border-b-0">
+    <div className="py-5 border-b border-gray-200/60 last:border-b-0">
       {/* Label + rank */}
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-gray-200 font-medium">{label}</span>
+        <span className="text-sm text-gray-700 font-medium">{label}</span>
         <div className="flex items-center gap-2">
           <span className={`text-xs font-semibold ${rankColor}`}>{rankText}</span>
           <span className="text-[10px] text-gray-600 tabular-nums">
-            {ordinal(data.percentile_rank)} pct
+            Better than {ordinal(data.percentile_rank)} of companies
           </span>
         </div>
       </div>
@@ -92,22 +92,22 @@ function MetricRow({ label, data, higherIsBetter }: {
       {/* Track — full width wrapper so dot can overflow */}
       <div className="relative w-full" style={{ paddingTop: "2px", paddingBottom: "2px" }}>
         {/* Track background */}
-        <div className="relative w-full h-3 bg-gray-800 rounded-full border border-gray-700/50">
+        <div className="relative w-full h-3 bg-gray-100 rounded-full border border-gray-300">
           {/* IQ range band */}
           <div
-            className="absolute top-0 h-full bg-gray-600/40 rounded-full"
+            className="absolute top-0 h-full bg-blue-100 rounded-full"
             style={{ left: bandLeft, width: bandWidth }}
           />
           {/* Median line */}
           <div
-            className="absolute top-0 h-full w-0.5 bg-gray-400/70 rounded-full"
+            className="absolute top-0 h-full w-0.5 bg-gray-500 rounded-full"
             style={{ left: `${medianPos}%` }}
           />
         </div>
 
         {/* Your score dot — outside track so it's never clipped */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-[#111827] bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.6)] z-10 pointer-events-none"
+          className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-white bg-blue-500 z-10 pointer-events-none"
           style={{ left: `clamp(0px, calc(${yourPos}% - 7px), calc(100% - 14px))` }}
         />
       </div>
@@ -115,12 +115,12 @@ function MetricRow({ label, data, higherIsBetter }: {
       {/* Numbers row */}
       <div className="flex items-center justify-between mt-2 text-[10px]">
         <span className="text-gray-700">0</span>
-        <div className="flex items-center gap-4 text-gray-500">
+        <div className="flex items-center gap-4 text-gray-600">
           <span>
-            You: <span className="text-cyan-400 font-bold">{data.score.toFixed(0)}</span>
+            You: <span className="text-blue-600 font-bold">{data.score.toFixed(0)}</span>
           </span>
-          <span>Median: <span className="text-gray-300">{data.median.toFixed(0)}</span></span>
-          <span>Top 25%: <span className="text-gray-300">{data.top_quartile.toFixed(0)}</span></span>
+          <span>Median: <span className="text-gray-700">{data.median.toFixed(0)}</span></span>
+          <span>Top 25%: <span className="text-gray-700">{data.top_quartile.toFixed(0)}</span></span>
         </div>
         <span className="text-gray-700">100</span>
       </div>
@@ -145,29 +145,29 @@ export default function BenchmarkPanel({ companyId }: Props) {
   }, [companyId])
 
   if (loading) return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Benchmark Intelligence</h2>
-      <p className="text-sm text-gray-500">Loading benchmarks...</p>
+    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
+      <p className="text-sm text-gray-600">Loading benchmarks...</p>
     </div>
   )
 
   if (!data) return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Benchmark Intelligence</h2>
-      <p className="text-sm text-gray-500">Run an assessment to unlock benchmarks.</p>
+    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
+      <p className="text-sm text-gray-600">Run an assessment to unlock benchmarks.</p>
     </div>
   )
 
   const riiRank = data.rii?.percentile_rank ?? null
 
   return (
-    <div className="bg-[#111827] rounded-lg border border-gray-800 overflow-hidden">
+    <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="px-8 pt-7 pb-4 border-b border-gray-800">
+      <div className="px-8 pt-7 pb-4 border-b border-gray-200">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold uppercase tracking-wide">Benchmark Intelligence</h2>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
+            <p className="text-xs text-gray-600 mt-0.5">
               Your GTM messaging vs {data.context.total_companies} {data.context.industry} companies
             </p>
           </div>
@@ -175,14 +175,14 @@ export default function BenchmarkPanel({ companyId }: Props) {
             <div className="text-right">
               <p className="text-[10px] text-gray-600 uppercase tracking-wide mb-1">Revenue Risk Rank</p>
               <p className={`text-2xl font-bold ${
-                riiRank >= 75 ? "text-green-400" :
-                riiRank >= 50 ? "text-cyan-400" :
-                riiRank >= 25 ? "text-amber-400" : "text-red-400"
+                riiRank >= 75 ? "text-green-600" :
+                riiRank >= 50 ? "text-blue-600" :
+                riiRank >= 25 ? "text-amber-600" : "text-red-600"
               }`}>
-                {ordinal(riiRank)} <span className="text-sm text-gray-500 font-normal">pct</span>
+                {ordinal(riiRank)} <span className="text-sm text-gray-600 font-normal">percentile</span>
               </p>
               <p className="text-[10px] text-gray-600 mt-0.5">
-                {riiRank >= 50 ? "better risk profile than majority" : "higher risk than majority"}
+                {riiRank >= 50 ? `better than ${riiRank}% of ${data.rii?.total_companies ?? ""} companies` : `higher risk than ${100 - riiRank}% of companies`}
               </p>
             </div>
           )}
@@ -191,23 +191,23 @@ export default function BenchmarkPanel({ companyId }: Props) {
         {/* Context pills */}
         <div className="flex gap-2 mt-3 flex-wrap">
           {data.context.arr_range && (
-            <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-400 rounded border border-gray-700">
+            <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-600 rounded border border-gray-200">
               ARR: {data.context.arr_range}
             </span>
           )}
-          <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-400 rounded border border-gray-700">
-            {data.context.industry}
-          </span>
-          <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-400 rounded border border-gray-700">
-            n={data.context.total_companies} companies
-          </span>
+
+
+
+
+
+
         </div>
       </div>
 
       {/* Legend */}
-      <div className="px-8 py-3 bg-[#0d1117] border-b border-gray-800 flex items-center gap-5 text-[10px] text-gray-600">
+      <div className="px-8 py-3 bg-white border-b border-gray-200 flex items-center gap-5 text-[10px] text-gray-600">
         <div className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-full bg-cyan-400 border-2 border-white inline-block" />
+          <span className="w-3 h-3 rounded-full bg-indigo-500 border-2 border-white inline-block" />
           Your score
         </div>
         <div className="flex items-center gap-1.5">
@@ -237,8 +237,8 @@ export default function BenchmarkPanel({ companyId }: Props) {
       </div>
 
       {/* Footer */}
-      <div className="px-8 pb-5 pt-2 text-[10px] text-gray-700 border-t border-gray-800">
-        Benchmarks are computed from anonymized assessments across the Vectri<span className="text-cyan-400">OS</span> dataset.
+      <div className="px-8 pb-5 pt-2 text-[10px] text-gray-700 border-t border-gray-200">
+        Benchmarks are computed from anonymized assessments across the Vectri<span className="text-blue-600">OS</span> dataset.
         Updated after each assessment run.
       </div>
     </div>
