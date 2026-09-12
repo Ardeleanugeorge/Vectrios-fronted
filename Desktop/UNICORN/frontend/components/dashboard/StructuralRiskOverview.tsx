@@ -12,7 +12,6 @@ interface StructuralRiskOverviewProps {
   suppressTrend?: boolean
   /** True when volatility banner / critical alerts are active — reconciles trend copy with “structural volatility” */
   volatileSignalActive?: boolean
-  isFirstScan?: boolean
 }
 
 export default function StructuralRiskOverview({
@@ -24,14 +23,13 @@ export default function StructuralRiskOverview({
   riskDelta,
   suppressTrend = false,
   volatileSignalActive = false,
-  isFirstScan = false,
 }: StructuralRiskOverviewProps) {
   const getTrendColor = (trend: string) => {
     switch (trend) {
-      case "escalating": return "text-red-600"
-      case "improving": return "text-green-600"
+      case "escalating": return "text-red-400"
+      case "improving": return "text-green-400"
       case "unstable": return "text-yellow-400"
-      default: return "text-gray-600"
+      default: return "text-gray-400"
     }
   }
 
@@ -66,10 +64,10 @@ export default function StructuralRiskOverview({
 
   const getDriftColor = (status: string) => {
     switch (status) {
-      case "critical": return "text-red-600"
-      case "degrading": return "text-orange-600"
+      case "critical": return "text-red-400"
+      case "degrading": return "text-orange-400"
       case "watch": return "text-yellow-400"
-      default: return "text-green-600"
+      default: return "text-green-400"
     }
   }
 
@@ -82,28 +80,28 @@ export default function StructuralRiskOverview({
 
   const getIntegrityColor = (status: string) => {
     switch (status) {
-      case "Structural Misalignment": return "text-red-600"
-      case "Alignment Risk Detected": return "text-orange-600"
-      case "Stable": return "text-green-600"
-      default: return "text-gray-600"
+      case "Structural Misalignment": return "text-red-400"
+      case "Alignment Risk Detected": return "text-orange-400"
+      case "Stable": return "text-green-400"
+      default: return "text-gray-400"
     }
   }
 
   const integrityStatus = getIntegrityStatus(riskScore, riskLevel)
 
   return (
-    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Revenue Alignment Status</h2>
+    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Revenue Alignment Status</h2>
       
       <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <p className="text-sm text-gray-600 mb-2 uppercase tracking-wide">Status snapshot</p>
+          <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Status snapshot</p>
           {riskScore !== null ? (
             <div>
               <p className={`text-4xl font-bold ${getIntegrityColor(integrityStatus)}`}>
                 {integrityStatus}
               </p>
-              <p className="text-sm text-gray-600 mt-1" title={RII_TAGLINE}>
+              <p className="text-sm text-gray-500 mt-1" title={RII_TAGLINE}>
                 Revenue Impact Index (RII): {riskScore.toFixed(0)}
               </p>
               {alignmentScore != null &&
@@ -115,48 +113,38 @@ export default function StructuralRiskOverview({
                 )}
             </div>
           ) : (
-            <p className="text-2xl font-bold text-gray-600">Monitoring</p>
+            <p className="text-2xl font-bold text-gray-500">Monitoring</p>
           )}
         </div>
 
         {!suppressTrend && (
           <div>
-            <p className="text-sm text-gray-600 mb-2 uppercase tracking-wide">Trend Signal</p>
-            {isFirstScan ? (
-              <p className="text-sm text-gray-400 italic">Trend available after 24h monitoring — first scan complete.</p>
-            ) : (
-              <>
-                <p className={`text-2xl font-semibold ${getTrendColor(trendDirection)}`}>
-                  {getTrendLabel(trendDirection)}
-                  {riskDelta !== undefined && riskDelta !== null && riskDelta !== 0 && (
-                    <span className="text-lg ml-2">
-                      ({riskDelta > 0 ? "+" : ""}{riskDelta.toFixed(1)})
-                    </span>
-                  )}
-                </p>
-                {getTrendSubtext(trendDirection) && (
-                  <p className="text-xs text-gray-600 mt-1">{getTrendSubtext(trendDirection)}</p>
-                )}
-              </>
+            <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Trend Signal</p>
+            <p className={`text-2xl font-semibold ${getTrendColor(trendDirection)}`}>
+              {getTrendLabel(trendDirection)}
+              {riskDelta !== undefined && riskDelta !== null && riskDelta !== 0 && (
+                <span className="text-lg ml-2">
+                  ({riskDelta > 0 ? "+" : ""}{riskDelta.toFixed(1)})
+                </span>
+              )}
+            </p>
+            {getTrendSubtext(trendDirection) && (
+              <p className="text-xs text-gray-500 mt-1">{getTrendSubtext(trendDirection)}</p>
             )}
           </div>
         )}
 
         <div>
-          <p className="text-sm text-gray-600 mb-2 uppercase tracking-wide">Drift Detection</p>
-          {isFirstScan ? (
-            <p className="text-sm text-gray-400 italic">Drift detection active — first comparison available after next scan.</p>
-          ) : (
-            <p className={`text-2xl font-semibold ${getDriftColor(driftStatus)}`}>
-              {getDriftLabel(driftStatus)}
-            </p>
-          )}
+          <p className="text-sm text-gray-400 mb-2 uppercase tracking-wide">Drift Detection</p>
+          <p className={`text-2xl font-semibold ${getDriftColor(driftStatus)}`}>
+            {getDriftLabel(driftStatus)}
+          </p>
         </div>
       </div>
 
-      <p className="text-xs text-gray-600 mt-6">
+      <p className="text-xs text-gray-500 mt-6">
         Breakdown by alignment, ICP, anchors, and positioning is in the{" "}
-        <a href="#revenue-alignment-map" className="text-indigo-700 hover:text-blue-600 hover:underline">
+        <a href="#revenue-alignment-map" className="text-cyan-600 hover:text-cyan-400 hover:underline">
           Revenue-Stage Alignment Map
         </a>{" "}
         below — not duplicated here.

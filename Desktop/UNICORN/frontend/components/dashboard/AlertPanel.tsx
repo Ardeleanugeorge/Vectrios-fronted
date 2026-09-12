@@ -23,8 +23,8 @@ export default function AlertPanel({ alerts, onMarkAlertRead }: AlertPanelProps)
   }
 
   return (
-    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Active Alerts</h2>
+    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+      <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Active Alerts</h2>
       <div className="space-y-4">
         {unreadAlerts.map((alert) => (
           <div 
@@ -39,19 +39,19 @@ export default function AlertPanel({ alerts, onMarkAlertRead }: AlertPanelProps)
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`text-xs font-semibold uppercase ${
-                    alert.severity_level === "critical" ? "text-red-600" :
-                    alert.severity_level === "degrading" ? "text-orange-600" :
+                    alert.severity_level === "critical" ? "text-red-400" :
+                    alert.severity_level === "degrading" ? "text-orange-400" :
                     "text-yellow-400"
                   }`}>
                     {alert.severity_level}
                   </span>
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-gray-500">
                     {alert.alert_type} • {alert.metric_name?.replace("_", " ") || "Structural"}
                   </span>
                 </div>
-                <p className="text-sm text-gray-700">{alert.message}</p>
+                <p className="text-sm text-gray-300">{alert.message}</p>
                 {alert.created_at && (
-                  <p className="text-xs text-gray-600 mt-2">
+                  <p className="text-xs text-gray-500 mt-2">
                     {new Date(alert.created_at).toLocaleDateString('en-US', { 
                       month: 'short', 
                       day: 'numeric', 
@@ -64,7 +64,7 @@ export default function AlertPanel({ alerts, onMarkAlertRead }: AlertPanelProps)
               {!alert.is_read && (
                 <button
                   onClick={() => onMarkAlertRead(alert.id)}
-                  className="ml-4 px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-md transition-colors"
+                  className="ml-4 px-3 py-1 text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 rounded transition"
                 >
                   Mark Read
                 </button>

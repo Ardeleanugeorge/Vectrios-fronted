@@ -37,19 +37,20 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
   const [entries, setEntries] = useState<TrendEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
+  const [selectedDays, setSelectedDays] = useState(30)
   const svgRef = useRef<SVGSVGElement>(null)
 
   useEffect(() => {
     if (!companyId) { setLoading(false); return }
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    apiFetch(`/rii-trend/${companyId}`, {
+    apiFetch(`/rii-trend/${companyId}?days=${selectedDays}`, {
       headers: { Authorization: `Bearer ${token || ""}` },
     })
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.has_data) setEntries(d.entries) })
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [companyId])
+  }, [companyId, selectedDays])
 
   // -- SVG chart dimensions ----------------------------------------------------
   const W = 700
@@ -98,21 +99,21 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
   // -- Render ------------------------------------------------------------------
   if (loading) {
     return (
-      <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Risk Trend (30 Days)</h2>
-        <p className="text-sm text-gray-600 animate-pulse">Loading trend data...</p>
+      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+        <div className="flex items-center justify-between mb-4"><h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Revenue Risk Trend</h2><div className="flex gap-1">{[{label:"30D",days:30},{label:"90D",days:90},{label:"6M",days:180},{label:"1Y",days:365},{label:"All",days:0}].map(({label,days})=><button key={label} onClick={()=>setSelectedDays(days)} className={`px-2 py-1 text-xs rounded font-medium transition ${selectedDays===days?"bg-blue-600 text-white":"bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>{label}</button>)}</div></div>
+        <p className="text-sm text-gray-500 animate-pulse">Loading trend data...</p>
       </div>
     )
   }
 
   if (!entries.length) {
     return (
-      <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
+      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
         <div className="flex items-start justify-between mb-6">
-          <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Risk Trend (30 Days)</h2>
+          <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Risk Trend (30 Days)</h2>
           {riskDelta !== undefined && riskDelta !== null && (
             <span className={`text-sm font-semibold px-2 py-0.5 rounded ${
-              riskDelta > 0 ? "text-red-600 bg-red-400/10" : "text-green-600 bg-green-400/10"
+              riskDelta > 0 ? "text-red-400 bg-red-400/10" : "text-green-400 bg-green-400/10"
             }`}>
               {riskDelta > 0 ? "+" : ""}{riskDelta.toFixed(1)} {uiState === "low" ? "volatility delta" : "risk delta"}
             </span>
@@ -122,15 +123,15 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
         {/* Empty state — honest message */}
         <div className="flex flex-col items-center justify-center py-10 text-center">
           {/* Mini baseline indicator */}
-          <div className="w-10 h-10 rounded-full border-2 border-indigo-600/40 flex items-center justify-center mb-4">
-            <div className="w-2 h-2 rounded-full bg-indigo-500" />
+          <div className="w-10 h-10 rounded-full border-2 border-cyan-500/40 flex items-center justify-center mb-4">
+            <div className="w-2 h-2 rounded-full bg-cyan-400" />
           </div>
-          <p className="text-sm text-gray-700 font-medium mb-1">
+          <p className="text-sm text-gray-300 font-medium mb-1">
             Baseline Recorded — Awaiting Subsequent Structural Delta
           </p>
-          <p className="text-xs text-gray-600 max-w-sm">
+          <p className="text-xs text-gray-500 max-w-sm">
             The trend chart populates after the monitoring engine runs at least
-            <strong className="text-gray-600"> 2 assessments</strong> with a date gap between them.
+            <strong className="text-gray-400"> 2 assessments</strong> with a date gap between them.
             Each monitoring scan adds a new data point.
           </p>
           <div className="mt-5 flex items-center gap-6 text-[10px] text-gray-600">
@@ -158,18 +159,18 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
   const totalDelta = latest.rii - oldest.rii
 
   return (
-    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
+    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Risk Trend (30 Days)</h2>
-          <p className="text-xs text-gray-600 mt-0.5">
+          <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Risk Trend (30 Days)</h2>
+          <p className="text-xs text-gray-500 mt-0.5">
             {entries.length} data point{entries.length !== 1 ? "s" : ""} —{" "}
             {formatDate(oldest.date)} – {formatDate(latest.date)}
           </p>
         </div>
         <div className="text-right">
-          <p className={`text-lg font-bold ${totalDelta > 2 ? "text-red-600" : totalDelta < -2 ? "text-green-600" : "text-gray-600"}`}>
+          <p className={`text-lg font-bold ${totalDelta > 2 ? "text-red-400" : totalDelta < -2 ? "text-green-400" : "text-gray-400"}`}>
             {totalDelta > 0 ? "+" : ""}{totalDelta.toFixed(1)}
           </p>
           <p className="text-[10px] text-gray-600 mt-0.5">{uiState === "low" ? "Stability delta" : "RII delta"} ({entries.length}d)</p>
@@ -180,17 +181,17 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
       <div className={`mb-3 h-8 transition-opacity ${hovered ? "opacity-100" : "opacity-0"}`}>
         {hovered && (
           <div className="flex items-center gap-4 text-xs">
-            <span className="text-gray-600">{formatDate(hovered.date)}</span>
+            <span className="text-gray-400">{formatDate(hovered.date)}</span>
             <span className="font-semibold" style={{ color: trendColor(hovered.trend) }}>
               RII {hovered.rii.toFixed(1)}
             </span>
             {hovered.delta_rii !== null && (
-              <span className={hovered.delta_rii > 0 ? "text-red-600" : "text-green-600"}>
+              <span className={hovered.delta_rii > 0 ? "text-red-400" : "text-green-400"}>
                 {hovered.delta_rii > 0 ? "+" : ""}{hovered.delta_rii.toFixed(1)} pts
               </span>
             )}
             {hovered.drift_detected && (
-              <span className="text-amber-600 text-[10px] uppercase tracking-wide">
+              <span className="text-amber-400 text-[10px] uppercase tracking-wide">
                 · drift {hovered.drift_severity}
               </span>
             )}
@@ -208,8 +209,8 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
         >
           <defs>
             <linearGradient id="riiGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="#3b82f6" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.02" />
+              <stop offset="0%"   stopColor="#06b6d4" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.02" />
             </linearGradient>
           </defs>
 
@@ -219,7 +220,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
               <line
                 x1={PAD.left} y1={yOf(tick)}
                 x2={PAD.left + chartW} y2={yOf(tick)}
-                stroke="#e5e7eb" strokeWidth="1"
+                stroke="#1f2937" strokeWidth="1"
               />
               <text
                 x={PAD.left - 6} y={yOf(tick)}
@@ -264,7 +265,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
             <polyline
               points={polyline}
               fill="none"
-              stroke="#3b82f6"
+              stroke="#06b6d4"
               strokeWidth="1.5"
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -277,7 +278,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
               key={i}
               cx={xOf(i)} cy={yOf(e.rii)}
               r={hoveredIdx === i ? 5 : e.interpolated ? 2 : 3}
-              fill={hoveredIdx === i ? "#3b82f6" : e.interpolated ? "#bfdbfe" : "#3b82f6"}
+              fill={hoveredIdx === i ? "#06b6d4" : e.interpolated ? "#1e3a4a" : "#0e7490"}
               stroke={hoveredIdx === i ? "#fff" : "none"}
               strokeWidth="1.5"
               opacity={e.interpolated ? 0.4 : 1}
@@ -292,7 +293,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
       {/* Legend */}
       <div className="mt-3 flex items-center gap-5 text-[10px] text-gray-600">
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-0.5 rounded bg-indigo-600 inline-block"/>
+          <span className="w-3 h-0.5 rounded bg-cyan-500 inline-block"/>
           RII score
         </span>
         <span className="flex items-center gap-1.5">

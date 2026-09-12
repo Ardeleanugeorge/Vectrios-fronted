@@ -9,9 +9,9 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import Link from "next/link"
 
 const PLAN_COLORS: Record<string, string> = {
-  starter: "text-gray-500 bg-gray-800 border-gray-200",
-  growth: "text-indigo-500 bg-indigo-600/10 border-indigo-600/30",
-  scale: "text-indigo-500 bg-indigo-600/10 border-indigo-600/30",
+  starter: "text-gray-400 bg-gray-800 border-gray-700",
+  growth: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
+  scale: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30",
   trial: "text-amber-400 bg-amber-500/10 border-amber-500/30",
 }
 
@@ -197,12 +197,10 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
       try {
         const raw = localStorage.getItem("user_data") || sessionStorage.getItem("user_data")
         const local = raw ? JSON.parse(raw) as any : {}
-        // Enterprise fix: always verify company_id from server
-        // localStorage is only used as optimistic UI, server is source of truth
-        const needsProfileRefresh = true
-        if (local?.company_id) {
+        const needsProfileRefresh = !local?.company_id
+        if (!needsProfileRefresh) {
           loadSubscriptionForCompany(String(local.company_id))
-          // Continue to server refresh to verify
+          return
         }
 
         const res = await apiFetch(`/account/profile`, {
@@ -413,13 +411,13 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
   }
 
   return (
-    <header className="border-b border-gray-200 bg-white sticky top-0 z-40">
+    <header className="border-b border-gray-800 bg-[#0B0F19] sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link href="/account" className="text-2xl font-bold text-gray-900 hover:text-indigo-500 transition">
-            Vectri<span className="text-indigo-500">OS</span>
+          <Link href="/account" className="text-2xl font-bold text-white hover:text-cyan-400 transition">
+            Vectri<span className="text-cyan-400">OS</span>
           </Link>
 
           {/* Right side */}
@@ -439,19 +437,19 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
               aria-expanded={showMenu}
               aria-haspopup="menu"
               onClick={() => setShowMenu(!showMenu)}
-              className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+              className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-800 transition"
             >
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{headerPrimaryName}</p>
+                <p className="text-sm font-medium text-white">{headerPrimaryName}</p>
                 {user?.email && (
-                  <p className="text-xs text-gray-500">{user.email}</p>
+                  <p className="text-xs text-gray-400">{user.email}</p>
                 )}
               </div>
-              <div className="w-10 h-10 rounded-full bg-indigo-600/20 border border-indigo-600/30 flex items-center justify-center">
-                <span className="text-indigo-500 font-semibold">{headerPrimaryInitial}</span>
+              <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
+                <span className="text-cyan-400 font-semibold">{headerPrimaryInitial}</span>
               </div>
               <svg
-                className={`w-5 h-5 text-gray-500 transition-transform ${showMenu ? "rotate-180" : ""}`}
+                className={`w-5 h-5 text-gray-400 transition-transform ${showMenu ? "rotate-180" : ""}`}
                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -461,7 +459,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
             {/* Dropdown */}
             {showMenu && (
               <div
-                className="absolute right-0 top-full mt-2 w-56 bg-gray-50 border border-gray-200 rounded-lg shadow-xl z-[100] overflow-hidden"
+                className="absolute right-0 top-full mt-2 w-56 bg-[#111827] border border-gray-800 rounded-lg shadow-xl z-[100] overflow-hidden"
                 role="menu"
                 aria-label="Account menu"
               >
@@ -470,7 +468,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                     type="button"
                     role="menuitem"
                     onClick={handleSmartDashboard}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition"
                   >
                     Dashboard
                   </button>
@@ -478,7 +476,7 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                   <Link
                     href="/account"
                     role="menuitem"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"
+                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition"
                     onClick={() => setShowMenu(false)}
                   >
                     Account Settings
@@ -488,19 +486,19 @@ export default function DashboardHeader({ showPlanBadge = true }: { showPlanBadg
                   <Link
                     href="/upgrade"
                     role="menuitem"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition"
+                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition"
                     onClick={() => setShowMenu(false)}
                   >
                     Upgrade Plan
                   </Link>
                   )}
 
-                  <div className="border-t border-gray-200 mt-1 pt-1">
+                  <div className="border-t border-gray-800 mt-1 pt-1">
                     <button
                       type="button"
                       role="menuitem"
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-100 transition"
+                      className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-800 transition"
                     >
                       Sign Out
                     </button>

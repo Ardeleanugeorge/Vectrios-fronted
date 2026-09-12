@@ -30,27 +30,27 @@ export default function SystemHealthIndicator({
     if (score >= 70) {
       return {
         label: "System stability: Strong",
-        color: "text-green-600",
+        color: "text-green-400",
         bgColor: "bg-green-500"
       }
     }
     if (score >= 40) {
       return {
         label: "System stability: Moderate",
-        color: "text-amber-600",
+        color: "text-amber-400",
         bgColor: "bg-amber-500"
       }
     }
     if (score >= 20) {
       return {
         label: "System stability: Needs attention",
-        color: "text-orange-600",
+        color: "text-orange-400",
         bgColor: "bg-orange-500"
       }
     }
     return {
       label: "Critical instability",
-      color: "text-red-600",
+      color: "text-red-400",
       bgColor: "bg-red-500"
     }
   }
@@ -66,17 +66,17 @@ export default function SystemHealthIndicator({
     const absDelta = Math.abs(healthDelta)
     
     return (
-      <span className={`text-xs font-medium ${isImproving ? 'text-green-600' : 'text-red-600'}`}>
+      <span className={`text-xs font-medium ${isImproving ? 'text-green-400' : 'text-red-400'}`}>
         {isImproving ? '↑' : '↓'} {absDelta.toFixed(0)} {isImproving ? 'improvement' : 'deterioration'} since last monitoring cycle
       </span>
     )
   }
 
   return (
-    <div className="mb-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
+    <div className="mb-6 p-6 bg-[#111827] rounded-lg border border-gray-800">
       <div className="flex items-center justify-between mb-3">
         <div className="min-w-0 flex-1 pr-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400">
             Revenue System Health
           </h3>
           <p className="text-[10px] text-gray-600 mt-1 max-w-xl leading-snug">
@@ -116,27 +116,27 @@ export default function SystemHealthIndicator({
         // Determine severity icon based on health score
         const getSeverityIcon = (score: number): { icon: string; color: string } => {
           if (score < 20) {
-            return { icon: "⛔", color: "text-red-600" } // Critical
+            return { icon: "⛔", color: "text-red-400" } // Critical
           }
           if (score < 40) {
-            return { icon: "⚠", color: "text-orange-600" } // Warning
+            return { icon: "⚠", color: "text-orange-400" } // Warning
           }
-          return { icon: "⚡", color: "text-amber-600" } // Structural
+          return { icon: "⚡", color: "text-amber-400" } // Structural
         }
         
         const severity = getSeverityIcon(healthScore)
         
         return (
-          <div className="pt-2 border-t border-gray-200">
-            <div className="text-xs text-gray-600 mb-1 uppercase tracking-wide">
+          <div className="pt-2 border-t border-gray-800">
+            <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
               Leading signal
             </div>
-            <div className="text-sm text-gray-600 flex items-center gap-2">
+            <div className="text-sm text-gray-400 flex items-center gap-2">
               <span className={severity.color}>{severity.icon}</span>
               <span>{primaryRiskDriver}</span>
             </div>
             <p className="text-[10px] text-gray-600 mt-1">
-              <a href="#revenue-alignment-map" className="text-indigo-700 hover:text-blue-600 hover:underline">
+              <a href="#revenue-alignment-map" className="text-cyan-600 hover:text-cyan-400 hover:underline">
                 Open Alignment Map
               </a>
             </p>

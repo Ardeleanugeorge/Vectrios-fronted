@@ -126,8 +126,8 @@ function MetricBar({ label, value }: { label: string; value: number | null }) {
   return (
     <div>
       <div className="flex justify-between mb-1.5">
-        <span className="text-sm text-gray-600">{label}</span>
-        <span className="text-sm font-bold text-gray-900">{value !== null ? Math.round(v) : "—"}</span>
+        <span className="text-sm text-gray-400">{label}</span>
+        <span className="text-sm font-bold text-white">{value !== null ? Math.round(v) : "—"}</span>
       </div>
       <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
         <div className={`h-full bg-gradient-to-r ${color} rounded-full`} style={{ width: `${Math.min(v, 100)}%` }} />
@@ -172,8 +172,8 @@ export default function CompanyProfilePage() {
   if (loading) return (
     <div className="page-root flex items-center justify-center">
       <div className="text-center">
-        <div className="w-8 h-8 border border-indigo-600/30 border-t-cyan-400 rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-gray-600 text-sm">Loading profile…</p>
+        <div className="w-8 h-8 border border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-gray-500 text-sm">Loading profile…</p>
       </div>
     </div>
   );
@@ -181,8 +181,8 @@ export default function CompanyProfilePage() {
   if (error || !data) return (
     <div className="page-root flex items-center justify-center">
       <div className="text-center max-w-sm">
-        <p className="text-gray-600 mb-4">{error || "Company not found."}</p>
-        <Link href="/saas-revenue-index" className="text-indigo-500 hover:underline text-sm">
+        <p className="text-gray-400 mb-4">{error || "Company not found."}</p>
+        <Link href="/saas-revenue-index" className="text-cyan-400 hover:underline text-sm">
           ← Back to index
         </Link>
       </div>
@@ -201,12 +201,12 @@ export default function CompanyProfilePage() {
       {/* Header */}
       <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between">
         <Link href={PUBLIC_HOME_URL} className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-          <span className="text-sm font-semibold text-gray-900 tracking-wide">
-            Vectri<span className="text-indigo-500">OS</span>
+          <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+          <span className="text-sm font-semibold text-white tracking-wide">
+            Vectri<span className="text-cyan-400">OS</span>
           </span>
         </Link>
-        <Link href="/saas-revenue-index" className="text-xs text-gray-600 hover:text-gray-700 transition-colors">
+        <Link href="/saas-revenue-index" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
           ← Revenue Architecture Index
         </Link>
       </header>
@@ -221,9 +221,9 @@ export default function CompanyProfilePage() {
             onError={e => (e.currentTarget.style.display = "none")}
           />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{data.domain}</h1>
+            <h1 className="text-2xl font-bold text-white">{data.domain}</h1>
             {latest.inferred_icp && (
-              <p className="text-sm text-gray-600">{latest.inferred_icp}</p>
+              <p className="text-sm text-gray-500">{latest.inferred_icp}</p>
             )}
           </div>
           <div className="ml-auto flex items-center gap-3">
@@ -232,7 +232,7 @@ export default function CompanyProfilePage() {
               href={`https://${data.domain}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-indigo-600 hover:text-indigo-500 transition-colors"
+              className="text-xs text-cyan-500 hover:text-cyan-400 transition-colors"
             >
               Visit site ↗
             </a>
@@ -242,10 +242,10 @@ export default function CompanyProfilePage() {
         {/* Revenue Impact Index (RII) + delta */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-indigo-600/80 mb-1">Core metric</p>
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">{RII_NAME}</p>
-            <p className="text-[10px] text-gray-600 mb-2">
-              <abbr title={RII_TAGLINE} className="cursor-help text-indigo-500/90 border-b border-dotted border-indigo-600/50 font-semibold">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-cyan-500/80 mb-1">Core metric</p>
+            <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">{RII_NAME}</p>
+            <p className="text-[10px] text-gray-500 mb-2">
+              <abbr title={RII_TAGLINE} className="cursor-help text-cyan-400/90 border-b border-dotted border-cyan-500/50 font-semibold">
                 {RII_ABBREV}
               </abbr>
               <span> · current</span>
@@ -254,22 +254,22 @@ export default function CompanyProfilePage() {
             <p className={`text-sm mt-1 ${riiColor}`}>{latest.risk_level}</p>
             <Link
               href={METHODOLOGY_RII_HREF}
-              className="text-[10px] text-indigo-700 hover:text-indigo-500 hover:underline mt-2 inline-block"
+              className="text-[10px] text-cyan-600 hover:text-cyan-400 hover:underline mt-2 inline-block"
             >
               What is {RII_ABBREV}? →
             </Link>
           </div>
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center">
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Trend Change</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Trend Change</p>
             <p className={`text-4xl font-bold ${delta < 0 ? "text-emerald-400" : delta > 0 ? "text-red-400" : "text-yellow-400"}`}>
               {delta === 0 ? "—" : delta > 0 ? `+${delta}` : `${delta}`}
             </p>
-            <p className="text-xs text-gray-600 mt-1">vs first scan</p>
+            <p className="text-xs text-gray-500 mt-1">vs first scan</p>
           </div>
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center">
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Scans</p>
-            <p className="text-4xl font-bold text-gray-900">{data.scan_count}</p>
-            <p className="text-xs text-gray-600 mt-1">data points</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Scans</p>
+            <p className="text-4xl font-bold text-white">{data.scan_count}</p>
+            <p className="text-xs text-gray-500 mt-1">data points</p>
           </div>
         </div>
 
@@ -277,7 +277,7 @@ export default function CompanyProfilePage() {
         {history.length >= 2 ? (
           <div className="rounded-xl bg-white/[0.03] border border-white/5 p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-xs text-gray-600 uppercase tracking-widest">
+              <p className="text-xs text-gray-500 uppercase tracking-widest">
                 {RII_NAME} trend <span className="text-gray-600 normal-case">({RII_ABBREV})</span>
               </p>
               <p className="text-xs text-gray-600">{history.length} data points</p>
@@ -296,10 +296,10 @@ export default function CompanyProfilePage() {
 
         {/* Structural breakdown */}
         <div className="rounded-xl bg-white/[0.03] border border-white/5 p-6 mb-6">
-          <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Structural Breakdown (latest scan)</p>
+          <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Structural Breakdown (latest scan)</p>
           <p className="text-[11px] text-gray-600 mb-5">
             Sub-scores feed your headline {RII_ABBREV}.{" "}
-            <Link href={METHODOLOGY_RII_HREF} className="text-indigo-700 hover:text-indigo-500 hover:underline">
+            <Link href={METHODOLOGY_RII_HREF} className="text-cyan-600 hover:text-cyan-400 hover:underline">
               How they combine →
             </Link>
           </p>
@@ -315,7 +315,7 @@ export default function CompanyProfilePage() {
         {history.length >= 2 && (
           <div className="rounded-xl bg-white/[0.03] border border-white/5 overflow-hidden mb-8">
             <div className="px-5 py-3 border-b border-white/5">
-              <p className="text-xs text-gray-600 uppercase tracking-widest">Scan History</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest">Scan History</p>
             </div>
             <table className="w-full text-sm">
               <thead>
@@ -337,7 +337,7 @@ export default function CompanyProfilePage() {
                   const riidelta = prev ? Math.round(h.rii - prev.rii) : null;
                   return (
                     <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
-                      <td className="px-5 py-3 text-gray-600 font-mono text-xs">
+                      <td className="px-5 py-3 text-gray-400 font-mono text-xs">
                         {new Date(h.scanned_at).toLocaleDateString("en-GB", {
                           day: "numeric", month: "short", year: "numeric"
                         })}
@@ -355,11 +355,11 @@ export default function CompanyProfilePage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-5 py-3 text-center text-gray-600 font-mono text-xs">{h.alignment !== null ? Math.round(h.alignment) : "—"}</td>
-                      <td className="px-5 py-3 text-center text-gray-600 font-mono text-xs">{h.icp_clarity !== null ? Math.round(h.icp_clarity) : "—"}</td>
-                      <td className="px-5 py-3 text-center text-gray-600 font-mono text-xs">{h.anchor_density !== null ? Math.round(h.anchor_density) : "—"}</td>
-                      <td className="px-5 py-3 text-center text-gray-600 font-mono text-xs">{h.positioning !== null ? Math.round(h.positioning) : "—"}</td>
-                      <td className="px-5 py-3 text-center text-gray-600 font-mono text-xs">{h.confidence !== null ? `${Math.round(h.confidence)}%` : "—"}</td>
+                      <td className="px-5 py-3 text-center text-gray-400 font-mono text-xs">{h.alignment !== null ? Math.round(h.alignment) : "—"}</td>
+                      <td className="px-5 py-3 text-center text-gray-400 font-mono text-xs">{h.icp_clarity !== null ? Math.round(h.icp_clarity) : "—"}</td>
+                      <td className="px-5 py-3 text-center text-gray-400 font-mono text-xs">{h.anchor_density !== null ? Math.round(h.anchor_density) : "—"}</td>
+                      <td className="px-5 py-3 text-center text-gray-400 font-mono text-xs">{h.positioning !== null ? Math.round(h.positioning) : "—"}</td>
+                      <td className="px-5 py-3 text-center text-gray-400 font-mono text-xs">{h.confidence !== null ? `${Math.round(h.confidence)}%` : "—"}</td>
                     </tr>
                   );
                 })}
@@ -370,18 +370,18 @@ export default function CompanyProfilePage() {
 
         {/* CTA */}
         <div className="text-center rounded-xl bg-white/[0.03] border border-white/5 p-8">
-          <p className="text-gray-600 text-sm mb-1">Want to track your own company?</p>
-          <h3 className="text-xl font-bold text-gray-900 mb-5">Get the full revenue diagnostic</h3>
+          <p className="text-gray-400 text-sm mb-1">Want to track your own company?</p>
+          <h3 className="text-xl font-bold text-white mb-5">Get the full revenue diagnostic</h3>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href={PUBLIC_HOME_URL}
-              className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-semibold text-sm transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm transition-colors"
             >
               ⚡ Scan your website
             </Link>
             <Link
               href="/saas-revenue-index"
-              className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-900 text-sm transition-colors"
+              className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm transition-colors"
             >
               ← Back to index
             </Link>

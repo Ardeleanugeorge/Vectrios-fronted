@@ -18,30 +18,30 @@ export default function CumulativeExposureCard({
   const annualizedProjection = monthlyExposure ? monthlyExposure * 12 : null
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
+    <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
       <div className="grid md:grid-cols-3 gap-6">
         {hasCumulative ? (
           <>
             <div>
-              <p className="text-xs text-gray-600 mb-1 uppercase tracking-wide">
+              <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
                 {uiState === "low" ? "30-Day Realized Opportunity" : "30-Day Cumulative"}
               </p>
-              <p className={`text-3xl font-bold ${uiState === "low" ? "text-emerald-600" : "text-amber-600"}`}>
+              <p className={`text-3xl font-bold ${uiState === "low" ? "text-emerald-300" : "text-amber-400"}`}>
                 ${cumulativeValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </p>
             </div>
             {annualizedProjection && annualizedProjection > 0 && uiState !== "low" && (
               <div>
-                <p className="text-xs text-gray-600 mb-1 uppercase tracking-wide">Annualized Projection</p>
-                <p className="text-3xl font-bold text-gray-700">
+                <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Annualized Projection</p>
+                <p className="text-3xl font-bold text-gray-300">
                   ${annualizedProjection.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
               </div>
             )}
             {uiState === "low" && monthlyExposure && monthlyExposure > 0 && (
               <div>
-                <p className="text-xs text-gray-600 mb-1 uppercase tracking-wide">Current Monthly Upside</p>
-                <p className="text-3xl font-bold text-emerald-600">
+                <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Current Monthly Upside</p>
+                <p className="text-3xl font-bold text-emerald-300">
                   ${monthlyExposure.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
               </div>
@@ -49,7 +49,7 @@ export default function CumulativeExposureCard({
           </>
         ) : (
           <div className="md:col-span-2">
-            <p className="text-sm text-gray-600">No cumulative exposure recorded.</p>
+            <p className="text-sm text-gray-400">No cumulative exposure recorded.</p>
           </div>
         )}
       </div>

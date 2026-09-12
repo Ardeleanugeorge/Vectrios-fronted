@@ -116,8 +116,8 @@ function QuestionBlock({
           onClick={() => onAnswer(true)}
           className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
             value === true
-              ? "border-indigo-600 bg-indigo-600/10 text-indigo-500"
-              : "border-gray-200 hover:border-gray-600 text-gray-700"
+              ? "border-cyan-500 bg-cyan-500/10 text-cyan-400"
+              : "border-gray-700 hover:border-gray-600 text-gray-300"
           }`}
         >
           Yes
@@ -127,16 +127,16 @@ function QuestionBlock({
           onClick={() => onAnswer(false)}
           className={`flex-1 py-3 px-6 rounded-lg border-2 transition ${
             value === false
-              ? "border-gray-600 bg-gray-800/30 text-gray-600"
-              : "border-gray-200 hover:border-gray-600 text-gray-700"
+              ? "border-gray-600 bg-gray-800/30 text-gray-400"
+              : "border-gray-700 hover:border-gray-600 text-gray-300"
           }`}
         >
           No
         </button>
       </div>
       {showFeedback && (
-        <div className="mt-3 p-4 bg-gray-800/50 border border-gray-200 rounded-lg">
-          <p className="text-sm text-gray-600 italic">
+        <div className="mt-3 p-4 bg-gray-800/50 border border-gray-700 rounded-lg">
+          <p className="text-sm text-gray-400 italic">
             {feedbackMessages[feedbackKey]}
           </p>
         </div>
@@ -165,7 +165,7 @@ export default function OnboardingPage() {
   if (shouldSuppressUi) {
     return (
       <div className="page-root flex items-center justify-center">
-        <span className="text-gray-600">Redirecting…</span>
+        <span className="text-gray-400">Redirecting…</span>
       </div>
     )
   }
@@ -598,10 +598,10 @@ export default function OnboardingPage() {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
                     step < currentStep
-                      ? "bg-indigo-600 text-black"
+                      ? "bg-cyan-500 text-black"
                       : step === currentStep
-                      ? "bg-indigo-600 text-black"
-                      : "bg-gray-800 text-gray-600"
+                      ? "bg-cyan-500 text-black"
+                      : "bg-gray-800 text-gray-500"
                   }`}
                 >
                   {step}
@@ -609,14 +609,14 @@ export default function OnboardingPage() {
                 {step < totalSteps && (
                   <div
                     className={`flex-1 h-1 mx-2 ${
-                      step < currentStep ? "bg-indigo-600" : "bg-gray-800"
+                      step < currentStep ? "bg-cyan-500" : "bg-gray-800"
                     }`}
                   />
                 )}
               </div>
             ))}
           </div>
-          <p className="text-sm text-gray-600 text-center">
+          <p className="text-sm text-gray-500 text-center">
             Step {currentStep} of {totalSteps}
           </p>
         </div>
@@ -625,22 +625,22 @@ export default function OnboardingPage() {
         {currentStep === 1 && (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <div className="mb-4 p-3 rounded-lg border border-indigo-600/30 bg-cyan-950/25 max-w-2xl mx-auto">
+              <div className="mb-4 p-3 rounded-lg border border-cyan-500/30 bg-cyan-950/25 max-w-2xl mx-auto">
                 <p className="text-sm text-cyan-200 font-medium">
                   To unlock accurate revenue-risk results and activate your selected plan/trial, complete these fields first.
                 </p>
               </div>
               <h2 className="text-3xl font-bold mb-4">Want a precise model for your business?</h2>
-              <p className="text-gray-600 mb-2">
+              <p className="text-gray-400 mb-2">
                 Takes ~2 minutes — Used by revenue teams to model ARR risk
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-500">
                 We'll calculate exact ARR at risk, close rate impact, and recovery potential
               </p>
               {cameFromInstantScan && (
-                <p className="text-sm text-indigo-600/90 mt-4 max-w-lg mx-auto">
+                <p className="text-sm text-cyan-500/90 mt-4 max-w-lg mx-auto">
                   Website and ARR band below are carried from your instant scan (and unlock flow). Confirm or tweak –{" "}
-                  <span className="text-gray-600">Step 2 only asks for current vs. target close rates.</span>
+                  <span className="text-gray-400">Step 2 only asks for current vs. target close rates.</span>
                 </p>
               )}
             </div>
@@ -652,7 +652,7 @@ export default function OnboardingPage() {
                   <button
                     type="button"
                     onClick={clearPrefill}
-                    className="text-xs text-gray-600 hover:text-gray-700 underline underline-offset-2"
+                    className="text-xs text-gray-400 hover:text-gray-200 underline underline-offset-2"
                   >
                     Clear prefill
                   </button>
@@ -684,7 +684,7 @@ export default function OnboardingPage() {
                 <option value="5M-20M">$5M–$20M</option>
                 <option value="20M+">$20M+</option>
               </select>
-              <p className="text-xs text-gray-600 mt-1 italic">
+              <p className="text-xs text-gray-500 mt-1 italic">
                 Used to estimate revenue exposure risk
               </p>
             </div>
@@ -696,7 +696,7 @@ export default function OnboardingPage() {
               {detectedIcp && (
                 <div className="mb-2 p-3 rounded-lg border border-cyan-800/40 bg-cyan-950/20">
                   <p className="text-xs text-cyan-300 mb-1">Detected target audience</p>
-                  <p className="text-sm text-gray-700">{detectedIcp}</p>
+                  <p className="text-sm text-gray-200">{detectedIcp}</p>
                 </div>
               )}
               <textarea
@@ -708,7 +708,7 @@ export default function OnboardingPage() {
                 placeholder="Optional: adjust detected audience if needed (e.g., Mid-market SaaS support teams with complex onboarding flows)."
               />
               <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-600 italic">
+                <p className="text-xs text-gray-500 italic">
                   Leave empty to use auto-detected ICP from your site content.
                 </p>
                 <p className="text-xs text-gray-600">
@@ -725,7 +725,7 @@ export default function OnboardingPage() {
           <div className="space-y-6">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold mb-4">Performance Baseline</h2>
-              <p className="text-gray-600">
+              <p className="text-gray-400">
                 Last step: Your current close rates to calculate exact ARR at risk
               </p>
             </div>
@@ -745,12 +745,12 @@ export default function OnboardingPage() {
                 placeholder="e.g., 18.5"
               />
               <div className="mt-2 space-y-1">
-                <p className="text-xs text-gray-600 italic">
+                <p className="text-xs text-gray-500 italic">
                   Used to model structural revenue gap.
                 </p>
-                <div className="text-xs text-gray-600 bg-gray-800/50 p-2 rounded border border-gray-200">
+                <div className="text-xs text-gray-600 bg-gray-800/50 p-2 rounded border border-gray-700">
                   <p className="font-medium mb-1">Typical SaaS close rates:</p>
-                  <ul className="space-y-0.5 text-gray-600">
+                  <ul className="space-y-0.5 text-gray-500">
                     <li>SMB: 15–25%</li>
                     <li>Mid-market: 20–35%</li>
                     <li>Enterprise: 10–20%</li>
@@ -773,14 +773,14 @@ export default function OnboardingPage() {
                 className="input"
                 placeholder="e.g., 28.0"
               />
-              <p className="text-xs text-gray-600 mt-1 italic">
+              <p className="text-xs text-gray-500 mt-1 italic">
                 Defines exposure delta threshold.
               </p>
             </div>
 
             {/* Optional fields - collapsed by default */}
-            <details className="border border-gray-200 rounded-lg p-4 mt-4">
-              <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-700">
+            <details className="border border-gray-800 rounded-lg p-4 mt-4">
+              <summary className="cursor-pointer text-sm text-gray-400 hover:text-gray-300">
                 Additional metrics (optional - helps improve accuracy)
               </summary>
               <div className="mt-4 space-y-4">
@@ -823,7 +823,7 @@ export default function OnboardingPage() {
                   </div>
                 </div>
 
-                <div className="space-y-4 pt-4 border-t border-gray-200">
+                <div className="space-y-4 pt-4 border-t border-gray-800">
                   <h3 className="text-lg font-semibold">Value & Positioning Clarity (Optional)</h3>
                   
                   <div>
@@ -896,7 +896,7 @@ export default function OnboardingPage() {
                 <option value="partner-channel-sales">Partner / channel sales</option>
                 <option value="mixed">Mixed</option>
               </select>
-              <p className="text-xs text-gray-600 mt-1 italic">
+              <p className="text-xs text-gray-500 mt-1 italic">
                 Used to evaluate pipeline volatility and conversion consistency
               </p>
             </div>
@@ -907,11 +907,11 @@ export default function OnboardingPage() {
 
 
         {/* NAVIGATION */}
-        <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-200">
+        <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-800">
           {currentStep > 1 ? (
             <button
               onClick={() => goToStep(currentStep - 1)}
-              className="px-6 py-3 border border-gray-200 hover:border-gray-600 rounded-lg transition"
+              className="px-6 py-3 border border-gray-700 hover:border-gray-600 rounded-lg transition"
             >
               Back
             </button>
@@ -925,8 +925,8 @@ export default function OnboardingPage() {
               disabled={!canProceed()}
               className={`px-6 py-3 rounded-lg transition ${
                 canProceed()
-                  ? "bg-indigo-600 hover:bg-indigo-500 text-black font-semibold"
-                  : "bg-gray-800 text-gray-600 cursor-not-allowed"
+                  ? "bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
+                  : "bg-gray-800 text-gray-500 cursor-not-allowed"
               }`}
             >
               Continue
@@ -934,11 +934,11 @@ export default function OnboardingPage() {
           ) : (
             <div className="flex flex-col items-end gap-3">
               {isSubmitting && (
-                <div className="flex items-center gap-2 text-xs text-indigo-500/80 animate-pulse">
+                <div className="flex items-center gap-2 text-xs text-cyan-400/80 animate-pulse">
                   <div className="flex gap-1">
-                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
                   <span>{submitPhases[submitPhase]}</span>
                 </div>
@@ -948,12 +948,12 @@ export default function OnboardingPage() {
                 disabled={!canProceed() || isSubmitting}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg transition ${
                   canProceed() && !isSubmitting
-                    ? "bg-indigo-600 hover:bg-indigo-500 text-black font-semibold"
-                    : "bg-gray-800 text-gray-600 cursor-not-allowed"
+                    ? "bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
+                    : "bg-gray-800 text-gray-500 cursor-not-allowed"
                 }`}
               >
                 {isSubmitting && (
-                  <svg className="animate-spin h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
@@ -966,13 +966,13 @@ export default function OnboardingPage() {
       </div>
       <SiteFooter />
       {isRouteTransitioning && (
-        <div className="fixed inset-0 z-[80] bg-white/95 backdrop-blur-sm flex items-center justify-center">
+        <div className="fixed inset-0 z-[80] bg-[#0B0F19]/95 backdrop-blur-sm flex items-center justify-center">
           <div className="text-center">
-            <svg className="animate-spin w-8 h-8 text-indigo-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
+            <svg className="animate-spin w-8 h-8 text-cyan-500 mx-auto mb-3" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            <p className="text-sm text-gray-700">Building your results…</p>
+            <p className="text-sm text-gray-300">Building your results…</p>
           </div>
         </div>
       )}
