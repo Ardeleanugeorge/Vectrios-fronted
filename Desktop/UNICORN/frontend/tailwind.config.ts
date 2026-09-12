@@ -10,9 +10,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0B0F19",
-        card: "#111827",
-        accent: "#22D3EE",
+        background: "#f9fafb",
+        card: "#ffffff",
+        accent: "#0ea5e9",
       },
     },
   },

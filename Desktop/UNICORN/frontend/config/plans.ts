@@ -26,23 +26,23 @@ export interface Plan {
 export const PLANS: Plan[] = [
   {
     name: "Scale",
-    headline: "Full revenue intelligence — one flat price",
-    ctaLabel: "Start Scale",
-    priceMonthly: 99,
-    priceAnnual: 79, // per month when billed annually
+    headline: "Govern messaging integrity. Stabilize pipeline velocity.",
+    ctaLabel: "Start 14-day free trial",
+    priceMonthly: 299,
+    priceAnnual: 239, // per month when billed annually (~$2,868/year, save $720)
     maxUsers: 20,
     features: [
-      "Revenue Impact Index (RII) — structural score 0–100",
-      "Revenue leak detection (page-by-page)",
-      "Full fix playbook — step-by-step with $/month recovery",
-      "ARR at risk + close rate impact modeling",
-      "24h continuous monitoring",
-      "Revenue Delta Engine (+$X/month vs last scan)",
-      "Risk trajectory — 30/60/90-day view",
-      "Revenue incidents (severity-ranked)",
-      "Benchmark vs 500+ SaaS companies",
-      "GSC + GA4 behavioral modifiers",
-      "Executive risk summaries (weekly)",
+      "Exact pages causing conversion compression",
+      "Prioritized recovery playbook with dollar impact per fix",
+      "Before/after copy fixes with modeled revenue recovery",
+      "ARR at risk + close-rate compression modeling",
+      "24h continuous revenue monitoring",
+      "Revenue drift detection — weekly structural delta",
+      "30/60/90-day revenue risk trajectory",
+      "Severity-ranked revenue incidents with alerts",
+      "Benchmark vs 500+ SaaS peer companies",
+      "HubSpot CRM + Google Analytics integration",
+      "Weekly executive risk summaries",
       "Team monitoring — unlimited seats",
     ],
     featureFlags: {

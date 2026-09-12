@@ -245,8 +245,8 @@ function CopyButton({ text, onCopied }: { text: string; onCopied?: () => void })
       onClick={handleCopy}
       className={`flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-md border transition-all duration-150 ${
         copied
-          ? "text-emerald-400 border-emerald-600/40 bg-emerald-950/30"
-          : "text-cyan-400 border-cyan-700/30 bg-cyan-950/10 hover:bg-cyan-950/30 hover:border-cyan-500/40"
+          ? "text-emerald-600 border-emerald-600/40 bg-emerald-950/30"
+          : "text-blue-600 border-cyan-700/30 bg-cyan-950/10 hover:bg-cyan-950/30 hover:border-indigo-600/40"
       }`}
     >
       {copied ? (
@@ -310,7 +310,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
 
   return (
     <div
-      className="rounded-lg bg-[#0B0F19] border border-gray-800 overflow-hidden"
+      className="rounded-lg bg-white border border-gray-200 overflow-hidden"
       style={{ display: "block", opacity: 1 }}
       data-playbook-fix-index={index}
       onClick={(e) => {
@@ -320,12 +320,12 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
       }}
     >
       {/* Header */}
-      <div className="px-4 pt-4 pb-3 border-b border-gray-800/60">
-        <p className="text-xs font-semibold uppercase tracking-wide text-cyan-500/90">
+      <div className="px-4 pt-4 pb-3 border-b border-gray-200/60">
+        <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600/90">
           Fix #{index} — {fix.title}
         </p>
         {monthlyChip && monthlyChip !== "—" && (
-          <p className="text-[11px] text-emerald-400/80 mt-1" title={compact.full}>
+          <p className="text-[11px] text-emerald-600/80 mt-1" title={compact.full}>
             Est. recovery: <span className="font-bold">{compact.short}</span>
             {!!(fix.impact_contribution?.close_rate && fix.impact_contribution?.close_rate.trim()) && (
               <span className="text-gray-600 ml-2">({fix.impact_contribution?.close_rate})</span>
@@ -343,7 +343,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
             href={fix.page_url}
             target="_blank"
             rel="noreferrer"
-            className="block text-[11px] text-cyan-300 hover:text-cyan-200 mt-1.5"
+            className="block text-[11px] text-indigo-600 hover:text-indigo-500 mt-1.5"
             onClick={() => trackPlaybookFixPageClick(analyticsPayload)}
           >
             Open page →
@@ -358,12 +358,12 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
             {useMonitoringSnapshot ? "Before (from latest monitoring snapshot)" : "Before (from crawl)"}
           </p>
-          <p className="text-sm text-gray-400 italic leading-relaxed">
+          <p className="text-sm text-gray-600 italic leading-relaxed">
             {hasRealBefore
               ? `"${fix.current_example}"`
               : useMonitoringSnapshot
                 ? <span className="text-gray-600 not-italic">—</span>
-                : <span className="text-gray-600 not-italic">— run full diagnostic for live copy</span>}
+                : <span className="text-gray-600 not-italic">Crawl data pending next monitoring cycle</span>}
           </p>
         </div>
 
@@ -378,7 +378,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
               />
             )}
           </div>
-          <p className="text-sm text-white leading-relaxed">{fix.suggested_change}</p>
+          <p className="text-sm text-gray-900 leading-relaxed">{fix.suggested_change}</p>
           {/* Evidence bullets from badges / behavioral signals */}
           {Array.isArray(fix.badges) && fix.badges.length > 0 && (
             <ul className="mt-2 ml-4 list-disc space-y-0.5">
@@ -389,7 +389,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
                   t === "INTENT MISMATCH" ? "Low CTR vs position on priority queries (GSC)" :
                   b
                 return (
-                  <li key={i} className="text-[11px] text-gray-400">{label}</li>
+                  <li key={i} className="text-[11px] text-gray-600">{label}</li>
                 )
               })}
             </ul>
@@ -398,8 +398,8 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
       </div>
 
       {/* Why */}
-      <div className="px-4 py-2.5 border-t border-gray-800/60 bg-gray-900/30">
-        <p className="text-[11px] text-gray-500">
+      <div className="px-4 py-2.5 border-t border-gray-200/60 bg-gray-100">
+        <p className="text-[11px] text-gray-600">
           <span className="text-gray-600 font-semibold">Why: </span>{fix.reason}
         </p>
       </div>
@@ -429,15 +429,15 @@ export default function ActionableInsights({
       ? "border-emerald-800/40"
       : uiState === "medium"
         ? "border-amber-800/40"
-        : "border-red-800/40"
+        : "border-red-200"
 
   if (playbookLoading && !actionLayer?.fixes?.length) {
     return (
-      <div className={`relative z-10 mb-8 p-6 bg-[#111827] rounded-lg border ${tone}`}>
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-4">
+      <div className={`relative z-10 mb-8 p-6 bg-gray-50 rounded-lg border ${tone}`}>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600 mb-4">
           Revenue playbook
         </h3>
-        <p className="text-sm text-gray-500 animate-pulse">Loading playbook…</p>
+        <p className="text-sm text-gray-600 animate-pulse">Loading playbook…</p>
       </div>
     )
   }
@@ -487,8 +487,8 @@ export default function ActionableInsights({
     const isHigh = (pri.level || "").toLowerCase() === "high"
 
     return (
-      <div className={`relative z-10 mb-8 p-6 bg-[#111827] rounded-lg border ${tone}`}>
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-4">
+      <div className={`relative z-10 mb-8 p-6 bg-gray-50 rounded-lg border ${tone}`}>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600 mb-4">
           Revenue playbook
         </h3>
 
@@ -496,50 +496,60 @@ export default function ActionableInsights({
         <div
           className={`mb-4 px-4 py-3 rounded-lg border ${
             isHigh
-              ? "bg-orange-950/40 border-orange-500/40"
-              : "bg-gray-900/60 border-gray-700"
+              ? "bg-orange-50"
+              : "bg-gray-100 border-gray-200"
           }`}
         >
-          <p className={`text-sm font-bold ${isHigh ? "text-orange-400" : "text-gray-300"}`}>
-            {isHigh ? "🔥 HIGH IMPACT (optional)" : "⚡ IMPACT"} — {pri.level}
+          <p className={`text-sm font-bold ${isHigh ? "text-orange-600" : "text-gray-700"}`}>
+            {isHigh ? "🔥 HIGH IMPACT (optional)" : "IMPACT"} — {pri.level}
           </p>
-          <p className="text-xs text-gray-400 mt-1">{pri.display_line || pri.reason}</p>
-          <p className="text-[11px] text-gray-500 mt-1">Low risk ≠ zero upside at scale — highest ROI comes from targeted fixes.</p>
+          <p className="text-xs text-gray-600 mt-1">{pri.display_line || pri.reason}</p>
+          <p className="text-[11px] text-gray-600 mt-1">Low risk ≠ zero upside at scale — highest ROI comes from targeted fixes.</p>
         </div>
 
         {/* 1. Primary leak */}
-        <div className="mb-6 p-4 rounded-lg bg-gradient-to-br from-orange-950/30 to-[#0B0F19] border border-orange-500/20">
-          <p className="text-xs font-semibold uppercase tracking-wider text-orange-400 mb-2">
+        <div className="mb-6 p-4 rounded-lg bg-orange-50 border border-orange-200">
+          <p className="text-xs font-semibold uppercase tracking-wider text-orange-600 mb-2">
             Primary revenue leak
           </p>
-          <h4 className="text-lg font-bold text-white mb-2">{effectiveLayer.primary_issue.title}</h4>
-          <p className="text-sm text-gray-300 leading-relaxed">{effectiveLayer.primary_issue.description}</p>
+          <h4 className="text-lg font-bold text-gray-900 mb-2">{effectiveLayer.primary_issue.title}</h4>
+          <p className="text-sm text-gray-700 leading-relaxed">{effectiveLayer.primary_issue.description}</p>
         </div>
 
         {/* 2. Where */}
         <div className="mb-6">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-2">
             Where this appears
           </p>
           <ul className="space-y-1.5">
             {effectiveLayer.affected_areas?.map((area) => (
-              <li key={area} className="text-sm text-gray-300 flex items-start gap-2">
-                <span className="text-cyan-500 mt-0.5">•</span>
+              <li key={area} className="text-sm text-gray-700 flex items-start gap-2">
+                <span className="text-indigo-600 mt-0.5">•</span>
                 <span>{area}</span>
               </li>
             ))}
           </ul>
         </div>
 
+        {/* GA4 not connected banner */}
+        {!first.behavioral_source && (
+          <div className="mb-4 px-4 py-3 rounded-lg bg-amber-950/20 border border-amber-700/40 flex items-start gap-3">
+            <span className="text-amber-400 text-lg mt-0.5">⚡</span>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-amber-400 mb-1">Connect GA4 for personalized fixes</p>
+              <p className="text-sm text-gray-400 leading-snug">These recommendations are based on structural analysis only. Connect Google Analytics 4 to unlock page-specific fixes with real exit rate and conversion data.</p>
+            </div>
+          </div>
+        )}
         {/* 3. Fix #1 — "Start here" callout + card */}
         <div className="mb-4">
           {/* START HERE banner */}
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-600">
               What to change first
             </p>
             {first.impact_contribution?.monthly_impact && first.impact_contribution.monthly_impact !== "—" && (
-              <span className="text-xs font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1 rounded-full">
+              <span className="text-xs font-bold text-emerald-600 bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1 rounded-full">
                 {first.impact_contribution.monthly_impact}
               </span>
             )}
@@ -548,27 +558,27 @@ export default function ActionableInsights({
           {/* ⚡ Behavioral insight banner — GA4 + GSC (only when real data available) */}
           {effectiveLayer.behavioral_insight && effectiveLayer.behavioral_insight.exit_pct >= 25 && (
             <div className="mb-3 px-4 py-3 rounded-lg bg-cyan-950/30 border border-cyan-700/40 flex flex-col gap-1">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-0.5">
-                ⚡ Behavioral signal detected — GA4 + GSC
+              <p className="text-[10px] font-bold uppercase tracking-widest text-blue-600 mb-0.5">
+                Behavioral signal detected — GA4 + GSC
               </p>
               <p className="text-sm text-cyan-100 leading-snug">
                 Page{" "}
-                <span className="font-mono text-cyan-300 text-xs bg-cyan-950/60 px-1.5 py-0.5 rounded">
+                <span className="font-mono text-blue-600 text-xs bg-cyan-950/60 px-1.5 py-0.5 rounded">
                   {effectiveLayer.behavioral_insight.page}
                 </span>{" "}
                 loses{" "}
-                <span className="font-semibold text-red-300">
+                <span className="font-semibold text-red-600">
                   {effectiveLayer.behavioral_insight.exit_pct}%
                 </span>{" "}
                 of visitors
                 {effectiveLayer.behavioral_insight.query && effectiveLayer.behavioral_insight.ctr_pct !== null && (
                   <>
                     {". Query "}
-                    <span className="italic text-gray-200">
+                    <span className="italic text-gray-700">
                       &ldquo;{effectiveLayer.behavioral_insight.query}&rdquo;
                     </span>
                     {" has CTR "}
-                    <span className="font-semibold text-red-300">
+                    <span className="font-semibold text-red-600">
                       {effectiveLayer.behavioral_insight.ctr_pct}%
                     </span>
                     {" → headline doesn't match search intent"}
@@ -585,10 +595,10 @@ export default function ActionableInsights({
               aria-hidden
             />
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-red-400 mb-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-red-600 mb-1.5">
                 🔴 Start here
                 {first.behavioral_source && (
-                  <span className="ml-2 text-cyan-400 normal-case font-normal tracking-normal">
+                  <span className="ml-2 text-blue-600 normal-case font-normal tracking-normal">
                     · confirmed by GA4
                   </span>
                 )}
@@ -620,7 +630,7 @@ export default function ActionableInsights({
                 (effectiveLayer.expected_impact?.arr_recovery && effectiveLayer.expected_impact.arr_recovery.trim())
               ) && (
                 <div className="p-4 rounded-lg bg-emerald-950/20 border border-emerald-800/30">
-                  <p className="text-xs font-semibold uppercase text-emerald-400 mb-2">
+                  <p className="text-xs font-semibold uppercase text-emerald-600 mb-2">
                     Expected impact (total — est.)
                   </p>
                   {effectiveLayer.expected_impact?.close_rate_improvement && effectiveLayer.expected_impact.close_rate_improvement.trim() && (
@@ -640,9 +650,9 @@ export default function ActionableInsights({
               )}
 
               {(pri?.reason && String(pri.reason).trim()) && (
-                <div className="p-4 rounded-lg bg-[#0B0F19] border border-gray-800">
-                  <p className="text-xs font-semibold uppercase text-gray-500 mb-2">Why this priority</p>
-                  <p className="text-xs text-gray-400">{pri.reason}</p>
+                <div className="p-4 rounded-lg bg-white border border-gray-200">
+                  <p className="text-xs font-semibold uppercase text-gray-600 mb-2">Why this priority</p>
+                  <p className="text-xs text-gray-600">{pri.reason}</p>
                 </div>
               )}
             </div>
