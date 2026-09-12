@@ -59,25 +59,19 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
   }, [companyId])
 
   const getConfidenceLabel = (s: number) => s >= 0.7 ? "High" : s >= 0.5 ? "Moderate" : "Low"
-  const getConfidenceColor = (s: number) => s >= 0.7 ? "text-green-600" : s >= 0.5 ? "text-amber-600" : "text-gray-600"
+  const getConfidenceColor = (s: number) => s >= 0.7 ? "text-green-400" : s >= 0.5 ? "text-amber-400" : "text-gray-400"
 
   if (loading) return (
-    <div id="revenue-optimization-model" className="p-8 bg-gray-50 rounded-lg border border-gray-200 scroll-mt-24">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Optimization Model</h2>
-      <p className="text-sm text-gray-600">Calculating revenue impact...</p>
+    <div id="revenue-optimization-model" className="p-8 bg-[#111827] rounded-lg border border-gray-800 scroll-mt-24">
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Optimization Model</h2>
+      <p className="text-sm text-gray-500">Calculating revenue impact...</p>
     </div>
   )
 
   if (!forecast) return (
-    <div id="revenue-optimization-model" className="p-8 bg-white rounded-lg border border-indigo-100 scroll-mt-24">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Optimization Model</h2>
-      <p className="text-sm font-medium text-gray-800 mb-2">Calibration Required</p>
-      <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-        Financial exposure modeling requires your operational metrics. Add your ARR and deal size to generate a personalized revenue compression model.
-      </p>
-      <a href="/onboarding" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
-        Add Revenue Metrics →
-      </a>
+    <div id="revenue-optimization-model" className="p-8 bg-[#111827] rounded-lg border border-gray-800 scroll-mt-24">
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Optimization Model</h2>
+      <p className="text-sm text-gray-500">Insufficient data for revenue calculation.</p>
     </div>
   )
 
@@ -85,32 +79,32 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
   const hasRecovery = forecast.recovery_potential_annual !== undefined && forecast.recovery_potential_annual > 0
 
   return (
-    <div id="revenue-optimization-model" className="p-8 bg-gray-50 rounded-lg border border-gray-200 space-y-6 scroll-mt-24">
+    <div id="revenue-optimization-model" className="p-8 bg-[#111827] rounded-lg border border-gray-800 space-y-6 scroll-mt-24">
       <div>
-        <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Optimization Model</h2>
-        <p className="text-xs text-gray-600 mt-1 uppercase tracking-wide">Messaging impact on ARR</p>
+        <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Optimization Model</h2>
+        <p className="text-xs text-gray-500 mt-1 uppercase tracking-wide">Messaging impact on ARR</p>
       </div>
 
       {/* -- PRIMARY: Annual Revenue at Risk --------------------------- */}
       {hasRevenueDelta && (
-        <div className={`p-5 rounded-lg border ${uiState === "low" ? "bg-gray-50 border-gray-200" : "bg-gray-50 border-gray-200"}`}>
-          <div className={`text-xs uppercase tracking-wide mb-2 font-medium ${uiState === "low" ? "text-gray-600" : "text-gray-600"}`}>
+        <div className={`p-5 rounded-lg border ${uiState === "low" ? "bg-emerald-950/20 border-emerald-900/30" : "bg-red-950/30 border-red-900/40"}`}>
+          <div className={`text-xs uppercase tracking-wide mb-2 font-medium ${uiState === "low" ? "text-emerald-300/80" : "text-red-400/80"}`}>
             {uiState === "low" ? "Optimization Potential" : "Estimated ARR at Risk"}
           </div>
-          <div className={`text-4xl font-bold ${uiState === "low" ? "text-gray-800" : "text-gray-900"}`}>
+          <div className={`text-4xl font-bold ${uiState === "low" ? "text-emerald-300" : "text-red-400"}`}>
             {uiState === "low" ? "+" : ""}{formatCurrency(forecast.annual_revenue_delta!)}
-            <span className={`text-lg font-normal ml-2 ${uiState === "low" ? "text-gray-500" : "text-gray-500"}`}>/ year</span>
+            <span className={`text-lg font-normal ml-2 ${uiState === "low" ? "text-emerald-300/60" : "text-red-400/60"}`}>/ year</span>
           </div>
           {forecast.primary_stage && (
-            <div className={`mt-2 text-sm ${uiState === "low" ? "text-emerald-600/70" : "text-red-600/70"}`}>
+            <div className={`mt-2 text-sm ${uiState === "low" ? "text-emerald-300/70" : "text-red-300/70"}`}>
               {uiState === "low" ? "Primary optimization gap: " : "Primary compression stage: "}
-              <span className={`font-medium ${uiState === "low" ? "text-gray-800" : "text-gray-900"}`}>{forecast.primary_stage}</span>
+              <span className={`font-medium ${uiState === "low" ? "text-emerald-300" : "text-red-300"}`}>{forecast.primary_stage}</span>
             </div>
           )}
           {forecast.close_rate_compression !== undefined && (
-            <div className="mt-1 text-xs text-gray-600">
+            <div className="mt-1 text-xs text-gray-500">
               {uiState === "low" ? "Performance improvement available: " : "Modeled close-rate impact: "}
-              <span className={uiState === "low" ? "text-gray-800" : "text-gray-900"}>
+              <span className={uiState === "low" ? "text-emerald-300" : "text-red-400"}>
                 {uiState === "low" ? "+" : "-"}{Math.abs(forecast.close_rate_compression).toFixed(1)}%
               </span>
               {forecast.lost_deals_annual !== undefined && forecast.lost_deals_annual > 0 && (
@@ -121,7 +115,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
             </div>
           )}
           {uiState !== "low" && (
-            <p className="text-[11px] text-gray-600 mt-3 pt-3 border-t border-gray-200/80">
+            <p className="text-[11px] text-gray-500 mt-3 pt-3 border-t border-gray-800/80">
               Driven by scale — not high structural risk. Represents modeled exposure, not immediate loss.
             </p>
           )}
@@ -130,15 +124,15 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
 
       {/* -- RECOVERY POTENTIAL ---------------------------------------- */}
       {hasRecovery && (
-        <div className="p-5 bg-gray-50">
-          <div className="text-xs text-green-600/80 uppercase tracking-wide mb-2 font-medium">
+        <div className="p-5 bg-green-950/20 border border-green-900/30 rounded-lg">
+          <div className="text-xs text-green-400/80 uppercase tracking-wide mb-2 font-medium">
             Recovery Potential
           </div>
-          <div className="text-3xl font-bold text-green-600">
+          <div className="text-3xl font-bold text-green-400">
             +{formatCurrency(forecast.recovery_potential_annual!)}
-            <span className="text-base font-normal text-green-600/60 ml-2">/ year</span>
+            <span className="text-base font-normal text-green-400/60 ml-2">/ year</span>
           </div>
-          <div className="mt-1 text-xs text-gray-600">
+          <div className="mt-1 text-xs text-gray-500">
             If messaging is aligned to target close rate
           </div>
         </div>
@@ -147,22 +141,22 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
       {/* -- SECONDARY METRICS ----------------------------------------- */}
       <div className="grid grid-cols-2 gap-4 pt-2">
         <div>
-          <div className="text-xs text-gray-600 mb-1 uppercase tracking-wide">Monthly Exposure</div>
-          <div className="text-xl font-bold text-amber-600">
+          <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Monthly Exposure</div>
+          <div className="text-xl font-bold text-amber-400">
             {formatCurrency(forecast.estimated_monthly_exposure)}
           </div>
         </div>
         <div>
-          <div className="text-xs text-gray-600 mb-1 uppercase tracking-wide">
+          <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
             {uiState === "low" ? "Performance Upside" : "Close-Rate Risk"}
           </div>
           <div
             className={`text-xl font-bold ${
               uiState === "low"
-                ? "text-emerald-600"
+                ? "text-emerald-300"
                 : forecast.close_rate_shift < 0
-                  ? "text-red-600"
-                  : "text-green-600"
+                  ? "text-red-400"
+                  : "text-green-400"
             }`}
           >
             {uiState === "low" ? "+" : forecast.close_rate_shift > 0 ? "+" : ""}
@@ -173,30 +167,30 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
 
       {/* -- MODEL INPUTS (transparency) ------------------------------- */}
       {(forecast.arr_used || forecast.acv_used || forecast.pipeline_deals) && (
-        <div className="pt-4 border-t border-gray-200">
+        <div className="pt-4 border-t border-gray-800">
           <div className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Model Inputs</div>
-          <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-gray-600">
-            {forecast.arr_used && <span>ARR: <span className="text-gray-600">{formatCurrency(forecast.arr_used)}</span></span>}
-            {forecast.acv_used && <span>ACV: <span className="text-gray-600">{formatCurrency(forecast.acv_used)}</span></span>}
-            {forecast.pipeline_deals && <span>Pipeline: <span className="text-gray-600">{Math.round(forecast.pipeline_deals)} deals/yr</span></span>}
+          <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
+            {forecast.arr_used && <span>ARR: <span className="text-gray-400">{formatCurrency(forecast.arr_used)}</span></span>}
+            {forecast.acv_used && <span>ACV: <span className="text-gray-400">{formatCurrency(forecast.acv_used)}</span></span>}
+            {forecast.pipeline_deals && <span>Pipeline: <span className="text-gray-400">{Math.round(forecast.pipeline_deals)} deals/yr</span></span>}
           </div>
         </div>
       )}
 
       {/* -- CONFIDENCE ------------------------------------------------ */}
-      <div className="pt-4 border-t border-gray-200 flex items-center justify-between">
+      <div className="pt-4 border-t border-gray-800 flex items-center justify-between">
         <div>
-          <div className="text-xs text-gray-600 mb-1 uppercase tracking-wide">Forecast Confidence</div>
+          <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Forecast Confidence</div>
           <div className={`text-lg font-semibold ${getConfidenceColor(forecast.confidence_score)}`}>
             {getConfidenceLabel(forecast.confidence_score)} ({(forecast.confidence_score * 100).toFixed(0)}%)
           </div>
         </div>
         {forecast.drivers && forecast.drivers.length > 0 && (
           <div className="text-right">
-            <div className="text-xs text-gray-600 mb-1 uppercase tracking-wide">Drivers</div>
+            <div className="text-xs text-gray-500 mb-1 uppercase tracking-wide">Drivers</div>
             <ul className="space-y-0.5">
               {forecast.drivers.slice(0, 2).map((d, i) => (
-                <li key={i} className="text-xs text-gray-600">· {d}</li>
+                <li key={i} className="text-xs text-gray-400">· {d}</li>
               ))}
             </ul>
           </div>

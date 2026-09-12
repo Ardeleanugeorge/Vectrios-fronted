@@ -41,7 +41,7 @@ function LockedCard({ title, description, ctaLabel }: {
   ctaLabel: string
 }) {
   return (
-    <div className="relative rounded-lg overflow-hidden min-h-[140px] bg-gray-50 border border-gray-200">
+    <div className="relative rounded-lg overflow-hidden min-h-[140px] bg-[#111827] border border-gray-800">
       {/* Static blur placeholder */}
       <div className="pointer-events-none select-none blur-sm opacity-20 p-6 space-y-3">
         <div className="h-3 bg-gray-700 rounded w-1/3" />
@@ -50,19 +50,19 @@ function LockedCard({ title, description, ctaLabel }: {
         <div className="h-3 bg-gray-800 rounded w-1/2" />
       </div>
       {/* Overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-[2px] z-10">
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0B0F19]/80 backdrop-blur-[2px] z-10">
         <div className="text-center px-6">
-          <div className="w-9 h-9 mx-auto mb-3 rounded-full bg-gray-800 border border-gray-200 flex items-center justify-center">
-            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-9 h-9 mx-auto mb-3 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center">
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <p className="text-sm font-semibold text-gray-900 mb-1">{title}</p>
-          <p className="text-xs text-gray-600 mb-3">{description}</p>
+          <p className="text-sm font-semibold text-white mb-1">{title}</p>
+          <p className="text-xs text-gray-500 mb-3">{description}</p>
           <Link
             href="/upgrade"
-            className="inline-block px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-black font-semibold rounded-lg transition text-xs text-center leading-snug"
+            className="inline-block px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold rounded-lg transition text-xs text-center leading-snug"
           >
             {ctaLabel}
           </Link>
@@ -84,8 +84,8 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
   const riskLevel = normalizeLevel(diagnostic?.risk_level)
 
   const riskColor =
-    riskLevel === "HIGH" ? "text-red-600 border-red-900/40 bg-red-50" :
-    riskLevel === "MODERATE" ? "text-orange-600 border-orange-900/40 bg-orange-50" :
+    riskLevel === "HIGH" ? "text-red-400 border-red-900/40 bg-red-950/10" :
+    riskLevel === "MODERATE" ? "text-orange-400 border-orange-900/40 bg-orange-950/10" :
     "text-yellow-400 border-yellow-900/40 bg-yellow-950/10"
 
   const riskLabel =
@@ -132,21 +132,21 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
 
       {/* Key metrics preview (real values) */}
       <div className="grid md:grid-cols-4 gap-3">
-        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-          <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-1">Alignment</p>
-          <p className="text-2xl font-bold text-gray-900">{metric(alignment)}</p>
+        <div className="p-4 bg-[#111827] border border-gray-800 rounded-lg">
+          <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Alignment</p>
+          <p className="text-2xl font-bold text-white">{metric(alignment)}</p>
         </div>
-        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-          <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-1">ICP Clarity</p>
-          <p className="text-2xl font-bold text-gray-900">{metric(icp)}</p>
+        <div className="p-4 bg-[#111827] border border-gray-800 rounded-lg">
+          <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">ICP Clarity</p>
+          <p className="text-2xl font-bold text-white">{metric(icp)}</p>
         </div>
-        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-          <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-1">Anchor Density</p>
-          <p className="text-2xl font-bold text-gray-900">{metric(anchor)}</p>
+        <div className="p-4 bg-[#111827] border border-gray-800 rounded-lg">
+          <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Anchor Density</p>
+          <p className="text-2xl font-bold text-white">{metric(anchor)}</p>
         </div>
-        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-          <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-1">Confidence</p>
-          <p className="text-2xl font-bold text-gray-900">{metric(confidence)}</p>
+        <div className="p-4 bg-[#111827] border border-gray-800 rounded-lg">
+          <p className="text-[11px] uppercase tracking-wider text-gray-500 mb-1">Confidence</p>
+          <p className="text-2xl font-bold text-white">{metric(confidence)}</p>
         </div>
       </div>
 
@@ -170,23 +170,23 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
       </div>
 
       {/* ══ CTA PRINCIPAL ══ */}
-      <div className="p-8 rounded-lg border border-cyan-200 bg-indigo-50">
-        <h3 className="text-lg font-bold text-gray-900 mb-2">
+      <div className="p-8 rounded-lg border border-cyan-800/40 bg-gradient-to-br from-cyan-950/30 to-[#111827]">
+        <h3 className="text-lg font-bold text-white mb-2">
           Your diagnostic is ready—see how much you can recover.
         </h3>
-        <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-          Typical companies lose $120K–$300K/year to messaging and funnel leaks. Vectri<span className="text-blue-600">OS</span> maps the fix and the dollar impact—from $99/mo.
+        <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+          Typical companies lose $120K–$300K/year to messaging and funnel leaks. Vectri<span className="text-cyan-400">OS</span> maps the fix and the dollar impact—from $99/mo.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
             href="/upgrade"
-            className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-sm text-center"
+            className="inline-block px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-lg transition text-sm text-center"
           >
             View plans & recover revenue
           </Link>
           <Link
             href="/upgrade"
-            className="inline-block px-6 py-3 bg-transparent hover:bg-gray-100"
+            className="inline-block px-6 py-3 bg-transparent hover:bg-gray-800 text-cyan-400 font-medium rounded-lg border border-cyan-700 transition text-sm text-center"
           >
             Try risk-free — 14-day full access
           </Link>

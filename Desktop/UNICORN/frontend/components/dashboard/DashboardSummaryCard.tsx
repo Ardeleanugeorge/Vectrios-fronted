@@ -11,8 +11,8 @@ interface DashboardSummaryCardProps {
 export default function DashboardSummaryCard({ companyName, monthlyLoss, riiScore, benchmarkPct, riskLevel }: DashboardSummaryCardProps) {
   if (!riiScore && !monthlyLoss) return null
   const lossStr = monthlyLoss ? `$${Math.round(monthlyLoss / 1000)}K` : null
-  const riskColor = "text-gray-900"
-  const riskBg = "bg-indigo-50 border-indigo-100"
+  const riskColor = !riiScore ? "text-gray-900" : riiScore < 30 ? "text-green-600" : riiScore < 60 ? "text-amber-600" : "text-red-600"
+  const riskBg = !riiScore ? "bg-gray-50" : riiScore < 30 ? "bg-green-50 border-green-200" : riiScore < 60 ? "bg-amber-50 border-amber-200" : "bg-red-50 border-red-200"
 
   return (
     <div className={`mb-6 p-5 rounded-xl border ${riskBg} flex items-center justify-between gap-6 flex-wrap`}>
@@ -23,10 +23,10 @@ export default function DashboardSummaryCard({ companyName, monthlyLoss, riiScor
           {lossStr ? (
             <>is losing <span className="text-red-600 font-bold">{lossStr}/month</span> in pipeline</>
           ) : (
-            <>Architecture drift detected — structural monitoring active</>
+            <>revenue risk detected</>
           )}
         </h2>
-        <p className="text-sm text-gray-600 mt-1">Baseline established. Playbook generated from live structural analysis.</p>
+        <p className="text-sm text-gray-600 mt-1">Fix the playbook below to recover revenue.</p>
       </div>
       <div className="flex gap-4 flex-wrap">
         {riiScore && (

@@ -64,13 +64,13 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "critical":
-        return "bg-red-500/20 text-red-600 border-red-500/30"
+        return "bg-red-500/20 text-red-400 border-red-500/30"
       case "warning":
-        return "bg-amber-500/20 text-amber-600 border-amber-500/30"
+        return "bg-amber-500/20 text-amber-400 border-amber-500/30"
       case "info":
-        return "bg-blue-500/20 text-blue-600 border-blue-500/30"
+        return "bg-blue-500/20 text-blue-400 border-blue-500/30"
       default:
-        return "bg-gray-500/20 text-gray-600 border-gray-500/30"
+        return "bg-gray-500/20 text-gray-400 border-gray-500/30"
     }
   }
 
@@ -108,18 +108,18 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
 
   if (loading) {
     return (
-      <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Recent Structural Signals</h2>
-        <p className="text-sm text-gray-600">Loading signals...</p>
+      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Recent Structural Signals</h2>
+        <p className="text-sm text-gray-500">Loading signals...</p>
       </div>
     )
   }
 
   if (signals.length === 0) {
     return (
-      <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Recent Structural Signals</h2>
-        <p className="text-sm text-gray-600">No signals detected. Monitoring active.</p>
+      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+        <h2 className="text-xl font-bold mb-6 uppercase tracking-wide">Recent Structural Signals</h2>
+        <p className="text-sm text-gray-500">No signals detected. Monitoring active.</p>
       </div>
     )
   }
@@ -135,30 +135,30 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
   }
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Recent Structural Signals</h2>
+    <div className="p-6 bg-[#111827] rounded-lg border border-gray-800">
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Recent Structural Signals</h2>
 
       <div className="space-y-0 mb-6">
         {recent.map((signal, index) => (
           <div 
             key={signal.id || `r-${index}`}
-            className="flex items-start gap-4 py-3 px-0 border-b border-gray-200 last:border-b-0"
+            className="flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0"
           >
             <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getSeverityColor(signal.severity)}`}>
               {getSeverityLabel(signal.severity)}
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-700 leading-relaxed">
+              <p className="text-sm text-gray-300 leading-relaxed">
                 {signal.description}
               </p>
               <div className="flex items-center gap-3 mt-1">
                 {signal.timestamp && (
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-500">
                     {formatTimeAgo(signal.timestamp)}
                   </p>
                 )}
                 {signal.value !== null && (
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-500">
                     Value: {signal.value.toFixed(1)}
                   </p>
                 )}
@@ -167,24 +167,24 @@ export default function RevenueSignalsPanel({ companyId }: RevenueSignalsPanelPr
           </div>
         ))}
         {recent.length === 0 && (
-          <p className="text-sm text-gray-600">No recent signals in the last 7 days.</p>
+          <p className="text-sm text-gray-500">No recent signals in the last 7 days.</p>
         )}
       </div>
 
       {history.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-gray-200">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-2">History</h3>
+        <div className="mt-4 pt-3 border-t border-gray-800">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">History</h3>
           <div className="space-y-0">
             {history.map((signal, index) => (
               <div 
                 key={signal.id || `h-${index}`}
-                className="flex items-start gap-4 py-3 px-0 border-b border-gray-200 last:border-b-0"
+                className="flex items-start gap-4 py-3 px-0 border-b border-gray-800 last:border-b-0"
               >
                 <span className={`text-xs font-semibold px-2 py-1 rounded border flex-shrink-0 ${getSeverityColor(signal.severity)}`}>
                   {getSeverityLabel(signal.severity)}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-sm text-gray-300 leading-relaxed">
                     {signal.description}
                   </p>
                   <div className="flex items-center gap-3 mt-1">
