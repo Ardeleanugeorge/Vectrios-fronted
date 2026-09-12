@@ -37,19 +37,20 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
   const [entries, setEntries] = useState<TrendEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
+  const [selectedDays, setSelectedDays] = useState(30)
   const svgRef = useRef<SVGSVGElement>(null)
 
   useEffect(() => {
     if (!companyId) { setLoading(false); return }
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    apiFetch(`/rii-trend/${companyId}`, {
+    apiFetch(`/rii-trend/${companyId}?days=${selectedDays}`, {
       headers: { Authorization: `Bearer ${token || ""}` },
     })
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.has_data) setEntries(d.entries) })
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [companyId])
+  }, [companyId, selectedDays])
 
   // -- SVG chart dimensions ----------------------------------------------------
   const W = 700
@@ -99,7 +100,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
   if (loading) {
     return (
       <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Risk Trend (30 Days)</h2>
+        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Risk Trend</h2>
         <p className="text-sm text-gray-600 animate-pulse">Loading trend data...</p>
       </div>
     )
@@ -109,7 +110,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
     return (
       <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
         <div className="flex items-start justify-between mb-6">
-          <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Risk Trend (30 Days)</h2>
+          <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Risk Trend</h2>
           {riskDelta !== undefined && riskDelta !== null && (
             <span className={`text-sm font-semibold px-2 py-0.5 rounded ${
               riskDelta > 0 ? "text-red-600 bg-red-400/10" : "text-green-600 bg-green-400/10"
@@ -162,7 +163,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Risk Trend (30 Days)</h2>
+          <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Revenue Risk Trend</h2>
           <p className="text-xs text-gray-600 mt-0.5">
             {entries.length} data point{entries.length !== 1 ? "s" : ""} —{" "}
             {formatDate(oldest.date)} – {formatDate(latest.date)}
