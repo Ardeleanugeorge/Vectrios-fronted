@@ -522,16 +522,6 @@ const delayTimer = setTimeout(() => {
 
   return (
     <div className="space-y-6">
-      
-      {/* ALERTS FIRST — Critical alerts at top */}
-      {hasCriticalAlerts && (
-        <div className={`p-4 rounded border-l-4 ${ (rii !== null && rii < 40) ? "bg-gray-100 border-gmber-500" : "bg-red-500/10 border-red-500" }`}>
-          <p className={`text-sm font-semibold mb-1 ${ (rii !== null && rii < 40) ? "text-amber-600" : "text-red-600" }`}>Recent critical structural events detected</p>
-          <p className="text-xs text-gray-600">
-            {criticalAlerts.length} critical alert{criticalAlerts.length > 1 ? 's' : ''} require immediate attention.
-          </p>
-        </div>
-      )}
 
       {hasInconsistency && (
         <div className="p-3 rounded border border-gray-200 bg-gray-50">
