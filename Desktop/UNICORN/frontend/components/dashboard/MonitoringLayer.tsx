@@ -524,6 +524,9 @@ const delayTimer = setTimeout(() => {
   return (
     <div className="space-y-6">
 
+      {/* PAGE CHANGE INCIDENTS */}
+      <PageIncidentsPanel companyId={companyId} />
+
       {/* 0. SYSTEM HEALTH INDICATOR — Health score bar */}
       {rii !== null && (
         <SystemHealthIndicator 
@@ -750,9 +753,6 @@ const delayTimer = setTimeout(() => {
           </div>
         )
       })()}
-
-      {/* PAGE CHANGE INCIDENTS */}
-      <PageIncidentsPanel companyId={companyId} />
 
       {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action
            Renders when structural scores exist (from diagnostic OR monitoring) */}
