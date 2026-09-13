@@ -5,6 +5,7 @@ import { API_URL } from '@/lib/config'
 
 import { useState, useEffect } from "react"
 import RevenueSystemStatus from "./RevenueSystemStatus"
+import PageIncidentsPanel from "./PageIncidentsPanel"
 import CumulativeExposureCard from "./CumulativeExposureCard"
 import StructuralRiskOverview from "./StructuralRiskOverview"
 import StructuralBreakdownWithDelta from "./StructuralBreakdownWithDelta"
@@ -749,6 +750,9 @@ const delayTimer = setTimeout(() => {
           </div>
         )
       })()}
+
+      {/* PAGE CHANGE INCIDENTS */}
+      <PageIncidentsPanel companyId={companyId} />
 
       {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action
            Renders when structural scores exist (from diagnostic OR monitoring) */}
