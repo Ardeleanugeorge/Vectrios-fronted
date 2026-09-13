@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import { apiFetch } from "@/lib/api"
-
+import IncidentDetail from "./IncidentDetail"
 interface PageIncident {
   id: string
   url: string
@@ -10,6 +10,8 @@ interface PageIncident {
   severity: string
   before_claim: string | null
   after_claim: string | null
+  before_icp: string | null
+  after_icp: string | null
   why_it_matters: string | null
   recommended_action: string | null
   confidence: number | null
@@ -53,45 +55,9 @@ export default function PageIncidentsPanel({ companyId }: Props) {
         <p className="text-sm font-semibold text-gray-900 mt-0.5">{incidents.length} change{incidents.length>1?"s":""} detected</p>
       </div>
       <div className="divide-y divide-gray-100">
-        {incidents.map(incident => {
-          const sev = SEV[incident.severity] || SEV.moderate
-          return (
-            <div key={incident.id} className="p-5">
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <div className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full shrink-0 mt-1 ${sev.dot}`} />
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{CT[incident.change_type]||"Page Change"}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{incident.url}</p>
-                  </div>
-                </div>
-                <span className={`px-2 py-0.5 text-xs font-semibold rounded border ${sev.color} shrink-0`}>{sev.label}</span>
-              </div>
-              {(incident.before_claim||incident.after_claim) && (
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  {incident.before_claim && <div className="p-3 bg-gray-50 rounded-lg border border-gray-200"><p className="text-xs text-gray-500 mb-1">Before</p><p className="text-xs text-gray-700 italic">"{incident.before_claim}"</p></div>}
-                  {incident.after_claim && <div className="p-3 bg-blue-50 rounded-lg border border-blue-200"><p className="text-xs text-blue-600 mb-1">After</p><p className="text-xs text-gray-700 italic">"{incident.after_claim}"</p></div>}
-                </div>
-              )}
-              {incident.why_it_matters && (
-                <div className="mb-2">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Why it matters</p>
-                  <p className="text-xs text-gray-700">{incident.why_it_matters}</p>
-                </div>
-              )}
-              <div className="mb-2">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Evidence</p>
-                <p className="text-xs text-gray-600">Structural evidence: page content changed significantly. Connect GA4 to add behavioral evidence.</p>
-              </div>
-              {incident.recommended_action && (
-                <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
-                  <span className="text-amber-600 text-xs font-semibold shrink-0">Action</span>
-                  <p className="text-xs text-gray-700">{incident.recommended_action}</p>
-                </div>
-              )}
-            </div>
-          )
-        })}
+        {incidents.map(incident => (
+          <IncidentDetail key={incident.id} incident={incident} onStatusChange={(id, status) => setIncidents(prev => prev.map(i => i.id === id ? {...i, status} : i))} />
+        ))}
       </div>
     </div>
   )
