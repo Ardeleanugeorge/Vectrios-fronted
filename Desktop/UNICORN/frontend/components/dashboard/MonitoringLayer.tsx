@@ -523,13 +523,6 @@ const delayTimer = setTimeout(() => {
   return (
     <div className="space-y-6">
 
-      {hasInconsistency && (
-        <div className="p-3 rounded border border-gray-200 bg-gray-50">
-          <p className="text-xs text-amber-600 font-semibold">In review</p>
-          <p className="text-xs text-amber-200/90">We detected mixed signals; numbers are correct, display emphasizes positives while monitoring risks separately.</p>
-        </div>
-      )}
-
       {/* 0. SYSTEM HEALTH INDICATOR — Health score bar */}
       {rii !== null && (
         <SystemHealthIndicator 
