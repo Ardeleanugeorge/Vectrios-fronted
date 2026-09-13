@@ -73,7 +73,16 @@ export default function PageIncidentsPanel({ companyId }: Props) {
                   {incident.after_claim && <div className="p-3 bg-blue-50 rounded-lg border border-blue-200"><p className="text-xs text-blue-600 mb-1">After</p><p className="text-xs text-gray-700 italic">"{incident.after_claim}"</p></div>}
                 </div>
               )}
-              {incident.why_it_matters && <p className="text-xs text-gray-600 mb-2">{incident.why_it_matters}</p>}
+              {incident.why_it_matters && (
+                <div className="mb-2">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Why it matters</p>
+                  <p className="text-xs text-gray-700">{incident.why_it_matters}</p>
+                </div>
+              )}
+              <div className="mb-2">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Evidence</p>
+                <p className="text-xs text-gray-600">Structural evidence: page content changed significantly. Connect GA4 to add behavioral evidence.</p>
+              </div>
               {incident.recommended_action && (
                 <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
                   <span className="text-amber-600 text-xs font-semibold shrink-0">Action</span>

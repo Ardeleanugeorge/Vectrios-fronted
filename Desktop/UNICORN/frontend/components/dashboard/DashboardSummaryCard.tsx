@@ -2,51 +2,34 @@
 
 interface DashboardSummaryCardProps {
   companyName?: string | null
-  monthlyLoss?: number | null
   riiScore?: number | null
-  benchmarkPct?: number | null
   riskLevel?: string | null
+  monthlyLoss?: number | null
+  benchmarkPct?: number | null
 }
 
-export default function DashboardSummaryCard({ companyName, monthlyLoss, riiScore, benchmarkPct, riskLevel }: DashboardSummaryCardProps) {
-  if (!riiScore && !monthlyLoss) return null
-  const lossStr = monthlyLoss ? `$${Math.round(monthlyLoss / 1000)}K` : null
-  const riskColor = "text-gray-900"
-  const riskBg = "bg-indigo-50 border-indigo-100"
+export default function DashboardSummaryCard({ companyName, riiScore, riskLevel, monthlyLoss: _m, benchmarkPct: _b }: DashboardSummaryCardProps) {
+  if (!riiScore) return null
+
+  const statusColor = riiScore < 40 ? "text-emerald-600" : riiScore < 70 ? "text-amber-600" : "text-red-600"
+  const statusLabel = riiScore < 40 ? "Low structural risk" : riiScore < 70 ? "Moderate structural risk" : "High structural risk"
 
   return (
-    <div className={`mb-6 p-5 rounded-xl border ${riskBg} flex items-center justify-between gap-6 flex-wrap`}>
+    <div className="mb-2 flex items-center justify-between gap-4 flex-wrap">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-gray-600 mb-1">{riskLevel || "Revenue Risk"}</p>
-        <h2 className="text-xl font-semibold text-gray-900">
-          {companyName ? `${companyName} ` : ""}
-          {lossStr ? (
-            <>is losing <span className="text-red-600 font-bold">{lossStr}/month</span> in pipeline</>
-          ) : (
-            <>Architecture drift detected — structural monitoring active</>
-          )}
+        <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-0.5">Revenue Monitoring Console</p>
+        <h2 className="text-base font-semibold text-gray-900">
+          {companyName || "Your site"} · Structural monitoring active
         </h2>
-        <p className="text-sm text-gray-600 mt-1">Baseline established. Playbook generated from live structural analysis.</p>
       </div>
-      <div className="flex gap-4 flex-wrap">
-        {riiScore && (
-          <div className="text-center bg-white rounded-lg px-4 py-3 border border-gray-200 min-w-[80px]">
-            <p className="text-xs text-gray-600 mb-1">RII Score</p>
-            <p className={`text-2xl font-bold ${riskColor}`}>{Math.round(riiScore)}</p>
-          </div>
-        )}
-        {lossStr && (
-          <div className="text-center bg-white rounded-lg px-4 py-3 border border-gray-200 min-w-[80px]">
-            <p className="text-xs text-gray-600 mb-1">Monthly loss</p>
-            <p className="text-2xl font-bold text-red-600">{lossStr}</p>
-          </div>
-        )}
-        {benchmarkPct && (
-          <div className="text-center bg-white rounded-lg px-4 py-3 border border-gray-200 min-w-[80px]">
-            <p className="text-xs text-gray-600 mb-1">Benchmark</p>
-            <p className="text-2xl font-bold text-blue-600">{Math.round(benchmarkPct)}th</p>
-          </div>
-        )}
+      <div className="flex items-center gap-3">
+        <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200">
+          <p className="text-xs text-gray-500 mb-0.5">RII</p>
+          <p className={`text-xl font-bold ${statusColor}`}>{Math.round(riiScore)}</p>
+        </div>
+        <span className={`text-xs font-medium px-2 py-1 rounded-full border ${riiScore < 40 ? "bg-emerald-50 border-emerald-200 text-emerald-700" : riiScore < 70 ? "bg-amber-50 border-amber-200 text-amber-700" : "bg-red-50 border-red-200 text-red-700"}`}>
+          {statusLabel}
+        </span>
       </div>
     </div>
   )

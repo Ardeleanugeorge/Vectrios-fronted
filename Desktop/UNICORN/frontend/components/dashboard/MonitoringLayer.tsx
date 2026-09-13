@@ -527,7 +527,7 @@ const delayTimer = setTimeout(() => {
       {/* PAGE CHANGE INCIDENTS */}
       <PageIncidentsPanel companyId={companyId} />
 
-      {/* 0. SYSTEM HEALTH INDICATOR — Health score bar */}
+      {/* 0. SYSTEM HEALTH INDICATOR — secondary, compact */}
       {rii !== null && (
         <SystemHealthIndicator 
           rii={rii} 
@@ -537,8 +537,8 @@ const delayTimer = setTimeout(() => {
       )}
 
       {/* REVENUE TRUTH BANNER — unified semantic layer */}
-      <div className="p-5 rounded-lg border border-cyan-700/30 bg-cyan-950/10">
-        <p className="text-sm font-semibold text-blue-600">{truth.headline}</p>
+      <div className="p-5 rounded-lg border border-blue-200 bg-blue-50">
+        <p className="text-sm font-semibold text-blue-800">{truth.headline}</p>
         <p className="text-xs text-gray-700 mt-1">{truth.subtext}{truthLossPct ? ` — ${truthLossPct}` : ""}</p>
         <p className="text-xs text-gray-600 mt-1">{truth.explanation}</p>
       </div>
