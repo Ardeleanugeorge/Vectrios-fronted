@@ -256,8 +256,8 @@ export default function MonitoringLayer({
     fetch(`${API_URL}/revenue-forecast/${companyId}`, {
       headers: { "Authorization": `Bearer ${token || ""}` }
     })
-      .then(r => (r.ok && r.status !== 404) ? r.json() : null)
-      .then(data => { if (data) setForecast(data) })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data && data.has_data !== false) setForecast(data) })
       .catch(() => {})
       .finally(() => setForecastFetchDone(true))
   }, [companyId])
