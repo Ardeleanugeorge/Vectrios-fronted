@@ -6,6 +6,7 @@ import { API_URL } from '@/lib/config'
 import { useState, useEffect } from "react"
 import RevenueSystemStatus from "./RevenueSystemStatus"
 import PageIncidentsPanel from "./PageIncidentsPanel"
+import RevenueStatusHeader from "./RevenueStatusHeader"
 import CumulativeExposureCard from "./CumulativeExposureCard"
 import StructuralRiskOverview from "./StructuralRiskOverview"
 import StructuralBreakdownWithDelta from "./StructuralBreakdownWithDelta"
@@ -523,6 +524,8 @@ const delayTimer = setTimeout(() => {
 
   return (
     <div className="space-y-6">
+
+      <RevenueStatusHeader companyId={companyId} rii={rii} lastEvaluatedAt={monitoringStatus.last_evaluated_at} uiState={uiState} />
 
       {/* PAGE CHANGE INCIDENTS */}
       <PageIncidentsPanel companyId={companyId} />
