@@ -73,8 +73,8 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
     fetch(simulationUrl, {
       headers: { "Authorization": `Bearer ${token || ""}` }
     })
-      .then(r => (r.ok && r.status !== 404) ? r.json() : null)
-      .then(d => { if (d) setData(d) })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d && d.has_data !== false) setData(d) })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [companyId])
