@@ -89,7 +89,7 @@ export default function RevenueTrajectorySimulation({ companyId, currentRii }: P
   if (!data) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Trajectory</h2>
-      <p className="text-sm text-gray-600">Run an assessment to generate trajectory simulation.</p>
+      <p className="text-sm text-gray-600">Connect GA4 to generate a revenue trajectory based on your real conversion data.</p>
     </div>
   )
 
