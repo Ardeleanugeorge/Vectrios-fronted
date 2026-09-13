@@ -48,7 +48,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
         const response = await apiFetch(`/revenue-forecast/${companyId}`, {
           headers: { "Authorization": `Bearer ${token || ""}` }
         })
-        if (response.ok) setForecast(await response.json())
+        if (response.ok) { const d = await response.json(); if (d && d.has_data !== false) setForecast(d) }
       } catch (e) {
         console.error("RevenueForecastPanel error:", e)
       } finally {
