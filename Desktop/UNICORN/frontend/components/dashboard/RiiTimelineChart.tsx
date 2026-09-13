@@ -99,16 +99,16 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
   // -- Render ------------------------------------------------------------------
   if (loading) {
     return (
-      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+      <div className="p-8 bg-white rounded-lg border border-gray-200">
         <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Risk Trend</h2>
-        <p className="text-sm text-gray-500 animate-pulse">Loading trend data...</p>
+        <p className="text-sm text-gray-400 animate-pulse">Loading trend data...</p>
       </div>
     )
   }
 
   if (!entries.length) {
     return (
-      <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+      <div className="p-8 bg-white rounded-lg border border-gray-200">
         <div className="flex items-start justify-between mb-6">
           <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Risk Trend</h2>
           {riskDelta !== undefined && riskDelta !== null && (
@@ -159,7 +159,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
   const totalDelta = latest.rii - oldest.rii
 
   return (
-    <div className="p-8 bg-[#111827] rounded-lg border border-gray-800">
+    <div className="p-8 bg-white rounded-lg border border-gray-200">
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
