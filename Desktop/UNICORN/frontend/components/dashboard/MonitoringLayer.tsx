@@ -398,6 +398,15 @@ export default function MonitoringLayer({
     ? "Minor messaging misalignment detected"
     : primaryRiskDriver
 
+
+  useEffect(() => {
+    if (!companyId) return
+    apiFetch(`/integrations/ga4/ping?company_id=${companyId}`, {})
+      .then(r => r.ok ? r.json() : null)
+      .then(d => setGa4Connected(!!(d?.status === "ok")))
+      .catch(() => setGa4Connected(false))
+  }, [companyId])
+
   // Safety checks for ActionableInsights props
   const safeCloseRateDelta = typeof closeRateDelta === 'number' ? closeRateDelta : null
   const safeMonthlyExposure = typeof monthlyExposure === 'number' ? monthlyExposure : null
@@ -405,6 +414,7 @@ export default function MonitoringLayer({
     ? diagnostic.recommendations[0] 
     : null
   const [playbookActionLayer, setPlaybookActionLayer] = useState<ActionLayerPayload | null>(null)
+  const [ga4Connected, setGa4Connected] = useState<boolean | null>(null)
   const [playbookFetchDone, setPlaybookFetchDone] = useState(false)
 
   useEffect(() => {
@@ -756,24 +766,6 @@ const delayTimer = setTimeout(() => {
           </div>
         )
       })()}
-
-
-      {/* GA4 Evidence Card */}
-      <div className="p-5 bg-blue-50 border border-blue-200 rounded-xl mb-2">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold text-blue-900 mb-1">Add behavioral evidence</p>
-            <p className="text-sm text-blue-700 mb-3">
-              Your RII is based on structural analysis only. Connect GA4 to add real conversion data and increase confidence from ~45% to ~78%.
-            </p>
-            <p className="text-xs text-blue-600">Based on 500+ SaaS companies in our index. Read-only access. Takes 2 minutes.</p>
-          </div>
-          <div className="flex flex-col gap-2 shrink-0">
-            <a href="/account#integrations" className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition text-center whitespace-nowrap">Connect GA4</a>
-            <a href="/account#integrations" className="px-4 py-2 bg-white text-blue-600 text-xs font-semibold rounded-lg border border-blue-200 hover:bg-blue-50 transition text-center whitespace-nowrap">Connect HubSpot</a>
-          </div>
-        </div>
-      </div>
 
       {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action
            Renders when structural scores exist (from diagnostic OR monitoring) */}
