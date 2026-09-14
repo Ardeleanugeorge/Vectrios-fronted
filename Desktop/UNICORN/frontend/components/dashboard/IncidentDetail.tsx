@@ -30,7 +30,7 @@ const changeTypeLabel: Record<string, string> = {
   proof_drift: "Proof signal changed",
   cta_drift: "CTA changed",
   general_drift: "Page content changed",
-  copy_variation: "Copy variation detected",
+  copy_variation: "Minor wording change",
   unknown: "Change detected",
 }
 
@@ -125,7 +125,7 @@ export default function IncidentDetail({ incident, onStatusChange }: Props) {
           <div className="space-y-2">
             <div className="flex items-center gap-2 p-2 bg-emerald-50 rounded border border-emerald-200">
               <span className="text-emerald-600 text-xs">✓</span>
-              <span className="text-xs text-gray-700">Structural evidence: page content changed significantly</span>
+              <span className="text-xs text-gray-700">Structural change detected</span>
             </div>
             <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200">
               <span className="text-gray-400 text-xs">○</span>
