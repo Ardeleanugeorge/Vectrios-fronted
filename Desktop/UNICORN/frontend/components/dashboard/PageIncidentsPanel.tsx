@@ -17,6 +17,8 @@ interface PageIncident {
   confidence: number | null
   status: string
   created_at: string | null
+  event_group_id: string | null
+  event_group_label: string | null
 }
 
 interface Props { companyId: string | null }
@@ -55,9 +57,27 @@ export default function PageIncidentsPanel({ companyId }: Props) {
         <p className="text-sm font-semibold text-gray-900 mt-0.5">{incidents.length} change{incidents.length>1?"s":""} detected</p>
       </div>
       <div className="divide-y divide-gray-100">
-        {incidents.map(incident => (
-          <IncidentDetail key={incident.id} incident={incident} onStatusChange={(id, status) => setIncidents(prev => prev.map(i => i.id === id ? {...i, status} : i))} />
-        ))}
+        {(() => {
+          const grouped = new Map<string, typeof incidents>()
+          incidents.forEach(inc => {
+            const key = inc.event_group_id || inc.id
+            if (!grouped.has(key)) grouped.set(key, [])
+            grouped.get(key)!.push(inc)
+          })
+          return Array.from(grouped.entries()).map(([groupId, groupIncidents]) => (
+            <div key={groupId}>
+              {groupIncidents.length > 1 && groupIncidents[0].event_group_label && (
+                <div className="px-4 py-2 bg-amber-50 border border-amber-200 rounded-t-lg border-b-0">
+                  <p className="text-xs font-semibold text-amber-800">⚡ {groupIncidents[0].event_group_label}</p>
+                  <p className="text-xs text-amber-600">{groupIncidents.length} related changes detected — grouped as one commercial event</p>
+                </div>
+              )}
+              {groupIncidents.map(incident => (
+                <IncidentDetail key={incident.id} incident={incident} onStatusChange={(id, status) => setIncidents(prev => prev.map(i => i.id === id ? {...i, status} : i))} />
+              ))}
+            </div>
+          ))
+        })()}
       </div>
     </div>
   )
