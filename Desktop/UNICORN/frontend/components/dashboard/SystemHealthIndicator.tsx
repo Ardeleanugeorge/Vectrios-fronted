@@ -29,21 +29,21 @@ export default function SystemHealthIndicator({
   const getStatus = (score: number): { label: string; color: string; bgColor: string } => {
     if (score >= 70) {
       return {
-        label: "System stability: Strong",
+        label: "System stability: Stable",
         color: "text-green-600",
         bgColor: "bg-green-500"
       }
     }
     if (score >= 40) {
       return {
-        label: "System stability: Moderate",
+        label: "System stability: Stable",
         color: "text-amber-600",
         bgColor: "bg-amber-500"
       }
     }
     if (score >= 20) {
       return {
-        label: "System stability: Needs attention",
+        label: "System stability: Watch",
         color: "text-orange-600",
         bgColor: "bg-orange-500"
       }
