@@ -576,17 +576,13 @@ const delayTimer = setTimeout(() => {
               revenueDelta.direction === "worse" ? "text-red-600" :
               revenueDelta.direction === "better" ? "text-emerald-600" : "text-gray-700"
             }`}>
-              {revenueDelta.delta_monthly_loss > 0
-                ? `+$${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()} pts structural deterioration`
-                : revenueDelta.delta_monthly_loss < 0
-                ? `↓ ${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()} pts structural improvement`
+              {typeof revenueDelta.delta_rii === "number" && revenueDelta.delta_rii !== 0
+                ? revenueDelta.delta_rii > 0
+                  ? `RII +${revenueDelta.delta_rii.toFixed(1)} pts — structural deterioration`
+                  : `RII ${revenueDelta.delta_rii.toFixed(1)} pts — structural improvement`
                 : "No change vs last scan"}
             </p>
-            {typeof revenueDelta.delta_rii === "number" && revenueDelta.delta_rii !== 0 && (
-              <p className="text-xs text-gray-600 mt-1">
-                RII {revenueDelta.delta_rii > 0 ? `+${revenueDelta.delta_rii}` : revenueDelta.delta_rii} pts since last scan
-              </p>
-            )}
+
           </div>
 
           {/* Drivers */}
