@@ -17,7 +17,6 @@ export default function DashboardSummaryCard({ companyName, riiScore, riskLevel,
   return (
     <div className="mb-2 flex items-center justify-between gap-4 flex-wrap">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-0.5">Revenue Monitoring Console</p>
         <h2 className="text-base font-semibold text-gray-900">
           {companyName || "Your site"} · Structural monitoring active
         </h2>
