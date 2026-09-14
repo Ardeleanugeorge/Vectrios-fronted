@@ -20,7 +20,7 @@ export default function SystemHealthIndicator({
   // Health score = max(0, 100 - RII) with bounds
   // RII 100 = Health 0 (worst)
   // RII 0 = Health 100 (best)
-  const healthScore = Math.max(0, Math.min(100, Math.round(100 - rii)))
+  const healthScore = Math.max(0, Math.min(100, 100 - Math.round(rii)))
   
   // Calculate health delta from risk delta (inverse relationship)
   const healthDelta = riskDelta !== null ? -riskDelta : null

@@ -572,7 +572,7 @@ const delayTimer = setTimeout(() => {
                 ? revenueDelta.delta_rii > 0
                   ? `RII +${revenueDelta.delta_rii.toFixed(1)} pts — structural deterioration`
                   : `RII ${revenueDelta.delta_rii.toFixed(1)} pts — structural improvement`
-                : "No change vs last scan"}
+                : "No material revenue-impacting change detected"}
             </p>
 
           </div>

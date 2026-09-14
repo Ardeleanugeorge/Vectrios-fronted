@@ -45,7 +45,7 @@ export type PlaybookFix = Omit<PlaybookFixLite, "impact_contribution"> & {
 }
 
 const BUYER_HERO_TITLE_RE =
-  /target\s*buyer|define.{0,24}buyer|clarify.{0,24}buyer|buyer in hero|hero.{0,12}buyer|explicitly in hero/i
+  /target\s*buyer|target\s*audience|define.{0,24}buyer|clarify.{0,24}buyer|specify.{0,24}buyer|specify.{0,24}audience|clarify.{0,24}audience|buyer in hero|hero.{0,12}buyer|explicitly in hero|icp in hero|hero.*icp/i
 
 const PROOF_COPY_RE =
   /proof|trust|logo|quantified|value proof|hero CTA|beside.{0,12}CTA|anchor/i
