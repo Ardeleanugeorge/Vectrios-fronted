@@ -187,6 +187,13 @@ export default function SaaSRevenueIndex() {
         </div>
 
 
+        {/* Data source disclaimer */}
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <p className="text-xs text-gray-600">
+            <span className="font-semibold text-gray-700">Data source:</span> Domains appear in this index based on publicly available website content analyzed by VectriOS. No private analytics, conversion data or user data is included. Each domain contributes its latest eligible structural assessment to the index. Historical scans are retained separately for trend and monitoring analysis.
+          </p>
+        </div>
+
         {/* How the index works */}
         <div className="mb-10 p-6 bg-gray-50 rounded-xl border border-gray-200">
           <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">How the index works</h2>
