@@ -30,6 +30,8 @@ const changeTypeLabel: Record<string, string> = {
   proof_drift: "Proof signal changed",
   cta_drift: "CTA changed",
   general_drift: "Page content changed",
+  copy_variation: "Copy variation detected",
+  unknown: "Change detected",
 }
 
 const commercialMeaning: Record<string, string> = {
