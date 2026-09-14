@@ -176,16 +176,39 @@ export default function SaaSRevenueIndex() {
             SaaS Revenue Architecture Index
           </h1>
           <p className="text-gray-700 text-lg max-w-2xl mx-auto mb-2">
-            Most SaaS companies are losing {displayLossMin}–{displayLossMax}/month from messaging gaps they don&apos;t see.
+            Structural messaging gaps are associated with estimated revenue exposure of {displayLossMin}–{displayLossMax}/month — based on benchmark-adjusted modeling across the index.
           </p>
           <p className="text-gray-600 text-sm max-w-2xl mx-auto mb-6">
-            This index shows how clearly each company&apos;s story supports revenue — so you can see where you stand.
+            This index measures messaging architecture clarity across ICP, positioning, proof and CTA dimensions. Structural metrics only — no behavioral or revenue data is used unless explicitly connected.
           </p>
           <a href="/" className="inline-block px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-sm">
             Scan your site — see your RII
           </a>
         </div>
 
+
+        {/* How the index works */}
+        <div className="mb-10 p-6 bg-gray-50 rounded-xl border border-gray-200">
+          <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">How the index works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs font-semibold text-gray-700 mb-1">1. Anonymous structural assessment</p>
+              <p className="text-xs text-gray-600">VectriOS analyzes publicly available website messaging across revenue-stage dimensions.</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-700 mb-1">2. One company, one benchmark position</p>
+              <p className="text-xs text-gray-600">Each unique SaaS domain contributes its latest eligible assessment. Rescans update the position — they do not add a new company.</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-700 mb-1">3. Structural metrics only</p>
+              <p className="text-xs text-gray-600">Benchmark scores measure messaging architecture — ICP clarity, positioning coherence, proof density and alignment. No behavioral or revenue data is used.</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-700 mb-1">4. Continuous refresh</p>
+              <p className="text-xs text-gray-600">When a domain is rescanned, its latest assessment replaces the previous snapshot. Historical scans are retained for trend analysis.</p>
+            </div>
+          </div>
+        </div>
         {/* Stats bar — real numbers */}
         <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
           {[
@@ -421,7 +444,7 @@ export default function SaaSRevenueIndex() {
       </main>
 
       <footer className="border-t border-white/5 px-6 py-6 text-center text-gray-600 text-xs">
-        Vectri<span className="text-indigo-500">OS</span> Revenue Architecture Index — data sourced from anonymous public website scans.
+        Vectri<span className="text-indigo-500">OS</span> Revenue Architecture Index — data sourced from anonymized structural assessments of unique SaaS domains.
         All scores based on structural messaging analysis only.
       </footer>
     </div>
