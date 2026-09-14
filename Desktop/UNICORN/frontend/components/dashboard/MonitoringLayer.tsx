@@ -538,14 +538,6 @@ const delayTimer = setTimeout(() => {
         />
       )}
 
-      {/* REVENUE TRUTH BANNER — unified semantic layer */}
-      <div className="p-5 rounded-lg border border-blue-200 bg-blue-50">
-        <p className="text-sm font-semibold text-blue-800">{truth.headline}</p>
-        <p className="text-xs text-gray-700 mt-1">{truth.subtext}{truthLossPct ? ` — ${truthLossPct}` : ""}</p>
-        <p className="text-xs text-gray-600 mt-1">{truth.explanation}</p>
-      </div>
-      <DiagnosticNudge companyId={companyId} monitoringSource={monitoringStatus.source} lastEvaluated={monitoringStatus.last_evaluated_at} />
-
       {/* REVENUE DELTA — +$/-$/stable vs last scan */}
   {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
         <div className={`rounded-xl border overflow-hidden ${
@@ -797,8 +789,6 @@ const delayTimer = setTimeout(() => {
         riskLevel={diagnostic?.risk_level || null}
         uiState={uiState}
       />
-
-      {/* 2. SYSTEM STATUS — Heartbeat of the system */}
       <RevenueSystemStatus
         monthlyExposure={
           monthlyExposure ??
@@ -820,8 +810,6 @@ const delayTimer = setTimeout(() => {
           undefined}
         deltaDirection={revenueDelta?.direction}
       />
-
-      {/* 2. FINANCIAL IMPACT — Unignorable numbers (only if exposure exists) */}
       {monthlyExposure && monthlyExposure > 0 && (
         <CumulativeExposureCard
           rolling30DayExposure={rolling30DayExposure}
@@ -829,8 +817,6 @@ const delayTimer = setTimeout(() => {
           uiState={uiState}
         />
       )}
-
-      {/* 4. EXECUTIVE INTERPRETATION — Max 2 lines */}
       <ExecutiveInterpretation
         monthlyExposure={monthlyExposure}
         annualExposure={annualDelta}
@@ -842,8 +828,6 @@ const delayTimer = setTimeout(() => {
         uiState={uiState}
         deltaDirection={revenueDelta?.direction}
       />
-
-      {/* 5. REVENUE ALIGNMENT STATUS — System state explanation */}
       <StructuralRiskOverview
         riskScore={rii}
         alignmentScore={alignmentScore}
@@ -862,8 +846,6 @@ const delayTimer = setTimeout(() => {
         riskDelta={monitoringStatus.risk_delta_since_last_scan}
         structuralScoresFallback={ss ?? undefined}
       />
-
-      {/* 7. RECENT STRUCTURAL SIGNALS — Growth+ */}
       <FeatureGate feature="Revenue Signals" planRequired="growth" currentPlan={currentPlan}>
         <RevenueSignalsPanel companyId={companyId} />
       </FeatureGate>
@@ -872,23 +854,15 @@ const delayTimer = setTimeout(() => {
       <FeatureGate feature="Revenue Alerts" planRequired="growth" currentPlan={currentPlan}>
         {monitoringStatus.source !== "fallback" && <RevenueAlertsPanel companyId={companyId} />}
       </FeatureGate>
-
-      {/* 9. REVENUE INCIDENTS — Growth+ */}
       <FeatureGate feature="Revenue Incidents" planRequired="growth" currentPlan={currentPlan}>
         {monitoringStatus.source !== "fallback" && <RevenueIncidentsPanel companyId={companyId} />}
       </FeatureGate>
-
-      {/* 10. REVENUE SYSTEM ACTIVITY — Growth+ */}
       <FeatureGate feature="Activity Feed" planRequired="growth" currentPlan={currentPlan}>
         <ActivityFeed companyId={companyId} />
       </FeatureGate>
-
-      {/* 11. REVENUE COMPRESSION FORECAST — 30-day prediction (Growth+) */}
       <FeatureGate feature="Forecast Engine" planRequired="growth" currentPlan={currentPlan}>
         <RevenueForecastPanel companyId={companyId} uiState={uiState} />
       </FeatureGate>
-
-      {/* 12. REVENUE TRAJECTORY SIMULATION — 12-month ARR (Scale+) */}
       <FeatureGate feature="12-Month ARR Trajectory" planRequired="scale" currentPlan={currentPlan}>
         <RevenueTrajectorySimulation companyId={companyId} currentRii={rii} />
       </FeatureGate>
