@@ -41,7 +41,7 @@ export default function PageIncidentsPanel({ companyId }: Props) {
     if (!companyId) { setLoading(false); return }
     apiFetch(`/page-incidents/${companyId}`)
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.incidents) setIncidents(d.incidents) })
+      .then(d => { if (d?.incidents) setIncidents(d.incidents.filter((i: any) => i.status !== 'resolved')) })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [companyId])
