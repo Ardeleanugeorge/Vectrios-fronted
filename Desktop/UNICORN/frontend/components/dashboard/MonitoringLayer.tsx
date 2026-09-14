@@ -578,9 +578,9 @@ const delayTimer = setTimeout(() => {
               revenueDelta.direction === "better" ? "text-emerald-600" : "text-gray-700"
             }`}>
               {revenueDelta.delta_monthly_loss > 0
-                ? `+$${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month worse`
+                ? `+$${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()} pts structural deterioration`
                 : revenueDelta.delta_monthly_loss < 0
-                ? `↓ $${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()}/month better`
+                ? `↓ ${Math.round(Math.abs(revenueDelta.delta_monthly_loss)).toLocaleString()} pts structural improvement`
                 : "No change vs last scan"}
             </p>
             {typeof revenueDelta.delta_rii === "number" && revenueDelta.delta_rii !== 0 && (
