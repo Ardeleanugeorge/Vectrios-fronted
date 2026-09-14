@@ -18,7 +18,6 @@ import RevenueAlertsPanel from "./RevenueAlertsPanel"
 import RevenueIncidentsPanel from "./RevenueIncidentsPanel"
 import ActivityFeed from "./ActivityFeed"
 import RevenueForecastPanel from "./RevenueForecastPanel"
-import RevenueRiskTrajectoryPanel from "./RevenueRiskTrajectoryPanel"
 import RevenueTrajectorySimulation from "./RevenueTrajectorySimulation"
 import BenchmarkPanel from "./BenchmarkPanel"
 import FinancialExposureCard from "./FinancialExposureCard"
@@ -896,11 +895,6 @@ const delayTimer = setTimeout(() => {
       {/* 12. REVENUE TRAJECTORY SIMULATION — 12-month ARR (Scale+) */}
       <FeatureGate feature="12-Month ARR Trajectory" planRequired="scale" currentPlan={currentPlan}>
         <RevenueTrajectorySimulation companyId={companyId} currentRii={rii} />
-      </FeatureGate>
-
-      {/* 13. REVENUE RISK TRAJECTORY — 30/60/90 day projection (Scale+) */}
-      <FeatureGate feature="Trajectory Engine" planRequired="scale" currentPlan={currentPlan}>
-        <RevenueRiskTrajectoryPanel companyId={companyId} />
       </FeatureGate>
 
       {/* 14. BENCHMARK INTELLIGENCE — cross-company comparison (Scale+) */}
