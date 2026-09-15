@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { apiFetch } from "@/lib/api"
 
 interface Incident {
@@ -45,6 +45,16 @@ const commercialMeaning: Record<string, string> = {
 export default function IncidentDetail({ incident, onStatusChange }: Props) {
   const [marking, setMarking] = useState(false)
   const [status, setStatus] = useState(incident.status)
+  const [verification, setVerification] = useState<any>(null)
+
+  useEffect(() => {
+    if (status === "fixed_pending_verification" || status === "resolved") {
+      apiFetch(`/incident-verification/${incident.id}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d?.has_verification) setVerification(d) })
+        .catch(() => {})
+    }
+  }, [incident.id, status])
 
   async function markFixed() {
     setMarking(true)
@@ -153,10 +163,47 @@ export default function IncidentDetail({ incident, onStatusChange }: Props) {
         {/* 6. Mark as fixed */}
         <div>
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">06 — Recovery monitoring</p>
-          {status === "resolved" ? (
-            <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-              <span className="text-emerald-600">✓</span>
-              <p className="text-sm text-emerald-700">Marked as fixed. VectriOS will monitor recovery in the next cycle.</p>
+          {status === "fixed_pending_verification" || status === "resolved" ? (
+            <div className="space-y-3">
+              {!verification || verification.status === "monitoring" ? (
+                <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <span className="text-blue-500 text-sm">◷</span>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-800">Monitoring verification</p>
+                    <p className="text-xs text-blue-600 mt-0.5">VectriOS will verify structural improvement in the next scan.</p>
+                  </div>
+                </div>
+              ) : verification.status === "verified_improved" ? (
+                <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+                  <p className="text-sm font-semibold text-emerald-800 mb-2">✓ Verified improved</p>
+                  <p className="text-xs text-emerald-700 mb-3">{verification.result_summary}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {verification.deltas?.rii !== null && verification.deltas?.rii !== undefined && (
+                      <div className="p-2 bg-white rounded border border-emerald-200">
+                        <p className="text-xs text-gray-500">RII</p>
+                        <p className="text-sm font-semibold text-gray-900">{verification.baseline?.rii?.toFixed(0)} → {verification.after?.rii?.toFixed(0)} <span className={verification.deltas.rii < 0 ? "text-emerald-600" : "text-red-600"}>{verification.deltas.rii > 0 ? "+" : ""}{verification.deltas.rii?.toFixed(1)}</span></p>
+                      </div>
+                    )}
+                    {verification.deltas?.icp !== null && verification.deltas?.icp !== undefined && (
+                      <div className="p-2 bg-white rounded border border-emerald-200">
+                        <p className="text-xs text-gray-500">ICP Clarity</p>
+                        <p className="text-sm font-semibold text-gray-900">{verification.baseline?.icp?.toFixed(0)} → {verification.after?.icp?.toFixed(0)} <span className={verification.deltas.icp > 0 ? "text-emerald-600" : "text-red-600"}>{verification.deltas.icp > 0 ? "+" : ""}{verification.deltas.icp?.toFixed(1)}</span></p>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-2">Evidence: Structural only · Confidence: {verification.confidence ? Math.round(verification.confidence * 100) : 75}%</p>
+                </div>
+              ) : verification.status === "no_measurable_improvement" ? (
+                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                  <p className="text-sm font-semibold text-amber-800">No measurable improvement detected</p>
+                  <p className="text-xs text-amber-700 mt-1">{verification.result_summary}</p>
+                </div>
+              ) : (
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <p className="text-sm font-semibold text-gray-700">Insufficient evidence</p>
+                  <p className="text-xs text-gray-600 mt-1">Not enough data to determine outcome yet.</p>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex items-center gap-3">
@@ -165,9 +212,9 @@ export default function IncidentDetail({ incident, onStatusChange }: Props) {
                 disabled={marking}
                 className="px-4 py-2 bg-gray-900 text-white text-xs font-semibold rounded-lg hover:bg-gray-700 transition disabled:opacity-50"
               >
-                {marking ? "Marking..." : "Mark as fixed"}
+                {marking ? "Submitting..." : "Mark as fixed"}
               </button>
-              <p className="text-xs text-gray-500">VectriOS will check if the fix improved structural signals in the next monitoring cycle.</p>
+              <p className="text-xs text-gray-500">VectriOS will verify structural improvement in the next monitoring cycle.</p>
             </div>
           )}
         </div>
