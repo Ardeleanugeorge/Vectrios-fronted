@@ -99,7 +99,7 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
       <div className="flex items-center gap-2 mb-3">
         <span className="w-2 h-2 rounded-full bg-red-500" />
         <p className="text-sm font-semibold text-red-800">
-          {incidents.length === 1 ? "Structural commercial event detected" : `${incidents.length} structural change${incidents.length > 1 ? "s" : ""} detected`}
+          {incidents.length === 1 ? "Structural change detected" : `${incidents.length} structural change${incidents.length > 1 ? "s" : ""} detected`}
         </p>
       </div>
       <div className="bg-white rounded-lg border border-red-100 p-4 mb-3">
@@ -124,7 +124,7 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
         <div className="mb-3">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Evidence</p>
           <div className="flex gap-3 flex-wrap">
-            <span className="text-xs text-emerald-600">✓ Structural commercial event detected</span>
+            <span className="text-xs text-emerald-600">✓ Structural change detected</span>
             <span className="text-xs text-gray-400">· GA4 — not connected</span>
             <span className="text-xs text-gray-400">· HubSpot — not connected</span>
           </div>
