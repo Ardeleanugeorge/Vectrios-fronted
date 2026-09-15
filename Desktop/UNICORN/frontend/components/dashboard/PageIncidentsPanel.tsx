@@ -53,7 +53,7 @@ export default function PageIncidentsPanel({ companyId }: Props) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Revenue Change Detection</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Commercial Events</p>
         <p className="text-sm font-semibold text-gray-900 mt-0.5">{incidents.length} change{incidents.length>1?"s":""} detected</p>
       </div>
       <div className="divide-y divide-gray-100">
