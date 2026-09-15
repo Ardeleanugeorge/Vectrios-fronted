@@ -71,9 +71,9 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
   if (!forecast) return (
     <div id="revenue-optimization-model" className="p-8 bg-white rounded-lg border border-indigo-100 scroll-mt-24">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Revenue Optimization Model</h2>
-      <p className="text-sm font-medium text-gray-800 mb-2">Connect GA4 for Revenue Modeling</p>
+      <p className="text-sm font-medium text-gray-800 mb-2">Unlock behavioral evidence</p>
       <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-        Connect Google Analytics 4 to generate a personalized revenue exposure model based on your real conversion data. Based on 500+ SaaS companies in our index.
+        Connect Google Analytics 4 to enrich structural assessments with measured engagement and conversion signals. Based on 500+ SaaS companies in our index.
       </p>
       <a href="/account#integrations" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
         Connect GA4 →
