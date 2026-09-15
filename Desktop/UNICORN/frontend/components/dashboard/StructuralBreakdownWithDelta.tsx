@@ -135,9 +135,9 @@ export default function StructuralBreakdownWithDelta({
         </div>
       </div>
       
-      {/* Primary Risk Driver */}
+      {/* Primary Optimization Area */}
       <div className="mt-8 pt-6 border-t border-gray-200">
-        <p className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Primary Risk Driver</p>
+        <p className="text-xs text-gray-600 mb-2 uppercase tracking-wide">Primary Optimization Area</p>
         <p className="text-base font-semibold text-gray-700">
           {diagnostic?.primary_risk_driver || diagnostic?.primary_fault || sf?.primary_risk_driver || "Messaging Architecture Misalignment"}
         </p>

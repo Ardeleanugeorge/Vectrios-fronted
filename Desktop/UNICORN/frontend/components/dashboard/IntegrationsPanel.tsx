@@ -188,7 +188,7 @@ export default function IntegrationsPanel() {
       </div>
 
       <p className="text-xs text-gray-400 mt-4">
-        Connecting improves RII accuracy by up to 30%. All data is read-only.
+        Additional data sources increase evidence depth and enable behavioral and revenue signals. All connected data is read-only.
       </p>
     </div>
   )

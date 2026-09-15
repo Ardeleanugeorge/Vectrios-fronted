@@ -334,7 +334,7 @@ export default function MonitoringLayer({
       ? "Trend: Stabilizing after recent volatility."
       : (zeroDelta ? "Trend: Stable - no significant changes detected." : trendText)
   const headline = monitoringStatus.ui_state_payload?.headline ?? (
-    uiState === "low" ? "Revenue system is healthy"
+    uiState === "low" ? "Revenue architecture is structurally healthy"
     : uiState === "medium" ? "Revenue performance is constrained"
     : "Revenue is at risk"
   )
@@ -854,7 +854,7 @@ const delayTimer = setTimeout(() => {
       <FeatureGate feature="Revenue Alerts" planRequired="growth" currentPlan={currentPlan}>
         {monitoringStatus.source !== "fallback" && <RevenueAlertsPanel companyId={companyId} />}
       </FeatureGate>
-      <FeatureGate feature="Revenue Incidents" planRequired="growth" currentPlan={currentPlan}>
+      <FeatureGate feature="Active Commercial Incidents" planRequired="growth" currentPlan={currentPlan}>
         {monitoringStatus.source !== "fallback" && <RevenueIncidentsPanel companyId={companyId} />}
       </FeatureGate>
       <FeatureGate feature="Activity Feed" planRequired="growth" currentPlan={currentPlan}>
