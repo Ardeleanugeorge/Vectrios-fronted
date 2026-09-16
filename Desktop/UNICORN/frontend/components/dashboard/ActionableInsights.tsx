@@ -522,7 +522,7 @@ export default function ActionableInsights({
             Where this appears
           </p>
           <ul className="space-y-1.5">
-            {effectiveLayer.affected_areas?.map((area) => (
+            {[...new Set(effectiveLayer.affected_areas || [])].map((area) => (
               <li key={area} className="text-sm text-gray-700 flex items-start gap-2">
                 <span className="text-indigo-600 mt-0.5">•</span>
                 <span>{area}</span>
