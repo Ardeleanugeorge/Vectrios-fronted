@@ -510,7 +510,7 @@ export default function ActionableInsights({
         {/* 1. Primary leak */}
         <div className="mb-6 p-4 rounded-lg bg-orange-50 border border-orange-200">
           <p className="text-xs font-semibold uppercase tracking-wider text-orange-600 mb-2">
-            Primary revenue leak
+            Primary optimization opportunity
           </p>
           <h4 className="text-lg font-bold text-gray-900 mb-2">{effectiveLayer.primary_issue.title}</h4>
           <p className="text-sm text-gray-700 leading-relaxed">{effectiveLayer.primary_issue.description}</p>
