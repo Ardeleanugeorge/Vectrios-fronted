@@ -37,7 +37,7 @@ export default function StructuralRiskOverview({
 
   const getTrendLabel = (trend: string) => {
     const t = (trend || "stable").toLowerCase()
-    if (t === "unstable") return "Initial baseline forming"
+    if (t === "unstable") return "Trend stabilizing"
     if (volatileSignalActive && t === "stable") return "Stabilizing after recent volatility"
     switch (t) {
       case "escalating": return "Deteriorating"
@@ -50,7 +50,7 @@ export default function StructuralRiskOverview({
   const getTrendSubtext = (trend: string) => {
     const t = (trend || "").toLowerCase()
     if (t === "unstable") {
-      return "Cadence sharpens as monitoring cycles accumulate"
+      return "Monitoring cadence active — trend data accumulating."
     }
     return null
   }
