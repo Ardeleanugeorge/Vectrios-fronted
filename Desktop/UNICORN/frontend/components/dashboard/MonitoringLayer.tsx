@@ -636,11 +636,6 @@ const delayTimer = setTimeout(() => {
       }`}>
         <p className="text-lg font-semibold text-gray-900">{headline}</p>
         <p className="text-sm text-gray-700 mt-1">{subtext}</p>
-        {uiState === "low" && (
-          <p className="text-xs text-emerald-600/80 mt-2">
-            Your messaging architecture is structurally healthy, with measurable optimization opportunities.
-          </p>
-        )}
         {improvementsDetected > 0 && (
           <p className="text-xs text-blue-600/80 mt-2">
             +{improvementsDetected} improvement{improvementsDetected > 1 ? "s" : ""} detected since last scan.
