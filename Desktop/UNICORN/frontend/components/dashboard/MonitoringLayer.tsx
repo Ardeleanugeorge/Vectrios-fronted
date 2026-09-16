@@ -635,7 +635,7 @@ const delayTimer = setTimeout(() => {
         : "border-red-700/40 bg-red-50"
       }`}>
         <p className="text-lg font-semibold text-gray-900">{headline}</p>
-        <p className="text-sm text-gray-700 mt-1">{subtext}</p>
+        {uiState !== "low" && <p className="text-sm text-gray-700 mt-1">{subtext}</p>}
         {improvementsDetected > 0 && (
           <p className="text-xs text-blue-600/80 mt-2">
             +{improvementsDetected} improvement{improvementsDetected > 1 ? "s" : ""} detected since last scan.
@@ -804,17 +804,6 @@ const delayTimer = setTimeout(() => {
           uiState={uiState}
         />
       )}
-      <StructuralRiskOverview
-        riskScore={rii}
-        alignmentScore={alignmentScore}
-        riskLevel={diagnostic?.risk_level || "MODERATE"}
-        trendDirection={monitoringStatus.trend_direction || "unstable"}
-        driftStatus={monitoringStatus.drift_status || "stable"}
-        volatileSignalActive={monitoringStatus.volatility_classification === "high" || hasCriticalAlerts}
-        riskDelta={monitoringStatus.risk_delta_since_last_scan}
-        suppressTrend={zeroDelta === true}
-        isFirstScan={isFirstScan}
-      />
 
       {/* DIAGNOSTICS SECTION */}
       <div className="border-t border-gray-100 pt-2 mt-2">

@@ -93,6 +93,7 @@ export default function StructuralRiskOverview({
 
   return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
+      <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-500 mb-4">Structural Snapshot</h2>
       
       
       <div className="grid md:grid-cols-2 gap-6">
