@@ -816,6 +816,11 @@ const delayTimer = setTimeout(() => {
         isFirstScan={isFirstScan}
       />
 
+      {/* DIAGNOSTICS SECTION */}
+      <div className="border-t border-gray-100 pt-2 mt-2">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Diagnostics</p>
+      </div>
+
       {/* 6. REVENUE-STAGE ALIGNMENT MAP — Diagnostic breakdown (with backend structural_scores fallback) */}
       <StructuralBreakdownWithDelta 
         diagnostic={diagnostic}
