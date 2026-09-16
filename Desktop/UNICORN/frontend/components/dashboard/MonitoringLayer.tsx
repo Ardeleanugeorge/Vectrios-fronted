@@ -744,6 +744,19 @@ const delayTimer = setTimeout(() => {
         )
       })()}
 
+
+      <ExecutiveInterpretation
+        monthlyExposure={monthlyExposure}
+        annualExposure={annualDelta}
+        closeRateDelta={closeRateDelta}
+        impactDirection={impactDirection}
+        alignmentScore={alignmentScore}
+        icpClarity={icpClarity}
+        anchorDensity={anchorDensity}
+        uiState={uiState}
+        deltaDirection={revenueDelta?.direction}
+      />
+
       {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action
            Renders when structural scores exist (from diagnostic OR monitoring) */}
       {(alignmentScore > 0 || icpClarity > 0 || anchorDensity > 0 || positioningScore > 0 || rii !== null) && (
@@ -789,27 +802,6 @@ const delayTimer = setTimeout(() => {
         riskLevel={diagnostic?.risk_level || null}
         uiState={uiState}
       />
-      <RevenueSystemStatus
-        monthlyExposure={
-          monthlyExposure ??
-          forecast?.estimated_monthly_exposure ??
-          (forecast?.annual_revenue_delta ? forecast.annual_revenue_delta / 12 : null)
-        }
-        annualExposure={
-          annualDelta ??
-          forecast?.annual_revenue_delta ??
-          forecast?.recovery_potential_annual ??
-          null
-        }
-        monitoringActive={monitoringStatus.monitoring_active}
-        impactConfidence={impactConfidence}
-        uiState={uiState}
-        modelConfidence={diagnostic?.revenue_leak_confidence ? 
-          (diagnostic.revenue_leak_confidence >= 80 ? "high" : 
-           diagnostic.revenue_leak_confidence >= 60 ? "moderate" : "low") : 
-          undefined}
-        deltaDirection={revenueDelta?.direction}
-      />
       {monthlyExposure && monthlyExposure > 0 && (
         <CumulativeExposureCard
           rolling30DayExposure={rolling30DayExposure}
@@ -817,17 +809,6 @@ const delayTimer = setTimeout(() => {
           uiState={uiState}
         />
       )}
-      <ExecutiveInterpretation
-        monthlyExposure={monthlyExposure}
-        annualExposure={annualDelta}
-        closeRateDelta={closeRateDelta}
-        impactDirection={impactDirection}
-        alignmentScore={alignmentScore}
-        icpClarity={icpClarity}
-        anchorDensity={anchorDensity}
-        uiState={uiState}
-        deltaDirection={revenueDelta?.direction}
-      />
       <StructuralRiskOverview
         riskScore={rii}
         alignmentScore={alignmentScore}
