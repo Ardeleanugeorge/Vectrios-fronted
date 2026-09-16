@@ -638,7 +638,7 @@ const delayTimer = setTimeout(() => {
         <p className="text-sm text-gray-700 mt-1">{subtext}</p>
         {uiState === "low" && (
           <p className="text-xs text-emerald-600/80 mt-2">
-            Your system is structurally healthy, but small inefficiencies still create measurable upside.
+            Your messaging architecture is structurally healthy, with measurable optimization opportunities.
           </p>
         )}
         {improvementsDetected > 0 && (
@@ -869,7 +869,7 @@ const delayTimer = setTimeout(() => {
         <div className="p-6 bg-emerald-950/10 border border-emerald-700/30 rounded-lg">
           <p className="text-sm font-semibold text-emerald-200">Summary</p>
           <p className="text-sm text-gray-700 mt-1">
-            Your revenue system is strong. Addressing the 2–3 remaining gaps could unlock ~${Math.round(annualDelta / 1000) * 1000} annually.
+            Your revenue architecture is structurally strong. Addressing the 2–3 remaining gaps could unlock ~${Math.round(annualDelta / 1000) * 1000} annually.
           </p>
         </div>
       )}

@@ -437,7 +437,7 @@ export default function ActionableInsights({
         <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600 mb-4">
           Revenue playbook
         </h3>
-        <p className="text-sm text-gray-600 animate-pulse">Loading playbook…</p>
+        <p className="text-sm text-gray-600 animate-pulse">Loading priority actions…</p>
       </div>
     )
   }
