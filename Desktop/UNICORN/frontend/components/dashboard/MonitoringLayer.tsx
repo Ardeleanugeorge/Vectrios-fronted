@@ -810,6 +810,15 @@ const delayTimer = setTimeout(() => {
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Diagnostics</p>
       </div>
 
+      <StructuralRiskOverview
+        riskScore={rii}
+        alignmentScore={alignmentScore}
+        riskLevel={diagnostic?.risk_level || "MODERATE"}
+        trendDirection={monitoringStatus.trend_direction || "unstable"}
+        driftStatus={monitoringStatus.drift_status || "stable"}
+        riskDelta={riskDelta ?? undefined}
+      />
+
       {/* 6. REVENUE-STAGE ALIGNMENT MAP — Diagnostic breakdown (with backend structural_scores fallback) */}
       <StructuralBreakdownWithDelta 
         diagnostic={diagnostic}
