@@ -435,7 +435,7 @@ export default function ActionableInsights({
     return (
       <div className={`relative z-10 mb-8 p-6 bg-gray-50 rounded-lg border ${tone}`}>
         <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600 mb-4">
-          Revenue playbook
+          Priority Actions
         </h3>
         <p className="text-sm text-gray-600 animate-pulse">Loading priority actions…</p>
       </div>
@@ -489,7 +489,7 @@ export default function ActionableInsights({
     return (
       <div className={`relative z-10 mb-8 p-6 bg-gray-50 rounded-lg border ${tone}`}>
         <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600 mb-4">
-          Revenue playbook
+          Priority Actions
         </h3>
 
         {/* Priority strip — visible for all plans */}
