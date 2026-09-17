@@ -501,16 +501,16 @@ export default function ActionableInsights({
           }`}
         >
           <p className={`text-sm font-bold ${isHigh ? "text-orange-600" : "text-gray-700"}`}>
-            {isHigh ? "🔥 HIGH IMPACT (optional)" : "IMPACT"} — {pri.level}
+            {isHigh ? "High impact" : "Medium impact"}
           </p>
           <p className="text-xs text-gray-600 mt-1">{pri.display_line || pri.reason}</p>
-          <p className="text-[11px] text-gray-600 mt-1">Low risk ≠ zero upside at scale — highest ROI comes from targeted fixes.</p>
+          <p className="text-[11px] text-gray-600 mt-1"></p>
         </div>
 
         {/* 1. Primary leak */}
         <div className="mb-6 p-4 rounded-lg bg-orange-50 border border-orange-200">
           <p className="text-xs font-semibold uppercase tracking-wider text-orange-600 mb-2">
-            Primary optimization opportunity
+            Recommended action
           </p>
           <h4 className="text-lg font-bold text-gray-900 mb-2">{effectiveLayer.primary_issue.title}</h4>
           <p className="text-sm text-gray-700 leading-relaxed">{effectiveLayer.primary_issue.description}</p>
