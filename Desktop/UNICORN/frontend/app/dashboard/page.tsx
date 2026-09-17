@@ -1021,6 +1021,9 @@ export default function DashboardPage() {
 
         </div>
         <div className="mt-8 max-w-4xl mx-auto px-6">
+          <div className="border-t border-gray-100 pt-2 mt-2 mb-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">System</p>
+          </div>
           <IntegrationsPanel />
         </div>
       </main>
