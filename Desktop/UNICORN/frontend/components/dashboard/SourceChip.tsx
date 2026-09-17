@@ -1,7 +1,7 @@
 "use client"
 
 interface SourceChipProps {
-  label: "GA4" | "GSC" | "Model" | "Monitoring";
+  label: "GA4" | "GSC" | "Model" | "Monitoring" | "Structural";
   title?: string;
   tone?: "emerald" | "cyan" | "indigo" | "gray";
 }

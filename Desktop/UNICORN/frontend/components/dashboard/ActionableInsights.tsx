@@ -104,7 +104,7 @@ export function buildLightweightActionLayer(
     return {
       close_rate: `+${(lo_cr / n).toFixed(2)}% – +${(hi_cr / n).toFixed(2)}% close rate (est., share)`,
       arr_recovery: `${fmt(arr_lo / n)} – ${fmt(arr_hi / n)} ARR (est., share)`,
-      monthly_impact: `+${fmt(mo_lo)} – ${fmt(mo_hi)}/month`,
+      monthly_impact: "—",
       monthly_impact_hi_raw: Math.round(mo_hi),
     }
   }
@@ -334,7 +334,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
         )}
         {/* Provenance */}
         <div className="flex items-center gap-1 mt-1 whitespace-nowrap">
-          <SourceChip label="Model" title="Estimated recovery modeled from structural scores" />
+          <SourceChip label="Structural" title="Derived from structural analysis of page content" />
           <SourceChip label="Monitoring" tone="cyan" title="Derived from latest monitoring snapshot" />
           {fix.behavioral_source && <SourceChip label="GA4" tone="emerald" title="Behavioral signal present (e.g., high exit)" />}
         </div>
