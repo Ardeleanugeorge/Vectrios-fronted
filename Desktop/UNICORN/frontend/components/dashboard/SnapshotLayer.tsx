@@ -119,7 +119,7 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
           <div>
             <p className="text-xl font-bold">{riskLabel}</p>
             <p className="text-xs opacity-60 mt-0.5">
-              Revenue compression risk identified in your messaging architecture.
+              Structural misalignment detected in your messaging architecture.
             </p>
           </div>
         </div>

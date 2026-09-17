@@ -25,7 +25,7 @@ interface Props {
 }
 
 const changeTypeLabel: Record<string, string> = {
-  icp_drift: "ICP positioning changed",
+  icp_drift: "ICP messaging signal changed",
   positioning_drift: "Positioning changed",
   proof_drift: "Proof signal changed",
   cta_drift: "CTA changed",

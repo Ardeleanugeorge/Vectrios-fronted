@@ -46,7 +46,7 @@ export default function RevenueRiskIndex({
 
   const getRiskLabel = () => {
     if (scoreClass === "HIGH") return "Revenue Inefficiency Detected"
-    if (scoreClass === "MODERATE") return "Moderate Revenue Compression"
+    if (scoreClass === "MODERATE") return "Moderate Structural Risk"
     return "Efficient Revenue Structure"
   }
 
@@ -55,14 +55,14 @@ export default function RevenueRiskIndex({
     scoreClass === "LOW"
       ? "Your messaging is structurally strong; primary revenue-stage risk is low."
       : scoreClass === "MODERATE"
-        ? "Moderate revenue inefficiencies detected — not a primary structural risk."
+        ? "Moderate structural misalignment detected — not a primary risk."
         : "Elevated structural risk on revenue-stage messaging — prioritize the playbook and monitoring signals."
 
   const heroBodySecondary =
     scoreClass === "LOW"
       ? "At your scale, small gaps still move the needle — optimization here has outsized returns."
       : scoreClass === "MODERATE"
-        ? "At your scale, even small inefficiencies create significant revenue impact."
+        ? "At your scale, small structural gaps still have optimization potential."
         : "Large dollar exposure can reflect scale as much as urgency — use model inputs below for context."
 
   return (

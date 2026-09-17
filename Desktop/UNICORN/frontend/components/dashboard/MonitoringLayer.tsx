@@ -335,12 +335,12 @@ export default function MonitoringLayer({
       : (zeroDelta ? "Trend: Stable - no significant changes detected." : trendText)
   const headline = monitoringStatus.ui_state_payload?.headline ?? (
     uiState === "low" ? "Revenue architecture is structurally healthy"
-    : uiState === "medium" ? "Revenue performance is constrained"
+    : uiState === "medium" ? "Structural misalignment detected"
     : "Revenue is at risk"
   )
   const subtext = monitoringStatus.ui_state_payload?.subtext ?? (
     uiState === "low" ? "Minor optimization opportunities remain."
-    : uiState === "medium" ? "Structural gaps are impacting conversion efficiency."
+    : uiState === "medium" ? "Structural gaps may affect buyer clarity and messaging relevance."
     : "Structural misalignment is compressing performance."
   )
   const improvementsDetected =
