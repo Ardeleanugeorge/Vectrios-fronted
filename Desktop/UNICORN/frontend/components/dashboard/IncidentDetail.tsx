@@ -35,7 +35,7 @@ const changeTypeLabel: Record<string, string> = {
 }
 
 const commercialMeaning: Record<string, string> = {
-  icp_drift: "When the ICP signal weakens, visitors may not immediately recognize the product is for them. This increases exit rates at the awareness stage.",
+  icp_drift: "When the ICP signal weakens, visitors may not immediately recognize the product is for them. This may make it harder for visitors to recognize whether the product is relevant to them.",
   positioning_drift: "A positioning shift can confuse buyers who are comparing alternatives. It weakens differentiation at the decision stage.",
   proof_drift: "Removing or reducing proof elements reduces conversion confidence. Buyers stall at the evaluation stage.",
   cta_drift: "A CTA change affects the primary conversion action. Even small wording changes can reduce click-through rates.",

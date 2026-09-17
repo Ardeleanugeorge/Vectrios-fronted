@@ -89,7 +89,7 @@ export default function FinancialExposureCard({
   const isLowRisk = uiState ? uiState === "low" : (typeof riskScore === "number" && riskScore < 40) || normalizedRisk.includes("LOW")
   const isMediumRisk = uiState ? uiState === "medium" : (!isLowRisk && ((typeof riskScore === "number" && riskScore < 70) || normalizedRisk.includes("MODERATE")))
 
-  const sectionTitle = isLowRisk ? "Residual Optimization Potential" : "Estimated Revenue Impact"
+  const sectionTitle = isLowRisk ? "Residual Optimization Potential" : "Next Evidence Layer"
   const mainLabel = isLowRisk ? "Additional Revenue Available" : "Estimated ARR Impact"
   const stageLabel = isLowRisk ? "Primary Optimization Gap" : "Where it breaks"
 
@@ -226,7 +226,7 @@ export default function FinancialExposureCard({
               )}
               {monthly != null && monthly > 0 && (
                 <p>
-                  {isLowRisk ? "Monthly optimization upside: " : "Monthly revenue impact: "}
+                  {isLowRisk ? "Monthly optimization upside: " : "Structural optimization potential: "}
                   <span className={`font-semibold ${isLowRisk ? "text-emerald-600" : "text-amber-600"}`}>{fmt(monthly)}</span>
                 </p>
               )}

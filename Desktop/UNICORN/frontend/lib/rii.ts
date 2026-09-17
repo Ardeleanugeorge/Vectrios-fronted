@@ -8,7 +8,7 @@ export const RII_TAGLINE =
 
 /** Short paragraph for hero / education blocks */
 export const RII_INTRO =
-  "The Revenue Impact Index (RII) is your headline structural score. It aggregates how well homepage, pricing, and product copy align with revenue outcomes (ICP clarity, proof, positioning). It is not the same as web analytics conversion rate — it measures messaging architecture."
+  "The Revenue Impact Index (RII) is your headline structural score. It measures how consistently your website messaging aligns around ICP clarity, positioning, proof, and revenue-stage messaging. It is not a measurement of revenue, conversion rate, or actual revenue loss."
 
 /** Deep link to methodology section that defines RII */
 export const METHODOLOGY_RII_HREF = "/methodology#revenue-impact-index"

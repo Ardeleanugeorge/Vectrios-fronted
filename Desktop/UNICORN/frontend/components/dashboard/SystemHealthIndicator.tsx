@@ -77,7 +77,7 @@ export default function SystemHealthIndicator({
       <div className="flex items-center justify-between mb-3">
         <div className="min-w-0 flex-1 pr-4">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600">
-            Revenue System Health
+            Structural Messaging Health
           </h3>
           <p className="text-[10px] text-gray-600 mt-1 max-w-xl leading-snug">
             Inverted view of your {RII_NAME} ({RII_ABBREV}): health = 100 − RII so higher bar means structurally safer messaging.
