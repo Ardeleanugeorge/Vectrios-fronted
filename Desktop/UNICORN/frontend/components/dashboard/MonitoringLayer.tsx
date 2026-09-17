@@ -851,6 +851,11 @@ const delayTimer = setTimeout(() => {
         <BenchmarkPanel companyId={companyId} />
       </FeatureGate>
 
+      {/* HISTORY SECTION */}
+      <div className="border-t border-gray-100 pt-2 mt-2">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">History</p>
+      </div>
+
       {/* 13. REVENUE RISK TREND (30 Days) — Historical trend */}
       <RiiTimelineChart
         companyId={companyId}
