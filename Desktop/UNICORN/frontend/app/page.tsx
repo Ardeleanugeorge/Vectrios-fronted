@@ -220,18 +220,18 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 pt-12 pb-16 md:pt-16 md:pb-20">
         <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 border border-gray-200 text-gray-500 text-[10px] font-medium mb-6 uppercase tracking-widest">
-            Revenue Architecture Monitoring
+            REVENUE-STAGE MONITORING INFRASTRUCTURE
           </div>
           <h1 className="text-4xl md:text-6xl text-slate-900 dark:text-gray-900 mb-6 font-bold leading-tight">
-            Revenue-Stage Monitoring for B2B SaaS.
+            Monitor the messaging structure behind your B2B SaaS revenue funnel.
             <br className="hidden md:block" />
             <p className="text-xl md:text-2xl text-indigo-700 font-medium mt-2"> Continuously monitored. Benchmarked daily. Actionable.</p>
           </h1>
           <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
-            Track messaging alignment, ICP clarity, and conversion anchor density across your entire digital footprint.
+            Continuously monitored. Structurally benchmarked. Actionable.
           </p>
           <p className="text-sm md:text-base text-gray-900 font-medium mb-6 max-w-2xl mx-auto">
-            As products evolve and markets shift, messaging structural integrity degrades naturally. VectriOS provides continuous visibility into this drift — before it compounds into pipeline friction.
+            VectriOS continuously monitors your website for changes in ICP clarity, positioning, proof, and revenue-stage messaging. See what changed, why it matters, and what to review next.
           </p>
 
 
@@ -310,7 +310,7 @@ export default function Home() {
       <section className="border-t border-b border-slate-200 bg-slate-50">
         <div className="max-w-6xl mx-auto px-6 py-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 px-4">
           <span className="text-sm text-gray-700 uppercase tracking-widest font-semibold shrink-0">Built for</span>
-          {["B2B SaaS ($500K-$10M ARR)", "CROs protecting close rates", "RevOps tracking pipeline weekly", "Product Marketing tracking positioning drift"].map(r => (
+          {["B2B SaaS teams", "Revenue & GTM leaders", "RevOps", "Product Marketing"].map(r => (
             <span key={r} className="flex items-center gap-1.5 text-base text-gray-800 font-medium">
               <span className="text-indigo-700 font-bold text-xs">&#10003;</span>
               {r}
@@ -322,32 +322,32 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
-            Your dashboard shows the result.
+            Your website changes. Your messaging model should notice.
           </h2>
           <p className="text-2xl text-indigo-700 font-semibold mb-8">
-            Your GTM messaging is where conversion starts.
+            Your team constantly changes headlines, positioning, offers, proof, and calls to action.
           </p>
-          <p className="text-xl text-gray-700 mb-6">Signals of Unmonitored Messaging Drift:</p>
+          <p className="text-xl text-gray-700 mb-6">Signals of structural messaging drift:</p>
           <ul className="space-y-4 text-lg text-gray-700 mb-8 ml-6">
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-              Pipeline fills with deals that stall before close
+              ICP signals become less explicit
             </li>
             <li className="flex items-center gap-3">
               
-              Value proposition takes too long to register
+              Positioning drifts across pages
             </li>
             <li className="flex items-center gap-3">
               
-              Buyers go quiet — no objection, no decision
+              Proof loses alignment with buyer context
             </li>
             <li className="flex items-center gap-3">
               
-              Close rates drop with no obvious cause
+              Revenue-stage messaging becomes less consistent
             </li>
           </ul>
           <p className="text-lg text-gray-700 leading-relaxed mb-2">
-            Standard analytics tools have no visibility into structural messaging drift. VectriOS provides the monitoring layer that surfaces these patterns early.</p>
+            Traditional analytics tell you what visitors do. VectriOS monitors the messaging structure that changed.</p>
           
             
         </div>
@@ -358,22 +358,17 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">Example Revenue Architecture Scan</p>
           <p className="text-center text-base md:text-lg font-semibold text-slate-900 dark:text-gray-900 mb-6 max-w-xl mx-auto leading-snug">
-            Example:{" "}
-            <span className="text-red-500">$287K</span> lost potential &mdash;{" "}
-            <span className="text-gray-700 font-medium">
-              caused by messaging misalignment across pages
-            </span>{" "}
-            and <span className="text-gray-700 font-medium">weak proof delaying decisions</span>
+            From website changes to commercial signals.
           </p>
           <p className="text-center text-sm md:text-base text-gray-500 mb-10 max-w-xl mx-auto leading-relaxed">
-            Structural misalignment typically surfaces 60-90 days after onset — after pipeline has already been affected.
+            VectriOS turns individual page changes into structured monitoring signals.
           </p>
 
           {/* Mock Dashboard */}
           <div className="relative rounded-xl border border-gray-200 bg-gray-50 overflow-hidden shadow-2xl">
             <div className="absolute top-[48px] right-3 sm:right-5 z-20 px-3 py-2 rounded-lg bg-red-50/95 border border-red-400/50 shadow-lg backdrop-blur-sm pointer-events-none text-right min-w-[7rem]">
-              <p className="text-[10px] uppercase tracking-wider text-red-500 font-semibold">ARR at risk</p>
-              <p className="text-xl sm:text-2xl font-bold text-red-500 tabular-nums leading-tight">$287K</p>
+              <p className="text-[10px] uppercase tracking-wider text-red-500 font-semibold">Structural risk</p>
+              <p className="text-xl sm:text-2xl font-bold text-orange-500 tabular-nums leading-tight">RII 40</p>
             </div>
             {/* Top bar */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 bg-gray-50">
@@ -419,14 +414,14 @@ export default function Home() {
             {/* ARR Risk row */}
             <div className="px-6 pb-6 grid md:grid-cols-3 gap-4">
               <div className="bg-red-50 rounded-lg p-4 border border-red-200">
-                <p className="text-xs text-gray-500 mb-1">ARR at Risk</p>
-                <p className="text-2xl font-bold text-red-500">$287K</p>
-                <p className="text-xs text-gray-700 mt-1">Annual exposure estimate</p>
+                <p className="text-xs text-gray-500 mb-1">Structural Risk</p>
+                <p className="text-2xl font-bold text-orange-500">Moderate</p>
+                <p className="text-xs text-gray-700 mt-1">Based on structural analysis</p>
               </div>
               <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <p className="text-xs text-gray-500 mb-1">Close Rate Impact</p>
-                <p className="text-2xl font-bold text-orange-500">-1.4%</p>
-                <p className="text-xs text-gray-700 mt-1">Estimated compression</p>
+                <p className="text-xs text-gray-500 mb-1">Evidence Level</p>
+                <p className="text-2xl font-bold text-blue-600">Structural</p>
+                <p className="text-xs text-gray-700 mt-1">Connect GA4 for behavioral evidence</p>
               </div>
               <div className="bg-white rounded-lg p-4 border border-gray-200">
                 <p className="text-xs text-gray-500 mb-1">Primary Risk Driver</p>
@@ -442,11 +437,7 @@ export default function Home() {
           {/* Financial proof hook */}
           <div className="mt-10 p-6 rounded-2xl border border-amber-200 bg-amber-50 text-center">
             <p className="text-lg md:text-xl font-semibold text-slate-900">
-              Companies we analyze typically uncover{" "}
-              <span className="text-amber-700 font-bold">$20K&ndash;$200K</span> in hidden revenue loss.
-            </p>
-            <p className="text-sm text-gray-600 mt-2">
-              Financial exposure estimates, not vanity content metrics.
+              Structural evidence comes first. Connect GA4 and HubSpot to add behavioral and revenue evidence.
             </p>
           </div>
         </div>
@@ -455,9 +446,9 @@ export default function Home() {
       {/* -- 4. WHAT IT DOES ----------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">Why High-Growth Pipelines Experience Conversion Decay</h2>
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">See where messaging structure is drifting.</h2>
           <p className="text-lg text-gray-700 mb-8">
-            In B2B SaaS, messaging structural integrity degrades naturally over time. Standard analytics tools create diagnostic blindspots — pipeline friction, value delay, and proof dilution go undetected until conversion drops.</p>
+            Products change. Markets shift. Positioning evolves. New pages get added and old messaging remains in place. Over time, these changes can create structural inconsistencies across the buying journey.</p>
 
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
             <ul className="space-y-4 text-lg text-gray-700">
@@ -481,9 +472,9 @@ export default function Home() {
       {/* -- 5. FINANCIAL FRAMING ------------------------------------------ */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">How messaging gaps turn into lost revenue</h2>
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">Why messaging structure degrades as SaaS products evolve.</h2>
           <p className="text-lg text-gray-700 mb-8">
-            Incremental degradation in messaging clarity compounds into measurable conversion compression over 60-90 day cycles.</p>
+            Over time, website changes accumulate into structural inconsistencies that affect how buyers perceive the product.</p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
               { metric: "Lower clarity", desc: "Fewer qualified opportunities reach the next step" },
@@ -502,7 +493,7 @@ export default function Home() {
       {/* -- 6. MONITORING LAYER ------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">Continuous revenue monitoring</h2>
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">Continuous Revenue-Stage Monitoring</h2>
           <p className="text-lg text-gray-700 mb-8">
             Messaging structural drift is a continuous process. As products evolve, markets shift, and competitors reposition, structural integrity requires continuous monitoring — not periodic audits.</p>
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 mb-6">
