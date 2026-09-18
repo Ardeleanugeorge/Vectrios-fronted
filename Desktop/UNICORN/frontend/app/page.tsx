@@ -358,10 +358,10 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">Example Revenue Architecture Scan</p>
           <p className="text-center text-base md:text-lg font-semibold text-slate-900 dark:text-gray-900 mb-6 max-w-xl mx-auto leading-snug">
-            From website changes to commercial signals.
+            From website changes to commercial events.
           </p>
           <p className="text-center text-sm md:text-base text-gray-500 mb-10 max-w-xl mx-auto leading-relaxed">
-            VectriOS turns individual page changes into structured monitoring signals.
+            VectriOS turns meaningful website changes into structured commercial events — showing what changed, why it matters, the evidence behind the signal, and what to review next.
           </p>
 
           {/* Real Dashboard Screenshot */}
@@ -369,7 +369,7 @@ export default function Home() {
             <img src="/dashboard-example.png" alt="VectriOS Commercial Events dashboard" className="w-full rounded-xl" />
           </div>
           <p className="text-center text-xs text-gray-500 mt-4">
-            Sample output &mdash; your actual scan will reflect your live messaging data
+            Illustrative example &mdash; actual results reflect the website being monitored.
           </p>
 
           {/* Financial proof hook */}
