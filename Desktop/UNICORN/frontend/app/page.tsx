@@ -366,7 +366,7 @@ export default function Home() {
 
           {/* Real Dashboard Screenshot */}
           <div className="relative rounded-xl border border-gray-200 overflow-hidden shadow-2xl">
-            <img src="/dashboard-example.png" alt="VectriOS Commercial Events dashboard" className="w-full rounded-xl" />
+            <img src="/dashboard-example.png" alt="VectriOS Commercial Events dashboard" className="w-full rounded-xl" style={{objectFit: "cover", objectPosition: "top", maxHeight: "700px"}} />
           </div>
           <p className="text-center text-xs text-gray-500 mt-4">
             Illustrative example &mdash; actual results reflect the website being monitored.
