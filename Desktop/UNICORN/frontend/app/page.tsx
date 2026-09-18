@@ -225,7 +225,7 @@ export default function Home() {
           <h1 className="text-4xl md:text-6xl text-slate-900 dark:text-gray-900 mb-6 font-bold leading-tight">
             Monitor the messaging structure behind your B2B SaaS revenue funnel.
             <br className="hidden md:block" />
-            <p className="text-xl md:text-2xl text-indigo-700 font-medium mt-2"> Continuously monitored. Benchmarked daily. Actionable.</p>
+            <p className="text-xl md:text-2xl text-indigo-700 font-medium mt-2"> </p>
           </h1>
           <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
             Continuously monitored. Structurally benchmarked. Actionable.
@@ -385,8 +385,8 @@ export default function Home() {
               {/* RII Score */}
               <div className="md:col-span-1 bg-white rounded-lg p-5 border border-gray-200 text-center">
                 <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">REVENUE IMPACT INDEX</p>
-                <p className="text-6xl font-bold text-orange-500 mb-1">63</p>
-                <p className="text-sm font-semibold text-orange-500">Moderate Exposure</p>
+                <p className="text-6xl font-bold text-orange-500 mb-1">40</p>
+                <p className="text-sm font-semibold text-orange-500">Moderate Structural Risk</p>
                 <div className="mt-3 w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full" style={{ width: "63%" }} />
                 </div>
@@ -395,8 +395,8 @@ export default function Home() {
               {/* Metrics */}
               <div className="md:col-span-2 grid grid-cols-2 gap-3">
                 {[
-                  { label: "Messaging Alignment", value: 41, color: "from-red-500 to-orange-500" },
-                  { label: "ICP Clarity", value: 34, color: "from-red-500 to-orange-500" },
+                  { label: "Messaging Alignment", value: 69, color: "from-yellow-500 to-orange-400" },
+                  { label: "ICP Clarity", value: 57, color: "from-yellow-500 to-orange-400" },
                   { label: "Anchor Density", value: 72, color: "from-emerald-500 to-green-400" },
                   { label: "Positioning", value: 68, color: "from-yellow-500 to-orange-400" },
                 ].map(m => (
@@ -454,15 +454,15 @@ export default function Home() {
             <ul className="space-y-4 text-lg text-gray-700">
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-                Your homepage attracts buyers your pricing page fails to convert
+                ICP signals become less explicit
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-                Your proof arrives too late to stop comparison shopping
+                Positioning drifts across pages
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-                Deals stall silently — no objection, no reply, no close
+                Revenue-stage messaging becomes less consistent
               </li>
             </ul>
           </div>
@@ -477,9 +477,9 @@ export default function Home() {
             Over time, website changes accumulate into structural inconsistencies that affect how buyers perceive the product.</p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
-              { metric: "Lower clarity", desc: "Fewer qualified opportunities reach the next step" },
-              { metric: "Weak proof", desc: "Slower deals and lower conversion speed" },
-              { metric: "Misalignment", desc: "Lower close rates when buyers compare alternatives" },
+              { metric: "Lower clarity", desc: "ICP and value signals become harder to interpret." },
+              { metric: "Weak proof", desc: "Evidence becomes less connected to the buyer story." },
+              { metric: "Misalignment", desc: "Positioning, anchors, and page messaging become less coherent." },
             ].map(item => (
               <div key={item.metric} className="p-5 bg-gray-50 rounded-lg border border-gray-200">
                 <p className="text-indigo-700 font-semibold mb-2">{item.metric}</p>
@@ -487,6 +487,35 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+
+      {/* EVIDENCE LAYERS SECTION */}
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">Start with structural evidence. Add deeper evidence when you&apos;re ready.</h2>
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <div className="p-6 bg-gray-50 rounded-lg border-2 border-indigo-200">
+              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">Structural Evidence</p>
+              <p className="text-lg font-bold text-gray-900 mb-2">Website messaging</p>
+              <p className="text-sm text-gray-600">Detect changes in ICP clarity, positioning, proof, and revenue-stage messaging.</p>
+              <p className="text-xs text-indigo-600 font-semibold mt-3">Available now</p>
+            </div>
+            <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Behavioral Evidence</p>
+              <p className="text-lg font-bold text-gray-700 mb-2">GA4 + GSC</p>
+              <p className="text-sm text-gray-500">Add behavioral and search-performance context to structural signals.</p>
+              <p className="text-xs text-gray-400 font-semibold mt-3">Connect GA4</p>
+            </div>
+            <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Revenue Evidence</p>
+              <p className="text-lg font-bold text-gray-700 mb-2">HubSpot</p>
+              <p className="text-sm text-gray-500">Add CRM and pipeline context to the monitoring model.</p>
+              <p className="text-xs text-gray-400 font-semibold mt-3">Connect HubSpot</p>
+            </div>
+          </div>
+          <p className="text-sm text-gray-500 text-center italic">VectriOS does not infer revenue outcomes from structural signals alone.</p>
         </div>
       </section>
 
@@ -500,15 +529,15 @@ export default function Home() {
             <ul className="space-y-4 text-lg text-gray-700">
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
-                ICP targeting precision degrades as messaging evolves
+                ICP signals change as messaging evolves
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
-                Positioning coherence drifts across pages and campaigns
+                Positioning coherence can drift across pages and campaigns
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
-                Conversion anchors lose alignment with current buyer expectations
+                Revenue-stage anchors can lose alignment with the current buyer story
               </li>
             </ul>
           </div>
@@ -525,7 +554,7 @@ export default function Home() {
           </h2>
           <p className="text-lg text-gray-700 mb-8">
             Scan your site to create a baseline in 30 seconds.
-            Then track drift weekly so you catch problems while they&apos;re still small.
+            Then let VectriOS monitor meaningful changes automatically every 24 hours.
           </p>
           <Link
             href="/signup"
