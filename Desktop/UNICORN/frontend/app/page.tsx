@@ -364,72 +364,10 @@ export default function Home() {
             VectriOS turns individual page changes into structured monitoring signals.
           </p>
 
-          {/* Mock Dashboard */}
-          <div className="relative rounded-xl border border-gray-200 bg-gray-50 overflow-hidden shadow-2xl">
-            <div className="absolute top-[48px] right-3 sm:right-5 z-20 px-3 py-2 rounded-lg bg-red-50/95 border border-red-400/50 shadow-lg backdrop-blur-sm pointer-events-none text-right min-w-[7rem]">
-              <p className="text-[10px] uppercase tracking-wider text-red-500 font-semibold">Structural risk</p>
-              <p className="text-xl sm:text-2xl font-bold text-orange-500 tabular-nums leading-tight">RII 40</p>
-            </div>
-            {/* Top bar */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 bg-gray-50">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-400/60" />
-                <div className="w-3 h-3 rounded-full bg-yellow-400/60" />
-                <div className="w-3 h-3 rounded-full bg-green-400/60" />
-              </div>
-              <span className="text-xs text-gray-500">Revenue Monitoring Console</span>
-              <span className="text-xs text-gray-500">Confidence: 84%</span>
-            </div>
-
-            <div className="p-6 grid md:grid-cols-3 gap-4">
-              {/* RII Score */}
-              <div className="md:col-span-1 bg-white rounded-lg p-5 border border-gray-200 text-center">
-                <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">REVENUE IMPACT INDEX</p>
-                <p className="text-6xl font-bold text-orange-500 mb-1">40</p>
-                <p className="text-sm font-semibold text-orange-500">Moderate Structural Risk</p>
-                <div className="mt-3 w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full" style={{ width: "63%" }} />
-                </div>
-              </div>
-
-              {/* Metrics */}
-              <div className="md:col-span-2 grid grid-cols-2 gap-3">
-                {[
-                  { label: "Messaging Alignment", value: 69, color: "from-yellow-500 to-orange-400" },
-                  { label: "ICP Clarity", value: 57, color: "from-yellow-500 to-orange-400" },
-                  { label: "Anchor Density", value: 72, color: "from-emerald-500 to-green-400" },
-                  { label: "Positioning", value: 68, color: "from-yellow-500 to-orange-400" },
-                ].map(m => (
-                  <div key={m.label} className="bg-white rounded-lg p-4 border border-gray-200">
-                    <p className="text-xs text-gray-500 mb-1">{m.label}</p>
-                    <p className="text-2xl font-bold text-gray-900 mb-2">{m.value}</p>
-                    <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                      <div className={`h-full bg-gradient-to-r ${m.color} rounded-full`} style={{ width: `${m.value}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ARR Risk row */}
-            <div className="px-6 pb-6 grid md:grid-cols-3 gap-4">
-              <div className="bg-red-50 rounded-lg p-4 border border-red-200">
-                <p className="text-xs text-gray-500 mb-1">Structural Risk</p>
-                <p className="text-2xl font-bold text-orange-500">Moderate</p>
-                <p className="text-xs text-gray-700 mt-1">Based on structural analysis</p>
-              </div>
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <p className="text-xs text-gray-500 mb-1">Evidence Level</p>
-                <p className="text-2xl font-bold text-blue-600">Structural</p>
-                <p className="text-xs text-gray-700 mt-1">Connect GA4 for behavioral evidence</p>
-              </div>
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <p className="text-xs text-gray-500 mb-1">Primary Risk Driver</p>
-                <p className="text-sm font-semibold text-gray-700 mt-1">Revenue-stage messaging misalignment</p>
-              </div>
-            </div>
+          {/* Real Dashboard Screenshot */}
+          <div className="relative rounded-xl border border-gray-200 overflow-hidden shadow-2xl">
+            <img src="/dashboard-example.png" alt="VectriOS Commercial Events dashboard" className="w-full rounded-xl" />
           </div>
-
           <p className="text-center text-xs text-gray-500 mt-4">
             Sample output &mdash; your actual scan will reflect your live messaging data
           </p>
