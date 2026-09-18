@@ -356,7 +356,7 @@ export default function Home() {
       {/* -- 3. PRODUCT VISUALIZATION -------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">Example Revenue Architecture Scan</p>
+          <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">EXAMPLE COMMERCIAL EVENT</p>
           <p className="text-center text-base md:text-lg font-semibold text-slate-900 dark:text-gray-900 mb-6 max-w-xl mx-auto leading-snug">
             From website changes to commercial events.
           </p>
@@ -436,7 +436,7 @@ export default function Home() {
       {/* EVIDENCE LAYERS SECTION */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">Start with structural evidence. Add deeper evidence when you&apos;re ready.</h2>
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">Start with structural evidence. Add behavioral and revenue context when available.</h2>
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             <div className="p-6 bg-gray-50 rounded-lg border-2 border-indigo-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">Structural Evidence</p>
