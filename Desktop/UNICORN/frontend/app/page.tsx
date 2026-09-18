@@ -347,7 +347,7 @@ export default function Home() {
             </li>
           </ul>
           <p className="text-lg text-gray-700 leading-relaxed mb-2">
-            Traditional analytics tell you what visitors do. VectriOS monitors the messaging structure that changed.</p>
+            Traditional analytics measure visitor behavior. VectriOS monitors the messaging structure that changed.</p>
           
             
         </div>
@@ -381,28 +381,32 @@ export default function Home() {
         </div>
       </section>
 
-      {/* -- 4. WHAT IT DOES ----------------------------------------------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">See where messaging structure is drifting.</h2>
-          <p className="text-lg text-gray-700 mb-8">
-            Products change. Markets shift. Positioning evolves. New pages get added and old messaging remains in place. Over time, these changes can create structural inconsistencies across the buying journey.</p>
 
-          <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-            <ul className="space-y-4 text-lg text-gray-700">
-              <li className="flex items-center gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-                ICP signals become less explicit
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-                Positioning drifts across pages
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-                Revenue-stage messaging becomes less consistent
-              </li>
-            </ul>
+      {/* WORKFLOW SECTION */}
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">From detection to action.</h2>
+          <div className="grid md:grid-cols-4 gap-4 mt-8">
+            <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">01</p>
+              <p className="text-lg font-bold text-gray-900 mb-2">Detect</p>
+              <p className="text-sm text-gray-600">Identify meaningful changes across monitored pages.</p>
+            </div>
+            <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">02</p>
+              <p className="text-lg font-bold text-gray-900 mb-2">Interpret</p>
+              <p className="text-sm text-gray-600">Understand which messaging dimension changed and why it matters structurally.</p>
+            </div>
+            <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">03</p>
+              <p className="text-lg font-bold text-gray-900 mb-2">Act</p>
+              <p className="text-sm text-gray-600">Get a prioritized recommendation for what to review.</p>
+            </div>
+            <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">04</p>
+              <p className="text-lg font-bold text-gray-900 mb-2">Verify</p>
+              <p className="text-sm text-gray-600">Track the next assessment to see whether the structural signal improves.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -412,7 +416,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4 text-slate-900">Why messaging structure degrades as SaaS products evolve.</h2>
           <p className="text-lg text-gray-700 mb-8">
-            Over time, website changes accumulate into structural inconsistencies that affect how buyers perceive the product.</p>
+            Over time, website changes can accumulate into structural inconsistencies that make the product story harder to interpret consistently across the buying journey.</p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
               { metric: "Lower clarity", desc: "ICP and value signals become harder to interpret." },
@@ -444,12 +448,12 @@ export default function Home() {
               <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Behavioral Evidence</p>
               <p className="text-lg font-bold text-gray-700 mb-2">GA4 + GSC</p>
               <p className="text-sm text-gray-500">Add behavioral and search-performance context to structural signals.</p>
-              <p className="text-xs text-gray-400 font-semibold mt-3">Connect GA4</p>
+              <p className="text-xs text-gray-400 font-semibold mt-3">Connect GA4 + GSC</p>
             </div>
             <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Revenue Evidence</p>
               <p className="text-lg font-bold text-gray-700 mb-2">HubSpot</p>
-              <p className="text-sm text-gray-500">Add CRM and pipeline context to the monitoring model.</p>
+              <p className="text-sm text-gray-500">Add CRM and pipeline context to structural signals.</p>
               <p className="text-xs text-gray-400 font-semibold mt-3">Connect HubSpot</p>
             </div>
           </div>
@@ -462,7 +466,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4 text-slate-900">Continuous Revenue-Stage Monitoring</h2>
           <p className="text-lg text-gray-700 mb-8">
-            Messaging structural drift is a continuous process. As products evolve, markets shift, and competitors reposition, structural integrity requires continuous monitoring — not periodic audits.</p>
+            Messaging drift is continuous. As products evolve, markets shift, and competitors reposition, structural integrity requires continuous monitoring — not periodic audits.</p>
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 mb-6">
             <ul className="space-y-4 text-lg text-gray-700">
               <li className="flex items-start gap-3">
