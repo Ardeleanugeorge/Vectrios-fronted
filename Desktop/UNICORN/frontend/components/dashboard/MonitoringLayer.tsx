@@ -334,7 +334,7 @@ export default function MonitoringLayer({
       ? "Trend: Stabilizing after recent volatility."
       : (zeroDelta ? "Trend: Stable - no significant changes detected." : trendText)
   const headline = monitoringStatus.ui_state_payload?.headline ?? (
-    uiState === "low" ? "Revenue architecture is structurally healthy"
+    uiState === "low" ? "Messaging architecture is structurally healthy"
     : uiState === "medium" ? "Structural misalignment detected"
     : "Revenue is at risk"
   )
@@ -549,7 +549,7 @@ const delayTimer = setTimeout(() => {
         }`}>
           {/* Header row */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
-            <p className="text-xs text-gray-600 uppercase tracking-wide font-medium">Revenue Change (last scan)</p>
+            <p className="text-xs text-gray-600 uppercase tracking-wide font-medium">Structural Change (last scan)</p>
             {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (typeof revenueDelta.delta_monthly_loss === "number" && revenueDelta.delta_monthly_loss !== 0) && (
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                 revenueDelta.trend_last_4 === "worsening" ? "text-red-600 bg-red-400/10" :

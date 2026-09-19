@@ -37,7 +37,7 @@ const changeTypeLabel: Record<string, string> = {
 const commercialMeaning: Record<string, string> = {
   icp_drift: "When the ICP signal weakens, visitors may find it harder to recognize whether the product is relevant to them.",
   positioning_drift: "A positioning shift can confuse buyers who are comparing alternatives. It weakens differentiation at the decision stage.",
-  proof_drift: "Removing or reducing proof elements reduces conversion confidence. Buyers stall at the evaluation stage.",
+  proof_drift: "Removing or reducing proof elements may reduce structural credibility signals.",
   cta_drift: "A CTA change affects the primary conversion action. Even small wording changes can reduce click-through rates.",
   general_drift: "Content changes affect how buyers perceive the product value at their stage in the revenue journey.",
 }
@@ -123,9 +123,6 @@ export default function IncidentDetail({ incident, onStatusChange }: Props) {
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">03 — Why VectriOS flagged it</p>
             <p className="text-sm text-gray-700">{incident.why_it_matters}</p>
-            {incident.confidence && (
-              <p className="text-xs text-gray-400 mt-1">Detection confidence: {Math.round(incident.confidence * 100)}%</p>
-            )}
           </div>
         )}
 
@@ -191,7 +188,7 @@ export default function IncidentDetail({ incident, onStatusChange }: Props) {
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">Evidence: Structural only · Confidence: {verification.confidence ? Math.round(verification.confidence * 100) : 75}%</p>
+                  <p className="text-xs text-gray-400 mt-2">Evidence: Structural only</p>
                 </div>
               ) : verification.status === "no_measurable_improvement" ? (
                 <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">

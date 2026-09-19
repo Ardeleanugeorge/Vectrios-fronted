@@ -95,7 +95,7 @@ export default function IntegrationsPanel() {
       <div className="mb-5">
         <h3 className="text-base font-semibold text-gray-900">Data Integrations</h3>
         <p className="text-xs text-gray-500 mt-1">
-          Connect your tools to improve RII accuracy with real behavioral data.
+          Connect your tools to add behavioral and revenue evidence to structural monitoring.
         </p>
       </div>
 

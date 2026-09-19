@@ -40,7 +40,7 @@ const METRICS = [
 
 function rankLabel(rank: number, higherIsBetter: boolean): { text: string; color: string } {
   const r = higherIsBetter ? rank : (100 - rank)
-  if (r >= 75) return { text: "Top 25%",  color: "text-green-600" }
+  if (r >= 75) return { text: "Top quartile", color: "text-green-600" }
   if (r >= 50) return { text: "Above median", color: "text-blue-600" }
   if (r >= 25) return { text: "Below median", color: "text-amber-600" }
   return { text: "Bottom 25%", color: "text-red-600" }
@@ -120,7 +120,7 @@ function MetricRow({ label, data, higherIsBetter }: {
             You: <span className="text-blue-600 font-bold">{data.score.toFixed(0)}</span>
           </span>
           <span>Median: <span className="text-gray-700">{data.median.toFixed(0)}</span></span>
-          <span>Top 25%: <span className="text-gray-700">{data.top_quartile.toFixed(0)}</span></span>
+          <span>75th pct: <span className="text-gray-700">{data.top_quartile.toFixed(0)}</span></span>
         </div>
         <span className="text-gray-700">100</span>
       </div>

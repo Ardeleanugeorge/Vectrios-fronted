@@ -60,7 +60,7 @@ export default function RevenueRiskIndex({
 
   const heroBodySecondary =
     scoreClass === "LOW"
-      ? "At your scale, small gaps still move the needle — optimization here has outsized returns."
+      ? ""
       : scoreClass === "MODERATE"
         ? "At your scale, small structural gaps still have optimization potential."
         : "Large dollar exposure can reflect scale as much as urgency — use model inputs below for context."
