@@ -793,7 +793,7 @@ const delayTimer = setTimeout(() => {
       <FinancialExposureCard
         forecast={forecast}
         forecastLoading={!!companyId && !forecast && !forecastFetchDone}
-        riskScore={diagnostic?.risk_score || null}
+        riskScore={diagnostic?.risk_score != null ? Math.floor(diagnostic.risk_score) : null}
         riskLevel={diagnostic?.risk_level || null}
         uiState={uiState}
       />
