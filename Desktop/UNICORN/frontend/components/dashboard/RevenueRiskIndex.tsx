@@ -25,7 +25,7 @@ export default function RevenueRiskIndex({
   assessmentDate = null,
 }: RevenueRiskIndexProps) {
   const effectiveConfidence = typeof coveragePct === "number" ? coveragePct : confidence
-  const displayScore = riskScore !== null ? Math.min(riskScore, 100) : null
+  const displayScore = riskScore !== null ? Math.floor(Math.min(riskScore, 100)) : null
   
   /** Derive risk classification directly from score — score is always up-to-date,
    *  the riskLevel string from backend may be stale (set at scan time). */

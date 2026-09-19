@@ -280,34 +280,34 @@ export default function MonitoringLayer({
 
   // Extract diagnostic metrics — localStorage diagnostic first, then backend structural_scores fallback
   const ss = monitoringStatus.structural_scores
-  const alignmentScore =
+  const alignmentScore = Math.floor(
     diagnostic?.alignment_score ??
     diagnostic?.strategic_alignment ??
     diagnostic?.metrics_breakdown?.alignment_average ??
-    ss?.alignment_score ?? 0
-  const anchorDensity =
+    ss?.alignment_score ?? 0)
+  const anchorDensity = Math.floor(
     diagnostic?.anchor_density_score ??
     diagnostic?.conversion_anchor_density ??
     diagnostic?.metrics_breakdown?.anchor_density_average ??
-    ss?.anchor_density_score ?? 0
-  const icpClarity =
+    ss?.anchor_density_score ?? 0)
+  const icpClarity = Math.floor(
     diagnostic?.icp_clarity_score ??
     (diagnostic?.icp_mention_count
       ? Math.min((diagnostic.icp_mention_count / 5) * 100, 100)
       : diagnostic?.metrics_breakdown?.icp_mentions_total
         ? Math.min((diagnostic.metrics_breakdown.icp_mentions_total / 5) * 100, 100)
-        : ss?.icp_clarity_score ?? 0)
+        : ss?.icp_clarity_score ?? 0))
 
-  const positioningScore =
-    diagnostic?.positioning_coherence_score ?? ss?.positioning_coherence_score ?? 0
+  const positioningScore = Math.floor(
+    diagnostic?.positioning_coherence_score ?? ss?.positioning_coherence_score ?? 0)
 
   // Get last scan date from monitoring status
   const lastScan = monitoringStatus.last_evaluated_at || monitoringStatus.created_at || new Date().toISOString()
 
   // Extract RII for health indicator — diagnostic first, then monitoring structural scores fallback
-  const rii = (monitoringStatus.source === "monitoring" && ss?.rii_score != null)
+  const rii = Math.floor((monitoringStatus.source === "monitoring" && ss?.rii_score != null)
     ? ss.rii_score
-    : diagnostic?.risk_score ?? ss?.rii_score ?? monitoringStatus.structural_health?.structural_health_score ?? null
+    : diagnostic?.risk_score ?? ss?.rii_score ?? monitoringStatus.structural_health?.structural_health_score ?? 0)
   const riskDelta = monitoringStatus.risk_delta_since_last_scan || null
   // Enterprise: detect first scan — no history to compare yet
   const isFirstScan = (
