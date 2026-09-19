@@ -911,7 +911,7 @@ export default function DashboardPage() {
           <DashboardSummaryCard
             companyName={user?.company_name || null}
             monthlyLoss={null}
-            riiScore={monitoringLoading ? null : (monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null) ? monitoringStatus.structural_scores.rii_score : diagnostic?.risk_score ?? monitoringStatus?.structural_scores?.rii_score ?? null}
+            riiScore={monitoringLoading ? null : (monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null) ? Math.floor(monitoringStatus.structural_scores.rii_score) : diagnostic?.risk_score != null ? Math.floor(diagnostic.risk_score) : monitoringStatus?.structural_scores?.rii_score != null ? Math.floor(monitoringStatus.structural_scores.rii_score) : null}
             riskLevel={diagnostic?.risk_level || null}
           />
           {/* REVENUE RISK INDEX - Visible when diagnostic OR monitoring structural scores exist */}
@@ -931,7 +931,7 @@ export default function DashboardPage() {
             if (!shouldShowRII) return null
             return (
               <RevenueRiskIndex
-                riskScore={riiScore}
+                riskScore={riiScore !== null ? Math.floor(riiScore) : null}
                 riskLevel={diagnostic?.risk_level || "MODERATE"}
                 confidence={confidence}
                 overrideTriggered={overrideTriggered}
