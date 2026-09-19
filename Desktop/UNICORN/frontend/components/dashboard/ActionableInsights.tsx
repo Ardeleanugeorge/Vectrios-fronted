@@ -165,7 +165,7 @@ export function buildLightweightActionLayer(
       title: "Measure proof next to CTAs",
       current_example: "—",
       suggested_change: "Add logos + one quantified customer line beside primary CTAs.",
-      reason: "Decisions happen where the CTA is.",
+      reason: "Placing proof near the primary CTA strengthens the structural relationship between the value proposition and supporting evidence.",
       impact_contribution: perFix(2),
       playbookKind: PLAYBOOK_KINDS.PROOF_CTA,
     },

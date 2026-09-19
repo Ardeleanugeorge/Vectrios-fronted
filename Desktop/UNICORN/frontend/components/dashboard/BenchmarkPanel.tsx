@@ -40,7 +40,7 @@ const METRICS = [
 
 function rankLabel(rank: number, higherIsBetter: boolean): { text: string; color: string } {
   const r = higherIsBetter ? rank : (100 - rank)
-  if (r >= 75) return { text: "Top percentile", color: "text-green-600" }
+  if (r >= 75) return { text: "Top 10%", color: "text-green-600" }
   if (r >= 50) return { text: "Above median", color: "text-blue-600" }
   if (r >= 25) return { text: "Below median", color: "text-amber-600" }
   return { text: "Bottom 25%", color: "text-red-600" }

@@ -45,24 +45,24 @@ export default function RevenueRiskIndex({
   }
 
   const getRiskLabel = () => {
-    if (scoreClass === "HIGH") return "Revenue Inefficiency Detected"
+    if (scoreClass === "HIGH") return "High Structural Risk"
     if (scoreClass === "MODERATE") return "Moderate Structural Risk"
-    return "Moderate Structural Risk"
+    return "Low structural risk"
   }
 
   /** Avoid “strong messaging” + “moderate risk” contradiction — copy tracks score band */
   const heroBodyPrimary =
     scoreClass === "LOW"
-      ? "Your messaging architecture shows moderate structural risk, with the main opportunity concentrated in ICP and positioning clarity."
+      ? "Your messaging architecture shows low structural risk. Primary optimization opportunity: ICP clarity and positioning."
       : scoreClass === "MODERATE"
-        ? "Moderate structural misalignment detected — not a primary risk."
+        ? "Moderate structural risk detected. Primary opportunity concentrated in ICP clarity and positioning."
         : "Elevated structural risk on revenue-stage messaging — prioritize the playbook and monitoring signals."
 
   const heroBodySecondary =
     scoreClass === "LOW"
       ? ""
       : scoreClass === "MODERATE"
-        ? "At your scale, small structural gaps still have optimization potential."
+        ? ""
         : "Large dollar exposure can reflect scale as much as urgency — use model inputs below for context."
 
   return (
@@ -127,7 +127,7 @@ export default function RevenueRiskIndex({
         <div className="text-[11px] text-gray-600 mb-4 mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 max-w-xl mx-auto">
           <span>0–39: <span className="text-emerald-600">Low</span></span>
           <span className="text-gray-700" aria-hidden>·</span>
-          <span>40–70: <span className="text-amber-600">Moderate</span></span>
+          <span>40–69: <span className="text-amber-600">Moderate</span></span>
           <span className="text-gray-700" aria-hidden>·</span>
           <span>70+: <span className="text-red-600">High Risk</span></span>
           <span className="text-gray-700" aria-hidden>·</span>
@@ -140,7 +140,7 @@ export default function RevenueRiskIndex({
         )}
         <div className="flex items-center justify-center gap-6 text-sm flex-wrap">
           <div>
-            <span className="text-gray-600">Data Coverage: </span>
+            <span className="text-gray-600">Structural Coverage: </span>
             <span className="font-semibold text-gray-700">
               {(() => {
                 const cov = typeof coveragePct === "number" ? coveragePct : confidence
