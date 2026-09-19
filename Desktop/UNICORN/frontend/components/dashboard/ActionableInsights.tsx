@@ -80,13 +80,13 @@ export function buildLightweightActionLayer(
   else if (anchor < 50) issue = "anchor"
   else if (pos < 40) issue = "positioning"
 
-  const lo_cr = r >= 65 ? 0.5 : r >= 45 ? 0.8 : 0.3
-  const hi_cr = r >= 65 ? 1.2 : r >= 45 ? 1.6 : 0.8
+  const lo_cr = 0  // requires behavioral evidence
+  const hi_cr = 0  // requires behavioral evidence
 
   // Use real monthly exposure from model if available; otherwise estimate from ARR band
-  const realMonthlyLoss = typeof monthlyExposure === "number" && monthlyExposure > 0 ? monthlyExposure : null
-  const arr_lo = realMonthlyLoss ? realMonthlyLoss * 12 * 0.6 : 15_000
-  const arr_hi = realMonthlyLoss ? realMonthlyLoss * 12 * 1.1 : 35_000
+  const realMonthlyLoss = null  // requires behavioral evidence
+  const arr_lo = 0  // requires behavioral evidence
+  const arr_hi = 0  // requires behavioral evidence
   const n = 3
   const fmt = (x: number) =>
     x >= 1_000_000
@@ -102,8 +102,8 @@ export function buildLightweightActionLayer(
     const mo_lo = (arr_lo / n) / 12
     const mo_hi = (arr_hi / n) / 12
     return {
-      close_rate: `+${(lo_cr / n).toFixed(2)}% – +${(hi_cr / n).toFixed(2)}% close rate (est., share)`,
-      arr_recovery: `${fmt(arr_lo / n)} – ${fmt(arr_hi / n)} ARR (est., share)`,
+      close_rate: "",  // requires behavioral evidence
+      arr_recovery: "",  // requires behavioral evidence
       monthly_impact: "—",
       monthly_impact_hi_raw: Math.round(mo_hi),
     }
@@ -149,7 +149,7 @@ export function buildLightweightActionLayer(
             : issue === "anchor"
               ? "Add 2 quantified metrics (time, $, %) above the fold on pricing + product."
               : "State category + ‘Unlike X, we Y’ with one proof point in hero.",
-      reason: "Highest ROI comes from fixing the lowest structural score first.",
+      reason: "Fixing the lowest structural score first addresses the primary structural gap.",
       impact_contribution: perFix(0),
       playbookKind: PLAYBOOK_KINDS.GENERAL,
     },
@@ -157,7 +157,7 @@ export function buildLightweightActionLayer(
       title: "Align secondary pages to the same story",
       current_example: "—",
       suggested_change: "Use the same buyer + outcome language on pricing and product as the homepage.",
-      reason: "Inconsistent pages create late-stage drop-off.",
+      reason: "Inconsistent pages reduce structural messaging coherence.",
       impact_contribution: perFix(1),
       playbookKind: PLAYBOOK_KINDS.POSITIONING,
     },
@@ -175,13 +175,13 @@ export function buildLightweightActionLayer(
     issue === "icp" || issue === "alignment"
       ? {
           level: "High",
-          reason: "Structural scores point to conversion risk until messaging is tightened.",
-          display_line: "HIGH PRIORITY — impacts conversion directly (score-based estimate).",
+          reason: "Structural scores indicate ICP or alignment needs attention.",
+          display_line: "High structural risk — ICP or alignment needs attention.",
         }
       : {
           level: "Medium",
-          reason: "Still material upside before pipeline is fully efficient.",
-          display_line: "MEDIUM PRIORITY — proof and positioning reinforce win rate.",
+          reason: "Moderate structural risk with room to improve ICP and positioning clarity.",
+          display_line: "Medium structural risk — proof and positioning can be strengthened.",
         }
 
   return {
@@ -194,8 +194,8 @@ export function buildLightweightActionLayer(
     ],
     fixes,
     expected_impact: {
-      close_rate_improvement: `+${lo_cr.toFixed(1)}% – +${hi_cr.toFixed(1)}% close rate (est., total if all fixes land)`,
-      arr_recovery: `${fmt(arr_lo)} – ${fmt(arr_hi)} ARR recovery (est., total — placeholder band)`,
+      close_rate_improvement: "",  // requires behavioral evidence
+      arr_recovery: "",  // requires behavioral evidence
     },
     priority: pri,
   }
