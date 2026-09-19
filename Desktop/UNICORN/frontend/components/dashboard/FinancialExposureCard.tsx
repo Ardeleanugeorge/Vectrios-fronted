@@ -25,7 +25,7 @@ interface FinancialExposureCardProps {
   riskScore?: number | null
   riskLevel?: string | null
   uiState?: "low" | "medium" | "high"
-  /** compact = one-line estimate + link to full Revenue Optimization Model (no duplicate breakdown) */
+  /** compact = one-line estimate + link to full Evidence and Revenue Context (no duplicate breakdown) */
   variant?: "compact" | "full"
 }
 
@@ -89,7 +89,7 @@ export default function FinancialExposureCard({
   const isLowRisk = uiState ? uiState === "low" : (typeof riskScore === "number" && riskScore < 40) || normalizedRisk.includes("LOW")
   const isMediumRisk = uiState ? uiState === "medium" : (!isLowRisk && ((typeof riskScore === "number" && riskScore < 70) || normalizedRisk.includes("MODERATE")))
 
-  const sectionTitle = isLowRisk ? "Residual Optimization Potential" : "Next Evidence Layer"
+  const sectionTitle = isLowRisk ? "Next Evidence Layer" : "Next Evidence Layer"
   const mainLabel = isLowRisk ? "Additional Revenue Available" : "Estimated ARR Impact"
   const stageLabel = isLowRisk ? "Primary Optimization Gap" : "Where it breaks"
 
@@ -172,7 +172,7 @@ export default function FinancialExposureCard({
             href="#revenue-optimization-model"
             className="text-blue-600 hover:text-blue-600 underline-offset-2 hover:underline"
           >
-            See full breakdown in Revenue Optimization Model below
+            See full breakdown in Evidence and Revenue Context below
           </a>
           <span className="text-gray-600"> — scenario output, not booked revenue.</span>
         </p>

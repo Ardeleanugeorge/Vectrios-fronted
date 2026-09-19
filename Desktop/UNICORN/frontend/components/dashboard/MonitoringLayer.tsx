@@ -334,7 +334,7 @@ export default function MonitoringLayer({
       ? "Trend: Stabilizing after recent volatility."
       : (zeroDelta ? "Trend: Stable - no significant changes detected." : trendText)
   const headline = monitoringStatus.ui_state_payload?.headline ?? (
-    uiState === "low" ? "Messaging architecture is structurally healthy"
+    uiState === "low" ? "Messaging architecture shows low structural risk"
     : uiState === "medium" ? "Structural misalignment detected"
     : "Revenue is at risk"
   )
@@ -570,7 +570,7 @@ const delayTimer = setTimeout(() => {
             }`}>
               {typeof revenueDelta.delta_rii === "number" && revenueDelta.delta_rii !== 0
                 ? revenueDelta.delta_rii > 0
-                  ? `RII +${revenueDelta.delta_rii.toFixed(1)} pts — structural deterioration`
+                  ? `RII +${revenueDelta.delta_rii.toFixed(1)} pts — structural increase`
                   : `RII ${revenueDelta.delta_rii.toFixed(1)} pts — structural improvement`
                 : "No material revenue-impacting change detected"}
             </p>
