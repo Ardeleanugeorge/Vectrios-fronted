@@ -53,7 +53,7 @@ export default function RevenueRiskIndex({
   /** Avoid “strong messaging” + “moderate risk” contradiction — copy tracks score band */
   const heroBodyPrimary =
     scoreClass === "LOW"
-      ? "Your messaging architecture shows low structural risk. Primary optimization opportunity: ICP clarity and positioning."
+      ? "Your messaging architecture shows low structural risk. Primary review area: ICP clarity and positioning."
       : scoreClass === "MODERATE"
         ? "Moderate structural risk detected. Primary opportunity concentrated in ICP clarity and positioning."
         : "Elevated structural risk on revenue-stage messaging — prioritize the playbook and monitoring signals."

@@ -73,7 +73,7 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Evidence and Revenue Context</h2>
       <p className="text-sm font-medium text-gray-800 mb-2">Unlock behavioral evidence</p>
       <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-        Connect Google Analytics 4 to add measured behavioral signals to your structural monitoring. Based on 500+ SaaS companies in our index.
+        Connect Google Analytics 4 to add measured behavioral signals to your structural monitoring.
       </p>
       <a href="/account#integrations" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
         Connect GA4 →

@@ -114,7 +114,7 @@ export default function IntegrationsPanel() {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">Google Search Console + GA4</p>
-              <p className="text-xs text-gray-500">CTR, conversion rate, behavioral signals</p>
+              <p className="text-xs text-gray-500">Search performance and behavioral signals</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ export default function IntegrationsPanel() {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">HubSpot CRM</p>
-              <p className="text-xs text-gray-500">Real close rate, deal velocity, pipeline data</p>
+              <p className="text-xs text-gray-500">Pipeline and revenue-stage signals</p>
             </div>
           </div>
           <div className="flex items-center gap-2">

@@ -48,7 +48,7 @@ export default function ExecutiveInterpretation({
   /** One idea, no numbers — dollars live in Financial summary + Optimization Model */
   const takeawayLine =
     uiState === "low"
-      ? "Low structural risk, with meaningful upside at scale driven by ICP and positioning clarity."
+      ? "Low structural risk, with the primary structural opportunity concentrated in ICP and positioning clarity."
       : "Tighten conversion-stage messaging using the playbook and Revenue-Stage Alignment Map — ICP clarity, anchors, and positioning carry the most leverage."
 
   return (
