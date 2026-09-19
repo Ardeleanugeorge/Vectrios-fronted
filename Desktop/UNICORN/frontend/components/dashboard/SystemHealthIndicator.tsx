@@ -67,7 +67,7 @@ export default function SystemHealthIndicator({
     
     return (
       <span className={`text-xs font-medium ${isImproving ? 'text-green-600' : 'text-red-600'}`}>
-        {isImproving ? '↑' : '↓'} {absDelta.toFixed(1)} pts structural health trend
+        {isImproving ? '↑' : '↓'} {absDelta.toFixed(1)} pts vs monitoring baseline
       </span>
     )
   }
