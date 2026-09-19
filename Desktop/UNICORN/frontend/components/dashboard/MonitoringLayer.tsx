@@ -720,7 +720,7 @@ const delayTimer = setTimeout(() => {
                   : band === "warning"
                   ? "text-indigo-600 bg-indigo-50 border-indigo-200"
                   : "text-red-600 bg-red-400/10 border-red-400/20"
-                const label = band === "on-track" ? "SLA On Track" : band === "warning" ? "SLA Warning" : band === "breach" ? "SLA Breach" : "SLA"
+                const label = band === "on-track" ? "Monitoring On Schedule" : band === "warning" ? "SLA Warning" : band === "breach" ? "SLA Breach" : "SLA"
                 return (
                   <span className={`px-2.5 py-0.5 rounded-full border text-xs font-semibold ${cls}`}>
                     {label}
