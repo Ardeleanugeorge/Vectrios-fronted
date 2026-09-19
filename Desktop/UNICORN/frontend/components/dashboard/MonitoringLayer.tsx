@@ -473,7 +473,7 @@ const delayTimer = setTimeout(() => {
       const al: ActionLayerPayload = {
         issue_type: "general",
         primary_issue: { title: primary.title, description: primary.why },
-        affected_areas: newFixes.map((f: any) => { const labels: Record<string,string> = {"": "Homepage", "/": "Homepage", "pricing": "Pricing page", "product": "Product page", "about": "About page", "features": "Features page", "blog": "Blog", "demo": "Demo page"}; try { const u = new URL(f.page_url || "/"); const p = u.pathname.replace(/^\//, ""); return labels[p] ?? labels["/"+p] ?? (p ? p.charAt(0).toUpperCase() + p.slice(1) : "Homepage") } catch { return labels[f.page_url] ?? f.page_url ?? "Homepage" } }),
+        affected_areas: newFixes.filter((f: any) => !((f.page_url || '').includes('/dashboard'))).map((f: any) => { const labels: Record<string,string> = {"": "Homepage", "/": "Homepage", "pricing": "Pricing page", "product": "Product page", "about": "About page", "features": "Features page", "blog": "Blog", "demo": "Demo page"}; try { const u = new URL(f.page_url || "/"); const p = u.pathname.replace(/^\//, ""); return labels[p] ?? labels["/"+p] ?? (p ? p.charAt(0).toUpperCase() + p.slice(1) : "Homepage") } catch { return labels[f.page_url] ?? f.page_url ?? "Homepage" } }),
 
 
 
