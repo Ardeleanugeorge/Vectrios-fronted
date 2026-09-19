@@ -499,7 +499,7 @@ export default function Home() {
             Then let VectriOS monitor meaningful changes automatically every 24 hours.
           </p>
           <Link
-            href="/signup"
+            href="/"
             className="inline-block px-12 py-5 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-lg"
           >
             Establish Domain Baseline
