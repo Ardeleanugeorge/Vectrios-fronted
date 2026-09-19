@@ -100,7 +100,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
   if (loading) {
     return (
       <div className="p-8 bg-white rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">Revenue Risk Trend</h2>
+        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide">RII Trend</h2>
         <p className="text-sm text-gray-400 animate-pulse">Loading trend data...</p>
       </div>
     )
@@ -110,7 +110,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
     return (
       <div className="p-8 bg-white rounded-lg border border-gray-200">
         <div className="flex items-start justify-between mb-6">
-          <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Risk Trend</h2>
+          <h2 className="text-xl font-bold uppercase tracking-wide">RII Trend</h2>
           {riskDelta !== undefined && riskDelta !== null && (
             <span className={`text-sm font-semibold px-2 py-0.5 rounded ${
               riskDelta > 0 ? "text-red-400 bg-red-400/10" : "text-green-400 bg-green-400/10"
@@ -163,7 +163,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h2 className="text-xl font-bold uppercase tracking-wide">Revenue Risk Trend</h2>
+          <h2 className="text-xl font-bold uppercase tracking-wide">RII Trend</h2>
           <div style={{display:"flex",gap:"4px",marginTop:"4px"}}>{([[" 30D",30],["90D",90],["6M",180],["1Y",365],["All",0]] as [string,number][]).map(([label,v])=>(<button key={label} onClick={()=>setSelectedDays(v)} style={{padding:"2px 8px",fontSize:"11px",borderRadius:"4px",border:"1px solid #e5e7eb",cursor:"pointer",fontWeight:500,background:selectedDays===v?"#2563eb":"#f9fafb",color:selectedDays===v?"white":"#6b7280"}}>{label}</button>))}</div>
           <p className="text-xs text-gray-500 mt-0.5">
             {entries.length} data point{entries.length !== 1 ? "s" : ""} —{" "}

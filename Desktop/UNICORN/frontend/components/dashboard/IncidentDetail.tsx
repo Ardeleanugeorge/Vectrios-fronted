@@ -39,7 +39,7 @@ const commercialMeaning: Record<string, string> = {
   positioning_drift: "A positioning shift can confuse buyers who are comparing alternatives. It weakens differentiation at the decision stage.",
   proof_drift: "Removing or reducing proof elements may reduce structural credibility signals.",
   cta_drift: "A CTA change affects the primary conversion action. Even small wording changes can reduce click-through rates.",
-  general_drift: "Content changes affect how buyers perceive the product value at their stage in the revenue journey.",
+  general_drift: "Content changes may affect structural messaging signals relevant to the revenue stage.",
 }
 
 export default function IncidentDetail({ incident, onStatusChange }: Props) {
@@ -115,7 +115,7 @@ export default function IncidentDetail({ incident, onStatusChange }: Props) {
         {/* 2. Commercial meaning */}
         <div>
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">02 — Commercial meaning</p>
-          <p className="text-sm text-gray-700">{commercialMeaning[incident.change_type] || "This change may affect how buyers perceive the product during their evaluation."}</p>
+          <p className="text-sm text-gray-700">{commercialMeaning[incident.change_type] || "This is a minor wording change with no material structural signal detected."}</p>
         </div>
 
         {/* 3. Why it matters */}
