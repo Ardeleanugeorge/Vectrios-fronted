@@ -188,9 +188,9 @@ const METRIC_ROWS: { label: string; hint: string }[] = [
 
 /** 0'100 score ? plain-English impact tier (matches example bands: ~20 / ~38 / ~59) */
 function metricImpactLabel(v: number): string {
-  if (v >= 59) return "High impact"
-  if (v >= 34) return "Moderate impact"
-  return "Low impact"
+  if (v >= 59) return "High structural priority"
+  if (v >= 34) return "Medium structural priority"
+  return "Lower structural priority"
 }
 
 function ScoreBar({ label, hint, value }: { label: string; hint: string; value: number | null }) {
@@ -240,7 +240,7 @@ function primarySignalDisplay(signal: string): { headline: string } {
   }
   if (s.includes("anchor")) {
     return {
-      headline: "Proof and conversion anchors are too thin – buyers stall before they act",
+      headline: "Proof and conversion anchors are too thin at key decision points",
     }
   }
   return {
@@ -1095,7 +1095,7 @@ function ScanResultsContent() {
                 {typeof data.percentile === "number" && (
                   <p className="text-xs text-gray-600 mt-1">
                     {data.percentile >= 50
-                      ? `Above-average structural performance relative to the benchmark dataset`
+                      ? "Structural assessment benchmarked against the public SaaS index."
                       : `You're performing worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of similar SaaS companies`}
                   </p>
                 )}
@@ -1131,8 +1131,8 @@ function ScanResultsContent() {
               >
                 <span>
                   {(data.percentile ?? 0) < 50
-                    ? "Structural deficit detected against tier benchmarks"
-                    : "Strong structural architecture — primary review areas identified"}
+                    ? "Structural risk detected — primary review areas identified"
+                    : "Moderate structural risk — primary review areas identified"}
                 </span>
                 {(data.percentile ?? 0) >= 50 ? (
                   <span className="text-xs opacity-80">
@@ -1182,8 +1182,8 @@ function ScanResultsContent() {
         {!unlocked && (
           <div className={`p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6 ${wideLayout ? "lg:p-8 lg:mb-8" : ""}`}>
             <p className="text-lg font-semibold text-gray-900 mb-1">Structural signals detected</p>
-            <p className="text-sm text-gray-600 mb-1">Structural messaging signals identified across revenue-stage pages</p>
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-5">Signal strength by dimension</p>
+            <p className="text-sm text-gray-600 mb-1">Signals identified across revenue-stage pages</p>
+            <p className="text-xs text-gray-600 uppercase tracking-widest mb-5">Primary structural signals</p>
             <ul className="space-y-3 text-sm text-gray-700">
               <li className="flex items-center justify-between gap-3">
                 <span>Messaging does not consistently reinforce the intended conversion path</span>
@@ -1230,6 +1230,7 @@ function ScanResultsContent() {
               <LockedInsight label="ICP Clarity Assessment" />
               <LockedInsight label="Messaging Alignment Assessment" />
               <LockedInsight label="Anchor Density Assessment" />
+              <LockedInsight label="Positioning Coherence Assessment" />
               <LockedInsight label="Structural Root Cause & Page-Level Breakdown" />
               <LockedInsight label="SaaS Architecture Index Peer Comparison (Cohorts)" />
             </div>
@@ -1258,7 +1259,7 @@ function ScanResultsContent() {
               </p>
             </div>
             <div className="text-left max-w-2xl mx-auto mb-6 rounded-lg border border-white/10 bg-white/[0.02] p-4">
-              <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Why this is happening</p>
+              <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Primary structural review areas</p>
               <ul className="space-y-1.5 text-sm text-gray-700">
                 <li>ICP definition is too broad across key messaging surfaces</li>
                 <li>Decision-stage proof is not sufficiently explicit</li>
@@ -1419,7 +1420,7 @@ function ScanResultsContent() {
         Structural drift accumulates gradually and becomes harder to trace without continuous monitoring. Activate monitoring to detect meaningful changes automatically every 24h.
       </p>
       <div className="rounded-lg border border-white/10 bg-white/[0.02] p-3 mb-3">
-        <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Why this is happening</p>
+        <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Primary structural review areas</p>
         <ul className="space-y-1.5 text-xs text-gray-700">
           <li>ICP definition is too broad across key messaging surfaces</li>
           <li>Decision-stage proof is not sufficiently explicit</li>
