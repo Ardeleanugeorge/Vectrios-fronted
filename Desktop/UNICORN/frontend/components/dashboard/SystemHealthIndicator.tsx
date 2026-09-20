@@ -111,7 +111,7 @@ export default function SystemHealthIndicator({
         {status.label}
       </div>
       
-      {/* Primary Optimization Area */}
+      {/* Primary Structural Signal */}
       {primaryRiskDriver && (() => {
         // Determine severity icon based on health score
         const getSeverityIcon = (score: number): { icon: string; color: string } => {
