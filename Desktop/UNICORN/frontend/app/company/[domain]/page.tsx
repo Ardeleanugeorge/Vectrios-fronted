@@ -323,6 +323,7 @@ export default function CompanyProfilePage() {
                   <th className="px-5 py-3 text-center" title={RII_TAGLINE}>
                     {RII_ABBREV}
                   </th>
+                  <th className="px-5 py-3 text-center" title="Change vs previous scan">Δ</th>
                   <th className="px-5 py-3 text-center">Align</th>
                   <th className="px-5 py-3 text-center">ICP</th>
                   <th className="px-5 py-3 text-center">Anchor</th>
@@ -348,11 +349,13 @@ export default function CompanyProfilePage() {
                         }`}>
                           {Math.round(h.rii)}
                         </span>
-                        {riidelta !== null && riidelta !== 0 && (
-                          <span className={`ml-1 text-xs ${riidelta > 0 ? "text-red-500" : "text-emerald-500"}`}>
+                      </td>
+                      <td className="px-5 py-3 text-center">
+                        {riidelta !== null && riidelta !== 0 ? (
+                          <span className={`text-xs font-mono ${riidelta > 0 ? "text-red-500" : "text-emerald-500"}`}>
                             {riidelta > 0 ? `+${riidelta}` : riidelta}
                           </span>
-                        )}
+                        ) : <span className="text-gray-600 text-xs">—</span>}
                       </td>
                       <td className="px-5 py-3 text-center text-gray-600 font-mono text-xs">{h.alignment !== null ? Math.round(h.alignment) : "—"}</td>
                       <td className="px-5 py-3 text-center text-gray-600 font-mono text-xs">{h.icp_clarity !== null ? Math.round(h.icp_clarity) : "—"}</td>
