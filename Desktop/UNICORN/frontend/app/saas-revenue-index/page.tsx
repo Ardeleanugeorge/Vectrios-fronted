@@ -177,7 +177,7 @@ export default function SaaSRevenueIndex() {
             A public benchmark of structural messaging architecture across SaaS companies.
           </p>
           <p className="text-gray-600 text-sm max-w-2xl mx-auto mb-6">
-            This index measures messaging architecture clarity across ICP, positioning, proof and CTA dimensions. Structural metrics only — no behavioral or revenue data is used unless explicitly connected.
+            This index measures messaging architecture clarity across ICP clarity, positioning coherence, anchor density and alignment. Structural metrics only — no behavioral or revenue data is used in this public index.
           </p>
           <a href="/" className="inline-block px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-sm">
             Scan your site — see your RII
@@ -206,7 +206,7 @@ export default function SaaSRevenueIndex() {
             </div>
             <div>
               <p className="text-xs font-semibold text-gray-700 mb-1">3. Structural metrics only</p>
-              <p className="text-xs text-gray-600">Benchmark scores measure messaging architecture — ICP clarity, positioning coherence, proof density and alignment. No behavioral or revenue data is used.</p>
+              <p className="text-xs text-gray-600">Benchmark scores measure messaging architecture — ICP clarity, positioning coherence, anchor density and alignment. No behavioral or revenue data is used in this public index.</p>
             </div>
             <div>
               <p className="text-xs font-semibold text-gray-700 mb-1">4. Continuous refresh</p>
@@ -399,11 +399,7 @@ export default function SaaSRevenueIndex() {
                       {c.domain}
                     </Link>
                   </div>
-                  {c.inferred_icp && (
-                    <p className="text-xs text-gray-500 mt-0.5 pl-6 truncate max-w-[220px]" title="Observed audience signal from website content">
-                      {c.inferred_icp}
-                    </p>
-                  )}
+
                 </div>
                 <div className="flex justify-center"><RiiBar value={c.rii} /></div>
                 <div className="text-center"><ScoreCell value={c.alignment} /></div>
