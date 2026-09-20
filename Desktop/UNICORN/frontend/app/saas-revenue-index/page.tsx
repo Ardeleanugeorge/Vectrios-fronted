@@ -136,9 +136,7 @@ export default function SaaSRevenueIndex() {
   // Real numbers from backend — fallback to index stats if public stats loaded
   const displayTotal    = publicStats?.total_companies_analyzed ?? s?.total_companies ?? 0;
   const displayAvgRii   = publicStats?.average_rii?.toFixed(1) ?? (s?.average_rii !== null ? s?.average_rii?.toFixed(1) : "—");
-  const displayLossMin  = publicStats ? `$${Math.round(publicStats.monthly_loss.min / 1000)}K` : "$1.5K";
-  const displayLossMax  = publicStats ? `$${Math.round(publicStats.monthly_loss.max / 1000)}K` : "$2.9K";
-  const displayBasis    = publicStats?.monthly_loss.basis ?? "Based on median SaaS ARR $3M";
+  // Financial exposure removed - structural evidence only
 
   return (
     <div className="page-root font-sans">
@@ -176,7 +174,7 @@ export default function SaaSRevenueIndex() {
             SaaS Revenue Architecture Index
           </h1>
           <p className="text-gray-700 text-lg max-w-2xl mx-auto mb-2">
-            Structural messaging gaps are associated with estimated revenue exposure of {displayLossMin}–{displayLossMax}/month — based on benchmark-adjusted modeling across the index.
+            A public benchmark of structural messaging architecture across SaaS companies.
           </p>
           <p className="text-gray-600 text-sm max-w-2xl mx-auto mb-6">
             This index measures messaging architecture clarity across ICP, positioning, proof and CTA dimensions. Structural metrics only — no behavioral or revenue data is used unless explicitly connected.
@@ -230,11 +228,7 @@ export default function SaaSRevenueIndex() {
         </div>
 
         <p className="text-xs sm:text-sm text-gray-600 mb-10 max-w-3xl mx-auto text-center">
-          Companies in this dataset quietly lose an estimated
-          <span className="text-amber-700 font-semibold"> {displayLossMin}–{displayLossMax}/month</span>{" "}
-          from messaging gaps that never show up in dashboards.{" "}
-          <span className="text-gray-500 text-xs">({displayBasis})</span>{" "}
-          Use this benchmark to understand how risky your own revenue architecture might be — then run your scan to see your exact exposure.
+          Use this benchmark to understand structural messaging risk across SaaS companies — then run your scan to see your RII and structural messaging profile.
         </p>
 
         {/* -- Top 10 / Worst 10 -- */}
@@ -244,7 +238,7 @@ export default function SaaSRevenueIndex() {
             {/* Top 10 */}
             <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] overflow-hidden">
               <div className="px-5 py-4 border-b border-emerald-500/20 flex items-center gap-2">
-                <span className="text-emerald-400 text-sm font-semibold">Best revenue architecture</span>
+                <span className="text-emerald-400 text-sm font-semibold">Strongest structural architecture</span>
                 <span className="ml-auto text-xs text-gray-600">lowest RII</span>
               </div>
               <div>
@@ -278,7 +272,7 @@ export default function SaaSRevenueIndex() {
             {/* Worst 10 */}
             <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.03] overflow-hidden">
               <div className="px-5 py-4 border-b border-red-500/20 flex items-center gap-2">
-                <span className="text-red-400 text-sm font-semibold">Highest revenue exposure</span>
+                <span className="text-red-400 text-sm font-semibold">Highest structural risk</span>
                 <span className="ml-auto text-xs text-gray-600">highest RII</span>
               </div>
               <div>
@@ -333,9 +327,9 @@ export default function SaaSRevenueIndex() {
                 }`}
               >
                 {f === "all" ? "All Companies" :
-                 f === "low" ? "Low exposure" :
-                 f === "moderate" ? "Moderate" :
-                 "High exposure"}
+                 f === "low" ? "Low risk" :
+                 f === "moderate" ? "Moderate risk" :
+                 "High risk"}
               </button>
             ))}
           </div>
@@ -406,7 +400,7 @@ export default function SaaSRevenueIndex() {
                     </Link>
                   </div>
                   {c.inferred_icp && (
-                    <p className="text-xs text-gray-600 mt-0.5 pl-6 truncate max-w-[220px]">
+                    <p className="text-xs text-gray-500 mt-0.5 pl-6 truncate max-w-[220px]" title="Observed audience signal from website content">
                       {c.inferred_icp}
                     </p>
                   )}
@@ -429,22 +423,22 @@ export default function SaaSRevenueIndex() {
 
         {/* Legend */}
         <div className="mt-8 flex flex-wrap gap-6 justify-center text-xs text-gray-600">
-          <span><span className="text-green-400 font-semibold">Low RII</span> = strong revenue architecture</span>
+          <span><span className="text-green-400 font-semibold">Low RII</span> = strong structural architecture</span>
           <span><span className="text-yellow-400 font-semibold">Moderate RII</span> = structural misalignment signals</span>
-          <span><span className="text-red-400 font-semibold">High RII</span> = significant revenue exposure</span>
+          <span><span className="text-red-400 font-semibold">High RII</span> = significant structural risk</span>
         </div>
 
         {/* Bottom CTA */}
         <div className="mt-14 text-center rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 p-10">
           <p className="text-gray-600 text-sm mb-2">Don&apos;t see your company?</p>
           <h3 className="text-2xl font-bold text-gray-900 mb-6">
-            Run a free Revenue Architecture Scan
+            Run a free Structural Architecture Scan
           </h3>
           <Link
             href={PUBLIC_HOME_URL}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-semibold text-sm transition-colors"
           >
-            Run Free Revenue Scan
+            Run Free Structural Scan
           </Link>
           <p className="text-gray-600 text-xs mt-3">Instant scan — No signup required</p>
         </div>
