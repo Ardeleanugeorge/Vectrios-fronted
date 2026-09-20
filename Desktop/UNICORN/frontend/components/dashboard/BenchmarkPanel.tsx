@@ -181,9 +181,6 @@ export default function BenchmarkPanel({ companyId }: Props) {
               }`}>
                 {ordinal(riiRank)} <span className="text-sm text-gray-600 font-normal">percentile</span>
               </p>
-              <p className="text-[10px] text-gray-600 mt-0.5">
-                {riiRank}th percentile
-              </p>
             </div>
           )}
         </div>
