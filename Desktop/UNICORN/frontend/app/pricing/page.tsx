@@ -732,7 +732,7 @@ export default function PricingPage() {
               { q: "What happens after the 14-day trial?", a: "After 14 days, your plan continues at $299/month. You can cancel anytime before the trial ends — no charge." },
               { q: "Do I need HubSpot or Google Analytics?", a: "No. VectriOS works on structural evidence alone. Connecting HubSpot and GA4 adds behavioral and revenue-stage evidence layers to your monitoring model." },
               { q: "How long does setup take?", a: "Under 10 minutes. Scan your domain, enter your email, and activate monitoring. No onboarding call required." },
-              { q: "How is structural risk assessed?", a: "VectriOS evaluates four structural dimensions: ICP clarity, messaging alignment, anchor density, and positioning coherence. These combine into the Revenue Impact Index (RII). Lower RII indicates stronger structural architecture." },
+              { q: "How is structural risk assessed?", a: "VectriOS evaluates four structural dimensions: ICP clarity, messaging alignment, anchor density, and positioning coherence. The Revenue Impact Index (RII) summarizes structural messaging risk across these dimensions. Lower RII indicates stronger structural architecture." },
               { q: "Can my team use it?", a: "Yes. The Scale plan includes unlimited team seats." },
               { q: "Is this a content audit or SEO tool?", a: "Neither. VectriOS monitors structural messaging architecture — ICP clarity, positioning coherence, proof, and alignment — not content quality or SEO." },
             ].map(({ q, a }) => (
