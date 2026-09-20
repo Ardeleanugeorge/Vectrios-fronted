@@ -222,9 +222,7 @@ export default function CompanyProfilePage() {
           />
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{data.domain}</h1>
-            {latest.inferred_icp && (
-              <p className="text-sm text-gray-600">{latest.inferred_icp}</p>
-            )}
+
           </div>
           <div className="ml-auto flex items-center gap-3">
             <TrendBadge trend={data.trend} />
@@ -251,6 +249,7 @@ export default function CompanyProfilePage() {
               <span> · current</span>
             </p>
             <p className={`text-5xl font-bold ${riiColor}`}>{Math.round(rii)}</p>
+            <p className="text-[10px] text-gray-600 mt-0.5">Structural messaging risk score</p>
             <p className={`text-sm mt-1 ${riiColor}`}>{latest.risk_level}</p>
             <Link
               href={METHODOLOGY_RII_HREF}
@@ -278,14 +277,14 @@ export default function CompanyProfilePage() {
           <div className="rounded-xl bg-white/[0.03] border border-white/5 p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs text-gray-600 uppercase tracking-widest">
-                {RII_NAME} trend <span className="text-gray-600 normal-case">({RII_ABBREV})</span>
+                RII Trend
               </p>
               <p className="text-xs text-gray-600">{history.length} data points</p>
             </div>
             <TrendChart history={history} />
             <div className="flex justify-between mt-2 text-xs text-gray-600">
               <span>Lower {RII_ABBREV} = stronger architecture</span>
-              <span>Higher {RII_ABBREV} = higher modeled exposure</span>
+              <span>Higher {RII_ABBREV} = higher structural risk</span>
             </div>
           </div>
         ) : (
@@ -328,7 +327,7 @@ export default function CompanyProfilePage() {
                   <th className="px-5 py-3 text-center">ICP</th>
                   <th className="px-5 py-3 text-center">Anchor</th>
                   <th className="px-5 py-3 text-center">Pos.</th>
-                  <th className="px-5 py-3 text-center">Conf.</th>
+                  <th className="px-5 py-3 text-center" title="Confidence reflects the reliability of the structural assessment based on available signal density and consistency.">Confidence</th>
                 </tr>
               </thead>
               <tbody>
@@ -371,7 +370,7 @@ export default function CompanyProfilePage() {
         {/* CTA */}
         <div className="text-center rounded-xl bg-white/[0.03] border border-white/5 p-8">
           <p className="text-gray-600 text-sm mb-1">Want to track your own company?</p>
-          <h3 className="text-xl font-bold text-gray-900 mb-5">Get the full revenue diagnostic</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-5">Get your structural baseline</h3>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href={PUBLIC_HOME_URL}
