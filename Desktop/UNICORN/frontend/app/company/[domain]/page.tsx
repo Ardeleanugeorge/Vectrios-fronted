@@ -238,8 +238,8 @@ export default function CompanyProfilePage() {
         </div>
 
         {/* Revenue Impact Index (RII) + delta */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center">
+        <div className="grid grid-cols-3 gap-4 mb-8 items-stretch">
+          <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center flex flex-col justify-center">
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-indigo-600/80 mb-1">Core metric</p>
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">{RII_NAME}</p>
             <p className="text-[10px] text-gray-600 mb-2">
