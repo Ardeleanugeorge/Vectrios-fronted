@@ -1655,12 +1655,11 @@ function ScanResultsContent() {
         {showEmailCapture && (
           <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl border border-gray-200 shadow-xl p-8 max-w-md w-full">
-              <h3 className="text-2xl font-bold mb-2 text-gray-900">Get your full revenue breakdown</h3>
+              <h3 className="text-2xl font-bold mb-2 text-gray-900">Save your structural baseline</h3>
               <p className="text-gray-600 mb-6 text-sm leading-relaxed">
                 {otpStep === "email" ? (
                   <>
-                    We&apos;ve analyzed your site and identified where revenue is leaking. Enter your email to unlock
-                    the full analysis and save it to your account.
+                    Your structural assessment is ready. Enter your email to save this baseline to your account and continue to continuous monitoring.
                   </>
                 ) : (
                   <>
@@ -1708,12 +1707,12 @@ function ScanResultsContent() {
                         disabled={capturing || !email.trim()}
                         className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
                       >
-                        {capturing ? "Sending code…" : "See full analysis"}
+                        {capturing ? "Sending code…" : "Save baseline & continue"}
                       </button>
                     </div>
                   </form>
                   <p className="text-xs text-gray-600 mt-4 text-center leading-relaxed">
-                    Instant access — No spam — Used to save your model
+                    No spam. We’ll use your email to save your assessment and set up your monitoring account.
                   </p>
                 </>
               ) : (
