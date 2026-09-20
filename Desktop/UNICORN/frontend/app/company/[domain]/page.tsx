@@ -240,22 +240,14 @@ export default function CompanyProfilePage() {
         {/* Revenue Impact Index (RII) + delta */}
         <div className="grid grid-cols-3 gap-4 mb-8 items-stretch">
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center flex flex-col justify-center">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-indigo-600/80 mb-1">Core metric</p>
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">{RII_NAME}</p>
-            <p className="text-[10px] text-gray-600 mb-2">
-              <abbr title={RII_TAGLINE} className="cursor-help text-indigo-500/90 border-b border-dotted border-indigo-600/50 font-semibold">
-                {RII_ABBREV}
-              </abbr>
-              <span> · current</span>
-            </p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-indigo-600/80 mb-2">Revenue Impact Index</p>
             <p className={`text-5xl font-bold ${riiColor}`}>{Math.round(rii)}</p>
-            <p className="text-[10px] text-gray-600 mt-0.5">Structural messaging risk score</p>
             <p className={`text-sm mt-1 ${riiColor}`}>{latest.risk_level}</p>
             <Link
               href={METHODOLOGY_RII_HREF}
               className="text-[10px] text-indigo-700 hover:text-indigo-500 hover:underline mt-2 inline-block"
             >
-              What is {RII_ABBREV}? →
+              What is RII? →
             </Link>
           </div>
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center">
