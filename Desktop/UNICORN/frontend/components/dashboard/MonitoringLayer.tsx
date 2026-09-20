@@ -43,6 +43,11 @@ type PlaybookFix = {
 type PlaybookResponse = {
   company_id: string
   fixes: PlaybookFix[]
+  primary_issue?: {
+    dimension: string
+    title: string
+    description: string
+  }
 }
 
 interface MonitoringStatus {
