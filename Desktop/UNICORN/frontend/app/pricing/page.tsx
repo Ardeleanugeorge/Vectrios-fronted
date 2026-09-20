@@ -594,7 +594,7 @@ export default function PricingPage() {
       <main className="max-w-6xl mx-auto px-6 py-12">
         {scanMonthlyLoss && (
           <div className="mb-6 p-4 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-800 text-sm text-center font-medium">
-            ✓ Baseline successfully established. Your 14-day tracking configuration is ready.
+            ✓ Baseline successfully established. Your 14-day monitoring configuration is ready.
             <span className="font-bold text-indigo-700">
             </span>
           </div>
