@@ -388,57 +388,7 @@ export default function PricingPage() {
     }
   }, [router])
 
-  const handleTrial = async () => {
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    if (!token) {
-      setIsRouteTransitioning(true)
-      router.replace("/login")
-      return
-    }
-    let companyId = await resolveCompanyId(token)
-    if (!companyId) {
-      setIsProcessing(false)
-      alert("Could not resolve your workspace. Please refresh the page and try again, or sign out and back in.")
-      return
-    }
-    try {
-      const ud = localStorage.getItem("user_data")
-      if (ud) {
-        const p = JSON.parse(ud) as { company_id?: string }
-        if (p.company_id !== companyId) {
-          localStorage.setItem("user_data", JSON.stringify({ ...p, company_id: companyId }))
-        }
-      }
-      localStorage.setItem("company_id", companyId)
-      sessionStorage.setItem("company_id", companyId)
-    } catch {
-      /* ignore */
-    }
-
-    setIsProcessing(true)
-    setSelectedPlanName("Trial (Scale)")
-    try {
-      const scanTok = currentScanTokenFromStorage()
-      const activateUrl =
-        scanTok != null && scanTok !== ""
-          ? `${API_URL}/monitoring/activate/${companyId}?scan_token=${encodeURIComponent(scanTok)}`
-          : `${API_URL}/monitoring/activate/${companyId}`
-      const res = await fetch(activateUrl, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.detail || "Failed to activate trial")
-      }
-      setIsRouteTransitioning(true)
-      redirectToMonitoringConsole({ trialActivated: true, activePlan: "scale" })
-    } catch (e: any) {
-      alert(e?.message || "Failed to start trial")
-    } finally {
-      setIsProcessing(false)
-    }
-  }
+  const handleTrial = () => { void handleSelectPlan("Scale") }
 
   const handleSelectPlan = async (planName: string) => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
