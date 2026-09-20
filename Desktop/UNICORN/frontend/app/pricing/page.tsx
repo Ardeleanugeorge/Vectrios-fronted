@@ -596,7 +596,6 @@ export default function PricingPage() {
           <div className="mb-6 p-4 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-800 text-sm text-center font-medium">
             ✓ Baseline successfully established. Your 14-day tracking configuration is ready.
             <span className="font-bold text-indigo-700">
-              {formatCurrency(scanMonthlyLoss.low)}–{formatCurrency(scanMonthlyLoss.high)}/month
             </span>
           </div>
         )}
@@ -612,9 +611,9 @@ export default function PricingPage() {
         )}
 
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold mb-3">Your recovery plan is ready</h1>
+          <h1 className="text-4xl font-bold mb-3">Your monitoring plan is ready</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Structural baseline complete. Activate continuous monitoring to track drift, detect compression, and recover pipeline velocity.
+            Structural baseline complete. Activate continuous monitoring to track meaningful messaging changes, review structural risk, and build an evidence history over time.
           </p>
         </div>
 
@@ -623,11 +622,11 @@ export default function PricingPage() {
         <div className="max-w-2xl mx-auto mb-12">
           <div className="p-7 bg-gradient-to-br from-cyan-950/40 to-[#111827] rounded-2xl border border-blue-200 text-center">
             <p className="text-white font-semibold mb-2 text-lg">
-              Activate Revenue Architecture Monitoring
+              Activate Continuous Monitoring
             </p>
             <h2 className="text-2xl font-bold mb-2">14-day trial — full Scale access</h2>
             <p className="text-slate-200 text-sm mb-6">
-              Every trial includes the full Scale playbook so you can see the complete recovery path — not a watered-down demo.
+              Every trial includes the full monitoring workspace so you can see how VectriOS detects structural changes, surfaces review areas, and tracks them over time.
             </p>
             <button
               onClick={handleTrial}
@@ -688,7 +687,7 @@ export default function PricingPage() {
                     ${billingCycle === "annual" ? plan.priceAnnual : plan.priceMonthly}
                   </span>
                   <span className="text-gray-600">/month</span>
-                  <p className="text-xs text-emerald-700 mt-1 font-medium">vs. modeled $600K+ annual exposure</p>
+                  
                   {billingCycle === "annual" ? (
                     <p className="text-xs text-gray-600 mt-1">
                       Billed annually (${plan.priceAnnual * 12}/year) — save ${(plan.priceMonthly - plan.priceAnnual) * 12}/year
@@ -731,11 +730,11 @@ export default function PricingPage() {
           <div className="max-w-2xl mx-auto space-y-3">
             {[
               { q: "What happens after the 14-day trial?", a: "After 14 days, your plan continues at $299/month. You can cancel anytime before the trial ends — no charge." },
-              { q: "Do I need HubSpot or Google Analytics?", a: "No. VectriOS works without integrations. Connecting HubSpot and Google refines the model with your real close rates and behavioral data." },
+              { q: "Do I need HubSpot or Google Analytics?", a: "No. VectriOS works on structural evidence alone. Connecting HubSpot and GA4 adds behavioral and revenue-stage evidence layers to your monitoring model." },
               { q: "How long does setup take?", a: "Under 10 minutes. Scan your domain, enter your email, and monitoring starts automatically. No onboarding call required." },
-              { q: "How accurate are the revenue estimates?", a: "Estimates are modeled from your structural scan + 500+ SaaS peer benchmarks. They become more precise once CRM and analytics connect." },
+              { q: "How is structural risk assessed?", a: "VectriOS evaluates four structural dimensions: ICP clarity, messaging alignment, anchor density, and positioning coherence. These combine into the Revenue Impact Index (RII). Lower RII indicates stronger structural architecture." },
               { q: "Can my team use it?", a: "Yes. All plans include unlimited team seats." },
-              { q: "Is this a content audit or SEO tool?", a: "Neither. VectriOS measures revenue-stage messaging architecture — not content quality or SEO." },
+              { q: "Is this a content audit or SEO tool?", a: "Neither. VectriOS monitors structural messaging architecture — ICP clarity, positioning coherence, proof, and alignment — not content quality or SEO." },
             ].map(({ q, a }) => (
               <details key={q} className="group rounded-xl border border-gray-200 bg-gray-50 p-5 cursor-pointer">
                 <summary className="flex items-center justify-between font-medium text-gray-900 list-none">
