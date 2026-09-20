@@ -54,6 +54,7 @@ export default function PageIncidentsPanel({ companyId }: Props) {
     <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Commercial Events</p>
+        <p className="text-[10px] text-gray-400 mt-0.5">Structural changes with potential commercial relevance</p>
         <p className="text-sm font-semibold text-gray-900 mt-0.5">{incidents.length} commercial event{incidents.length>1?"s":""}</p>
       </div>
       <div className="divide-y divide-gray-100">

@@ -236,7 +236,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
       {/* Footer */}
       <div className="px-8 pb-5 pt-2 text-[10px] text-gray-700 border-t border-gray-200">
         Benchmarks are computed from anonymized assessments across the Vectri<span className="text-blue-600">OS</span> dataset.
-        Updated after each assessment run.
+        Updated after each assessment run. Percentile rank — higher indicates stronger structural performance relative to peers.
       </div>
     </div>
   )

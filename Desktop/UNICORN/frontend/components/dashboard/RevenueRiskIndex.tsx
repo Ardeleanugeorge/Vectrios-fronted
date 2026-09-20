@@ -145,7 +145,7 @@ export default function RevenueRiskIndex({
               {(() => {
                 const cov = typeof coveragePct === "number" ? coveragePct : confidence
                 return <>
-                  {cov >= 80 ? "High" : cov >= 60 ? "Moderate" : "Low"} ({Math.round(cov)}%)
+                  {cov >= 80 ? "High" : cov >= 60 ? "Moderate" : "Low"}
                 </>
               })()}
             </span>

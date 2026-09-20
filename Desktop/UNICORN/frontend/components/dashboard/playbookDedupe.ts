@@ -130,10 +130,10 @@ function buildSyntheticProofFix(ref: PlaybookFix | undefined): PlaybookFix {
     arr_recovery: "",
   }
   return {
-    title: "Strengthen value proof beside hero CTA",
+    title: "Add verified proof beside hero CTA",
     current_example: "—",
     suggested_change:
-      "Add one quantified customer outcome or a compact logo row next to the primary hero CTA.",
+      "Add verified customer proof or a compact logo row beside the primary hero CTA.",
     reason:
       "Proof at the decision moment supports the buyer story without duplicating another hero rewrite.",
     impact_contribution: ic,
