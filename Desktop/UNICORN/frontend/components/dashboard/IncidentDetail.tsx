@@ -35,10 +35,10 @@ const changeTypeLabel: Record<string, string> = {
 }
 
 const commercialMeaning: Record<string, string> = {
-  icp_drift: "When the ICP signal weakens, visitors may find it harder to recognize whether the product is relevant to them.",
-  positioning_drift: "A positioning shift can confuse buyers who are comparing alternatives. It weakens differentiation at the decision stage.",
+  icp_drift: "The broader wording makes the intended outcome less explicit, which weakens the structural ICP signal.",
+  positioning_drift: "The positioning signal changed. Structural differentiation may be less explicit in the revised copy.",
   proof_drift: "Removing or reducing proof elements may reduce structural credibility signals.",
-  cta_drift: "A CTA change affects the primary conversion action. Even small wording changes can reduce click-through rates.",
+  cta_drift: "The CTA wording changed. Structural alignment between the CTA and the value proposition may be affected.",
   general_drift: "Content changes may affect structural messaging signals relevant to the revenue stage.",
 }
 

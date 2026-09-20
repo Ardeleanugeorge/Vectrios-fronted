@@ -164,7 +164,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
         <span className="w-2 h-2 rounded-full bg-green-500" />
         <p className="text-sm text-gray-600">No active commercial incidents detected.</p>
       </div>
-      <p className="text-xs text-gray-600 mt-1 ml-4">No commercial incidents require attention.</p>
+      <p className="text-xs text-gray-600 mt-1 ml-4">No active incidents detected in monitored structural signals.</p>
     </div>
   )
 
