@@ -1021,7 +1021,7 @@ function ScanResultsContent() {
             {data.domain.charAt(0).toUpperCase()}
           </div>
           <div>
-            <p className="text-sm text-gray-600 uppercase tracking-wider">Revenue Architecture Scan</p>
+            <p className="text-sm text-gray-600 uppercase tracking-wider">Structural Architecture Scan</p>
             <p className="font-semibold text-gray-900">{data.domain}</p>
           </div>
           <div className="ml-auto">
@@ -1042,11 +1042,11 @@ function ScanResultsContent() {
               </p>
               {canShowFinancials && financialImpact && (
                 <p className="text-base text-gray-800 font-semibold mb-2">
-                  Estimated impact: {modeledAnnualLossLabel} at risk
+                  Structural baseline established
                 </p>
               )}
               <p className="text-sm text-gray-700 mt-2">
-                Financial exposure modeling available after activation. Activate monitoring to unlock your personalized revenue model.
+                Your structural messaging baseline is ready. VectriOS analyzed your public website across ICP clarity, positioning coherence, anchor density and messaging alignment.
               </p>
             </div>
           )}
@@ -1070,7 +1070,7 @@ function ScanResultsContent() {
           <div className={wideLayout ? "lg:col-span-8 space-y-4" : "contents"}>
             {data.status !== "blocked" && (
               <p className={`text-sm text-gray-600 ${wideLayout ? "mb-2" : "mb-4"}`}>
-                Structural misalignment in revenue-stage messaging – see breakdown below.
+                Structural messaging signals identified across revenue-stage pages — see the breakdown below.
               </p>
             )}
             {data.status === "blocked" && (
@@ -1080,22 +1080,22 @@ function ScanResultsContent() {
             )}
 
             <p className="text-xs text-gray-600 mb-4">
-              {data.pages_scanned} revenue page{data.pages_scanned !== 1 ? "s" : ""} analyzed
+              {data.pages_scanned} revenue-stage page{data.pages_scanned !== 1 ? "s" : ""} analyzed
             </p>
 
             {!isBlocked && (
               <div className={`${wideLayout ? "text-left" : "text-center"}`}>
                 <p className="text-sm text-gray-700 font-medium">
                   {!unlocked
-                    ? "Revenue impact detected – full breakdown after unlock"
+                    ? "Structural assessment complete — full breakdown after unlock"
                     : financialImpact
-                      ? (modeledMonthlyLossLabel ? `Modeled impact: ~${modeledMonthlyLossLabel}` : "Revenue impact detected")
-                      : "Revenue impact detected"}
+                      ? "Structural assessment complete"
+                      : "Structural assessment complete"}
                 </p>
                 {typeof data.percentile === "number" && (
                   <p className="text-xs text-gray-600 mt-1">
                     {data.percentile >= 50
-                      ? `Above-average structural performance — measurable revenue recovery still available`
+                      ? `Above-average structural performance relative to the benchmark dataset`
                       : `You're performing worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of similar SaaS companies`}
                   </p>
                 )}
@@ -1132,19 +1132,19 @@ function ScanResultsContent() {
                 <span>
                   {(data.percentile ?? 0) < 50
                     ? "Structural deficit detected against tier benchmarks"
-                    : "Strong revenue architecture — conversion leakage still compounds over time"}
+                    : "Strong structural architecture — primary review areas identified"}
                 </span>
                 {(data.percentile ?? 0) >= 50 ? (
                   <span className="text-xs opacity-80">
                     {canShowFinancials && financialImpact
-                      ? `Opportunity: ~${formatCurrency(financialImpact.recovery_low)}–${formatCurrency(financialImpact.recovery_high)}/year recoverable`
-                      : "Unlock the full simulation inside your secure console."}
+                      ? "Structural architecture shows relative strength — activate monitoring to track changes."
+                      : "Activate monitoring to add behavioral and revenue evidence layers."}
                   </span>
                 ) : (
                   <span className="text-xs opacity-80">
                     {hasHighConfidence && canShowFinancials && financialImpact
-                      ? `Estimated preventable loss: ${formatCurrency(financialImpact.arr_at_risk_low)}–${formatCurrency(financialImpact.arr_at_risk_high)}/year`
-                      : "Calibrate your metrics above to model financial exposure"}
+                      ? "Activate monitoring to add behavioral and revenue evidence layers."
+                      : "Activate monitoring to add behavioral and revenue evidence layers."}
                   </span>
                 )}
               </div>
@@ -1170,7 +1170,7 @@ function ScanResultsContent() {
             >
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shrink-0" />
               <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
-                Benchmarked against 500+ SaaS companies — structural analysis, not content grading
+                Benchmarked against 508 SaaS companies — structural messaging analysis only
               </span>
               <span className="text-indigo-600 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                 View index
@@ -1181,24 +1181,24 @@ function ScanResultsContent() {
 
         {!unlocked && (
           <div className={`p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6 ${wideLayout ? "lg:p-8 lg:mb-8" : ""}`}>
-            <p className="text-lg font-semibold text-gray-900 mb-1">Revenue compression signals detected</p>
-            <p className="text-sm text-gray-600 mb-1">Structural conversion leaks identified across revenue journey</p>
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-5">Leak severity by area</p>
+            <p className="text-lg font-semibold text-gray-900 mb-1">Structural signals detected</p>
+            <p className="text-sm text-gray-600 mb-1">Structural messaging signals identified across revenue-stage pages</p>
+            <p className="text-xs text-gray-600 uppercase tracking-widest mb-5">Signal strength by dimension</p>
             <ul className="space-y-3 text-sm text-gray-700">
               <li className="flex items-center justify-between gap-3">
-                <span>Your pages don&apos;t consistently convert</span>
+                <span>Messaging does not consistently reinforce the intended conversion path</span>
                 <span className="text-xs text-gray-600">{metricImpactLabel(data.alignment ?? 0)}</span>
               </li>
               <li className="flex items-center justify-between gap-3">
-                <span>You&apos;re attracting low-fit visitors</span>
+                <span>Audience definition is not consistently explicit across key pages</span>
                 <span className="text-xs text-gray-600">{metricImpactLabel(data.icp_clarity ?? 0)}</span>
               </li>
               <li className="flex items-center justify-between gap-3">
-                <span>Proof and numbers are too thin to justify the next step</span>
+                <span>Proof and decision-supporting anchors are limited at key decision points</span>
                 <span className="text-xs text-gray-600">{metricImpactLabel(data.anchor_density ?? 0)}</span>
               </li>
               <li className="flex items-center justify-between gap-3">
-                <span>Your category story is inconsistent across pages</span>
+                <span>Category positioning is inconsistent across monitored pages</span>
                 <span className="text-xs text-gray-600">{metricImpactLabel(data.positioning ?? 0)}</span>
               </li>
             </ul>
@@ -1212,11 +1212,9 @@ function ScanResultsContent() {
               {primarySignalDisplay(data.primary_signal).headline}
             </p>
             <p className="text-sm text-gray-600">
-              This introduces structural conversion drag across the pipeline.
+              The current messaging architecture provides limited decision-supporting proof and conversion anchoring.
             </p>
-            {data.inferred_icp && (
-              <p className="text-xs text-gray-600 mt-3">Detected audience: {data.inferred_icp}</p>
-            )}
+            
           </div>
         )}
 
@@ -1228,10 +1226,10 @@ function ScanResultsContent() {
               <span className="px-2 py-0.5 text-xs bg-indigo-600/10 text-indigo-500 rounded border border-gray-200">Locked</span>
             </div>
             <div className="space-y-3">
-              <LockedInsight label="Estimated ARR at Risk" />
-              <LockedInsight label="Algorithmic Close Rate Compression Estimate" />
-              <LockedInsight label="Velocity Recovery Target (12-Month Rolling)" />
-              <LockedInsight label="Revenue Trajectory (12 months)" />
+              <LockedInsight label="Structural Messaging Risk Assessment" />
+              <LockedInsight label="ICP Clarity Assessment" />
+              <LockedInsight label="Messaging Alignment Assessment" />
+              <LockedInsight label="Anchor Density Assessment" />
               <LockedInsight label="Structural Root Cause & Page-Level Breakdown" />
               <LockedInsight label="SaaS Architecture Index Peer Comparison (Cohorts)" />
             </div>
@@ -1247,23 +1245,23 @@ function ScanResultsContent() {
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold mb-2 text-gray-900 max-w-xl mx-auto leading-snug">
-              Address Structural Messaging Drift Before It Restricts Pipeline Velocity.</h2>
+              Address Structural Messaging Drift Before It Compounds Across Your Website.</h2>
             <p className="text-gray-600 mb-5 text-sm max-w-2xl mx-auto leading-relaxed">
-              Modeled using benchmark-adjusted close-rate compression vs 500+ SaaS peer set.
+              VectriOS identifies structural messaging changes and surfaces the signals worth reviewing across your revenue-stage pages.
             </p>
             <div className="text-left max-w-2xl mx-auto mb-5">
               <p className="text-sm text-gray-700 mb-2">
-                This loss is not visible in your dashboard.
+                Structural drift accumulates gradually and becomes harder to trace without continuous monitoring.
               </p>
               <p className="text-sm text-gray-600">
-                It shows up as slower deal cycles, lower close rates, and unqualified pipeline.
+                Activate monitoring to detect meaningful changes automatically every 24h.
               </p>
             </div>
             <div className="text-left max-w-2xl mx-auto mb-6 rounded-lg border border-white/10 bg-white/[0.02] p-4">
               <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Why this is happening</p>
               <ul className="space-y-1.5 text-sm text-gray-700">
-                <li>Your ICP is too broad -&gt; wrong buyers enter funnel</li>
-                <li>Proof is not strong at decision stage</li>
+                <li>ICP definition is too broad across key messaging surfaces</li>
+                <li>Decision-stage proof is not sufficiently explicit</li>
                 <li>Messaging shifts across key pages</li>
               </ul>
             </div>
@@ -1271,10 +1269,10 @@ function ScanResultsContent() {
             {canShowFinancials && (
               <div className="space-y-2.5 mb-4 text-left max-w-md mx-auto">
                 {[
-                  "Which pages are causing the loss",
-                  "Where conversion breaks",
-                  "What to fix first to recover revenue",
-                  "How much you can recover (modeled)",
+                  "Which pages show the strongest structural signals",
+                  "Where structural ICP clarity and positioning gaps concentrate",
+                  "What to review first based on structural priority",
+                  "How structural signals change over time with monitoring",
                 ].map((line) => (
                   <div key={line} className="flex items-start gap-2 text-sm text-gray-700">
                     <svg className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1287,15 +1285,10 @@ function ScanResultsContent() {
             )}
             {canShowFinancials && (
               <p className="text-xs text-gray-600 mb-5">
-                Companies at your level typically recover $80K-$220K/year.
-                <span className="block text-xs text-gray-500 mt-1">Modeled using your structural scan + peer conversion benchmarks. Refined further once CRM connects.</span>
+                Connect GA4 and HubSpot to add behavioral and revenue evidence layers to your structural monitoring.
               </p>
             )}
-            {modeledAnnualLossLabel && canShowFinancials && (
-              <p className="text-sm text-gray-600 font-semibold mb-4">
-                Estimated impact: ~{modeledAnnualLossLabel} at risk
-              </p>
-            )}
+            
             <button
               onClick={handleUnlock}
               className="px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
@@ -1303,7 +1296,7 @@ function ScanResultsContent() {
               Activate Continuous Drift Monitoring
             </button>
             <p className="text-xs text-gray-600 mt-3 max-w-md mx-auto text-center leading-relaxed">
-              Revenue leakage compounds weekly without intervention · Takes 30 seconds
+              Monitor meaningful structural changes automatically every 24h · Takes 30 seconds
             </p>
           </div>
         )}
@@ -1352,20 +1345,20 @@ function ScanResultsContent() {
                   </h3>
                   <p className="text-base font-semibold text-gray-800 mb-2 text-center lg:text-left">
                     {impact
-                      ? `Modeled annual impact: ~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year`
-                      : "Modeled annual impact based on structural analysis"}
+                      ? "Structural signals identified across revenue-stage pages"
+                      : "Structural signals identified across revenue-stage pages"}
                   </p>
                   <p className="text-sm text-gray-600 mb-6 max-w-3xl text-center lg:text-left">
-                    Modeled using benchmark-adjusted close-rate compression vs 500+ SaaS peer set.
+                    VectriOS identifies structural messaging changes and surfaces the signals worth reviewing across your revenue-stage pages.
                   </p>
                   {canShowFinancials && (
                   <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-indigo-600/[0.04] p-4">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-2">We&apos;ve built a full revenue model for your business</p>
                     <ul className="space-y-1.5 text-sm text-gray-700">
-                      <li>Annual revenue at risk</li>
-                      <li>Recoverable revenue range</li>
-                      <li>Close rate impact</li>
-                      <li>Revenue trajectory over time</li>
+                      <li>Structural messaging risk assessment</li>
+                      <li>Primary structural review areas</li>
+                      <li>ICP clarity and positioning assessment</li>
+                      <li>Structural signal trend over monitoring history</li>
                     </ul>
                   </div>
                   )}
@@ -1374,7 +1367,7 @@ function ScanResultsContent() {
                     <p className="text-sm font-semibold text-gray-700">
                       {impact && mLow !== null && mHigh !== null
                         ? `Unmonitored structural drift compounds into an estimated ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}.`
-                        : "Structural messaging drift compounds into measurable pipeline compression over time."}
+                        : "Structural messaging drift accumulates gradually and becomes harder to trace without continuous monitoring."}
                     </p>
                     <p className="text-sm text-gray-600 mt-1">
                       Structural monitoring provides early detection before pipeline metrics reflect the impact.
@@ -1383,27 +1376,23 @@ function ScanResultsContent() {
                   )}
                   {canShowFinancials && (
                   <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
-                    <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-1">Preview of your recovery model</p>
-                    <p className="text-[11px] text-gray-600 mb-3">Based on 500+ SaaS revenue architectures</p>
+                    <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-1">Structural assessment preview</p>
+                    <p className="text-[11px] text-gray-600 mb-3">Based on 508 SaaS structural assessments</p>
                     <div className="grid sm:grid-cols-3 gap-3">
                       <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Annual revenue at risk</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {impact ? `~${formatCurrency(impact.arr_at_risk_low)}–${formatCurrency(impact.arr_at_risk_high)}/year` : "Full modeled loss available after unlock"}
-                        </p>
-                        <p className="text-[11px] text-gray-600 mt-1">Modeled annual downside</p>
+                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Structural Risk</p>
+                        <p className="text-2xl font-bold text-gray-900">{data.risk_level ?? "Assessed"}</p>
+                        <p className="text-[11px] text-gray-600 mt-1">Current structural classification</p>
                       </div>
-                      <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Recovery potential</p>
-                        <p className="text-2xl font-bold text-gray-900">
-                          {impact ? `~${formatCurrency(impact.recovery_low)}–${formatCurrency(impact.recovery_high)}/year` : "Recovery range calculated (unlock to view)"}
-                        </p>
-                        <p className="text-[11px] text-gray-600 mt-1">If structural fixes are applied</p>
+                      <div className="rounded-lg border border-indigo-200 bg-indigo-50 p-4">
+                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Primary Review Area</p>
+                        <p className="text-xl font-bold text-gray-900">ICP Clarity</p>
+                        <p className="text-[11px] text-gray-600 mt-1">Highest structural signal</p>
                       </div>
-                      <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-700 mb-1">Close-rate compression</p>
-                        <p className="text-2xl font-bold text-gray-800">{modeledCloseRateGapLabel || "-1.4%"}</p>
-                        <p className="text-[11px] text-gray-600">Estimated structural compression</p>
+                      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Monitoring Cadence</p>
+                        <p className="text-2xl font-bold text-gray-800">24h</p>
+                        <p className="text-[11px] text-gray-600">Automated structural scan</p>
                       </div>
                     </div>
                     {!isAuthenticated && (
@@ -1417,23 +1406,23 @@ function ScanResultsContent() {
                   {canShowFinancials && (
                   
                   <p className="text-xs text-gray-600 mb-6">
-                    Companies at your level typically recover $80K-$220K/year.
-                  <span className="block text-xs text-gray-500 mt-1">Modeled using your structural scan + peer conversion benchmarks. Refined further once CRM connects.</span>
+                    Connect GA4 and HubSpot to add behavioral and revenue evidence layers to your structural monitoring.
+                  <span className="block text-xs text-gray-500 mt-1">Structural evidence only — behavioral and revenue context requires connected integrations.</span>
                   </p>
                   )}
 
                   {canShowFinancials && (
   <div className="grid lg:grid-cols-12 gap-6 mb-8">
     <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-white border border-gray-200/70">
-      <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-3">Where your revenue is leaking most</p>
+      <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-3">Primary structural signals</p>
       <p className="text-xs text-gray-600 mb-3">
-        This loss is not visible in your dashboard. It appears as slower deal cycles, lower close rates, and unqualified pipeline.
+        Structural drift accumulates gradually and becomes harder to trace without continuous monitoring. Activate monitoring to detect meaningful changes automatically every 24h.
       </p>
       <div className="rounded-lg border border-white/10 bg-white/[0.02] p-3 mb-3">
         <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Why this is happening</p>
         <ul className="space-y-1.5 text-xs text-gray-700">
-          <li>Your ICP is too broad -&gt; wrong buyers enter funnel</li>
-          <li>Proof is not strong at decision stage</li>
+          <li>ICP definition is too broad across key messaging surfaces</li>
+          <li>Decision-stage proof is not sufficiently explicit</li>
           <li>Messaging shifts across key pages</li>
         </ul>
       </div>
@@ -1449,10 +1438,7 @@ function ScanResultsContent() {
                                 <p className="text-xs text-gray-600 mt-1 leading-relaxed">{d.description || ""}</p>
                               </div>
                               <div className="text-right shrink-0">
-                                <p className="text-sm font-bold text-gray-700 tabular-nums">
-                                  ~{formatCurrency(Number(d.monthly_low || 0))}–{formatCurrency(Number(d.monthly_high || 0))}/mo
-                                </p>
-                                <p className="text-[11px] text-gray-600 mt-0.5">estimated impact</p>
+                                <p className="text-[11px] text-gray-600 mt-0.5">Structural signal</p>
                               </div>
                             </div>
                           </div>
@@ -1473,15 +1459,15 @@ function ScanResultsContent() {
                             Start with this first – it drives the largest share of your modeled monthly loss.
                           </p>
                           <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-                            <p className="text-xs uppercase tracking-wider text-gray-600 mb-1">Estimated recoverable from #1</p>
-                            <p className="text-sm font-semibold text-emerald-200">
-                              ~{formatCurrency(Number(drivers[0]?.monthly_low || 0))}–{formatCurrency(Number(drivers[0]?.monthly_high || 0))}/month
+                            <p className="text-xs uppercase tracking-wider text-gray-600 mb-1">Primary structural review area</p>
+                            <p className="text-sm font-semibold text-gray-700">
+                              {drivers[0]?.title || "ICP Clarity"}
                             </p>
                           </div>
                           <p className="text-xs text-gray-600 mt-3">
                             {impact
-                              ? `Companies at your level typically recover ~${formatCurrency(impact.recovery_low)}–${formatCurrency(impact.recovery_high)}/year.`
-                              : "Recovery range unlocks after a full crawl model pass."}
+                              ? "Connect GA4 and HubSpot to add behavioral and revenue evidence to your monitoring model."
+                              : "Activate monitoring to track structural changes over time."}
                           </p>
                         </>
                       ) : (
@@ -1568,7 +1554,7 @@ function ScanResultsContent() {
                   {[
                     "Exact pages causing the loss",
                     "Where conversion breaks (and why)",
-                    "What to fix first to recover revenue",
+                    "What to review first based on structural priority",
                     "Modeled recovery by priority and timeline",
                   ].map((line) => (
                     <li key={line} className="flex items-start gap-2">
