@@ -182,7 +182,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
                 {ordinal(riiRank)} <span className="text-sm text-gray-600 font-normal">percentile</span>
               </p>
               <p className="text-[10px] text-gray-600 mt-0.5">
-                {riiRank >= 50 ? `stronger structural score than ${riiRank}% of ${data.rii?.total_companies ?? ""} companies` : `higher risk than ${100 - riiRank}% of companies`}
+                {riiRank}th percentile
               </p>
             </div>
           )}
