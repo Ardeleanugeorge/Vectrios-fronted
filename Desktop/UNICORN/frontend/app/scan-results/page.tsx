@@ -578,7 +578,7 @@ function ScanResultsContent() {
     if (typeof window !== "undefined") {
       const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
       if (auth) {
-        router.push("/pricing?from=scan&focus=recovery")
+        router.push("/pricing?from=scan&focus=monitoring")
         return
       }
       const storedEmail = readStoredUserEmail()
@@ -1340,9 +1340,7 @@ function ScanResultsContent() {
               return (
                 <>
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-3 text-center lg:text-left max-w-4xl">
-                    {impact && mLow !== null && mHigh !== null
-                      ? `Unmonitored structural drift compounds into an estimated ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}/month`
-                      : "Structural conversion loss confirmed"}
+                    {"Structural Diagnostic Complete"}
                   </h3>
                   <p className="text-base font-semibold text-gray-800 mb-2 text-center lg:text-left">
                     {impact
@@ -1354,7 +1352,7 @@ function ScanResultsContent() {
                   </p>
                   {canShowFinancials && (
                   <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-indigo-600/[0.04] p-4">
-                    <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-2">We&apos;ve built a full revenue model for your business</p>
+                    <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-2">Structural diagnostic summary</p>
                     <ul className="space-y-1.5 text-sm text-gray-700">
                       <li>Structural messaging risk assessment</li>
                       <li>Primary structural review areas</li>
@@ -1515,16 +1513,16 @@ function ScanResultsContent() {
               /* -- STATE B: Authenticated but no active plan ? upgrade CTA -- */
               <div className="p-5 sm:p-6 rounded-xl bg-gray-50 border border-amber-800/40">
                 <p className="text-xs font-semibold text-gray-700/90 uppercase tracking-wider mb-2">
-                  Stop the leakage before it compounds further
+                  Address structural messaging drift
                 </p>
                 <p className="text-sm text-gray-700 mb-3">
-                  You&apos;re logged in, but your plan hasn&apos;t been activated yet. Upgrade to access the full recovery model, page-level fixes, and automated monitoring.
+                  You’re logged in, but monitoring hasn’t been activated yet. Activate monitoring to track meaningful structural changes automatically every 24h.
                 </p>
                 <ul className="space-y-2 text-sm text-gray-600 mb-4">
                   {[
-                    "Exact pages causing the loss",
+                    "Page-level structural findings",
                     "Before/After copy for each fix",
-                    "Modeled recovery by priority",
+                    "Prioritized structural review actions",
                     "24h automated monitoring",
                   ].map((line) => (
                     <li key={line} className="flex items-start gap-2">
@@ -1534,7 +1532,7 @@ function ScanResultsContent() {
                   ))}
                 </ul>
                 <Link
-                href="/pricing?from=scan&focus=recovery"
+                href="/pricing?from=scan&focus=monitoring"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
                   Activate Continuous Drift Monitoring
@@ -1544,19 +1542,19 @@ function ScanResultsContent() {
               /* -- STATE C: Unauthenticated ? continue to login/plans (not a second signup) -- */
               <div className="p-5 sm:p-6 rounded-xl bg-gray-50 border border-gray-200/80">
                 <p className="text-xs font-semibold text-indigo-500/90 uppercase tracking-wider mb-2">
-                  {returningAccountHint ? "Next step" : "Full recovery plan locked"}
+                  {returningAccountHint ? "Next step" : "Full diagnostic locked"}
                 </p>
                 <p className="text-sm text-gray-700 mb-3">
                   {returningAccountHint
                     ? "You already unlocked this scan from this browser. Sign in (password or one-time code) if the page lost your session, or open plans to activate monitoring."
-                    : "We've mapped exactly which pages are causing the loss, where conversion breaks, what to fix first, and how much you can recover."}
+                    : "Activate monitoring to track structural messaging changes and review primary signals across your revenue-stage pages."}
                 </p>
                 <ul className="space-y-2 text-sm text-gray-600 mb-4">
                   {[
-                    "Exact pages causing the loss",
+                    "Page-level structural findings",
                     "Where conversion breaks (and why)",
                     "What to review first based on structural priority",
-                    "Modeled recovery by priority and timeline",
+                    "Prioritized structural review actions",
                   ].map((line) => (
                     <li key={line} className="flex items-start gap-2">
                       <span className="text-emerald-400 mt-0.5 shrink-0" aria-hidden>✓</span>
@@ -1567,7 +1565,7 @@ function ScanResultsContent() {
                 {returningAccountHint ? (
                   <div className="flex flex-col sm:flex-row gap-3 mb-2">
                     <Link
-                      href="/pricing?from=scan&focus=recovery"
+                      href="/pricing?from=scan&focus=monitoring"
                       className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto text-center"
                     >
                       View plans
@@ -1613,7 +1611,7 @@ function ScanResultsContent() {
                       </Link>
                       {" – "}
                       <Link
-                        href="/pricing?from=scan&focus=recovery"
+                        href="/pricing?from=scan&focus=monitoring"
                         className="text-gray-600 hover:text-blue-600 underline-offset-2 hover:underline"
                       >
                         View plans
@@ -1626,7 +1624,7 @@ function ScanResultsContent() {
                         Sign in
                       </Link>
                       {" – "}
-                      <Link href="/pricing?from=scan&focus=recovery" className="text-gray-600 hover:text-blue-600 underline-offset-2 hover:underline">
+                      <Link href="/pricing?from=scan&focus=monitoring" className="text-gray-600 hover:text-blue-600 underline-offset-2 hover:underline">
                         View plans
                       </Link>
                     </>
