@@ -358,10 +358,10 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">EXAMPLE COMMERCIAL EVENT</p>
           <p className="text-center text-base md:text-lg font-semibold text-slate-900 dark:text-gray-900 mb-6 max-w-xl mx-auto leading-snug">
-            From website changes to commercial events.
+            From website changes to structured events with commercial relevance.
           </p>
           <p className="text-center text-sm md:text-base text-gray-500 mb-10 max-w-xl mx-auto leading-relaxed">
-            VectriOS turns meaningful website changes into structured commercial events — showing what changed, why it matters, the evidence behind the signal, and what to review next.
+            VectriOS turns meaningful website changes into structured events with commercial relevance — showing what changed, why it matters, the evidence behind the signal, and what to review next.
           </p>
 
           {/* Real Dashboard Screenshot */}
