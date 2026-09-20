@@ -21,7 +21,7 @@ export default function MethodologyPage() {
         <section className="mb-12 border-b border-gray-200 pb-12">
           <h2 className="text-2xl font-bold mb-6">The Core Premise</h2>
           <div className="space-y-4 text-gray-600 leading-relaxed">
-            <p>Revenue risk does not begin in analytics dashboards. It begins in messaging architecture.</p>
+            <p>Revenue-stage risk can begin upstream of analytics, in messaging architecture.</p>
             <p>VectriOS models structural messaging risk — the gap between how your messaging is architected and the requirements of your revenue-stage strategy.</p>
             <p>Structural messaging risk accumulates across ICP definition, positioning architecture, conversion anchoring, and revenue-stage alignment. Most teams measure performance. Few monitor structural integrity.</p>
           </div>
@@ -108,7 +108,7 @@ export default function MethodologyPage() {
           <h2 className="text-2xl font-bold mb-6">5. Confidence Layer</h2>
           <div className="space-y-3 text-gray-600 leading-relaxed">
             <p>Every classification includes a Structural Signal Confidence evaluation — assessing signal density, alignment variance, sample reliability, and override frequency.</p>
-            <p>High risk with low confidence requires further sampling. High risk with high confidence requires intervention.</p>
+            <p>High risk with low confidence requires further sampling. High-confidence high-risk signals warrant intervention review.</p>
           </div>
         </section>
 
@@ -125,7 +125,7 @@ export default function MethodologyPage() {
         {/* Dark CTA */}
         <section className="mb-12 bg-slate-900 rounded-2xl p-8">
           <p className="text-xs font-bold tracking-widest uppercase text-indigo-500 mb-3">Monitoring Infrastructure</p>
-          <p className="text-white text-lg font-semibold mb-2">Analytics measure what happened. VectriOS monitors the structural signals that precede it.</p>
+          <p className="text-white text-lg font-semibold mb-2">Analytics measure what happened. VectriOS monitors the structural signals upstream of performance data.</p>
           <p className="text-slate-400 leading-relaxed">Revenue-Stage Monitoring Infrastructure operates upstream from performance dashboards — tracking structural messaging integrity before changes become difficult to trace.</p>
         </section>
 
