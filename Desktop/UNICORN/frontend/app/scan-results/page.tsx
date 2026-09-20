@@ -1340,7 +1340,7 @@ function ScanResultsContent() {
               return (
                 <>
                   <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-3 text-center lg:text-left max-w-4xl">
-                    {"Structural Diagnostic Complete"}
+                    {"Primary structural review areas identified"}
                   </h3>
                   <p className="text-base font-semibold text-gray-800 mb-2 text-center lg:text-left">
                     {impact
