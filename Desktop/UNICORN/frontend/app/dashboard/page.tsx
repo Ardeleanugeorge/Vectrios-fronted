@@ -962,28 +962,7 @@ export default function DashboardPage() {
             /* STATE 3 ΓÇö CONTINUOUS MONITORING ACTIVE */
             <MonitoringLayer 
               monitoringStatus={monitoringStatus}
-              diagnostic={
-                (() => {
-                  // Prefer monitoringStatus.action_layer (always uses real company ARR)
-                  // but merge its fixes with existing diagnostic.action_layer to preserve all fixes
-                  const diagAction = diagnostic?.action_layer;
-                  const monitorAction = monitoringStatus.action_layer;
-                  if (!monitorAction) return diagnostic;
-                  if (!diagAction) return { ...diagnostic, action_layer: monitorAction };
-                  // Merge fixes, deduplicate by title (case-insensitive), preferring monitor's version
-                  const existingFixes = diagAction.fixes || [];
-                  const newFixes = monitorAction.fixes || [];
-                  const fixMap = new Map<string, any>();
-                  existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix));
-                  newFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix));
-                  const mergedFixes = Array.from(fixMap.values());
-                  const mergedActionLayer: ActionLayerPayload = {
-                    ...monitorAction,
-                    fixes: mergedFixes,
-                  };
-                  return { ...diagnostic, action_layer: mergedActionLayer };
-                })()
-              }
+              diagnostic={diagnostic}
               alerts={alerts}
               onMarkAlertRead={markAlertRead}
               trialDays={trialDaysLeft}
