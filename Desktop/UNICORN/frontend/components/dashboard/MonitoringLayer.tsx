@@ -81,6 +81,7 @@ interface MonitoringStatus {
     anchor_density_score: number | null
     positioning_coherence_score: number | null
     primary_risk_driver: string | null
+    primary_risk_driver_short?: string | null
     rii_score: number | null
     confidence_score?: number | null
   }
@@ -361,45 +362,11 @@ export default function MonitoringLayer({
   const posCount = revenueDelta?.drivers?.positives?.length ?? 0
   const riskCount = revenueDelta?.drivers?.risks?.length ?? 0
 
-  // Extract and simplify primary risk driver from recommendations or diagnostic
-  const simplifyRiskDriver = (text: string): string => {
-    if (!text) return "Messaging Architecture Misalignment"
-    
-    // Remove action verbs and make it more direct
-    let simplified = text
-      .replace(/^Reinforce |^Introduce |^Reassess |^Align |^Improve /i, "")
-      .replace(/ more explicitly| more consistently| across .*$/i, "")
-      .replace(/\.$/, "")
-      .trim()
-    
-    // Transform common patterns to shorter, executive-friendly format
-    if (simplified.toLowerCase().includes("align") && simplified.toLowerCase().includes("icp")) {
-      simplified = "Messaging not aligned with ICP pain"
-    } else if (simplified.toLowerCase().includes("icp") && simplified.toLowerCase().includes("signal")) {
-      simplified = "ICP signal absence"
-    } else if (simplified.toLowerCase().includes("anchor") || simplified.toLowerCase().includes("conversion")) {
-      simplified = "Conversion anchor gaps"
-    } else if (simplified.toLowerCase().includes("messaging") && simplified.toLowerCase().includes("architecture")) {
-      simplified = "Messaging Architecture Misalignment"
-    } else if (simplified.toLowerCase().includes("alignment") || simplified.toLowerCase().includes("align")) {
-      simplified = "Strategic misalignment"
-    }
-    
-    // Keep it under 50 characters for executive clarity
-    if (simplified.length > 50) {
-      simplified = simplified.substring(0, 47) + "..."
-    }
-    
-    return simplified
-  }
-  
-  const primaryRiskDriver = diagnostic?.recommendations && diagnostic.recommendations.length > 0
-    ? simplifyRiskDriver(diagnostic.recommendations[0])
-    : diagnostic?.primary_revenue_leak
-      ? simplifyRiskDriver(diagnostic.primary_revenue_leak)
-      : ss?.primary_risk_driver
-        ? simplifyRiskDriver(ss.primary_risk_driver)
-        : "Messaging Architecture Misalignment"
+  // Executive label comes from the monitoring snapshot - the UI does not re-derive semantics
+  const primaryRiskDriver =
+    ss?.primary_risk_driver_short ||
+    ss?.primary_risk_driver ||
+    "Structural review area not yet determined"
   const displayRiskDriver = uiState === "low" && primaryRiskDriver.toLowerCase().includes("misalignment")
     ? "Minor messaging misalignment detected"
     : primaryRiskDriver
