@@ -464,15 +464,9 @@ const delayTimer = setTimeout(() => {
           badges: Array.isArray(fix.badges) ? fix.badges : []
         }
       }
-      // Existing fixes from diagnostic action layer
-      const existingFixes = diagnostic?.action_layer?.fixes || []
+      // Use only playbook fixes - canonical source, no merge with legacy action_layer
       const newFixes = fixesArr.map(mapFix)
-
-      // Merge fixes, deduplicate by title (case-insensitive), preferring new fixes
-      const fixMap = new Map<string, any>()
-      existingFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
-      newFixes.forEach((fix: any) => fixMap.set(fix.title.toLowerCase(), fix))
-      const mergedFixes = Array.from(fixMap.values())
+      const mergedFixes = newFixes
       
       const primary = fixesArr[0]
       const apiPrimaryIssue = data?.primary_issue
