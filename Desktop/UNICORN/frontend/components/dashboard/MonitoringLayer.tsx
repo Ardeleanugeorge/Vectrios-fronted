@@ -327,12 +327,13 @@ export default function MonitoringLayer({
   const trendText =
     trend === "improving" ? "Trend: Improving - recent changes are reducing risk."
     : trend === "escalating" ? "Trend: Declining - risk is increasing over time."
+    : trend === "unstable" ? "Trend: No clear direction across recent scans."
     : "Trend: Stable - no significant changes detected."
   // If delta is exactly zero, force a stable message to avoid contradiction with "No change"
   const zeroDelta =
     revenueDelta &&
-    typeof revenueDelta.delta_monthly_loss === "number" &&
-    revenueDelta.delta_monthly_loss === 0
+    typeof revenueDelta.delta_rii === "number" &&
+    revenueDelta.delta_rii === 0
   const hasRecentCritical = (monitoringStatus.recent_drift_events || []).some(e => (e.severity || "").toLowerCase() === "critical")
   const isVolatile = (monitoringStatus.volatility_classification || "").toLowerCase() !== "stable"
   const effectiveTrendText =
