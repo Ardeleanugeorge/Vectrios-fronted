@@ -75,7 +75,7 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
               {rii !== null && (
                 <>
                   <span className="text-gray-300">·</span>
-                  <span className={`text-xs font-semibold ${riskColor}`}>RII {Math.floor(rii)}</span>
+                  <span className={`text-xs font-semibold ${riskColor}`}>RII {Math.round(rii)}</span>
                   <span className="text-xs text-gray-500">{riskLabel}</span>
                 </>
               )}
@@ -133,7 +133,7 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-xs text-gray-500">Last scan: {lastScanLabel}</span>
-          {rii !== null && <span className={`text-xs font-semibold ${riskColor}`}>RII {Math.floor(rii)}</span>}
+          {rii !== null && <span className={`text-xs font-semibold ${riskColor}`}>RII {Math.round(rii)}</span>}
         </div>
         <a href="#revenue-change-detection" className="text-xs font-semibold text-red-700 hover:text-red-800">
           Investigate change →
