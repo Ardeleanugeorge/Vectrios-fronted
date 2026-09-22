@@ -6,7 +6,7 @@ interface StructuralRiskOverviewProps {
   riskScore: number | null
   alignmentScore?: number | null
   riskLevel: string
-  trendDirection?: string
+  trendDirection?: string | null
   driftStatus?: string
   riskDelta?: number
   suppressTrend?: boolean
@@ -19,14 +19,14 @@ export default function StructuralRiskOverview({
   riskScore,
   alignmentScore,
   riskLevel,
-  trendDirection = "unstable",
+  trendDirection = null,
   driftStatus = "stable",
   riskDelta,
   suppressTrend = false,
   volatileSignalActive = false,
   isFirstScan = false,
 }: StructuralRiskOverviewProps) {
-  const getTrendColor = (trend: string) => {
+  const getTrendColor = (trend: string | null) => {
     switch (trend) {
       case "escalating": return "text-red-600"
       case "improving": return "text-green-600"
@@ -35,8 +35,9 @@ export default function StructuralRiskOverview({
     }
   }
 
-  const getTrendLabel = (trend: string) => {
-    const t = (trend || "stable").toLowerCase()
+  const getTrendLabel = (trend: string | null) => {
+    if (!trend) return "Trend not yet available"
+    const t = trend.toLowerCase()
     if (t === "unstable") return "No clear trend"
     if (volatileSignalActive && t === "stable") return "Stabilizing after recent volatility"
     switch (t) {
@@ -47,8 +48,11 @@ export default function StructuralRiskOverview({
     }
   }
 
-  const getTrendSubtext = (trend: string) => {
+  const getTrendSubtext = (trend: string | null) => {
     const t = (trend || "").toLowerCase()
+    if (!trend) {
+      return "Trend becomes available once several scans have been recorded."
+    }
     if (t === "unstable") {
       return "RII has not moved consistently in one direction across recent scans."
     }

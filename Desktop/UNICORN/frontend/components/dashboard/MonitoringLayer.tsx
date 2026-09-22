@@ -368,9 +368,8 @@ export default function MonitoringLayer({
     ss?.primary_risk_driver_short ||
     ss?.primary_risk_driver ||
     "Structural review area not yet determined"
-  const displayRiskDriver = uiState === "low" && primaryRiskDriver.toLowerCase().includes("misalignment")
-    ? "Minor messaging misalignment detected"
-    : primaryRiskDriver
+  // Severity is conveyed by RII and ui_state - the driver label stays as the backend named it
+  const displayRiskDriver = primaryRiskDriver
 
 
   useEffect(() => {
@@ -783,7 +782,7 @@ const delayTimer = setTimeout(() => {
         riskScore={rii}
         alignmentScore={alignmentScore}
         riskLevel={diagnostic?.risk_level || "MODERATE"}
-        trendDirection={monitoringStatus.trend_direction || "unstable"}
+        trendDirection={monitoringStatus.trend_direction ?? null}
         driftStatus={monitoringStatus.drift_status || "stable"}
         riskDelta={riskDelta ?? undefined}
       />
