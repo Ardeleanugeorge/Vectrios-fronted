@@ -473,6 +473,7 @@ export default function ActionableInsights({
     ? [...baseLayer.fixes]
     : [...baseLayer.fixes, ...additionalFixes].slice(0, 8)
   const mergedFixes = dedupeBuyerHeroPlaybookFixes(combined)
+  if (typeof window !== "undefined") console.log("[AI] mergedFixes:", mergedFixes.length, "combined:", combined.length, "actionLayer fixes:", actionLayer?.fixes?.length)
 
   const effectiveLayer = {
     ...baseLayer,
