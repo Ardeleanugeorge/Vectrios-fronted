@@ -12,6 +12,7 @@ interface RevenueRiskIndexProps {
   source?: "monitoring" | "diagnostic" | "fallback"
   coveragePct?: number | null
   assessmentDate?: string | null
+  primaryDimension?: string | null
 }
 
 export default function RevenueRiskIndex({
@@ -23,6 +24,7 @@ export default function RevenueRiskIndex({
   source,
   coveragePct = null,
   assessmentDate = null,
+  primaryDimension = null,
 }: RevenueRiskIndexProps) {
   const effectiveConfidence = typeof coveragePct === "number" ? coveragePct : confidence
   const displayScore = riskScore !== null ? Math.floor(Math.min(riskScore, 100)) : null
@@ -53,9 +55,27 @@ export default function RevenueRiskIndex({
   /** Avoid “strong messaging” + “moderate risk” contradiction — copy tracks score band */
   const heroBodyPrimary =
     scoreClass === "LOW"
-      ? "Your messaging architecture shows low structural risk. Primary review area: ICP clarity and positioning."
+      ? (() => {
+        const _dimLabel: Record<string, string> = {
+          anchor: "anchor density",
+          icp: "ICP clarity",
+          positioning: "positioning coherence",
+          alignment: "messaging alignment",
+        }
+        const _dim = primaryDimension ? (_dimLabel[primaryDimension] || primaryDimension) : "ICP clarity and positioning"
+        return `Your messaging architecture shows low structural risk. Primary review area: ${_dim}.`
+      })()
       : scoreClass === "MODERATE"
-        ? "Moderate structural risk detected. Primary opportunity concentrated in ICP clarity and positioning."
+        ? (() => {
+        const _dimLabel: Record<string, string> = {
+          anchor: "anchor density",
+          icp: "ICP clarity",
+          positioning: "positioning coherence",
+          alignment: "messaging alignment",
+        }
+        const _dim = primaryDimension ? (_dimLabel[primaryDimension] || primaryDimension) : "ICP clarity and positioning"
+        return `Moderate structural risk detected. Primary opportunity concentrated in ${_dim}.`
+      })()
         : "Elevated structural risk on revenue-stage messaging — prioritize the playbook and monitoring signals."
 
   const heroBodySecondary =
