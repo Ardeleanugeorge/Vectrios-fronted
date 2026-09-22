@@ -174,7 +174,7 @@ export default function RiiTimelineChart({ companyId, riskDelta, uiState = "medi
           <p className={`text-lg font-bold ${totalDelta > 2 ? "text-red-400" : totalDelta < -2 ? "text-green-400" : "text-gray-400"}`}>
             {totalDelta > 0 ? "+" : ""}{totalDelta.toFixed(1)}
           </p>
-          <p className="text-[10px] text-gray-600 mt-0.5">{uiState === "low" ? "Stability delta" : "RII delta"} ({entries.length}d)</p>
+          <p className="text-[10px] text-gray-600 mt-0.5">{uiState === "low" ? "Stability delta" : "RII delta"} ({entries.length} scans)</p>
         </div>
       </div>
 
