@@ -37,20 +37,20 @@ export default function StructuralRiskOverview({
 
   const getTrendLabel = (trend: string) => {
     const t = (trend || "stable").toLowerCase()
-    if (t === "unstable") return "Trend stabilizing"
+    if (t === "unstable") return "No clear trend"
     if (volatileSignalActive && t === "stable") return "Stabilizing after recent volatility"
     switch (t) {
       case "escalating": return "Deteriorating"
       case "improving": return "Improving"
       case "stable": return "Stable"
-      default: return "Stabilizing"
+      default: return "No clear trend"
     }
   }
 
   const getTrendSubtext = (trend: string) => {
     const t = (trend || "").toLowerCase()
     if (t === "unstable") {
-      return "Monitoring cadence active — trend data accumulating."
+      return "RII has not moved consistently in one direction across recent scans."
     }
     return null
   }
