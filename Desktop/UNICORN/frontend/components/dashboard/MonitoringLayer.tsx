@@ -717,6 +717,7 @@ const delayTimer = setTimeout(() => {
         anchorDensity={anchorDensity}
         uiState={uiState}
         deltaDirection={revenueDelta?.direction}
+        leadingStructuralSignal={displayRiskDriver}
       />
 
       {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action

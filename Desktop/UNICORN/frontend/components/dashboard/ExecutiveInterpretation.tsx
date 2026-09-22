@@ -45,11 +45,16 @@ export default function ExecutiveInterpretation({
   const primaryStructuralTheme =
     (leadingStructuralSignal && leadingStructuralSignal.trim()) || fallbackFault
 
-  /** One idea, no numbers — dollars live in Financial summary + Optimization Model */
+  /** One idea, no numbers — the named area comes from the monitoring snapshot, never hardcoded */
+  const focusArea = (leadingStructuralSignal && leadingStructuralSignal.trim()) || null
   const takeawayLine =
     uiState === "low"
-      ? "Low structural risk. The primary structural review areas are ICP clarity and positioning coherence."
-      : "Tighten conversion-stage messaging using the playbook and Revenue-Stage Alignment Map — ICP clarity, anchors, and positioning carry the most leverage."
+      ? focusArea
+        ? `Low structural risk. The primary structural review area is ${focusArea.toLowerCase()}.`
+        : "Low structural risk. No single dominant structural review area identified."
+      : focusArea
+        ? `Tighten revenue-stage messaging using the playbook and Revenue-Stage Alignment Map — ${focusArea.toLowerCase()} carries the most leverage.`
+        : "Tighten revenue-stage messaging using the playbook and Revenue-Stage Alignment Map."
 
   return (
     <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
