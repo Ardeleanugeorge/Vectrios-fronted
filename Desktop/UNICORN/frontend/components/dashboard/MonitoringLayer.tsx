@@ -611,21 +611,6 @@ const delayTimer = setTimeout(() => {
         </div>
       )}
 
-      <div className={`p-5 lg:p-6 rounded-lg border ${
-        uiState === "low" ? "border-emerald-700/40 bg-emerald-950/10"
-        : uiState === "medium" ? "border-gray-200 bg-gray-50"
-        : "border-red-700/40 bg-red-50"
-      }`}>
-        <p className="text-lg font-semibold text-gray-900">{headline}</p>
-        {uiState !== "low" && <p className="text-sm text-gray-700 mt-1">{subtext}</p>}
-        {improvementsDetected > 0 && (
-          <p className="text-xs text-blue-600/80 mt-2">
-            +{improvementsDetected} improvement{improvementsDetected > 1 ? "s" : ""} detected since last scan.
-          </p>
-        )}
-        <p className="text-xs text-gray-600 mt-2">{effectiveTrendText}</p>
-      </div>
-
       {/* MONITORING STATUS STRIP */}
       {!!currentPlan && (() => {
         const lastEval = monitoringStatus.last_evaluated_at
