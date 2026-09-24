@@ -69,15 +69,28 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
   )
 
   if (!forecast) return (
-    <div id="revenue-optimization-model" className="p-8 bg-white rounded-lg border border-indigo-100 scroll-mt-24">
+    <div id="revenue-optimization-model" className="p-8 bg-white rounded-lg border border-gray-200 scroll-mt-24">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Evidence and Revenue Context</h2>
-      <p className="text-sm font-medium text-gray-800 mb-2">Unlock behavioral evidence</p>
-      <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-        Connect Google Analytics 4 to add measured behavioral signals to your structural monitoring.
+      <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+        The current analysis is structural. It reads how your messaging is composed — not how
+        visitors respond to it.
       </p>
-      <a href="/account#integrations" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
-        Connect GA4 →
-      </a>
+      <p className="text-sm text-gray-700 mb-3 leading-relaxed">
+        Connecting Google Analytics 4 adds observed behaviour: which monitored pages lose visitors,
+        and where that coincides with a structural weakness. Connecting HubSpot adds pipeline
+        movement over the same period.
+      </p>
+      <p className="text-xs text-gray-500 mb-5 leading-relaxed">
+        Neither is required. Both narrow what the system can attribute — not what it is willing to claim.
+      </p>
+      <div className="flex items-center gap-3 flex-wrap">
+        <a href="/account#integrations" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
+          Connect Google Analytics 4
+        </a>
+        <a href="/account#integrations" className="inline-block px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg border border-gray-300 transition">
+          Connect HubSpot
+        </a>
+      </div>
     </div>
   )
 

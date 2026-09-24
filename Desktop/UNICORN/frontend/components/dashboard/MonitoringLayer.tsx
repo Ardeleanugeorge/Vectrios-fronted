@@ -816,9 +816,6 @@ const delayTimer = setTimeout(() => {
       <FeatureGate feature="Forecast Engine" planRequired="growth" currentPlan={currentPlan}>
         <RevenueForecastPanel companyId={companyId} uiState={uiState} />
       </FeatureGate>
-      <FeatureGate feature="12-Month ARR Trajectory" planRequired="scale" currentPlan={currentPlan}>
-        <RevenueTrajectorySimulation companyId={companyId} currentRii={rii} />
-      </FeatureGate>
 
       {/* 14. BENCHMARK INTELLIGENCE — cross-company comparison (Scale+) */}
       <FeatureGate feature="Benchmark Intelligence" planRequired="scale" currentPlan={currentPlan}>
