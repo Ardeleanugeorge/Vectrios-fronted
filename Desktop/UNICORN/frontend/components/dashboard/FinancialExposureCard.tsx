@@ -104,21 +104,9 @@ export default function FinancialExposureCard({
     )
   }
 
-  // ── Fallback: forecast not yet available ──
-  if (!forecast) {
-    return (
-      <div className="relative z-0 p-8 bg-white rounded-lg border border-indigo-100">
-        <p className="text-xs text-gray-600 uppercase tracking-wider font-semibold mb-4">{sectionTitle}</p>
-        <p className="text-sm font-medium text-gray-800 mb-2">Unlock behavioral evidence</p>
-        <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-          Connect Google Analytics 4 to add measured behavioral signals to your structural monitoring.
-        </p>
-        <a href="/account#integrations" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
-          Connect GA4 →
-        </a>
-      </div>
-    )
-  }
+  // ── No forecast: the invitation to connect lives in Evidence and Revenue
+  //    Context, where it is explained. This card has nothing to add here.
+  if (!forecast) return null
 
   const annualDelta = forecast.annual_revenue_delta
   const recovery    = forecast.recovery_potential_annual
