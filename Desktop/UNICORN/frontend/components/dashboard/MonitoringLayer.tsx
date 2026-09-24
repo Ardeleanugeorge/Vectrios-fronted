@@ -506,18 +506,18 @@ const delayTimer = setTimeout(() => {
       )}
 
       {/* REVENUE DELTA — +$/-$/stable vs last scan */}
-  {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_monthly_loss === "number" && (
+  {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_rii === "number" && (
         <div className={`rounded-xl border overflow-hidden ${
           revenueDelta.direction === "worse"
             ? "border-red-700/40 bg-red-50"
             : revenueDelta.direction === "better"
-            ? "border-emerald-700/40 bg-emerald-950/10"
+            ? "border-emerald-700/40 bg-emerald-50"
             : "border-gray-200/40 bg-white"
         }`}>
           {/* Header row */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
             <p className="text-xs text-gray-600 uppercase tracking-wide font-medium">Structural Change (last scan)</p>
-            {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (typeof revenueDelta.delta_monthly_loss === "number" && revenueDelta.delta_monthly_loss !== 0) && (
+            {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                 revenueDelta.trend_last_4 === "worsening" ? "text-red-600 bg-red-400/10" :
                 revenueDelta.trend_last_4 === "improving" ? "text-emerald-600 bg-emerald-400/10" :
@@ -547,14 +547,14 @@ const delayTimer = setTimeout(() => {
           {/* Drivers */}
           {(posCount > 0 || riskCount > 0) && (
             <div className="px-5 pb-4 border-t border-white/5 pt-3">
-              {revenueDelta.direction === "better" && posCount > 0 && (
+              {posCount > 0 && (
                 <>
                   <p className="text-xs text-gray-600 mb-2">Driven by:</p>
                   <ul className="space-y-1">
                     {(revenueDelta.drivers?.positives || []).map((d:any, i:number) => (
                       <li key={`pos-${i}`} className="flex items-start gap-2 text-xs text-gray-700">
                         <span className="mt-0.5 shrink-0 text-emerald-600">•</span>
-                        {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
+                        {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (${d.delta} pts)` : ""}
                       </li>
                     ))}
                   </ul>
@@ -567,7 +567,7 @@ const delayTimer = setTimeout(() => {
                     {(revenueDelta.drivers?.risks || []).map((d:any, i:number) => (
                       <li key={`risk-${i}`} className="flex items-start gap-2 text-xs text-gray-700">
                         <span className="mt-0.5 shrink-0 text-red-600">•</span>
-                        {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (+${d.delta})` : ""}
+                        {d.label}{typeof d.delta === "number" && d.delta > 0 ? ` (${d.delta} pts)` : ""}
                       </li>
                     ))}
                   </ul>
