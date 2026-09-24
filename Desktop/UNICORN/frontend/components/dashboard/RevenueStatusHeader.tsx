@@ -67,19 +67,13 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
               <p className="text-sm font-semibold text-emerald-800">Revenue-stage architecture stable</p>
             </div>
-            <p className="text-xs text-emerald-700 mb-3">No structural commercial events detected since last scan.</p>
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-xs text-gray-500">Last scan: {lastScanLabel}</span>
-              <span className="text-gray-300">·</span>
-              <span className="text-xs text-gray-500">Next: ~24h</span>
-            </div>
+            <p className="text-xs text-emerald-700">No structural commercial events detected since last scan.</p>
           </div>
           <div className="text-right shrink-0">
             <p className="text-xs text-gray-500 mb-1">Monitoring</p>
             <div className="space-y-0.5">
               <p className="text-xs text-gray-700">Homepage ✓</p>
               <p className="text-xs text-gray-700">Pricing ✓</p>
-              <p className="text-xs text-gray-700">24h continuous</p>
             </div>
           </div>
         </div>
