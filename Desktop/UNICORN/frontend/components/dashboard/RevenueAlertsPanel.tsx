@@ -161,14 +161,7 @@ export default function RevenueAlertsPanel({ companyId, onMarkAlertRead }: Reven
     )
   }
 
-  if (alerts.length === 0) {
-    return (
-      <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-        <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Active Alerts</h2>
-        <p className="text-sm text-gray-600">No active alerts. All systems operational.</p>
-      </div>
-    )
-  }
+  if (alerts.length === 0) return null
 
   return (
     <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">

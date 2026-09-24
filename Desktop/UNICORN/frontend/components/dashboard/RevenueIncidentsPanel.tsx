@@ -157,16 +157,7 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
     </div>
   )
 
-  if (open.length === 0) return (
-    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Active Commercial Incidents</h2>
-      <div className="flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-green-500" />
-        <p className="text-sm text-gray-600">No active commercial incidents detected.</p>
-      </div>
-      <p className="text-xs text-gray-600 mt-1 ml-4">No active incidents detected in monitored structural signals.</p>
-    </div>
-  )
+  if (open.length === 0) return null
 
   return (
     <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">

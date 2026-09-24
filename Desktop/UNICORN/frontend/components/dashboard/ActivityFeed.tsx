@@ -146,6 +146,8 @@ export default function ActivityFeed({ companyId, defaultCollapsed = false }: Ac
     )
   }
 
+  if (!loading && events.length === 0) return null
+
   return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-6 uppercase tracking-wide text-gray-900">Monitoring Activity</h2>

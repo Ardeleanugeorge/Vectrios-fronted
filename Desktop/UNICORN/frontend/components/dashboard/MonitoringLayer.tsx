@@ -8,7 +8,6 @@ import RevenueSystemStatus from "./RevenueSystemStatus"
 import PageIncidentsPanel from "./PageIncidentsPanel"
 import RevenueStatusHeader from "./RevenueStatusHeader"
 import CumulativeExposureCard from "./CumulativeExposureCard"
-import StructuralRiskOverview from "./StructuralRiskOverview"
 import StructuralBreakdownWithDelta from "./StructuralBreakdownWithDelta"
 import ExecutiveInterpretation from "./ExecutiveInterpretation"
 import AlertPanel from "./AlertPanel"
@@ -576,6 +575,22 @@ const delayTimer = setTimeout(() => {
             </div>
           )}
 
+          {/* Direction over several scans - the single trend verdict on the page */}
+          {monitoringStatus.trend_direction && (
+            <div className="px-5 pb-4 border-t border-white/5 pt-3">
+              <p className="text-xs text-gray-600 mb-1">
+                Trend:{" "}
+                <span className="font-semibold text-gray-800">
+                  {monitoringStatus.trend_direction === "improving"
+                    ? "Improving across recent scans"
+                    : monitoringStatus.trend_direction === "escalating"
+                    ? "Escalating across recent scans"
+                    : "No clear direction across recent scans"}
+                </span>
+              </p>
+            </div>
+          )}
+
           {/* Fix this first — delta + action combo (killer UX) */}
           {revenueDelta.direction === "worse" && diagnostic?.action_layer?.fixes?.[0] && (
             <div className="mx-4 mb-4 px-4 py-3 rounded-lg bg-indigo-50 border border-indigo-100">
@@ -777,15 +792,6 @@ const delayTimer = setTimeout(() => {
       <div className="border-t border-gray-100 pt-2 mt-2">
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Diagnostics</p>
       </div>
-
-      <StructuralRiskOverview
-        riskScore={rii}
-        alignmentScore={alignmentScore}
-        riskLevel={diagnostic?.risk_level || "MODERATE"}
-        trendDirection={monitoringStatus.trend_direction ?? null}
-        driftStatus={monitoringStatus.drift_status || "stable"}
-        riskDelta={riskDelta ?? undefined}
-      />
 
       {/* 6. REVENUE-STAGE ALIGNMENT MAP — Diagnostic breakdown (with backend structural_scores fallback) */}
       <StructuralBreakdownWithDelta 
