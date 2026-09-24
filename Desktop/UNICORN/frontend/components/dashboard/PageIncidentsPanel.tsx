@@ -38,6 +38,7 @@ const CT: Record<string,string> = {
 export default function PageIncidentsPanel({ companyId }: Props) {
   const [incidents, setIncidents] = useState<PageIncident[]>([])
   const [loading, setLoading] = useState(true)
+  const [showMinor, setShowMinor] = useState(false)
 
   useEffect(() => {
     if (!companyId) { setLoading(false); return }
@@ -50,17 +51,56 @@ export default function PageIncidentsPanel({ companyId }: Props) {
 
   if (loading || !incidents.length) return null
 
+  // A change the engine judged immaterial should not occupy the same space as
+  // one that needs a decision.
+  const minorIncidents = incidents.filter(i => (i.severity || "").toLowerCase() === "low")
+  const majorIncidents = incidents.filter(i => (i.severity || "").toLowerCase() !== "low")
+
   return (
     <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Commercial Events</p>
         <p className="text-[10px] text-gray-400 mt-0.5">Structural changes with potential commercial relevance</p>
-        <p className="text-sm font-semibold text-gray-900 mt-0.5">{incidents.length} commercial event{incidents.length>1?"s":""}</p>
+        <p className="text-sm font-semibold text-gray-900 mt-0.5">
+          {majorIncidents.length > 0
+            ? `${majorIncidents.length} event${majorIncidents.length > 1 ? "s" : ""} requiring review`
+            : "No events requiring review"}
+        </p>
       </div>
+      {minorIncidents.length > 0 && (
+        <div className="px-4 py-3 border-b border-gray-100">
+          <button
+            type="button"
+            onClick={() => setShowMinor(v => !v)}
+            className="w-full flex items-center justify-between gap-4 text-left"
+          >
+            <span className="text-sm text-gray-700">
+              <span className="font-semibold">{minorIncidents.length} minor copy change{minorIncidents.length > 1 ? "s" : ""}</span>
+              <span className="text-gray-500"> — reviewed, no structural signal detected</span>
+            </span>
+            <span className="text-xs text-gray-500 shrink-0">{showMinor ? "Hide" : "Review"}</span>
+          </button>
+
+          {showMinor && (
+            <ul className="mt-3 space-y-2">
+              {minorIncidents.map(inc => (
+                <li key={inc.id} className="text-xs text-gray-600 border-l-2 border-gray-200 pl-3">
+                  <span className="text-gray-800">{inc.url}</span>
+                  <span className="text-gray-400"> · {inc.created_at ? new Date(inc.created_at).toLocaleDateString() : ""}</span>
+                  {inc.after_claim && (
+                    <p className="mt-0.5 text-gray-500 italic">&ldquo;{inc.after_claim.slice(0, 110)}{inc.after_claim.length > 110 ? "…" : ""}&rdquo;</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
       <div className="divide-y divide-gray-100">
         {(() => {
-          const grouped = new Map<string, typeof incidents>()
-          incidents.forEach(inc => {
+          const grouped = new Map<string, typeof majorIncidents>()
+          majorIncidents.forEach(inc => {
             const key = inc.event_group_id || inc.id
             if (!grouped.has(key)) grouped.set(key, [])
             grouped.get(key)!.push(inc)
