@@ -38,12 +38,13 @@ export default function Home() {
   const [scanCount, setScanCount] = useState<number | null>(null)
   const router = useRouter()
 
-  // Fake scan phases for perceived progress
+  // Progress phases: they advance once and hold on the last one rather than
+  // looping, so a slow scan never claims to be crawling again after it finished.
   const scanPhases = useRef([
-    "Crawling your pages...",
+    "Crawling your revenue-stage pages...",
     "Analyzing messaging structure...",
-    "Detecting ICP & value signals...",
-    "Estimating Revenue Impact Index..."
+    "Detecting ICP and positioning signals...",
+    "Calculating Revenue Impact Index..."
   ])
   const [scanPhase, setScanPhase] = useState(0)
   const [showCookieBanner, setShowCookieBanner] = useState(false)
@@ -100,7 +101,7 @@ export default function Home() {
       return
     }
     const interval = setInterval(() => {
-      setScanPhase(prev => (prev + 1) % scanPhases.current.length)
+      setScanPhase(prev => Math.min(prev + 1, scanPhases.current.length - 1))
     }, 3000)
     return () => clearInterval(interval)
   }, [scanning])

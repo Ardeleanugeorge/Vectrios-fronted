@@ -72,13 +72,6 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
               <span className="text-xs text-gray-500">Last scan: {lastScanLabel}</span>
               <span className="text-gray-300">·</span>
               <span className="text-xs text-gray-500">Next: ~24h</span>
-              {rii !== null && (
-                <>
-                  <span className="text-gray-300">·</span>
-                  <span className={`text-xs font-semibold ${riskColor}`}>RII {Math.round(rii)}</span>
-                  <span className="text-xs text-gray-500">{riskLabel}</span>
-                </>
-              )}
             </div>
           </div>
           <div className="text-right shrink-0">

@@ -225,11 +225,11 @@ export default function OnboardingPage() {
   const [cameFromInstantScan, setCameFromInstantScan] = useState(false)
 
   const submitPhases = [
-    "Crawling your pages...",
+    "Crawling your revenue-stage pages...",
     "Analyzing messaging structure...",
-    "Generating embeddings...",
-    "Calculating Revenue Risk Index...",
-    "Finalizing diagnostic...",
+    "Comparing pages for positioning coherence...",
+    "Calculating Revenue Impact Index...",
+    "Finalizing structural assessment...",
   ]
   const [form, setForm] = useState({
     b2b_saas: null as boolean | null,
@@ -409,7 +409,7 @@ export default function OnboardingPage() {
 
     // Rotate through phases every 6 seconds
     const phaseInterval = setInterval(() => {
-      setSubmitPhase(prev => (prev + 1) % submitPhases.length)
+      setSubmitPhase(prev => Math.min(prev + 1, submitPhases.length - 1))
     }, 6000)
 
     // Normalize all URLs
