@@ -949,7 +949,17 @@ export default function DashboardPage() {
                     : (diagnostic?.confidence ?? diagnostic?.confidence_score ?? null) as number | null
                 }
                 assessmentDate={monitoringStatus?.last_evaluated_at ?? null}
-                primaryDimension={monitoringStatus?.structural_scores ? (() => { const ss = monitoringStatus.structural_scores; const dims = [['anchor', ss.anchor_density_score], ['icp', ss.icp_clarity_score], ['positioning', ss.positioning_coherence_score], ['alignment', ss.alignment_score]].filter(([,v]) => v != null) as [string, number][]; return dims.length ? dims.reduce((a, b) => a[1] < b[1] ? a : b)[0] : null })() : null}
+                primaryDimension={(() => {
+                  const short = (monitoringStatus?.structural_scores as any)?.primary_risk_driver_short
+                  if (!short) return null
+                  const byLabel: Record<string, string> = {
+                    "Conversion anchor gaps": "anchor",
+                    "ICP signal absence": "icp",
+                    "Positioning inconsistency": "positioning",
+                    "Strategic misalignment": "alignment",
+                  }
+                  return byLabel[short] ?? null
+                })()}
               />
             )
           })()}
