@@ -53,7 +53,7 @@ export default function ExecutiveInterpretation({
         ? `Low structural risk. The primary structural review area is ${focusArea.toLowerCase()}.`
         : "Low structural risk. No single dominant structural review area identified."
       : focusArea
-        ? `Tighten revenue-stage messaging using the playbook and Revenue-Stage Alignment Map — ${focusArea.toLowerCase()} carries the most leverage.`
+        ? `Tighten revenue-stage messaging using the playbook and Revenue-Stage Alignment Map — ${focusArea.toLowerCase()} is the primary structural opportunity.`
         : "Tighten revenue-stage messaging using the playbook and Revenue-Stage Alignment Map."
 
   return (

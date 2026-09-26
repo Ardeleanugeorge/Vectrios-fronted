@@ -296,7 +296,14 @@ function formatCompactMoneyLabel(m: string | undefined, rawHi?: number): { short
 
 function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix; index: number; useMonitoringSnapshot?: boolean }) {
   const beforeVal = (fix.current_example || "").trim()
-  const hasRealBefore = beforeVal.length > 0 && beforeVal !== "—" && beforeVal !== "-" && !beforeVal.startsWith("—")
+  const looksLikeValueProp =
+    beforeVal.length > 0 &&
+    beforeVal !== "—" &&
+    beforeVal !== "-" &&
+    !beforeVal.startsWith("—") &&
+    !beforeVal.trimEnd().endsWith("?") &&
+    beforeVal.split(/\s+/).length >= 5
+  const hasRealBefore = looksLikeValueProp
   const hasRealAfter = fix.suggested_change && fix.suggested_change.length > 0
   const monthlyChip = fix.impact_contribution?.monthly_impact || ""
   const compact = formatCompactMoneyLabel(monthlyChip, fix.impact_contribution?.monthly_impact_hi_raw)
@@ -356,14 +363,14 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
         {/* BEFORE */}
         <div className="px-4 py-3 space-y-1.5">
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-600">
-            {useMonitoringSnapshot ? "Before (from latest monitoring snapshot)" : "Before (from crawl)"}
+            {hasRealBefore
+              ? (useMonitoringSnapshot ? "Before (from latest monitoring snapshot)" : "Before (from crawl)")
+              : "Where to review"}
           </p>
           <p className="text-sm text-gray-600 italic leading-relaxed">
             {hasRealBefore
               ? `"${fix.current_example}"`
-              : useMonitoringSnapshot
-                ? <span className="text-gray-600 not-italic">—</span>
-                : <span className="text-gray-600 not-italic">Crawl data pending next monitoring cycle</span>}
+              : <span className="text-gray-700 not-italic">Homepage → hero section, beside the primary call to action</span>}
           </p>
         </div>
 

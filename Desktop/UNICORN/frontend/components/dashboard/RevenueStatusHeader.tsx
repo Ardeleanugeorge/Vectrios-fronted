@@ -65,9 +65,9 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <p className="text-sm font-semibold text-emerald-800">Revenue-stage architecture stable</p>
+              <p className="text-sm font-semibold text-emerald-800">Structural monitoring active</p>
             </div>
-            <p className="text-xs text-emerald-700">No structural commercial events detected since last scan.</p>
+            <p className="text-xs text-emerald-700">No new commercial events detected since last scan.</p>
           </div>
           <div className="text-right shrink-0">
             <p className="text-xs text-gray-500 mb-1">Monitoring</p>
