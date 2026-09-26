@@ -374,9 +374,17 @@ export default function MonitoringLayer({
   useEffect(() => {
     if (!companyId) return
     apiFetch(`/integrations/ga4/ping?company_id=${companyId}`, {})
-      .then(r => r.ok ? r.json() : null)
-      .then(d => setGa4Connected(!!(d?.status === "ok")))
-      .catch(() => setGa4Connected(false))
+      .then(async r => {
+        // Check unavailable (transport failure upstream) - leave the state unknown
+        if (r.status === 503) return null
+        if (!r.ok) return { status: "not_connected" }
+        return r.json()
+      })
+      .then(d => {
+        if (d === null) return
+        setGa4Connected(d?.status === "ok")
+      })
+      .catch(() => {})
   }, [companyId])
 
   // Safety checks for ActionableInsights props
