@@ -544,7 +544,7 @@ export default function ActionableInsights({
             <span className="text-amber-400 text-lg mt-0.5">⚡</span>
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-amber-400 mb-1">Connect GA4 for behavioral evidence</p>
-              <p className="text-sm text-gray-400 leading-snug">These recommendations are based on structural analysis only. Connect Google Analytics 4 to add measured behavioral signals such as engagement and conversion performance.</p>
+              <p className="text-sm text-gray-400 leading-snug">These recommendations are based on structural analysis only. Connect Google Analytics 4 to add measured behavioral evidence to structural monitoring.</p>
             </div>
           </div>
         )}
