@@ -15,6 +15,9 @@ interface MetricBenchmark {
 }
 
 interface BenchmarkData {
+  available?: boolean
+  population?: number
+  required?: number
   alignment: MetricBenchmark
   icp_clarity: MetricBenchmark
   anchor_density: MetricBenchmark
@@ -155,6 +158,24 @@ export default function BenchmarkPanel({ companyId }: Props) {
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
       <p className="text-sm text-gray-600">Run an assessment to unlock benchmarks.</p>
+    </div>
+  )
+
+  // Withheld until enough assessments exist that were measured the same way.
+  // Comparing against the earlier method would describe the difference between
+  // the methods, not between companies - and it would read as precise.
+  if (data.available === false) return (
+    <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
+      <p className="text-sm text-gray-700 mb-2">
+        Comparison needs at least {data.required ?? 50} assessments measured the
+        same way. {data.population ?? 0} are available so far.
+      </p>
+      <p className="text-xs text-gray-500 leading-relaxed">
+        Earlier assessments selected pages differently, so a percentile drawn
+        across both would report the difference between the two methods rather
+        than between companies. New assessments are added daily.
+      </p>
     </div>
   )
 
