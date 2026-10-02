@@ -87,7 +87,9 @@ function MetricRow({ label, data, higherIsBetter }: {
         <div className="flex items-center gap-2">
           <span className={`text-xs font-semibold ${rankColor}`}>{rankText}</span>
           <span className="text-[10px] text-gray-600 tabular-nums">
-            Better structural score than {data.percentile_rank}% of companies
+            {data.percentile_rank >= 100
+            ? "Highest structural score in the benchmark"
+            : `Better structural score than ${data.percentile_rank}% of domains`}
           </span>
         </div>
       </div>
@@ -189,7 +191,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
           <div>
             <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
             <p className="text-xs text-gray-600 mt-0.5">
-              Your GTM messaging vs {data.context.total_companies} {data.context.industry} companies
+              Your GTM messaging vs {data.context.total_companies} {data.context.industry} domains
             </p>
           </div>
           {riiRank !== null && (
@@ -200,7 +202,9 @@ export default function BenchmarkPanel({ companyId }: Props) {
                 riiRank >= 50 ? "text-blue-600" :
                 riiRank >= 25 ? "text-amber-600" : "text-red-600"
               }`}>
-                {ordinal(riiRank)} <span className="text-sm text-gray-600 font-normal">percentile</span>
+                {riiRank >= 100
+                  ? <>Top <span className="text-sm text-gray-600 font-normal">of benchmark</span></>
+                  : <>{ordinal(riiRank)} <span className="text-sm text-gray-600 font-normal">percentile</span></>}
               </p>
             </div>
           )}
@@ -256,7 +260,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
 
       {/* Footer */}
       <div className="px-8 pb-5 pt-2 text-[10px] text-gray-700 border-t border-gray-200">
-        Benchmarks are computed from anonymized assessments across the Vectri<span className="text-blue-600">OS</span> dataset.
+        Benchmarks are computed from anonymized assessments across the Vectri<span className="text-blue-600">OS</span> dataset, measured with the current crawl contract. Earlier assessments used a different page-selection method and are excluded.
         Updated after each assessment run. Percentile rank — higher indicates stronger structural performance relative to peers.
       </div>
     </div>
