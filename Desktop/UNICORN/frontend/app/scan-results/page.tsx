@@ -1102,7 +1102,7 @@ function ScanResultsContent() {
                   <p className="text-xs text-gray-600 mt-1">
                     {data.percentile >= 50
                       ? "Structural assessment benchmarked against the public SaaS index."
-                      : `You're performing worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of similar SaaS companies`}
+                      : `You're performing worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of SaaS domains in the index`}
                   </p>
                 )}
               </div>
@@ -1176,7 +1176,7 @@ function ScanResultsContent() {
             >
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shrink-0" />
               <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
-                Benchmarked against 508 SaaS companies — structural messaging analysis only
+                Benchmarked against the public SaaS index — structural messaging analysis only
               </span>
               <span className="text-indigo-600 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                 View index
@@ -1382,7 +1382,7 @@ function ScanResultsContent() {
                   {canShowFinancials && (
                   <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
                     <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-1">Structural assessment preview</p>
-                    <p className="text-[11px] text-gray-600 mb-3">Based on 508 SaaS structural assessments</p>
+                    <p className="text-[11px] text-gray-600 mb-3">Based on structural assessments across the SaaS index</p>
                     <div className="grid sm:grid-cols-3 gap-3">
                       <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                         <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Structural Risk</p>
