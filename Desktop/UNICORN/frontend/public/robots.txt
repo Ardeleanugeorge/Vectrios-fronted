@@ -1,0 +1,11 @@
+﻿User-agent: *
+Allow: /
+
+Disallow: /login
+Disallow: /signup
+Disallow: /dashboard
+Disallow: /account
+Disallow: /onboarding
+Disallow: /scan-results
+
+Sitemap: https://www.vectrios.com/sitemap.xml
