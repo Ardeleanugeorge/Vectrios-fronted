@@ -49,9 +49,11 @@ interface PublicStats {
 function getRiskColor(risk: string | null) {
   if (!risk) return { bg: "bg-gray-500/10", text: "text-gray-600", dot: "bg-gray-500" };
   const r = risk.toLowerCase();
-  if (r.includes("inefficiency") || r.includes("high") || r.includes("critical"))
+  // Older rows carry the previous vocabulary ("Revenue Inefficiency Detected",
+  // "High Exposure"), so both are recognised. New scans say what was measured.
+  if (r.includes("high") || r.includes("critical") || r.includes("inefficiency"))
     return { bg: "bg-red-500/10", text: "text-red-400", dot: "bg-red-500" };
-  if (r.includes("moderate") || r.includes("compression") || r.includes("detected"))
+  if (r.includes("moderate") || r.includes("compression"))
     return { bg: "bg-yellow-500/10", text: "text-yellow-400", dot: "bg-yellow-500" };
   return { bg: "bg-green-500/10", text: "text-green-400", dot: "bg-green-500" };
 }
@@ -409,7 +411,7 @@ export default function SaaSRevenueIndex() {
                 <div className="flex justify-center">
                   <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${risk.bg} ${risk.text}`}>
                     <span className={`w-1 h-1 rounded-full ${risk.dot}`} />
-                    {c.risk_level?.replace(" Exposure", "") ?? "—"}
+                    {c.risk_level?.replace(" Exposure", "").replace(" Structural Risk", "") ?? "—"}
                   </span>
                 </div>
               </div>

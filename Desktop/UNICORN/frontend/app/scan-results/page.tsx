@@ -220,33 +220,39 @@ function ScoreBar({ label, hint, value }: { label: string; hint: string; value: 
   )
 }
 
-/** Translate backend primary_signal into pain-first copy */
+/**
+ * State the structural finding, not a consequence that was not measured.
+ *
+ * The scan reads how a site's messaging is composed. It does not observe
+ * visitors, so it cannot know that anyone failed to convert or that a buyer
+ * was confused - and a reader who connects analytics and finds the opposite
+ * has been given a reason to distrust everything else on the page. What the
+ * scan does know is specific enough to be worth saying plainly.
+ */
 function primarySignalDisplay(signal: string): { headline: string } {
   const s = (signal || "").toLowerCase()
   if (s.includes("positioning") || s.includes("coherence")) {
     return {
-      headline: "Your positioning is inconsistent – buyers don't clearly understand why to choose you",
+      headline: "Your category positioning shifts between pages",
     }
   }
   if (s.includes("icp") || s.includes("clarity")) {
     return {
-      headline: "Your ICP is too broad – you're attracting visitors who will never convert",
+      headline: "Who this is for is not stated explicitly on your key pages",
     }
   }
   if (s.includes("alignment") || s.includes("messaging")) {
     return {
-      headline: "Your messaging doesn't match your revenue objective – conversion breaks early",
+      headline: "Your pages point toward different outcomes",
     }
   }
   if (s.includes("anchor")) {
     return {
-      headline: "Proof and conversion anchors are too thin at key decision points",
+      headline: "Proof and decision-supporting anchors are sparse near your calls to action",
     }
   }
   return {
-    headline:
-      signal ||
-      "Your growth is being limited by subtle messaging gaps – you're still leaving revenue on the table",
+    headline: signal || "Structural signals were found across your revenue-stage pages",
   }
 }
 
