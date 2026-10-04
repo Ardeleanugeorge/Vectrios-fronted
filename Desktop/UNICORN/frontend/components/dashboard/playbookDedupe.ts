@@ -130,10 +130,15 @@ function buildSyntheticProofFix(ref: PlaybookFix | undefined): PlaybookFix {
     arr_recovery: "",
   }
   return {
-    title: "Add verified proof beside hero CTA",
+    title: "Add a quantified value anchor beside the hero CTA",
     current_example: "—",
     suggested_change:
-      "Add verified customer proof or a compact logo row beside the primary hero CTA.",
+      // Anchor density counts quantified expressions and discounts vague social
+      // proof, so "customer proof" and "a logo row" point at something the
+      // metric does not read - a reader who follows that advice would see the
+      // score stay where it was, or fall.
+      "Add a quantified value anchor beside the primary hero CTA — a verified percentage, " +
+      "a time saved, a volume handled, or another concrete outcome.",
     reason:
       "Proof at the decision moment supports the buyer story without duplicating another hero rewrite.",
     impact_contribution: ic,
