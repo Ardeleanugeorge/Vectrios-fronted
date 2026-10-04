@@ -186,10 +186,17 @@ const METRIC_ROWS: { label: string; hint: string }[] = [
   },
 ]
 
-/** 0'100 score ? plain-English impact tier (matches example bands: ~20 / ~38 / ~59) */
+/**
+ * How urgently a dimension needs attention.
+ *
+ * On these four dimensions a higher score is a stronger result, so the ones
+ * that need work are the low ones. Reading the bands the other way marked a
+ * company's strongest dimension as its most urgent, and set the page against
+ * the primary signal, which the backend derives from the weakest score.
+ */
 function metricImpactLabel(v: number): string {
-  if (v >= 59) return "High structural priority"
-  if (v >= 34) return "Medium structural priority"
+  if (v < 40) return "High structural priority"
+  if (v < 60) return "Medium structural priority"
   return "Lower structural priority"
 }
 

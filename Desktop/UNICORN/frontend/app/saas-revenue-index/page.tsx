@@ -46,6 +46,19 @@ interface PublicStats {
   };
 }
 
+type RiskBand = "Low" | "Moderate" | "High" | null;
+
+function normalizeRiskLabel(raw: string | null): RiskBand {
+  if (!raw) return null;
+  const r = raw.toLowerCase();
+  // "Revenue Inefficiency Detected" was issued for the 40-69 band, so it maps
+  // to Moderate despite how it reads; "High Exposure" was the band above it.
+  if (r.includes("high") || r.includes("critical")) return "High";
+  if (r.includes("moderate") || r.includes("compression") || r.includes("inefficiency")) return "Moderate";
+  if (r.includes("low") || r.includes("efficient")) return "Low";
+  return null;
+}
+
 function getRiskColor(risk: string | null) {
   if (!risk) return { bg: "bg-gray-500/10", text: "text-gray-600", dot: "bg-gray-500" };
   const r = risk.toLowerCase();
@@ -411,7 +424,7 @@ export default function SaaSRevenueIndex() {
                 <div className="flex justify-center">
                   <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${risk.bg} ${risk.text}`}>
                     <span className={`w-1 h-1 rounded-full ${risk.dot}`} />
-                    {c.risk_level?.replace(" Exposure", "").replace(" Structural Risk", "") ?? "—"}
+                    {normalizeRiskLabel(c.risk_level) ?? "—"}
                   </span>
                 </div>
               </div>
