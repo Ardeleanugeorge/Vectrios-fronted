@@ -54,6 +54,26 @@ interface ScanData {
   created_at?: string
 }
 
+interface BenchmarkBand {
+  p25: number
+  p50: number
+  p75: number
+  n: number
+}
+
+interface BenchmarkBands {
+  available: boolean
+  generation?: string
+  population?: number
+  dimensions?: {
+    alignment?: BenchmarkBand | null
+    icp_clarity?: BenchmarkBand | null
+    anchor_density?: BenchmarkBand | null
+    positioning?: BenchmarkBand | null
+    rii?: BenchmarkBand | null
+  }
+}
+
 interface ScanSnapshot {
   rii: number | null
   alignment: number | null
@@ -187,16 +207,21 @@ const METRIC_ROWS: { label: string; hint: string }[] = [
 ]
 
 /**
- * How urgently a dimension needs attention.
+ * How urgently a dimension needs attention, read against the field.
  *
- * On these four dimensions a higher score is a stronger result, so the ones
- * that need work are the low ones. Reading the bands the other way marked a
- * company's strongest dimension as its most urgent, and set the page against
- * the primary signal, which the backend derives from the weakest score.
+ * On these four dimensions a higher score is the stronger result, so the ones
+ * needing work are the low ones. The boundaries come from the benchmark
+ * population rather than from chosen numbers, because the dimensions sit on
+ * different scales - a 50 is a weak alignment and a strong anchor density -
+ * and because fixed thresholds drift out of date silently as the field moves.
+ *
+ * "High priority" therefore means "in the weakest quarter of the sites measured
+ * the same way", which a reader can check. Without the bands, no claim is made.
  */
-function metricImpactLabel(v: number): string {
-  if (v < 40) return "High structural priority"
-  if (v < 60) return "Medium structural priority"
+function metricImpactLabel(v: number, band?: BenchmarkBand | null): string | null {
+  if (!band) return null
+  if (v < band.p25) return "High structural priority"
+  if (v < band.p75) return "Medium structural priority"
   return "Lower structural priority"
 }
 
@@ -211,9 +236,7 @@ function ScoreBar({ label, hint, value }: { label: string; hint: string; value: 
         <span className="text-sm text-gray-700 font-medium leading-snug">{label}</span>
         <div className="flex flex-col items-end shrink-0">
           <span className="text-sm font-bold text-gray-900 tabular-nums">{value !== null ? Math.round(v) : "–"}</span>
-          {value !== null && (
-            <span className="text-[10px] font-medium text-gray-600 mt-0.5">{metricImpactLabel(v)}</span>
-          )}
+
         </div>
       </div>
       <div className="w-full h-2 bg-gray-50 rounded-full overflow-hidden mb-1">
@@ -334,6 +357,7 @@ function ScanResultsContent() {
   const token = params.get("token")
   const [data, setData] = useState<ScanData | null>(null)
   const [scanCount, setScanCount] = useState<number | null>(null)
+  const [bands, setBands] = useState<BenchmarkBands | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [showEmailCapture, setShowEmailCapture] = useState(false)
@@ -437,6 +461,15 @@ function ScanResultsContent() {
       .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
       .then(d => setScanCount(d.total ?? 0))
       .catch(() => setScanCount(0))
+  }, [])
+
+  // Quartile boundaries from the benchmark population. If they do not arrive,
+  // priority labels are omitted rather than guessed.
+  useEffect(() => {
+    apiFetch(`/public/benchmark-bands`)
+      .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then(d => setBands(d && d.available ? d : null))
+      .catch(() => setBands(null))
   }, [])
 
   /** Restore wide view after email unlock for this scan token.
@@ -1200,19 +1233,19 @@ function ScanResultsContent() {
             <ul className="space-y-3 text-sm text-gray-700">
               <li className="flex items-center justify-between gap-3">
                 <span>Messaging does not consistently reinforce the intended conversion path</span>
-                <span className="text-xs text-gray-600">{metricImpactLabel(data.alignment ?? 0)}</span>
+                <span className="text-xs text-gray-600">{metricImpactLabel(data.alignment ?? 0, bands?.dimensions?.alignment)}</span>
               </li>
               <li className="flex items-center justify-between gap-3">
                 <span>Audience definition is not consistently explicit across key pages</span>
-                <span className="text-xs text-gray-600">{metricImpactLabel(data.icp_clarity ?? 0)}</span>
+                <span className="text-xs text-gray-600">{metricImpactLabel(data.icp_clarity ?? 0, bands?.dimensions?.icp_clarity)}</span>
               </li>
               <li className="flex items-center justify-between gap-3">
                 <span>Proof and decision-supporting anchors are limited at key decision points</span>
-                <span className="text-xs text-gray-600">{metricImpactLabel(data.anchor_density ?? 0)}</span>
+                <span className="text-xs text-gray-600">{metricImpactLabel(data.anchor_density ?? 0, bands?.dimensions?.anchor_density)}</span>
               </li>
               <li className="flex items-center justify-between gap-3">
                 <span>Category positioning is inconsistent across monitored pages</span>
-                <span className="text-xs text-gray-600">{metricImpactLabel(data.positioning ?? 0)}</span>
+                <span className="text-xs text-gray-600">{metricImpactLabel(data.positioning ?? 0, bands?.dimensions?.positioning)}</span>
               </li>
             </ul>
           </div>
