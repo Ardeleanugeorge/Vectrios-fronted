@@ -45,16 +45,33 @@ export default function ExecutiveInterpretation({
   const primaryStructuralTheme =
     (leadingStructuralSignal && leadingStructuralSignal.trim()) || fallbackFault
 
-  /** One idea, no numbers — the named area comes from the monitoring snapshot, never hardcoded */
-  const focusArea = (leadingStructuralSignal && leadingStructuralSignal.trim()) || null
+  /**
+   * Name the dimension, not the signal label.
+   *
+   * The leading signal is phrased for a strip of its own ("ICP signal absence",
+   * "Conversion anchor gaps"); dropped into a sentence and lowercased it reads
+   * as a fragment, and the rest of the page has already named the area four
+   * times in the system's own vocabulary. Deriving it from the scores keeps
+   * this line consistent with the review area without repeating its wording.
+   */
+  const dimensionName = (() => {
+    const scored: Array<[string, number]> = [
+      ["messaging alignment", alignmentScore],
+      ["ICP clarity", icpClarity],
+      ["anchor density", anchorDensity],
+    ].filter(([, v]) => typeof v === "number") as Array<[string, number]>
+    if (!scored.length) return null
+    return scored.reduce((lowest, entry) => (entry[1] < lowest[1] ? entry : lowest))[0]
+  })()
+
   const takeawayLine =
     uiState === "low"
-      ? focusArea
-        ? `Low structural risk. The primary structural review area is ${focusArea.toLowerCase()}.`
+      ? dimensionName
+        ? `Low structural risk. ${dimensionName.charAt(0).toUpperCase()}${dimensionName.slice(1)} is the area worth reviewing first.`
         : "Low structural risk. No single dominant structural review area identified."
-      : focusArea
-        ? `Tighten revenue-stage messaging using the playbook and Revenue-Stage Alignment Map — ${focusArea.toLowerCase()} is the primary structural opportunity.`
-        : "Tighten revenue-stage messaging using the playbook and Revenue-Stage Alignment Map."
+      : dimensionName
+        ? `${dimensionName.charAt(0).toUpperCase()}${dimensionName.slice(1)} is the primary structural review area. The playbook below names where to start.`
+        : "Review the playbook and the Revenue-Stage Alignment Map for the areas worth addressing first."
 
   return (
     <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
