@@ -3,8 +3,8 @@ import Script from "next/script"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "VectriOS - Strategic Revenue Diagnostic Engine for B2B SaaS",
-  description: "Detect structural misalignment between content, ICP, and revenue objective. Measure close rate risk, not impressions.",
+  title: "VectriOS — Structural messaging monitoring for B2B SaaS",
+  description: "Detect structural misalignment between your homepage, pricing and product pages. See what changed in positioning, audience and proof — and what it means.",
   icons: {
     icon: "/favicon.png",
   },
