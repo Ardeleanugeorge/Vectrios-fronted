@@ -17,6 +17,9 @@ interface HistoryPoint {
   positioning: number | null;
   confidence: number | null;
   risk_level: string | null;
+  // Which crawl contract read this scan. Two contracts measured different page
+  // sets, so a difference across the change is method, not messaging.
+  crawl_contract_version: number | null;
   scanned_at: string;
 }
 
@@ -38,6 +41,11 @@ interface CompanyHistory {
   domain: string;
   scan_count: number;
   trend: "improving" | "degrading" | "stable" | null;
+  // The backend draws the trend only across readings comparable with the
+  // latest one, and says how many those were. Both were already in the
+  // response and unused: the page recomputed its own deltas instead.
+  trend_delta: number | null;
+  comparable_scan_count: number;
   latest: LatestScan;
   history: HistoryPoint[];
 }
@@ -59,8 +67,17 @@ function TrendChart({ history }: { history: HistoryPoint[] }) {
     `${x(history.length - 1)},${H - PAD}`,
   ].join(" ");
 
-  const firstRii = riis[0], lastRii = riis[riis.length - 1];
-  const delta = lastRii - firstRii;
+  // Colour follows the comparable readings - the run ending at the latest
+  // scan that shares its crawl contract. The whole line is still drawn,
+  // because the history is a real record; only the claim about direction is
+  // restricted to what can be compared.
+  const lastContract = history[history.length - 1]?.crawl_contract_version ?? null;
+  const comparableRiis = history
+    .filter(h => h.crawl_contract_version === lastContract)
+    .map(h => h.rii);
+  const delta = comparableRiis.length >= 2
+    ? comparableRiis[comparableRiis.length - 1] - comparableRiis[0]
+    : 0;
   const lineColor = delta < -2 ? "#34d399" : delta > 2 ? "#f87171" : "#facc15";
 
   const formatDate = (iso: string) => {
@@ -192,8 +209,14 @@ export default function CompanyProfilePage() {
   const { latest, history } = data;
   const rii = latest.rii ?? 0;
   const riiColor = rii >= 70 ? "text-red-400" : rii >= 40 ? "text-orange-400" : "text-emerald-400";
-  const firstRii = history[0]?.rii ?? rii;
-  const delta = Math.round(rii - firstRii);
+  // The trend the backend computed, not a fresh subtraction over first and
+  // last. Scans made under different crawl contracts were measured on
+  // different page sets, so a difference between them reports the change in
+  // method - and on a public page carrying this company's name it reads as a
+  // change in their messaging. 23 domains in the index have scans under both.
+  const trendDelta = data.trend_delta;
+  const delta = trendDelta === null ? 0 : Math.round(trendDelta);
+  const partialTrend = data.comparable_scan_count < data.scan_count;
 
   return (
     <div className="page-root font-sans">
@@ -255,7 +278,13 @@ export default function CompanyProfilePage() {
             <p className={`text-4xl font-bold ${delta < 0 ? "text-emerald-400" : delta > 0 ? "text-red-400" : "text-yellow-400"}`}>
               {delta === 0 ? "—" : delta > 0 ? `+${delta}` : `${delta}`}
             </p>
-            <p className="text-xs text-gray-600 mt-1">vs first scan</p>
+            <p className="text-xs text-gray-600 mt-1">
+              {trendDelta === null
+                ? "needs two scans read the same way"
+                : partialTrend
+                  ? `across ${data.comparable_scan_count} comparable scans`
+                  : "vs first scan"}
+            </p>
           </div>
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center">
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Scans</p>
@@ -326,7 +355,12 @@ export default function CompanyProfilePage() {
               <tbody>
                 {[...history].reverse().map((h, i) => {
                   const prev = history[history.length - 2 - i];
-                  const riidelta = prev ? Math.round(h.rii - prev.rii) : null;
+                  // Only between readings taken the same way. Where the
+                  // contract changed between two scans the cell stays empty
+                  // rather than showing a difference the method produced.
+                  const sameContract =
+                    prev && h.crawl_contract_version === prev.crawl_contract_version;
+                  const riidelta = sameContract ? Math.round(h.rii - prev.rii) : null;
                   return (
                     <tr key={i} className="border-b border-white/[0.03] hover:bg-white/[0.02]">
                       <td className="px-5 py-3 text-gray-600 font-mono text-xs">
