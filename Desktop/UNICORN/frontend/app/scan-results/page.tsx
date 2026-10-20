@@ -1009,7 +1009,15 @@ function ScanResultsContent() {
 
   if (!data) return null
 
-  const isBlocked = data.status === "blocked"
+  // No reading, no findings. status is the backend's own word for how the
+  // crawl went; the absent score is the invariant that holds even if that
+  // field never arrives. With no score there is nothing to report, and the
+  // template findings below must not appear as though there were.
+  const isBlocked =
+    data.status === "blocked" ||
+    data.status === "failed" ||
+    data.rii === null ||
+    data.rii === undefined
   const hasRii = data.rii !== null && data.rii !== undefined
   const rii = hasRii ? (data.rii as number) : null
   const riiColor = (rii ?? 0) >= 70 ? "text-red-500" : (rii ?? 0) >= 40 ? "text-amber-600" : "text-emerald-400"
