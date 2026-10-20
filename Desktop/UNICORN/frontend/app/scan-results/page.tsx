@@ -33,12 +33,17 @@ interface ScanData {
   percentile: number | null
   percentile_label: string | null
   financial_impact?: {
-    arr_at_risk_low: number
-    arr_at_risk_high: number
-    recovery_low: number
-    recovery_high: number
-    monthly_loss_low: number
-    monthly_loss_high: number
+    // What the backend sends on every scan: whether a sum exists at all.
+    available?: boolean
+    reason?: string | null
+    // Present only when available is true, i.e. when a contract value and
+    // behavioural evidence were measured rather than assumed.
+    arr_at_risk_low?: number
+    arr_at_risk_high?: number
+    recovery_low?: number
+    recovery_high?: number
+    monthly_loss_low?: number
+    monthly_loss_high?: number
     arr_range?: string | null
     acv_range?: string | null
   } | null
@@ -906,7 +911,11 @@ function ScanResultsContent() {
   }
 
 
-  const formatCurrency = (val: number) => {
+  const formatCurrency = (val: number | null | undefined) => {
+    // A figure the backend did not measure arrives absent, not as zero.
+    // Reading toFixed off it is what blanked this page for every scan
+    // after c0f88dd stopped the product stating sums it cannot measure.
+    if (typeof val !== "number" || !Number.isFinite(val)) return "\u2014"
     if (val >= 1000000) {
       return `$${(val / 1000000).toFixed(1)}M`
     } else if (val >= 1000) {
@@ -1017,17 +1026,17 @@ function ScanResultsContent() {
   const wideLayout = unlocked
 
   const modeledMonthlyLossLabel = !canShowFinancials ? null : (() => {
-    if (!financialImpact) return null
+    if (!financialImpact || financialImpact.available === false) return null
     return `${formatCurrency(financialImpact.monthly_loss_low)}–${formatCurrency(financialImpact.monthly_loss_high)}/month`
   })()
 
   const modeledAnnualLossLabel = (() => {
-    if (!financialImpact) return null
+    if (!financialImpact || financialImpact.available === false) return null
     return `${formatCurrency(financialImpact.arr_at_risk_low)}–${formatCurrency(financialImpact.arr_at_risk_high)}/year`
   })()
 
   const modeledRecoverableLabel = (() => {
-    if (!financialImpact) return null
+    if (!financialImpact || financialImpact.available === false) return null
     return `${formatCurrency(financialImpact.recovery_low)}–${formatCurrency(financialImpact.recovery_high)}/year`
   })()
 
