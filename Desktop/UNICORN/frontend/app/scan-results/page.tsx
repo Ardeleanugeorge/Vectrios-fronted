@@ -1242,7 +1242,7 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {!unlocked && (
+        {!unlocked && !isBlocked && (
           <div className={`p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6 ${wideLayout ? "lg:p-8 lg:mb-8" : ""}`}>
             <p className="text-lg font-semibold text-gray-900 mb-1">Structural signals detected</p>
             <p className="text-sm text-gray-600 mb-1">Signals identified across revenue-stage pages</p>
@@ -1268,7 +1268,7 @@ function ScanResultsContent() {
           </div>
         )}
 
-        {!unlocked && (
+        {!unlocked && !isBlocked && (
           <div className="p-5 bg-gray-50 rounded-xl border border-orange-500/20 mb-6">
             <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">Primary signal</p>
             <p className="text-gray-800 font-semibold text-lg mb-2 leading-snug">
@@ -1282,7 +1282,7 @@ function ScanResultsContent() {
         )}
 
         {/* Locked insights — hide after unlock once full numbers are shown below */}
-        {!unlocked && (
+        {!unlocked && !isBlocked && (
           <div className="p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6">
             <div className="flex items-center gap-2 mb-4">
               <p className="text-xs text-gray-600 uppercase tracking-widest">Full Diagnostic</p>
@@ -1301,7 +1301,7 @@ function ScanResultsContent() {
         )}
 
         {/* Soft Paywall - Full Diagnostic (only show if not unlocked) */}
-        {!unlocked && (
+        {!unlocked && !isBlocked && (
           <div className="text-center p-8 bg-white rounded-xl border border-gray-200 mb-6">
             <div className="mb-4">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-600/10 border border-gray-200 text-indigo-500 text-xs font-medium">
