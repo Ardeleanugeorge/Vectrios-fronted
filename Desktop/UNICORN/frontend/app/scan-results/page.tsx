@@ -139,13 +139,38 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   
   // Failed status
   if (status === "failed") {
+    // reason is a log code. "Reason: homepage_http_403" tells a client nothing,
+    // so each code carries its own sentence, and the one worth trying next
+    // where there is one. Codes are what production actually stores:
+    // no_content 114, homepage_http_403 9, homepage_http_404 1, and one
+    // compound code whose tail is no_content. An unknown code still shows,
+    // rather than leaving the reader with nothing.
+    const explained = (() => {
+      const code = (reason || "").trim()
+      const tail = code.includes(":") ? code.slice(code.lastIndexOf(":") + 1) : code
+      const sentences: Record<string, string> = {
+        no_content:
+          "We reached the site but found no readable text on the homepage \u2014 the page most likely builds its content in the browser.",
+        homepage_http_403:
+          "The homepage answered 403: it sits behind a login, or it refuses automated readers.",
+        homepage_http_404:
+          "The homepage answered 404 \u2014 there is no page at that address. Try the domain with or without www.",
+        waf:
+          "A bot-protection layer refused the request before the page could load.",
+        rate_limit:
+          "The site asked us to slow down before the page could be read. A scan in a few minutes usually goes through.",
+      }
+      return sentences[code] || sentences[tail] ||
+        (code ? `Reason: ${code}` : "Please try again later.")
+    })()
     return (
       <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-gray-50 border border-gray-200">
         <p className="text-gray-700 font-semibold text-sm mb-1">
-          Scan failed
+          Could not read this website
         </p>
-        <p className="text-xs text-gray-600">
-          Unable to analyze this website. {reason ? `Reason: ${reason}` : "Please try again later."}
+        <p className="text-xs text-gray-600">{explained}</p>
+        <p className="text-xs text-gray-500 mt-2">
+          No pages were read, so no structural assessment was produced.
         </p>
       </div>
     )
