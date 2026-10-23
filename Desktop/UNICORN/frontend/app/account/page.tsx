@@ -1249,138 +1249,35 @@ export default function AccountPage() {
             <div className="space-y-5">
               <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm backdrop-blur-sm dark:border-gray-200 dark:bg-gray-100">
                 <div className="p-6 border-b border-slate-200 dark:border-gray-200">
-                  <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Financial calibration</h2>
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-900">Revenue context</h2>
                   <p className="text-gray-600 text-sm mt-0.5">
-                    Set your real business numbers to improve financial impact estimates. Structural risk is derived from website scan signals — these values calibrate the dollar output.
+                    There is nothing to fill in here. Financial figures are read
+                    from your own systems or they are not shown at all.
                   </p>
                 </div>
-                <form onSubmit={handleCalibrationSave} className="p-6 space-y-6">
-                  <div className="grid md:grid-cols-3 gap-5">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
-                        Annual Recurring Revenue
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm">$</span>
-                        <input
-                          type="number"
-                          min={1}
-                          value={calibrationArr}
-                          onChange={e => setCalibrationArr(e.target.value)}
-                          placeholder="1000000"
-                          className="w-full pl-8 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
-                        />
-                      </div>
-                      <p className="text-xs text-gray-600 mt-1.5">Your current ARR in USD</p>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
-                        Current close rate
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="number"
-                          min={0}
-                          max={100}
-                          step="0.1"
-                          value={calibrationCurrentCloseRate}
-                          onChange={e => setCalibrationCurrentCloseRate(e.target.value)}
-                          placeholder="12.5"
-                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
-                        />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm">%</span>
-                      </div>
-                      <p className="text-xs text-gray-600 mt-1.5">Trial-to-paid or lead-to-close</p>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
-                        Target close rate
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="number"
-                          min={0}
-                          max={100}
-                          step="0.1"
-                          value={calibrationTargetCloseRate}
-                          onChange={e => setCalibrationTargetCloseRate(e.target.value)}
-                          placeholder="18.0"
-                          className="w-full px-4 pr-10 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500 dark:bg-gray-100"
-                        />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm">%</span>
-                      </div>
-                      <p className="text-xs text-gray-600 mt-1.5">What you're aiming to reach</p>
-                    </div>
+                <div className="p-6 space-y-4">
+                  <div className="rounded-xl border border-slate-200 p-4">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-gray-900">CRM</p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Closed deals give the contract value a figure can rest on.
+                      Until a CRM is connected, no sum is shown anywhere in the
+                      product.
+                    </p>
                   </div>
-
-
-                  {/* ACV + Pipeline */}
-                  <div className="grid md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
-                        Average Contract Value (ACV)
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
-                        <input
-                          type="number"
-                          min={0}
-                          step="1000"
-                          value={calibrationAcv}
-                          onChange={e => setCalibrationAcv(e.target.value)}
-                          placeholder="20000"
-                          className="w-full pl-8 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500"
-                        />
-                      </div>
-                      <p className="text-xs text-gray-600 mt-1.5">Average deal size in USD</p>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-600 uppercase tracking-wider mb-2">
-                        Pipeline deals / year
-                      </label>
-                      <input
-                        type="number"
-                        min={0}
-                        step="1"
-                        value={calibrationPipeline}
-                        onChange={e => setCalibrationPipeline(e.target.value)}
-                        placeholder="50"
-                        className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-500"
-                      />
-                      <p className="text-xs text-gray-600 mt-1.5">Active deals in pipeline per year</p>
-                    </div>
+                  <div className="rounded-xl border border-slate-200 p-4">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-gray-900">Analytics</p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Sessions and conversions turn a structural reading into a
+                      measured effect rather than a modelled one.
+                    </p>
                   </div>
-                  {/* Impact preview */}
-                  {calibrationArr && calibrationCurrentCloseRate && calibrationTargetCloseRate && (
-                    <div className="p-4 rounded-xl bg-indigo-600/5 border border-indigo-600/20">
-                      <p className="text-xs text-indigo-500 font-medium uppercase tracking-wider mb-1">Model preview</p>
-                      <p className="text-sm text-gray-700">
-                        Closing gap:{" "}
-                        <span className="text-slate-900 dark:text-gray-900 font-semibold">
-                          +{(Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)).toFixed(1)}pp
-                        </span>
-                        {" "}on ${(Number(calibrationArr) / 1_000_000).toFixed(1)}M ARR —{" "}
-                        <span className="text-cyan-300 font-bold">
-                          ~${Math.round(Number(calibrationArr) * (Number(calibrationTargetCloseRate) - Number(calibrationCurrentCloseRate)) / 100 / 1000)}K recoverable
-                        </span>
-                      </p>
-                    </div>
-                  )}
-
-                  {calibrationError && (
-                    <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm">{calibrationError}</div>
-                  )}
-                  {calibrationSuccess && (
-                    <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">{calibrationSuccess}</div>
-                  )}
-                  <button
-                    type="submit"
-                    disabled={calibrationLoading || !companyId}
-                    className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
-                  >
-                    {calibrationLoading ? "Saving…" : "Save calibration"}
-                  </button>
-                </form>
+                  <p className="text-xs text-gray-500">
+                    A number typed into a form is an assumption, and an
+                    assumption displayed as a measurement is worth less than no
+                    number at all. The structural assessment does not depend on
+                    any of this: it comes from reading your site.
+                  </p>
+                </div>
               </div>
 
               {/* Info card */}
@@ -1389,8 +1286,8 @@ export default function AccountPage() {
                 <div className="grid sm:grid-cols-3 gap-4">
                   {[
                     { icon: "•", title: "Structural scan", desc: "RII and risk drivers come from crawling your site — always accurate." },
-                    { icon: "•", title: "Financial model", desc: "ARR + close rates calibrate the $ impact numbers shown in the dashboard." },
-                    { icon: "•", title: "Auto-updated", desc: "Next monitoring run picks up new calibration values automatically." },
+                    { icon: "•", title: "Financial model", desc: "Revenue figures come from a connected CRM, never from a form." },
+                    { icon: "•", title: "Auto-updated", desc: "Connect analytics and a CRM, and figures appear on the next run." },
                   ].map(item => (
                     <div key={item.title} className="flex gap-3">
                       <span className="text-xl mt-0.5">{item.icon}</span>
