@@ -850,7 +850,6 @@ export default function AccountPage() {
     { icon: "•", key: "action",       label: "Action Engine",             desc: "Top fix with priority, $/month impact estimate and Start here",   minPlan: "scale" },
     { icon: "•", key: "autofix",      label: "Auto-Fix Engine",           desc: "Before/After copy per fix — copy-ready text with Copy button",   minPlan: "scale" },
     { icon: "•", key: "playbook",     label: "Full Fix Playbook",         desc: "3-fix step-by-step plan, each with page target + $/month recovery",  minPlan: "scale" },
-    { icon: "•", key: "arr_risk",     label: "ARR at Risk Calculation",   desc: "Dollar-level exposure tied to your actual ARR + calibration",        minPlan: "scale" },
     { icon: "•", key: "close_rate",   label: "Close Rate Impact Model",   desc: "How messaging gaps compress your current close rate",                minPlan: "scale" },
     { icon: "•", key: "signals",      label: "Revenue Signals",           desc: "Granular structural change signals after each scan",                 minPlan: "scale" },
     { icon: "•", key: "alerts",       label: "Revenue Alerts",            desc: "Real-time drift alerts when structural risk changes",                minPlan: "scale" },
@@ -860,7 +859,7 @@ export default function AccountPage() {
     { icon: "•", key: "delta_action", label: "Delta + Action Combo",      desc: "'Fix this first' shown instantly when revenue leak increases",       minPlan: "scale" },
     { icon: "•", key: "trajectory",   label: "Risk Trajectory",           desc: "30/60/90-day forward-looking risk projections",                      minPlan: "scale" },
     { icon: "⚡", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale" },
-    { icon: "•", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Compare vs 500+ SaaS companies in your revenue tier",               minPlan: "scale" },
+    { icon: "•", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Your position against every SaaS site in the index, measured the same way",               minPlan: "scale" },
     { icon: "•", key: "arr_sim",      label: "12-Month ARR Simulation",   desc: "Model revenue trajectory with vs without fixes applied",             minPlan: "scale" },
     { icon: "•", key: "apis",         label: "GSC + GA4 Modifiers",       desc: "Real search + behavior data applied to revenue model",               minPlan: "scale" },
     { icon: "•", key: "executive",    label: "Executive Risk Summaries",  desc: "Weekly board-ready summaries of structural drift",                   minPlan: "scale" },
@@ -1208,7 +1207,7 @@ export default function AccountPage() {
                           Activate Scale — $99/month
                         </p>
                         <p className="text-xs text-gray-600 mt-0.5">
-                          Unlock 24h monitoring, full playbook, ARR at risk, incidents, benchmark, and team access.
+                          Unlock 24h monitoring, full playbook, incidents, benchmark, and team access.
                         </p>
                       </div>
                       <Link

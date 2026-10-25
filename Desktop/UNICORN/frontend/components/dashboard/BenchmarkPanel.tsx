@@ -16,6 +16,7 @@ interface MetricBenchmark {
 
 interface BenchmarkData {
   available?: boolean
+  reason?: string
   population?: number
   required?: number
   alignment: MetricBenchmark
@@ -24,7 +25,6 @@ interface BenchmarkData {
   positioning: MetricBenchmark
   rii: MetricBenchmark
   context: {
-    arr_range: string | null
     industry: string
     total_companies: number
   }
@@ -170,8 +170,9 @@ export default function BenchmarkPanel({ companyId }: Props) {
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
       <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
       <p className="text-sm text-gray-700 mb-2">
-        Comparison needs at least {data.required ?? 50} assessments measured the
-        same way. {data.population ?? 0} are available so far.
+        {data.reason === "own_reading_not_comparable"
+          ? "Your site has no reading taken the same way as the index yet. The comparison appears after your next monitoring run."
+          : `Comparison needs at least ${data.required ?? 50} assessments measured the same way. ${data.population ?? 0} are available so far.`}
       </p>
       <p className="text-xs text-gray-500 leading-relaxed">
         Earlier assessments selected pages differently, so a percentile drawn
@@ -212,11 +213,6 @@ export default function BenchmarkPanel({ companyId }: Props) {
 
         {/* Context pills */}
         <div className="flex gap-2 mt-3 flex-wrap">
-          {data.context.arr_range && (
-            <span className="text-[10px] px-2 py-0.5 bg-gray-800 text-gray-600 rounded border border-gray-200">
-              ARR: {data.context.arr_range}
-            </span>
-          )}
 
 
 
