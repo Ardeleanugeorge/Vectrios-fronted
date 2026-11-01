@@ -38,6 +38,19 @@ function formatCurrency(val: number): string {
 export default function RevenueForecastPanel({ companyId, uiState = "medium" }: RevenueForecastPanelProps) {
   const [forecast, setForecast] = useState<RevenueForecast | null>(null)
   const [loading, setLoading] = useState(true)
+  // Connected and measured are different questions. This panel invited every
+  // customer without a forecast to connect GA4, including those who had.
+  const [googleConnected, setGoogleConnected] = useState(false)
+  const [hubspotConnected, setHubspotConnected] = useState(false)
+  useEffect(() => {
+    apiFetch("/integrations/status")
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => {
+        setGoogleConnected(!!d?.integrations?.google?.connected)
+        setHubspotConnected(!!d?.integrations?.hubspot?.connected)
+      })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (!companyId) { setLoading(false); return }
@@ -76,21 +89,31 @@ export default function RevenueForecastPanel({ companyId, uiState = "medium" }: 
         visitors respond to it.
       </p>
       <p className="text-sm text-gray-700 mb-3 leading-relaxed">
-        Connecting Google Analytics 4 adds observed behaviour: which monitored pages lose visitors,
-        and where that coincides with a structural weakness. Connecting HubSpot adds pipeline
-        movement over the same period.
+        {googleConnected
+          ? "Google Analytics 4 is connected. Its data is used as evidence only once it amounts to a measurement: enough sessions on the monitored pages, and conversion events configured in the GA4 property."
+          : "Connecting Google Analytics 4 adds observed behaviour: which monitored pages lose visitors, and where that coincides with a structural weakness."}
+        {" "}
+        {hubspotConnected
+          ? "HubSpot is connected."
+          : "Connecting HubSpot adds pipeline movement over the same period."}
       </p>
       <p className="text-xs text-gray-500 mb-5 leading-relaxed">
         Neither is required. Both narrow what the system can attribute — not what it is willing to claim.
       </p>
-      <div className="flex items-center gap-3 flex-wrap">
-        <a href="/account#integrations" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
-          Connect Google Analytics 4
-        </a>
-        <a href="/account#integrations" className="inline-block px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg border border-gray-300 transition">
-          Connect HubSpot
-        </a>
-      </div>
+      {(!googleConnected || !hubspotConnected) && (
+        <div className="flex items-center gap-3 flex-wrap">
+          {!googleConnected && (
+            <a href="/account#integrations" className="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition">
+              Connect Google Analytics 4
+            </a>
+          )}
+          {!hubspotConnected && (
+            <a href="/account#integrations" className="inline-block px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg border border-gray-300 transition">
+              Connect HubSpot
+            </a>
+          )}
+        </div>
+      )}
     </div>
   )
 

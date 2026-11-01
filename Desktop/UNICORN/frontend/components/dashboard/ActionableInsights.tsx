@@ -392,7 +392,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
               {fix.badges.slice(0, 2).map((b, i) => {
                 const t = (b || "").toUpperCase()
                 const label =
-                  t === "HIGH EXIT" ? "Exit rate spike on key pages (GA4)" :
+                  t === "HIGH EXIT" ? "Many sessions on this page were not engaged (GA4)" :
                   t === "INTENT MISMATCH" ? "Low CTR vs position on priority queries (GSC)" :
                   b
                 return (
@@ -606,7 +606,7 @@ export default function ActionableInsights({
                 🔴 Start here
                 {first.behavioral_source && (
                   <span className="ml-2 text-blue-600 normal-case font-normal tracking-normal">
-                    · confirmed by GA4
+                    · GA4 behavioural signal
                   </span>
                 )}
               </p>
