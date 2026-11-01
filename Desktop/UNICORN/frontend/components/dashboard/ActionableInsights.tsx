@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import SourceChip from "./SourceChip"
+import { apiFetch } from "@/lib/api"
 import FeatureGate from "./FeatureGate"
 import {
   dedupeBuyerHeroPlaybookFixes,
@@ -414,6 +415,36 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
   )
 }
 
+// Connected and measured are different questions. The banner this replaces
+// asked customers who had connected GA4 to connect it, whenever no behavioural
+// signal reached the first fix - which, until GA4 data amounts to a
+// measurement, is always.
+function BehaviouralEvidenceNote() {
+  const [googleConnected, setGoogleConnected] = useState<boolean | null>(null)
+  useEffect(() => {
+    apiFetch("/integrations/status")
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => setGoogleConnected(!!d?.integrations?.google?.connected))
+      .catch(() => setGoogleConnected(false))
+  }, [])
+  if (googleConnected === null) return null
+  return (
+    <div className="mb-4 px-4 py-3 rounded-lg bg-amber-950/20 border border-amber-700/40 flex items-start gap-3">
+      <span className="text-amber-400 text-lg mt-0.5">⚡</span>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-widest text-amber-400 mb-1">
+          {googleConnected ? "Structural evidence only" : "Connect GA4 for behavioral evidence"}
+        </p>
+        <p className="text-sm text-gray-400 leading-snug">
+          {googleConnected
+            ? "These recommendations are based on structural analysis. Google Analytics 4 is connected; its data is added here once it amounts to a measurement - enough sessions on the monitored pages."
+            : "These recommendations are based on structural analysis only. Connect Google Analytics 4 to add measured behavioral evidence to structural monitoring."}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function ActionableInsights({
   primaryRiskDriver: _pr,
   closeRateDelta: _crd,
@@ -538,15 +569,9 @@ export default function ActionableInsights({
           </ul>
         </div>
 
-        {/* GA4 not connected banner */}
+        {/* Structural-only note: says whether GA4 is connected */}
         {!first.behavioral_source && (
-          <div className="mb-4 px-4 py-3 rounded-lg bg-amber-950/20 border border-amber-700/40 flex items-start gap-3">
-            <span className="text-amber-400 text-lg mt-0.5">⚡</span>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-amber-400 mb-1">Connect GA4 for behavioral evidence</p>
-              <p className="text-sm text-gray-400 leading-snug">These recommendations are based on structural analysis only. Connect Google Analytics 4 to add measured behavioral evidence to structural monitoring.</p>
-            </div>
-          </div>
+          <BehaviouralEvidenceNote />
         )}
         {/* 3. Fix #1 — "Start here" callout + card */}
         <div className="mb-4">
