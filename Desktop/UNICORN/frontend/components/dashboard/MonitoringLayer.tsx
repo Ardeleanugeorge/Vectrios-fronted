@@ -19,6 +19,7 @@ import ActivityFeed from "./ActivityFeed"
 import RevenueForecastPanel from "./RevenueForecastPanel"
 import RevenueTrajectorySimulation from "./RevenueTrajectorySimulation"
 import BenchmarkPanel from "./BenchmarkPanel"
+import CompetitorsPanel from "./CompetitorsPanel"
 import FinancialExposureCard from "./FinancialExposureCard"
 
 import SystemHealthIndicator from "./SystemHealthIndicator"
@@ -813,6 +814,7 @@ const delayTimer = setTimeout(() => {
       {/* 14. BENCHMARK INTELLIGENCE — cross-company comparison (Scale+) */}
       <FeatureGate feature="Benchmark Intelligence" planRequired="scale" currentPlan={currentPlan}>
         <BenchmarkPanel companyId={companyId} />
+        <CompetitorsPanel companyId={companyId} />
       </FeatureGate>
 
       {/* HISTORY SECTION */}

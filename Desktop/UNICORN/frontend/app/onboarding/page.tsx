@@ -472,6 +472,21 @@ export default function OnboardingPage() {
         }
         // Store company_id for monitoring status loading
         if (data.company_id) {
+          // Competitors go to the list the nightly monitor reads - the same route the
+          // dashboard uses. Kept only in the profile before, where nothing read them.
+          const rivals = Array.from(new Set(
+            form.top_competitors.map((c) => c.trim()).filter(Boolean)
+          )).slice(0, 5)
+          for (const domain of rivals) {
+            try {
+              await apiFetch(`/competitors/${data.company_id}`, {
+                method: "POST",
+                body: JSON.stringify({ domain }),
+              })
+            } catch (err) {
+              console.error("[onboarding] competitor not added:", domain, err)
+            }
+          }
           sessionStorage.setItem("onboarding_response", JSON.stringify({ company_id: data.company_id }))
           localStorage.setItem("onboarding_response", JSON.stringify({ company_id: data.company_id }))
           // Also update user_data with company_id
@@ -801,9 +816,9 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Top 3 Competitors</label>
+                  <label className="block text-sm font-medium mb-2">Competitors to monitor (up to 5)</label>
                   <div className="space-y-2">
-                    {[0, 1, 2].map((idx) => (
+                    {[0, 1, 2, 3, 4].map((idx) => (
                       <input
                         key={idx}
                         type="text"
@@ -817,7 +832,7 @@ export default function OnboardingPage() {
                           setForm(prev => ({ ...prev, top_competitors: newCompetitors }))
                         }}
                         className="input"
-                        placeholder={`Competitor ${idx + 1} (optional)`}
+                        placeholder={`Competitor ${idx + 1} website (optional)`}
                       />
                     ))}
                   </div>
