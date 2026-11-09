@@ -224,15 +224,13 @@ export default function Home() {
             REVENUE-STAGE MONITORING INFRASTRUCTURE
           </div>
           <h1 className="text-4xl md:text-6xl text-slate-900 dark:text-gray-900 mb-6 font-bold leading-tight">
-            Monitor the messaging structure behind your B2B SaaS revenue funnel.
-            <br className="hidden md:block" />
-            <p className="text-xl md:text-2xl text-indigo-700 font-medium mt-2"> </p>
+            For B2B SaaS marketing leaders: know when your website stops speaking to your buyer.
           </h1>
           <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
-            Continuously monitored. Structurally benchmarked. Actionable.
+            Your site and up to 5 competitors, read every night and benchmarked against hundreds of B2B SaaS sites.
           </p>
           <p className="text-sm md:text-base text-gray-900 font-medium mb-6 max-w-2xl mx-auto">
-            VectriOS continuously monitors your website for changes in ICP clarity, positioning, proof, and revenue-stage messaging. See what changed, why it matters, and what to review next.
+            VectriOS reads your homepage, pricing and product pages for changes in ICP clarity, positioning, proof and revenue-stage messaging, and does the same for the competitors you choose. See what changed, why it matters, and what to review next.
           </p>
 
 
@@ -311,7 +309,7 @@ export default function Home() {
       <section className="border-t border-b border-slate-200 bg-slate-50">
         <div className="max-w-6xl mx-auto px-6 py-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 px-4">
           <span className="text-sm text-gray-700 uppercase tracking-widest font-semibold shrink-0">Built for</span>
-          {["B2B SaaS teams", "Revenue & GTM leaders", "RevOps", "Product Marketing"].map(r => (
+          {["Heads of Marketing", "Product Marketing", "Growth & Demand Gen", "B2B SaaS Founders"].map(r => (
             <span key={r} className="flex items-center gap-1.5 text-base text-gray-800 font-medium">
               <span className="text-indigo-700 font-bold text-xs">&#10003;</span>
               {r}
