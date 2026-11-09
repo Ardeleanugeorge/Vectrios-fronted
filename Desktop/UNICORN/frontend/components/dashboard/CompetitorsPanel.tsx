@@ -46,6 +46,7 @@ export default function CompetitorsPanel({ companyId }: Props) {
   const [input, setInput] = useState("")
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   async function load() {
     if (!companyId) return
@@ -55,9 +56,18 @@ export default function CompetitorsPanel({ companyId }: Props) {
         const d = await r.json()
         setItems(Array.isArray(d.competitors) ? d.competitors : [])
         if (typeof d.limit === "number") setLimit(d.limit)
+        setLoadError(null)
+      } else {
+        // A failed read is not an empty list. Shown as one, a signed-out
+        // customer was told they had no competitors.
+        setLoadError(
+          r.status === 401
+            ? "Your session has expired. Sign in again to see your competitors."
+            : `Could not load your competitors (HTTP ${r.status}).`
+        )
       }
     } catch {
-      // keep the last list shown
+      setLoadError("Could not reach the server to load your competitors.")
     } finally {
       setLoading(false)
     }
@@ -116,7 +126,7 @@ export default function CompetitorsPanel({ companyId }: Props) {
     <div className="bg-white border border-gray-200 rounded-xl p-5">
       <div className="flex items-baseline justify-between mb-1">
         <h3 className="text-sm font-semibold text-gray-900">Competitors monitored</h3>
-        <span className="text-xs text-gray-500">{items.length} of {limit}</span>
+        {!loadError && <span className="text-xs text-gray-500">{items.length} of {limit}</span>}
       </div>
       <p className="text-xs text-gray-500 mb-4">
         Each competitor&apos;s homepage is read every night, alongside yours.
@@ -124,6 +134,8 @@ export default function CompetitorsPanel({ companyId }: Props) {
 
       {loading ? (
         <p className="text-xs text-gray-400 mb-4">Loading…</p>
+      ) : loadError ? (
+        <p className="text-sm text-red-600 mb-4">{loadError}</p>
       ) : items.length === 0 ? (
         <p className="text-sm text-gray-600 mb-4">No competitors yet. Add up to {limit}.</p>
       ) : (
@@ -150,7 +162,7 @@ export default function CompetitorsPanel({ companyId }: Props) {
         </ul>
       )}
 
-      {full ? (
+      {loadError ? null : full ? (
         <p className="text-xs text-gray-500">All {limit} places are in use. Remove one to add another.</p>
       ) : (
         <div className="flex gap-2">
