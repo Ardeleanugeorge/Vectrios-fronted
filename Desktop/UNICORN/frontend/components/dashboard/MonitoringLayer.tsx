@@ -543,11 +543,13 @@ const delayTimer = setTimeout(() => {
               revenueDelta.direction === "worse" ? "text-red-600" :
               revenueDelta.direction === "better" ? "text-emerald-600" : "text-gray-700"
             }`}>
-              {typeof revenueDelta.delta_rii === "number" && revenueDelta.delta_rii !== 0
+              {typeof revenueDelta.delta_rii === "number" && revenueDelta.direction !== "stable" && revenueDelta.delta_rii !== 0
                 ? revenueDelta.delta_rii > 0
                   ? `RII +${revenueDelta.delta_rii.toFixed(1)} pts — structural increase`
                   : `RII ${revenueDelta.delta_rii.toFixed(1)} pts — structural improvement`
-                : "No material revenue-impacting change detected"}
+                : typeof revenueDelta.delta_rii === "number" && revenueDelta.delta_rii !== 0
+                  ? `RII ${revenueDelta.delta_rii > 0 ? "+" : ""}${revenueDelta.delta_rii.toFixed(1)} pts — below the change threshold`
+                  : "No significant structural change since last scan"}
             </p>
 
           </div>

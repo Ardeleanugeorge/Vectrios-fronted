@@ -378,7 +378,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
         {/* AFTER */}
         <div className="px-4 py-3 space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/70">After (suggested)</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/70">Suggested change</p>
             {hasRealAfter && (
               <CopyButton
                 text={fix.suggested_change}
