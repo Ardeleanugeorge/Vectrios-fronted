@@ -123,33 +123,7 @@ function toPlaybookFix(f: PlaybookFixLite, kind: PlaybookFixKind): PlaybookFix {
   }
 }
 
-function buildSyntheticProofFix(ref: PlaybookFix | undefined): PlaybookFix {
-  const ic = ref?.impact_contribution ?? {
-    monthly_impact: "—",
-    close_rate: "",
-    arr_recovery: "",
-  }
-  return {
-    title: "Add a quantified value anchor beside the hero CTA",
-    current_example: "—",
-    suggested_change:
-      // Anchor density counts quantified expressions and discounts vague social
-      // proof, so "customer proof" and "a logo row" point at something the
-      // metric does not read - a reader who follows that advice would see the
-      // score stay where it was, or fall.
-      "Add a quantified value anchor beside the primary hero CTA — a verified percentage, " +
-      "a time saved, a volume handled, or another concrete outcome.",
-    reason:
-      "Proof at the decision moment supports the buyer story without duplicating another hero rewrite.",
-    impact_contribution: ic,
-    page_url: ref?.page_url ?? null,
-    behavioral_source: false,
-    badges: [],
-    playbookKind: PLAYBOOK_KINDS.PROOF_CTA,
-  }
-}
-
-/** Collapse duplicate buyer-hero rows; add distinct proof fix when needed */
+/** Collapse duplicate buyer-hero rows */
 export function dedupeBuyerHeroPlaybookFixes(fixes: PlaybookFixLite[]): PlaybookFix[] {
   const inputLen = fixes.length
   const out: PlaybookFix[] = []
@@ -180,12 +154,11 @@ export function dedupeBuyerHeroPlaybookFixes(fixes: PlaybookFixLite[]): Playbook
   }
 
   const hasProofCta = existingKinds.has(PLAYBOOK_KINDS.PROOF_CTA)
-  let addedSyntheticProof = false
-
-  if (usedBuyerHero && out.length < 3 && !hasProofCta) {
-    out.push(buildSyntheticProofFix(out[out.length - 1]))
-    addedSyntheticProof = true
-  }
+  // No fix is synthesised here. A value-anchor fix used to be added
+  // whenever fewer than three rows remained, without reading any score -
+  // it advised more anchors to sites in the top decile for anchor density.
+  // Fixes come from the backend's analysis only.
+  const addedSyntheticProof = false
 
   const beforeCap = out.length
   const deduped = out.slice(0, 3)

@@ -62,12 +62,12 @@ export default function SystemHealthIndicator({
   const getTrendIndicator = () => {
     if (healthDelta === null || healthDelta === 0) return null
     
-    const isImproving = healthDelta > 0
-    const absDelta = Math.abs(healthDelta)
-    
+    // The difference from the last comparable scan. Shown plainly: whether
+    // a move this size counts as a change is decided by the backend floor
+    // and reported in "Structural Change (last scan)".
     return (
-      <span className={`text-xs font-medium ${isImproving ? 'text-green-600' : 'text-red-600'}`}>
-        {isImproving ? '↑' : '↓'} {absDelta.toFixed(1)} pts vs monitoring baseline
+      <span className="text-xs font-medium text-gray-600">
+        {healthDelta > 0 ? "+" : ""}{healthDelta.toFixed(1)} pts vs last scan
       </span>
     )
   }
