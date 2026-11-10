@@ -86,7 +86,7 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
       <div className="flex items-center gap-2 mb-3">
         <span className="w-2 h-2 rounded-full bg-red-500" />
         <p className="text-sm font-semibold text-red-800">
-          {incidents.length === 1 ? "Structural change detected" : `${incidents.length} structural change${incidents.length > 1 ? "s" : ""} detected`}
+          {incidents.length === 1 ? "Page change detected" : `${incidents.length} page changes detected`}
         </p>
       </div>
       <div className="bg-white rounded-lg border border-red-100 p-4 mb-3">
@@ -97,13 +97,13 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
             {topIncident.before_claim && (
               <div className="p-2 bg-gray-50 rounded border border-gray-200">
                 <p className="text-xs text-gray-400 mb-0.5">Before</p>
-                <p className="text-xs text-gray-700 italic">"{topIncident.before_claim.slice(0, 80)}"</p>
+                <p className="text-xs text-gray-700 italic">"{topIncident.before_claim.length > 120 ? topIncident.before_claim.slice(0, Math.max(topIncident.before_claim.lastIndexOf(" ", 120), 80)) + "…" : topIncident.before_claim}"</p>
               </div>
             )}
             {topIncident.after_claim && (
               <div className="p-2 bg-blue-50 rounded border border-blue-100">
                 <p className="text-xs text-blue-400 mb-0.5">After</p>
-                <p className="text-xs text-gray-700 italic">"{topIncident.after_claim.slice(0, 80)}"</p>
+                <p className="text-xs text-gray-700 italic">"{topIncident.after_claim.length > 120 ? topIncident.after_claim.slice(0, Math.max(topIncident.after_claim.lastIndexOf(" ", 120), 80)) + "…" : topIncident.after_claim}"</p>
               </div>
             )}
           </div>
@@ -111,7 +111,7 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
         <div className="mb-3">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Evidence</p>
           <div className="flex gap-3 flex-wrap">
-            <span className="text-xs text-emerald-600">✓ Structural change detected</span>
+            <span className="text-xs text-emerald-600">✓ Page change recorded</span>
             <span className="text-xs text-gray-400">· GA4 — not connected</span>
             <span className="text-xs text-gray-400">· HubSpot — not connected</span>
           </div>

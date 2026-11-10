@@ -524,7 +524,7 @@ const delayTimer = setTimeout(() => {
         }`}>
           {/* Header row */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
-            <p className="text-xs text-gray-600 uppercase tracking-wide font-medium">Structural Change (last scan)</p>
+            <p className="text-xs text-gray-600 uppercase tracking-wide font-medium">Score change (last scan)</p>
             {revenueDelta.trend_last_4 && revenueDelta.trend_last_4 !== "insufficient_data" && (
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                 revenueDelta.trend_last_4 === "worsening" ? "text-red-600 bg-red-400/10" :

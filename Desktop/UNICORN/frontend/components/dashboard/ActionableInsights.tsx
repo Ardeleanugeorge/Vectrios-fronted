@@ -371,7 +371,7 @@ function FixCard({ fix, index, useMonitoringSnapshot = false }: { fix: ActionFix
           <p className="text-sm text-gray-600 italic leading-relaxed">
             {hasRealBefore
               ? `"${fix.current_example}"`
-              : <span className="text-gray-700 not-italic">Homepage → hero section, beside the primary call to action</span>}
+              : <span className="text-gray-700 not-italic">{/anchor|cta|proof/i.test(fix.title || "") ? "Hero section, beside the primary call to action" : "Hero section, first headline"}</span>}
           </p>
         </div>
 
