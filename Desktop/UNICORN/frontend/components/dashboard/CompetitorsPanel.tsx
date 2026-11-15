@@ -20,6 +20,10 @@ interface Competitor {
   last_read: string | null
   scans: number
   scored_since: string | null
+  headline?: string | null
+  headline_read_at?: string | null
+  headline_changes?: { detected_at: string | null; page_type: string | null; url: string; before: string | null; after: string | null }[]
+  headline_comparisons?: number
 }
 
 interface Props {
@@ -31,6 +35,13 @@ function fmtDate(iso: string | null): string {
   const d = new Date(iso)
   if (isNaN(d.getTime())) return ""
   return d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })
+}
+
+// Quotes are shown whole up to 120 characters, then cut at a word.
+function clip(s: string | null | undefined): string {
+  const t = (s || "").trim()
+  if (t.length <= 120) return t
+  return t.slice(0, Math.max(t.lastIndexOf(" ", 120), 80)) + "\u2026"
 }
 
 function readingStatus(c: Competitor): string {
@@ -141,7 +152,7 @@ export default function CompetitorsPanel({ companyId }: Props) {
       ) : (
         <ul className="divide-y divide-gray-100 mb-4">
           {items.map((c) => (
-            <li key={c.domain} className="flex items-center justify-between py-2">
+            <li key={c.domain} className="flex items-start justify-between py-2">
               <div className="min-w-0">
                 <p className="text-sm text-gray-900 truncate">{c.label || c.domain}</p>
                 <p className="text-xs text-gray-500">
@@ -149,6 +160,23 @@ export default function CompetitorsPanel({ companyId }: Props) {
                   {readingStatus(c)}
                   {c.last_read ? ` · last read ${fmtDate(c.last_read)}` : ""}
                 </p>
+                {c.headline ? (
+                  <p className="text-xs text-gray-700 mt-1">
+                    Headline: <span className="italic">&ldquo;{clip(c.headline)}&rdquo;</span>
+                  </p>
+                ) : null}
+                {(c.headline_changes || []).slice(0, 3).map((ch, i) => (
+                  <p key={i} className="text-xs text-amber-700 mt-1">
+                    Headline changed {fmtDate(ch.detected_at)}:{" "}
+                    <span className="italic">&ldquo;{clip(ch.before)}&rdquo;</span> {"\u2192"}{" "}
+                    <span className="italic">&ldquo;{clip(ch.after)}&rdquo;</span>
+                  </p>
+                ))}
+                {!(c.headline_changes || []).length && (c.headline_comparisons || 0) > 0 ? (
+                  <p className="text-xs text-gray-500 mt-1">
+                    No headline change across {c.headline_comparisons} comparison{c.headline_comparisons === 1 ? "" : "s"}.
+                  </p>
+                ) : null}
               </div>
               <button
                 onClick={() => remove(c.domain)}
