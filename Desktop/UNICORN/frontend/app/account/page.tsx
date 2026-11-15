@@ -1603,14 +1603,10 @@ export default function AccountPage() {
               {/* Header */}
               <div className="rounded-2xl border border-indigo-600/20 bg-indigo-600/5 p-6">
                 <div className="flex items-center gap-3 mb-1">
-                  <span className="text-2xl">??</span>
-                  <h2 className="text-lg font-bold text-cyan-300">RII Auto-Calibration</h2>
+                  <h2 className="text-lg font-bold text-gray-900">Manager console</h2>
                   <span className="px-2 py-0.5 rounded-full bg-indigo-600/20 text-indigo-500 text-xs font-bold uppercase tracking-widest">Owner only</span>
                 </div>
-                <p className="text-gray-600 text-sm mt-1">
-                  Re-calibrates the RII scoring model using all scan results in the database.
-                  No terminal, no Excel — one click.
-                </p>
+                <p className="text-gray-600 text-sm mt-1">Platform health, the scoring contract and the support inbox.</p>
               </div>
 
               {/* Platform Ops snapshot */}
@@ -1755,167 +1751,27 @@ export default function AccountPage() {
                 </div>
               </div>
 
-              {/* Current DB stats */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">Current Status</h3>
-                {calibStatus ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-                    <div className="rounded-xl bg-gray-100">
-                      <div className="text-2xl font-bold text-slate-900 dark:text-gray-900">{calibStatus.total_scans_in_db ?? "–"}</div>
-                      <div className="text-xs text-gray-600 mt-1">Total scans in DB</div>
-                      <div className="text-[10px] text-gray-600 mt-0.5">incl. monitoring cycles</div>
-                    </div>
-                    <div className="rounded-xl bg-gray-100">
-                      <div className="text-2xl font-bold text-slate-900 dark:text-gray-900">{calibStatus.n_scans || "–"}</div>
-                      <div className="text-xs text-gray-600 mt-1">Last calibration scans</div>
-                      <div className="text-[10px] text-gray-600 mt-0.5">unique companies used</div>
-                    </div>
-                    <div className="rounded-xl bg-gray-100">
-                      <div className={`text-2xl font-bold ${calibStatus.mae && calibStatus.mae < 6 ? "text-emerald-400" : "text-amber-400"}`}>
-                        {calibStatus.mae ? `${calibStatus.mae.toFixed(1)} pts` : "—"}
+              {/* Scoring weights: read-only, fixed by the scoring contract */}
+              <div className="rounded-2xl border border-gray-200 bg-gray-100 p-6">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wider">Scoring weights in use</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Fixed: they are part of the scoring contract and the same for every site, every competitor and the benchmark.
+                  Changing them is a code change with a new crawl contract, never a runtime action.
+                </p>
+                {calibStatus?.global_weights ? (
+                  <div className="flex flex-wrap gap-3">
+                    {Object.entries(calibStatus.global_weights).map(([k, v]) => (
+                      <div key={k} className="text-xs font-mono bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-gray-800">
+                        {k}: <span className="font-bold">{typeof v === "number" ? v.toFixed(2) : String(v)}</span>
                       </div>
-                      <div className="text-xs text-gray-600 mt-1">MAE (lower = better)</div>
-                    </div>
-                    <div className="rounded-xl bg-gray-100">
-                      <div className={`text-2xl font-bold ${calibStatus.state === "done" ? "text-emerald-400" : calibStatus.state === "running" ? "text-indigo-500" : calibStatus.state === "error" ? "text-red-400" : "text-amber-400"}`}>
-                        {calibStatus.state === "done" ? "?" : calibStatus.state === "running" ? "?" : calibStatus.state === "error" ? "?" : "?"}
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">
-                        {calibStatus.state === "done" ? "Done" : calibStatus.state === "running" ? "Running…" : calibStatus.state === "error" ? "Error" : "Ready"}
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 ) : (
-                  <p className="text-gray-600 text-sm mb-5">No calibration has been run yet. Click below to run the first one.</p>
+                  <p className="text-xs text-gray-500">Weights not loaded.</p>
                 )}
-
-                {/* Label distribution */}
-                {calibStatus?.label_distribution && (
-                  <div className="flex gap-3 mb-5 flex-wrap">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                      <span className="text-xs text-emerald-300 font-medium">Good: {calibStatus.label_distribution.good ?? 0}</span>
-                    </div>
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                      <span className="w-2 h-2 rounded-full bg-amber-400" />
-                      <span className="text-xs text-amber-300 font-medium">Mid: {calibStatus.label_distribution.mid ?? 0}</span>
-                    </div>
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20">
-                      <span className="w-2 h-2 rounded-full bg-red-400" />
-                      <span className="text-xs text-red-300 font-medium">Bad: {calibStatus.label_distribution.bad ?? 0}</span>
-                    </div>
-                    {(calibStatus.label_distribution.anchors ?? 0) > 0 && (
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600/10 border border-indigo-600/20">
-                        <span className="w-2 h-2 rounded-full bg-indigo-500" />
-                        <span className="text-xs text-cyan-300 font-medium">Anchors: {calibStatus.label_distribution.anchors} (locked)</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Optimal global weights */}
-                {calibStatus?.global_weights && (
-                  <div className="p-4 rounded-xl bg-gray-100">
-                    <p className="text-xs text-gray-600 uppercase tracking-wider mb-3">Calibrated Weights (active)</p>
-                    <div className="flex flex-wrap gap-3">
-                      {Object.entries(calibStatus.global_weights).map(([k, v]) => (
-                        <div key={k} className="text-xs font-mono bg-gray-800 rounded-lg px-3 py-1.5 text-cyan-300">
-                          {k}: <span className="text-slate-900 dark:text-gray-900 font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Candidate block */}
-                {calibStatus?.candidate?.present && (
-                  <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-5">
-                    <p className="text-xs text-amber-300 uppercase tracking-wider mb-2">Candidate Calibration (pending review)</p>
-                    <div className="text-sm text-gray-700 mb-3">
-                      <span className="mr-4">MAE: <span className="font-semibold">{calibStatus.candidate?.mae?.toFixed?.(1) ?? "–"} pts</span></span>
-                      <span className="mr-4">Scans: <span className="font-semibold">{calibStatus.candidate?.n_scans ?? "–"}</span></span>
-                      <span>Calibrated at: <span className="font-semibold">{calibStatus.candidate?.calibrated_at ? new Date(calibStatus.candidate.calibrated_at).toLocaleString() : "—"}</span></span>
-                    </div>
-                    {calibStatus.candidate?.weights && (
-                      <div className="flex flex-wrap gap-3 mb-3">
-                        {Object.entries(calibStatus.candidate.weights).map(([k, v]) => (
-                          <div key={k} className="text-xs font-mono bg-gray-800 rounded-lg px-3 py-1.5 text-amber-300">
-                            {k}: <span className="text-slate-900 dark:text-gray-900 font-bold">{typeof v === 'number' ? v.toFixed(2) : v}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <div className="flex items-center gap-3">
-                      <button onClick={handleAcceptCandidate} className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition">
-                        Accept and activate
-                      </button>
-                      <button onClick={handleRejectCandidate} className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-100 text-gray-700 font-medium text-sm transition">
-                        Reject
-                      </button>
-                      <button onClick={handleRollback} className="px-4 py-2 rounded-lg bg-gray-100">
-                        Rollback to Previous
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Last calibrated */}
-                {calibStatus?.calibrated_at && (
-                  <p className="text-xs text-gray-600 mb-5">
-                    Last calibrated: {new Date(calibStatus.calibrated_at).toLocaleString()}
-                  </p>
-                )}
-
-                {/* Run button */}
-                <div className="flex items-center gap-4 flex-wrap">
-                  <button
-                    onClick={handleRunCalibration}
-                    disabled={calibRunning}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold text-sm transition"
-                  >
-                    {calibRunning ? (
-                      <>
-                        <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                        Calibrating…
-                      </>
-                    ) : (
-                      <>Run Auto-Calibration</>
-                    )}
-                  </button>
-                  <button
-                    onClick={loadCalibStatus}
-                    disabled={calibRunning}
-                    className="px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black text-sm font-medium transition disabled:opacity-50"
-                  >
-                    Refresh status
-                  </button>
-                </div>
-
-                {/* Progress message */}
-                {calibMsg && (
-                  <div className={`mt-4 p-3 rounded-xl text-sm border ${
-                    calibMsg.startsWith("Error:") || calibMsg.startsWith("Network error")
-                      ? "bg-red-500/10 border-red-500/20 text-red-300"
-                      : /^(Done!|Candidate ready|Candidate accepted|Rolled back|Candidate discarded)/.test(calibMsg)
-                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
-                        : "bg-indigo-600/10 border-indigo-600/20 text-cyan-300"
-                  }`}>
-                    {calibMsg}
-                  </div>
-                )}
-              </div>
-
-              {/* How it works */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-100">
-                <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wider">What happens when you click Run</h3>
-                <ol className="space-y-2 text-sm text-gray-600">
-                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">1.</span> Loads all successful scans from the database</li>
-                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">2.</span> Auto-labels each scan as good / mid / bad based on current RII</li>
-                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">3.</span> Grid search finds the optimal alignment / ICP / anchor / positioning weights</li>
-                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">4.</span> Runs per-segment (Developer, Marketing, Product, Support)</li>
-                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">5.</span> Saves candidate to <code className="text-indigo-500">calibration_results_candidate.json</code></li>
-                  <li className="flex gap-3"><span className="text-indigo-500 font-bold">6.</span> Click <strong>Accept and activate</strong> to promote candidate to active weights</li>
-                </ol>
+                {calibStatus?.total_scans_in_db != null ? (
+                  <p className="text-xs text-gray-500 mt-4">Scans in the database: {calibStatus.total_scans_in_db}</p>
+                ) : null}
               </div>
 
               {/* Admin Support Console */}
