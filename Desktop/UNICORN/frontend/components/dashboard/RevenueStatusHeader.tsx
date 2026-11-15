@@ -112,8 +112,8 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Evidence</p>
           <div className="flex gap-3 flex-wrap">
             <span className="text-xs text-emerald-600">✓ Page change recorded</span>
-            <span className="text-xs text-gray-400">· GA4 — not connected</span>
-            <span className="text-xs text-gray-400">· HubSpot — not connected</span>
+            <span className="text-xs text-gray-400">· GA4 — no behavioral measurement for this change</span>
+            <span className="text-xs text-gray-400">· HubSpot — no revenue data for this change</span>
           </div>
         </div>
       </div>

@@ -138,13 +138,13 @@ export default function IncidentDetail({ incident, onStatusChange }: Props) {
             </div>
             <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200">
               <span className="text-gray-400 text-xs">○</span>
-              <span className="text-xs text-gray-500">Behavioral evidence: GA4 not connected</span>
-              <a href="/account#integrations" className="text-xs text-blue-600 ml-auto hover:underline">Connect →</a>
+              <span className="text-xs text-gray-500">Behavioral evidence: no GA4 measurement for this change</span>
+              <a href="/account#integrations" className="text-xs text-blue-600 ml-auto hover:underline">Integrations →</a>
             </div>
             <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200">
               <span className="text-gray-400 text-xs">○</span>
-              <span className="text-xs text-gray-500">Revenue evidence: HubSpot not connected</span>
-              <a href="/account#integrations" className="text-xs text-blue-600 ml-auto hover:underline">Connect →</a>
+              <span className="text-xs text-gray-500">Revenue evidence: no HubSpot data for this change</span>
+              <a href="/account#integrations" className="text-xs text-blue-600 ml-auto hover:underline">Integrations →</a>
             </div>
           </div>
         </div>
