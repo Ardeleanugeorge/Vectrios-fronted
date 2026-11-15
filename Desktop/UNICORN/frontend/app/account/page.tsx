@@ -1589,6 +1589,15 @@ export default function AccountPage() {
 
           {/* -- SYSTEM TAB (owner-only) -------------------------------------- */}
           {activeTab === 'system' && isOwner && (
+            <div className="mb-6 flex items-center justify-between rounded-xl border border-cyan-200 bg-cyan-50 px-5 py-4">
+              <div>
+                <p className="text-sm font-bold text-gray-900">Prospects</p>
+                <p className="text-xs text-gray-600">Accounts read every night before anyone signs up &mdash; trial without Stripe.</p>
+              </div>
+              <a href="/admin/prospects" className="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-semibold">Open &rarr;</a>
+            </div>
+          )}
+          {activeTab === 'system' && isOwner && (
             <div className="space-y-6">
 
               {/* Header */}
