@@ -905,6 +905,14 @@ export default function DashboardPage() {
               <div>
                 <h1 className="text-2xl font-semibold text-gray-900">Revenue Monitoring Console</h1>
               </div>
+              <a
+                href="/report"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg text-white bg-gray-900 hover:bg-gray-700 transition"
+              >
+                Download report (PDF)
+              </a>
             </div>
           </div>
 
