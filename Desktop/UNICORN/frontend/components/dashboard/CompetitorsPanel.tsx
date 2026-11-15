@@ -177,6 +177,11 @@ export default function CompetitorsPanel({ companyId }: Props) {
                     No headline change across {c.headline_comparisons} comparison{c.headline_comparisons === 1 ? "" : "s"}.
                   </p>
                 ) : null}
+                {c.readings >= 2 && (c.headline_comparisons || 0) === 0 ? (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Headline changes cannot be compared yet for this site: its recent readings did not capture the rendered headline.
+                  </p>
+                ) : null}
               </div>
               <button
                 onClick={() => remove(c.domain)}
