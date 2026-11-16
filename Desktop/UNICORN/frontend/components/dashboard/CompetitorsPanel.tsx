@@ -24,6 +24,8 @@ interface Competitor {
   headline_read_at?: string | null
   headline_changes?: { detected_at: string | null; page_type: string | null; url: string; before: string | null; after: string | null }[]
   headline_comparisons?: number
+  changes?: { detected_at: string | null; page_type: string | null; url: string; change_type: string; label: string; before: string | null; after: string | null }[]
+  current?: { subhead?: string | null; main_cta?: string | null }
   scores?: Scores | null
 }
 
@@ -201,16 +203,21 @@ export default function CompetitorsPanel({ companyId }: Props) {
                     Headline: <span className="italic">&ldquo;{clip(c.headline)}&rdquo;</span>
                   </p>
                 ) : null}
-                {(c.headline_changes || []).slice(0, 3).map((ch, i) => (
+                {c.current?.main_cta ? (
+                  <p className="text-xs text-gray-600 mt-0.5">
+                    Main button: <span className="italic">&ldquo;{clip(c.current.main_cta)}&rdquo;</span>
+                  </p>
+                ) : null}
+                {(c.changes || []).slice(0, 5).map((ch, i) => (
                   <p key={i} className="text-xs text-amber-700 mt-1">
-                    Headline changed {fmtDate(ch.detected_at)}:{" "}
+                    {ch.label.charAt(0).toUpperCase() + ch.label.slice(1)} changed {fmtDate(ch.detected_at)}:{" "}
                     <span className="italic">&ldquo;{clip(ch.before)}&rdquo;</span> {"\u2192"}{" "}
                     <span className="italic">&ldquo;{clip(ch.after)}&rdquo;</span>
                   </p>
                 ))}
-                {!(c.headline_changes || []).length && (c.headline_comparisons || 0) > 0 ? (
+                {!(c.changes || []).length && (c.headline_comparisons || 0) > 0 ? (
                   <p className="text-xs text-gray-500 mt-1">
-                    No headline change across {c.headline_comparisons} comparison{c.headline_comparisons === 1 ? "" : "s"}.
+                    No change to the headline, subheadline, buttons or logos across {c.headline_comparisons} comparison{c.headline_comparisons === 1 ? "" : "s"}.
                   </p>
                 ) : null}
                 {c.readings >= 2 && (c.headline_comparisons || 0) === 0 ? (

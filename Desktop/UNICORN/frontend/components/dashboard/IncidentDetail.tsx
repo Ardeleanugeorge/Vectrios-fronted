@@ -27,6 +27,10 @@ interface Props {
 const changeTypeLabel: Record<string, string> = {
   icp_drift: "ICP messaging signal changed",
   headline_change: "Headline changed",
+  subhead_change: "Subheadline changed",
+  cta_change: "Main call to action changed",
+  ctas_change: "Calls to action changed",
+  logos_change: "Customer logos changed",
   positioning_drift: "Positioning changed",
   proof_drift: "Proof signal changed",
   cta_drift: "CTA changed",
@@ -38,6 +42,10 @@ const changeTypeLabel: Record<string, string> = {
 const commercialMeaning: Record<string, string> = {
   icp_drift: "The broader wording makes the intended outcome less explicit, which weakens the structural ICP signal.",
   headline_change: "The main headline of the page changed - the first claim a visitor reads. Compare the two versions to see whether the offer, the audience or the promise moved.",
+  subhead_change: "The line under the main headline changed - usually where the offer is explained. Compare the two versions to see what is now promised, and to whom.",
+  cta_change: "The first button below the navigation changed - the action the page asks a visitor to take. Compare the two to see whether the next step moved, for example from a trial to a demo.",
+  ctas_change: "Buttons on the page were added, removed or renamed. Compare the two sets to see which next steps the page now offers.",
+  logos_change: "The customer logos shown as proof changed. Compare the two sets to see which names were added or removed.",
   positioning_drift: "The positioning signal changed. Structural differentiation may be less explicit in the revised copy.",
   proof_drift: "Removing or reducing proof elements may reduce structural credibility signals.",
   cta_drift: "The CTA wording changed. Structural alignment between the CTA and the value proposition may be affected.",

@@ -17,7 +17,7 @@ interface Scores {
   positioning: number | null
   read_at: string | null
 }
-interface HeadlineChange { detected_at: string | null; before: string | null; after: string | null }
+interface HeadlineChange { detected_at: string | null; before: string | null; after: string | null; label?: string }
 interface Competitor {
   domain: string
   label: string | null
@@ -27,6 +27,8 @@ interface Competitor {
   headline?: string | null
   headline_changes?: HeadlineChange[]
   headline_comparisons?: number
+  changes?: HeadlineChange[]
+  current?: { subhead?: string | null; main_cta?: string | null }
   scores?: Scores | null
 }
 interface TrendEntry { date: string; rii: number; interpolated?: boolean }
@@ -277,7 +279,11 @@ export default function ReportPage() {
         setCompetitors(Array.isArray(c?.competitors) ? c.competitors : [])
         setIncidents(Array.isArray(inc?.incidents) ? inc.incidents : [])
         setFixes(Array.isArray(pb?.fixes) ? pb.fixes.slice(0, 3) : [])
-        setSite(name ? name.replace(/^https?:\/\//, "").replace(/\/$/, "") : null)
+        const siteName = name ? name.replace(/^https?:\/\//, "").replace(/\/$/, "") : null
+        setSite(siteName)
+        // The browser prints the title in the page header and offers it as the
+        // file name, so it names the site and the day rather than the app.
+        document.title = `VectriOS report - ${siteName || "your site"} - ${new Date().toISOString().slice(0, 10)}`
         setState("ready")
       } catch {
         if (!cancelled) setState("error")
@@ -313,7 +319,7 @@ export default function ReportPage() {
   const dims4 = summaries.filter((s) => s.d.key !== "rii")
   const gaps = dims4.filter((s) => s.n > 0 && s.stronger === s.n)
   const leads = dims4.filter((s) => s.n > 0 && s.weaker === s.n)
-  const compChanges = competitors.flatMap((c) => (c.headline_changes || []).map((h) => ({ c, h })))
+  const compChanges = competitors.flatMap((c) => (c.changes || c.headline_changes || []).map((h) => ({ c, h })))
   const z = zone(you.rii)
   const comparisons = competitors.reduce((s, c) => s + (c.headline_comparisons || 0), 0)
 
@@ -512,7 +518,7 @@ export default function ReportPage() {
               {compChanges.map(({ c, h }, k) => (
                 <Card key={k}>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider rounded px-2 py-0.5" style={{ background: C.warnSoft, color: C.warn }}>Headline changed</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider rounded px-2 py-0.5" style={{ background: C.warnSoft, color: C.warn }}>{(h.label || "headline")} changed</span>
                     <span className="text-xs" style={{ color: C.faint }}>{fmtDate(h.detected_at)} &middot; {c.domain}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -524,13 +530,14 @@ export default function ReportPage() {
             </div>
           ) : null}
           <div className="grid grid-cols-2 gap-3">
-            {competitors.filter((c) => !(c.headline_changes || []).length).map((c) => (
+            {competitors.filter((c) => !(c.changes || c.headline_changes || []).length).map((c) => (
               <Card key={c.domain} style={{ background: C.card }}>
                 <p className="text-sm font-bold">{c.domain}</p>
                 {c.headline ? <p className="text-xs italic mt-1" style={{ color: C.ink }}>&ldquo;{clip(c.headline, 110)}&rdquo;</p> : null}
+                {c.current?.main_cta ? <p className="text-[11px] mt-1" style={{ color: C.sub }}>Main button: &ldquo;{clip(c.current.main_cta, 60)}&rdquo;</p> : null}
                 <p className="text-[11px] mt-1.5" style={{ color: C.faint }}>
                   {(c.headline_comparisons || 0) > 0
-                    ? `Unchanged across ${c.headline_comparisons} nightly comparisons`
+                    ? `Headline, subheadline, buttons and logos unchanged across ${c.headline_comparisons} nightly comparisons`
                     : "Readings could not be compared yet"}
                 </p>
               </Card>
