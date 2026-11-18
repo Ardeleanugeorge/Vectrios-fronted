@@ -537,7 +537,7 @@ export default function ReportPage() {
                 {c.current?.main_cta ? <p className="text-[11px] mt-1" style={{ color: C.sub }}>Main button: &ldquo;{clip(c.current.main_cta, 60)}&rdquo;</p> : null}
                 <p className="text-[11px] mt-1.5" style={{ color: C.faint }}>
                   {(c.headline_comparisons || 0) > 0
-                    ? `Headline, subheadline, buttons and logos unchanged across ${c.headline_comparisons} nightly comparisons`
+                    ? `No change found across ${c.headline_comparisons} nightly comparisons`
                     : "Readings could not be compared yet"}
                 </p>
               </Card>

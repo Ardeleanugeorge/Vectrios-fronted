@@ -217,7 +217,7 @@ export default function CompetitorsPanel({ companyId }: Props) {
                 ))}
                 {!(c.changes || []).length && (c.headline_comparisons || 0) > 0 ? (
                   <p className="text-xs text-gray-500 mt-1">
-                    No change to the headline, subheadline, buttons or logos across {c.headline_comparisons} comparison{c.headline_comparisons === 1 ? "" : "s"}.
+                    No change found across {c.headline_comparisons} comparison{c.headline_comparisons === 1 ? "" : "s"}.
                   </p>
                 ) : null}
                 {c.readings >= 2 && (c.headline_comparisons || 0) === 0 ? (
