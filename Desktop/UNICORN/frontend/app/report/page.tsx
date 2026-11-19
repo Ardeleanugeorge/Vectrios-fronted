@@ -130,7 +130,7 @@ function Gauge({ value }: { value: number | null }) {
 }
 
 function TrendChart({ points }: { points: TrendEntry[] }) {
-  const W = 700, H = 190
+  const W = 700, H = 140
   const P = { top: 20, right: 24, bottom: 34, left: 40 }
   const cw = W - P.left - P.right, ch = H - P.top - P.bottom
   const vals = points.map((p) => p.rii)
@@ -407,7 +407,7 @@ export default function ReportPage() {
                 {Math.round(first.rii)} &rarr; {Math.round(last.rii)} ({moved > 0 ? "+" : ""}{moved}).
               </span>{" "}
               {Math.abs(moved) <= LEVEL
-                ? `Within night-to-night variation (${LEVEL} points): your structure has held where it is.`
+                ? `Within night-to-night variation (3 points or less): your structure has held where it is.`
                 : moved < 0
                 ? "Lower is stronger: your structure has strengthened over this period."
                 : "Higher is weaker: your structure has weakened over this period."}
@@ -483,7 +483,7 @@ export default function ReportPage() {
                   </tbody>
                 </table>
                 <p className="text-[11px] mt-2" style={{ color: C.faint }}>
-                  Amber: the competitor is stronger by more than {LEVEL} points. Green: you are. RII is stronger when lower; the other four when higher.
+                  Amber: the competitor is stronger by 4 points or more. Green: you are. RII is stronger when lower; the other four when higher.
                 </p>
               </Card>
             </>
@@ -540,7 +540,7 @@ export default function ReportPage() {
                 <p className="text-[11px] mt-1.5" style={{ color: C.faint }}>
                   {(c.headline_comparisons || 0) > 0
                     ? `No change found across ${c.headline_comparisons} nightly comparisons`
-                    : "Readings could not be compared yet"}
+                    : "No comparable pair of readings yet"}
                 </p>
               </Card>
             ))}

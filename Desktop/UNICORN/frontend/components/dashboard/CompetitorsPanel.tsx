@@ -224,7 +224,7 @@ export default function CompetitorsPanel({ companyId }: Props) {
                 ) : null}
                 {c.readings >= 2 && (c.headline_comparisons || 0) === 0 ? (
                   <p className="text-xs text-gray-500 mt-1">
-                    Headline changes cannot be compared yet for this site: its recent readings did not capture the rendered headline.
+                    No comparable pair of readings yet: a change shows once two readings of this site are made the same way.
                   </p>
                 ) : null}
               </div>
@@ -298,7 +298,7 @@ export default function CompetitorsPanel({ companyId }: Props) {
             })}
           </ul>
           <p className="text-xs text-gray-400 mt-2">
-            Latest reading of each site, all under the same crawl method. Differences of {LEVEL} points or
+            Latest reading of each site, all under the same crawl method. Differences of 3 points or
             less count as level. RII: lower is stronger; the other four: higher is stronger.
           </p>
         </div>
