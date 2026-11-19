@@ -51,14 +51,16 @@ const DIMS: { key: ScoreKey; label: string; lowerIsBetter: boolean }[] = [
 ]
 
 function fmtScore(v: number | null | undefined): string {
-  return typeof v === "number" ? v.toFixed(0) : "\u2014"
+  return typeof v === "number" ? String(Math.round(v)) : "\u2014"
 }
 
 // Positive when the competitor is stronger than you on this dimension, negative
 // when weaker, 0 when level, null when either reading is missing.
 function edge(d: (typeof DIMS)[number], mine: number | null | undefined, theirs: number | null | undefined): number | null {
   if (typeof mine !== "number" || typeof theirs !== "number") return null
-  const diff = d.lowerIsBetter ? mine - theirs : theirs - mine
+  // On the whole numbers shown: a gap the reader sees as 4 is never counted level.
+  const a = Math.round(mine), b = Math.round(theirs)
+  const diff = d.lowerIsBetter ? a - b : b - a
   return Math.abs(diff) <= LEVEL ? 0 : diff
 }
 

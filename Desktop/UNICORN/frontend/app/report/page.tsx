@@ -70,7 +70,7 @@ function fmtDate(iso: string | null | undefined): string {
   return d.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })
 }
 function fmtScore(v: number | null | undefined): string {
-  return typeof v === "number" ? v.toFixed(0) : "—"
+  return typeof v === "number" ? String(Math.round(v)) : "—"
 }
 function clip(s: string | null | undefined, n = 140): string {
   const t = (s || "").trim()
@@ -81,7 +81,9 @@ function clip(s: string | null | undefined, n = 140): string {
 // 0 when level, null when either reading is missing.
 function edge(d: (typeof DIMS)[number], mine: number | null | undefined, theirs: number | null | undefined): number | null {
   if (typeof mine !== "number" || typeof theirs !== "number") return null
-  const diff = d.lowerIsBetter ? mine - theirs : theirs - mine
+  // On the whole numbers shown: a gap the reader sees as 4 is never counted level.
+  const a = Math.round(mine), b = Math.round(theirs)
+  const diff = d.lowerIsBetter ? a - b : b - a
   return Math.abs(diff) <= LEVEL ? 0 : diff
 }
 
@@ -167,7 +169,7 @@ function TrendChart({ points }: { points: TrendEntry[] }) {
       ))}
       {points.length > 0 && (
         <text x={x(points.length - 1)} y={y(points[points.length - 1].rii) - 12} textAnchor="end" fontSize="12" fontWeight="700" fill={C.brandDark}>
-          {points[points.length - 1].rii.toFixed(1)}
+          {Math.round(points[points.length - 1].rii)}
         </text>
       )}
       {labels.map((i) => (
@@ -190,7 +192,7 @@ function DimBar({ mine, theirs }: { mine: number | null; theirs: number[] }) {
       {typeof mine === "number" && (
         <>
           <circle cx={x(mine)} cy={24} r={8} fill={C.brand} stroke="#fff" strokeWidth="2.5" />
-          <text x={x(mine)} y={11} textAnchor="middle" fontSize="11" fontWeight="700" fill={C.brandDark}>you {mine.toFixed(0)}</text>
+          <text x={x(mine)} y={11} textAnchor="middle" fontSize="11" fontWeight="700" fill={C.brandDark}>you {Math.round(mine)}</text>
         </>
       )}
       <text x={L} y={H - 2} fontSize="9" fill={C.faint}>0</text>
@@ -303,7 +305,7 @@ export default function ReportPage() {
     return <main className="max-w-3xl mx-auto p-10 text-sm text-gray-700">The report could not be prepared: no reading was found for this account yet.</main>
 
   const first = trend[0], last = trend[trend.length - 1]
-  const moved = first && last ? last.rii - first.rii : null
+  const moved = first && last ? Math.round(last.rii) - Math.round(first.rii) : null
   const compared = competitors.filter((c) => c.scores)
   const summaries = DIMS.map((d) => {
     let stronger = 0, weaker = 0, level = 0
@@ -388,7 +390,7 @@ export default function ReportPage() {
           </div>
         </Section>
 
-        <Section n="02" title="How it has moved" pageBreak keep lead="Every reading since monitoring began under the current method. Each point is one night.">
+        <Section n="02" title="How it has moved" keep lead="Every reading since monitoring began under the current method. Each point is one night.">
           <Card>
             {trend.length ? <TrendChart points={trend} /> : <p className="text-sm" style={{ color: C.sub }}>No readings under the current method yet.</p>}
             {trend.length ? (
@@ -402,7 +404,7 @@ export default function ReportPage() {
           {trend.length > 1 && moved !== null ? (
             <div className="mt-3 rounded-xl px-4 py-3 text-sm" style={{ background: C.card, color: C.sub }}>
               <span className="font-semibold" style={{ color: C.ink }}>
-                {first.rii.toFixed(1)} &rarr; {last.rii.toFixed(1)} ({moved > 0 ? "+" : ""}{moved.toFixed(1)}).
+                {Math.round(first.rii)} &rarr; {Math.round(last.rii)} ({moved > 0 ? "+" : ""}{moved}).
               </span>{" "}
               {Math.abs(moved) <= LEVEL
                 ? `Within night-to-night variation (${LEVEL} points): your structure has held where it is.`
