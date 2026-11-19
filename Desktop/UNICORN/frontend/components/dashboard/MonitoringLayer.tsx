@@ -652,7 +652,7 @@ const delayTimer = setTimeout(() => {
         const lastScanLabel = lastEval ? formatAgo(lastEval) : "—"
         const nextScanLabel = lastEval ? formatNextIn(lastEval) : "~24h"
         const planLabel = currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)
-        const trialLabel = trialDays ? ` · Trial day ${trialDays}` : ""
+        const trialLabel = trialDays ? ` · Trial: ${trialDays} day${trialDays === 1 ? "" : "s"} left` : ""
 
         return (
           <div className="flex flex-wrap items-center gap-px rounded-2xl overflow-hidden border border-gray-200 bg-white text-sm">
