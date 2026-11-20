@@ -319,11 +319,17 @@ export default function ReportPage() {
     return { d, stronger, weaker, level, n: stronger + weaker + level }
   })
   const dims4 = summaries.filter((s) => s.d.key !== "rii")
-  const gaps = dims4.filter((s) => s.n > 0 && s.stronger === s.n)
-  const leads = dims4.filter((s) => s.n > 0 && s.weaker === s.n)
+  // "All" needs at least two competitors behind it; one is not a pattern.
+  const gaps = dims4.filter((s) => s.n >= 2 && s.stronger === s.n)
+  const leads = dims4.filter((s) => s.n >= 2 && s.weaker === s.n)
+  const everyone = (s: { n: number }) => s.n === competitors.length
   const compChanges = competitors.flatMap((c) => (c.changes || c.headline_changes || []).map((h) => ({ c, h })))
   const z = zone(you.rii)
   const comparisons = competitors.reduce((s, c) => s + (c.headline_comparisons || 0), 0)
+  // Monitored is not read: a competitor counts as read only once it has a
+  // reading under the current method.
+  const readCount = compared.length
+  const notRead = competitors.length - readCount
 
   return (
     <main className="mx-auto bg-white" style={{ maxWidth: 820, color: C.ink }}>
@@ -343,12 +349,17 @@ export default function ReportPage() {
         <p className="text-sm mt-2" style={{ color: "#cffafe" }}>
           Prepared {fmtDate(generated)}
           {first && last ? ` · ${trend.length} nightly reading${trend.length === 1 ? "" : "s"}, ${fmtDate(first.date)} – ${fmtDate(last.date)}` : ""}
-          {competitors.length ? ` · ${competitors.length} competitor${competitors.length === 1 ? "" : "s"} read on the same nights` : ""}
+          {competitors.length
+            ? notRead
+              ? ` · ${competitors.length} competitor${competitors.length === 1 ? "" : "s"} monitored, ${readCount} read so far`
+              : ` · ${competitors.length} competitor${competitors.length === 1 ? "" : "s"} read under the same method`
+            : ""}
         </p>
         <div className="grid grid-cols-3 gap-3 mt-5">
           {[
             { v: String(trend.length), l: "Nightly readings", s: first ? `since ${fmtDate(first.date)}` : "" },
-            { v: String(competitors.length), l: "Competitors read alongside", s: comparisons ? `${comparisons} headline comparisons` : "" },
+            { v: String(readCount), l: "Competitors read alongside",
+              s: notRead ? `${competitors.length} monitored · ${notRead} not read yet` : comparisons ? `${comparisons} headline comparisons` : "" },
             { v: String(incidents.length + compChanges.length), l: "Headline & page changes", s: `${incidents.length} on your site · ${compChanges.length} at competitors` },
           ].map((k) => (
             <div key={k.l} className="rounded-xl px-4 py-3" style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.18)" }}>
@@ -416,23 +427,23 @@ export default function ReportPage() {
         </Section>
 
         <Section n="03" title="You and your competitors"
-          lead="Your latest reading beside each competitor's, taken the same night with the same method.">
+          lead="Your latest reading beside each competitor's latest, both under the same method.">
           {compared.length ? (
             <>
               {(gaps.length || leads.length) ? (
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   {gaps.map((s) => (
                     <Card key={s.d.key} style={{ background: C.warnSoft, borderColor: "transparent" }}>
-                      <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: C.warn }}>Behind all {s.n}</p>
+                      <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: C.warn }}>Behind all {s.n}{everyone(s) ? "" : " read"}</p>
                       <p className="text-base font-bold mt-1">{s.d.label}</p>
-                      <p className="text-xs mt-1" style={{ color: C.sub }}>Every competitor scores higher than you.</p>
+                      <p className="text-xs mt-1" style={{ color: C.sub }}>{everyone(s) ? "Every competitor scores higher than you." : `All ${s.n} competitors read so far score higher than you.`}</p>
                     </Card>
                   ))}
                   {leads.map((s) => (
                     <Card key={s.d.key} style={{ background: C.goodSoft, borderColor: "transparent" }}>
-                      <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: C.good }}>Ahead of all {s.n}</p>
+                      <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: C.good }}>Ahead of all {s.n}{everyone(s) ? "" : " read"}</p>
                       <p className="text-base font-bold mt-1">{s.d.label}</p>
-                      <p className="text-xs mt-1" style={{ color: C.sub }}>You score higher than every competitor.</p>
+                      <p className="text-xs mt-1" style={{ color: C.sub }}>{everyone(s) ? "You score higher than every competitor." : `You score higher than all ${s.n} competitors read so far.`}</p>
                     </Card>
                   ))}
                 </div>
@@ -539,7 +550,7 @@ export default function ReportPage() {
                 {c.current?.main_cta ? <p className="text-[11px] mt-1" style={{ color: C.sub }}>Main button: &ldquo;{clip(c.current.main_cta, 60)}&rdquo;</p> : null}
                 <p className="text-[11px] mt-1.5" style={{ color: C.faint }}>
                   {(c.headline_comparisons || 0) > 0
-                    ? `No change found across ${c.headline_comparisons} nightly comparisons`
+                    ? `Headline unchanged across ${c.headline_comparisons} nightly comparison${c.headline_comparisons === 1 ? "" : "s"}`
                     : "No comparable pair of readings yet"}
                 </p>
               </Card>
@@ -588,7 +599,7 @@ export default function ReportPage() {
             </div>
           </div>
         <footer className="mt-6 pt-3 pb-2 text-[10px]" style={{ borderTop: `1px solid ${C.line}`, color: C.faint }}>
-          Scores are structural readings of page text under VectriOS crawl method 4 &mdash; the same for your site, your competitors and the benchmark.
+          Scores are structural readings of page text under one VectriOS crawl method &mdash; the same for your site, your competitors and the benchmark.
           They describe how the pages are composed, not how visitors respond to them, and are not a measurement of revenue. vectrios.com
         </footer>
         </Section>
