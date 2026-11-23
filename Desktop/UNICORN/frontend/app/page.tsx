@@ -41,10 +41,10 @@ export default function Home() {
   // Progress phases: they advance once and hold on the last one rather than
   // looping, so a slow scan never claims to be crawling again after it finished.
   const scanPhases = useRef([
-    "Crawling your revenue-stage pages...",
-    "Analyzing messaging structure...",
-    "Detecting ICP and positioning signals...",
-    "Calculating Revenue Impact Index..."
+    "Reading your homepage and up to 4 key pages...",
+    "Scoring ICP clarity, alignment, proof and positioning...",
+    "Comparing with 500+ SaaS sites in the benchmark...",
+    "Calculating your Revenue Impact Index (RII)..."
   ])
   const [scanPhase, setScanPhase] = useState(0)
   const [showCookieBanner, setShowCookieBanner] = useState(false)
@@ -130,7 +130,7 @@ export default function Home() {
       clearTimeout(timeoutId)
 
       if (res.status === 429) {
-        setScanError("Scan limit reached (3/day). Create a free account for unlimited scans.")
+        setScanError("You have reached today's limit of 3 free scans. Please try again tomorrow.")
         setScanning(false)
         return
       }
@@ -221,16 +221,16 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 pt-12 pb-16 md:pt-16 md:pb-20">
         <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 border border-gray-200 text-gray-500 text-[10px] font-medium mb-6 uppercase tracking-widest">
-            REVENUE-STAGE MONITORING INFRASTRUCTURE
+            WEBSITE MESSAGING MONITORING FOR B2B SAAS
           </div>
           <h1 className="text-4xl md:text-6xl text-slate-900 dark:text-gray-900 mb-6 font-bold leading-tight">
-            For B2B SaaS marketing leaders: know when your website stops speaking to your buyer.
+            For B2B SaaS marketing teams: know when your website, or a competitor&apos;s, changes its message.
           </h1>
           <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
-            Your site and up to 5 competitors, read every night and benchmarked against hundreds of B2B SaaS sites.
+            VectriOS reads your site and up to 5 competitors every night, scores each one against 500+ SaaS websites, and reports when a homepage headline changes.
           </p>
           <p className="text-sm md:text-base text-gray-900 font-medium mb-6 max-w-2xl mx-auto">
-            VectriOS reads your homepage, pricing and product pages for changes in ICP clarity, positioning, proof and revenue-stage messaging, and does the same for the competitors you choose. See what changed, why it matters, and what to review next.
+            Every reading covers the homepage and up to 4 key pages: pricing, product, solutions, customers. A headline change is reported only after it appears on two nightly readings in a row, so A/B tests and one-day banners never become alerts.
           </p>
 
 
@@ -261,7 +261,7 @@ export default function Home() {
                     </svg>
                     Scanning...
                   </span>
-                ) : "Establish Domain Baseline (30s)"}
+                ) : "Scan your site free"}
               </button>
             </div>
             {scanError && (
@@ -281,7 +281,7 @@ export default function Home() {
           )}
           <div className="text-xs sm:text-sm text-gray-500 mb-8 space-y-3 max-w-lg mx-auto">
             <p className="font-medium text-gray-700">
-              Takes 30 seconds. No signup required for baseline report.
+              Free scan · No signup · No credit card
             </p>
             
           </div>
@@ -294,9 +294,9 @@ export default function Home() {
                 className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 border border-slate-200 hover:border-indigo-600/40 hover:bg-indigo-50/30 transition-all text-sm text-gray-600"
               >
                 <span className="font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
-                  {scanCount.toLocaleString("en-US")}+
+                  {scanCount.toLocaleString("en-US")}
                 </span>
-                <span className="text-gray-500">revenue architectures analyzed</span>
+                <span className="text-gray-500">SaaS sites in the benchmark</span>
                 <span className="text-indigo-700 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                   View index &rarr;
                 </span>
@@ -321,32 +321,32 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
-            Your website changes. Your messaging model should notice.
+            Websites change every week. Most marketing teams find out late.
           </h2>
           <p className="text-2xl text-indigo-700 font-semibold mb-8">
-            Your team constantly changes headlines, positioning, offers, proof, and calls to action.
+            Headlines, offers and proof change on your site and on your competitors&apos; sites, often without anyone on the team seeing it.
           </p>
-          <p className="text-xl text-gray-700 mb-6">Signals of structural messaging drift:</p>
+          <p className="text-xl text-gray-700 mb-6">What VectriOS scores on every reading:</p>
           <ul className="space-y-4 text-lg text-gray-700 mb-8 ml-6">
             <li className="flex items-center gap-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-              ICP signals become less explicit
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
+              ICP clarity: does the page say who it is for?
             </li>
             <li className="flex items-center gap-3">
-              
-              Positioning drifts across pages
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
+              Messaging alignment: does the value story stay the same across pages?
             </li>
             <li className="flex items-center gap-3">
-              
-              Proof loses alignment with buyer context
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
+              Anchor density: are there numbers, customers and pricing near each decision?
             </li>
             <li className="flex items-center gap-3">
-              
-              Revenue-stage messaging becomes less consistent
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
+              Positioning coherence: do the category and &ldquo;why us&rdquo; hold across pages?
             </li>
           </ul>
           <p className="text-lg text-gray-700 leading-relaxed mb-2">
-            Traditional analytics measure visitor behavior. VectriOS monitors the messaging structure that changed.</p>
+            Analytics show what visitors did. VectriOS shows what the page said, and when it changed.</p>
           
             
         </div>
@@ -355,17 +355,17 @@ export default function Home() {
       {/* -- 3. PRODUCT VISUALIZATION -------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">EXAMPLE COMMERCIAL EVENT</p>
+          <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">EXAMPLE</p>
           <p className="text-center text-base md:text-lg font-semibold text-slate-900 dark:text-gray-900 mb-6 max-w-xl mx-auto leading-snug">
-            From website changes to structured events with commercial relevance.
+            What a change report shows.
           </p>
           <p className="text-center text-sm md:text-base text-gray-500 mb-10 max-w-xl mx-auto leading-relaxed">
-            VectriOS turns meaningful website changes into structured events with commercial relevance — showing what changed, why it matters, the evidence behind the signal, and what to review next.
+            When a homepage headline changes, on your site or a competitor&apos;s, you see the old and the new headline, the dates of the readings, and how the score moved.
           </p>
 
           {/* Real Dashboard Screenshot */}
           <div className="relative rounded-xl border border-gray-200 overflow-hidden shadow-2xl">
-            <img src="/dashboard-example.png" alt="VectriOS Commercial Events dashboard" className="w-full rounded-xl" style={{objectFit: "cover", objectPosition: "top", maxHeight: "700px"}} />
+            <img src="/dashboard-example.png" alt="Example of a VectriOS change report" className="w-full rounded-xl" style={{objectFit: "cover", objectPosition: "top", maxHeight: "700px"}} />
           </div>
           <p className="text-center text-xs text-gray-500 mt-4">
             Illustrative example &mdash; actual results reflect the website being monitored.
@@ -384,27 +384,27 @@ export default function Home() {
       {/* WORKFLOW SECTION */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">From detection to action.</h2>
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">How monitoring works.</h2>
           <div className="grid md:grid-cols-4 gap-4 mt-8">
             <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">01</p>
-              <p className="text-lg font-bold text-gray-900 mb-2">Detect</p>
-              <p className="text-sm text-gray-600">Identify meaningful changes across monitored pages.</p>
+              <p className="text-lg font-bold text-gray-900 mb-2">Read</p>
+              <p className="text-sm text-gray-600">Every night: your homepage and up to 4 key pages, and the same for up to 5 competitors.</p>
             </div>
             <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">02</p>
-              <p className="text-lg font-bold text-gray-900 mb-2">Interpret</p>
-              <p className="text-sm text-gray-600">Understand which messaging dimension changed and why it matters structurally.</p>
+              <p className="text-lg font-bold text-gray-900 mb-2">Confirm</p>
+              <p className="text-sm text-gray-600">A headline change counts only when the new headline appears on two nightly readings in a row.</p>
             </div>
             <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">03</p>
-              <p className="text-lg font-bold text-gray-900 mb-2">Act</p>
-              <p className="text-sm text-gray-600">Get a prioritized recommendation for what to review.</p>
+              <p className="text-lg font-bold text-gray-900 mb-2">Review</p>
+              <p className="text-sm text-gray-600">See the old and new headline, the score before and after, and the areas to review first.</p>
             </div>
             <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">04</p>
               <p className="text-lg font-bold text-gray-900 mb-2">Verify</p>
-              <p className="text-sm text-gray-600">Track the next assessment to see whether the structural signal improves.</p>
+              <p className="text-sm text-gray-600">The next readings show whether the score held, improved or slipped.</p>
             </div>
           </div>
         </div>
@@ -413,14 +413,14 @@ export default function Home() {
       {/* -- 5. FINANCIAL FRAMING ------------------------------------------ */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">Why messaging structure degrades as SaaS products evolve.</h2>
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">One score, four parts. Lower is better.</h2>
           <p className="text-lg text-gray-700 mb-8">
-            Over time, website changes can accumulate into structural inconsistencies that make the product story harder to interpret consistently across the buying journey.</p>
+            The Revenue Impact Index (RII) runs from 0 to 100. It summarizes the four sub-scores above with the same method for every site, yours, your competitors&apos; and the 500+ in the benchmark. RII describes how a site&apos;s messaging is built; it is not a revenue figure. <Link href="/methodology" className="text-indigo-700 underline">How the score is calculated</Link>.</p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
-              { metric: "Lower clarity", desc: "ICP and value signals become harder to interpret." },
-              { metric: "Weak proof", desc: "Evidence becomes less connected to the buyer story." },
-              { metric: "Misalignment", desc: "Positioning, anchors, and page messaging become less coherent." },
+              { metric: "Under 40: low risk", desc: "Clear audience, consistent story, proof near decisions." },
+              { metric: "40 to 69: moderate risk", desc: "One or two sub-scores pull the score up. The scan shows which." },
+              { metric: "70 and above: high risk", desc: "The pages do not say clearly who they serve or why to choose you." },
             ].map(item => (
               <div key={item.metric} className="p-5 bg-gray-50 rounded-lg border border-gray-200">
                 <p className="text-indigo-700 font-semibold mb-2">{item.metric}</p>
@@ -440,7 +440,7 @@ export default function Home() {
             <div className="p-6 bg-gray-50 rounded-lg border-2 border-indigo-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">Structural Evidence</p>
               <p className="text-lg font-bold text-gray-900 mb-2">Website messaging</p>
-              <p className="text-sm text-gray-600">Detect changes in ICP clarity, positioning, proof, and revenue-stage messaging.</p>
+              <p className="text-sm text-gray-600">Scores ICP clarity, alignment, proof and positioning on every reading, and reports homepage headline changes.</p>
               <p className="text-xs text-indigo-600 font-semibold mt-3">Available now</p>
             </div>
             <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
@@ -463,22 +463,30 @@ export default function Home() {
       {/* -- 6. MONITORING LAYER ------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">Continuous Revenue-Stage Monitoring</h2>
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">What monitoring includes, for $299/month</h2>
           <p className="text-lg text-gray-700 mb-8">
-            Messaging drift is continuous. As products evolve, markets shift, and competitors reposition, structural integrity requires continuous monitoring — not periodic audits.</p>
+            One plan for marketing teams at B2B SaaS companies. 14-day free trial, cancel anytime.</p>
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 mb-6">
             <ul className="space-y-4 text-lg text-gray-700">
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
-                ICP signals change as messaging evolves
+                Your site read every night: homepage and up to 4 key pages
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
-                Positioning coherence can drift across pages and campaigns
+                Up to 5 competitors read every night with the same method
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
-                Revenue-stage anchors can lose alignment with the current buyer story
+                Homepage headline changes, confirmed on two readings, for your site and each competitor
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
+                RII score history and your position among 500+ SaaS sites
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
+                Page-level findings with suggested copy for the top review areas
               </li>
             </ul>
           </div>
@@ -491,24 +499,21 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-20 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
-            Establish continuous visibility into your revenue architecture.
+            Start with a free scan of your site.
           </h2>
           <p className="text-lg text-gray-700 mb-8">
-            Scan your site to create a baseline in 30 seconds.
-            Then let VectriOS monitor meaningful changes automatically every 24 hours.
+            See your RII, the four sub-scores and where you stand among 500+ SaaS sites.
+            Nightly monitoring of your site and up to 5 competitors starts with the 14-day trial.
           </p>
           <Link
             href="/"
             className="inline-block px-12 py-5 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-lg"
           >
-            Establish Domain Baseline
+            Scan your site free
           </Link>
           <div className="mt-4">
-            <p className="text-sm text-gray-500">
-              Takes 30 seconds:
-            </p>
             <p className="text-sm text-gray-600 mt-3">
-              No credit card required
+              No signup and no credit card for the scan
             </p>
           </div>
         </div>
@@ -519,7 +524,7 @@ export default function Home() {
         <div className="text-center">
           <h3 className="text-2xl font-bold mb-2 text-slate-900">Vectri<span className="text-indigo-700">OS</span></h3>
           <p className="text-gray-500 mb-4">
-            Revenue-Stage Monitoring Infrastructure for B2B SaaS
+            Website messaging monitoring for B2B SaaS marketing teams
           </p>
           <div className="flex flex-wrap justify-center gap-6 mb-6 text-sm">
             <Link href="/security" className="text-gray-500 hover:text-gray-700">Security</Link>

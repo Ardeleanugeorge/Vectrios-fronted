@@ -1,5 +1,6 @@
 /**
- * Plans configuration — single commercial plan: Scale ($99/mo) + trial (full Scale access).
+ * Plans configuration — single commercial plan: Scale ($299/mo, $239/mo billed annually) + 14-day trial (full Scale access).
+ * Every feature listed here must exist in the product today. Check before adding a line.
  */
 
 export interface Plan {
@@ -26,24 +27,19 @@ export interface Plan {
 export const PLANS: Plan[] = [
   {
     name: "Scale",
-    headline: "Govern messaging integrity. Maintain structural visibility.",
+    headline: "Your site and up to 5 competitors, read every night.",
     ctaLabel: "Start 14-day free trial",
     priceMonthly: 299,
     priceAnnual: 239, // per month when billed annually (~$2,868/year, save $720)
     maxUsers: 20,
     features: [
-      "Page-level structural findings",
-      "Prioritized structural review actions",
-      "Before/after copy recommendations for priority fixes",
-      "Structural risk assessment with evidence context",
-      "24h continuous structural monitoring",
-      "Structural messaging drift detection and change history",
-      "30/60/90-day structural risk trend",
-      "Severity-ranked structural signals and commercial events",
-      "Benchmark against 508 SaaS companies",
-      "HubSpot CRM + GA4 evidence integrations",
-      "Weekly structural risk summaries",
-      "Team monitoring — unlimited seats",
+      "Your site read every night: homepage + up to 4 key pages",
+      "Up to 5 competitors read every night, same method",
+      "Homepage headline change reports, confirmed on 2 readings",
+      "RII and 4 sub-scores on every reading, with history",
+      "Benchmark position among 500+ SaaS sites",
+      "Page-level findings with suggested copy for top review areas",
+      "Google Search Console, GA4 and HubSpot connections",
     ],
     featureFlags: {
       signals: true,

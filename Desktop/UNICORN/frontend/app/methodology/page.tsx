@@ -2,144 +2,133 @@
 import Link from "next/link"
 import Header from "@/components/Header"
 
+const SUBSCORES = [
+  { label: "Messaging alignment", desc: "Whether the pages tell one consistent value story, and whether it matches the audience the site addresses. Carries the largest weight in the RII." },
+  { label: "ICP clarity", desc: "Whether the pages say explicitly who the product is for: role, team, company type or industry." },
+  { label: "Anchor density", desc: "Proof and numbers a buyer can decide on: customer names, results, percentages, prices, and how they sit around the calls to action." },
+  { label: "Positioning coherence", desc: "Whether the category and the reason to choose the product stay the same from page to page." },
+]
+
+const BANDS = [
+  { range: "0 to 39", label: "Low structural risk" },
+  { range: "40 to 69", label: "Moderate structural risk" },
+  { range: "70 to 100", label: "High structural risk" },
+]
+
+const CONFIDENCE = [
+  { part: "50%", desc: "How many of the 5 pages were read" },
+  { part: "30%", desc: "How much text was read, up to 4,000 words" },
+  { part: "20%", desc: "How many pages could be analyzed semantically" },
+]
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="mb-12 border-b border-gray-200 pb-12">
+      <h2 className="text-2xl font-bold mb-6">{title}</h2>
+      <div className="space-y-4 text-gray-600 leading-relaxed">{children}</div>
+    </section>
+  )
+}
+
 export default function MethodologyPage() {
   return (
     <div className="page-root">
       <Header />
       <main className="max-w-4xl mx-auto px-6 py-16">
 
-        {/* Hero */}
         <div className="mb-12">
           <p className="text-xs font-bold tracking-widest uppercase text-indigo-600 mb-3">Methodology</p>
-          <h1 className="text-4xl font-bold mb-4">Revenue-Stage Monitoring Infrastructure</h1>
+          <h1 className="text-4xl font-bold mb-4">How VectriOS reads and scores a website</h1>
           <p className="text-lg text-gray-600 leading-relaxed">
-            A layered risk modeling framework for B2B SaaS — built for revenue leaders who govern structural integrity, not just performance metrics.
+            For B2B SaaS marketing teams who want to know exactly what the score measures, what it does not measure, and what triggers a change report.
+            The same method is used for your site, your competitors and the 500+ SaaS sites in the benchmark.
           </p>
         </div>
 
-        {/* Core Premise */}
-        <section className="mb-12 border-b border-gray-200 pb-12">
-          <h2 className="text-2xl font-bold mb-6">The Core Premise</h2>
-          <div className="space-y-4 text-gray-600 leading-relaxed">
-            <p>Revenue-stage risk can begin upstream of analytics, in messaging architecture.</p>
-            <p>VectriOS models structural messaging risk — the gap between how your messaging is architected and the requirements of your revenue-stage strategy.</p>
-            <p>Structural messaging risk accumulates across ICP definition, positioning architecture, conversion anchoring, and revenue-stage alignment. Most teams measure performance. Few monitor structural integrity.</p>
-          </div>
-        </section>
+        <Section title="1. What is read">
+          <p>Each reading covers the <strong className="text-gray-900">homepage and up to 4 key pages</strong>, found automatically: pricing, product, solutions, customers and about pages come first. The homepage is always included. If the homepage cannot be read, no score is produced for that reading, rather than a score built from other pages.</p>
+          <p>Pages are read with services that run the page&apos;s scripts when the site needs it, so content built in the browser is read too. On later readings each page is read by the same reading service as before, so two readings of an unchanged page give the same text and the same score.</p>
+          <p>VectriOS reads only public pages. It does not log in, fill forms or read anything behind a password.</p>
+        </Section>
 
-        {/* What we dont do */}
-        <section className="mb-12 border-b border-gray-200 pb-12">
-          <h2 className="text-2xl font-bold mb-6">What VectriOS Does Not Do</h2>
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-            <p className="text-gray-600 leading-relaxed mb-3">VectriOS does not optimize impressions, engagement, click-through rates, or content quality.</p>
-            <p className="text-gray-600 leading-relaxed">It models structural messaging risk — the gap between how your messaging is architected and the requirements of your revenue-stage strategy.</p>
-          </div>
-        </section>
-
-        {/* RII */}
-        <section className="mb-12 border-b border-gray-200 pb-12">
-          <h2 className="text-2xl font-bold mb-2">1. Risk Engine — Revenue Impact Index (RII)</h2>
-          <p className="text-gray-500 text-sm mb-6">0–100 scale · lower is stronger architecture</p>
-          <p className="text-gray-600 leading-relaxed mb-6">Risk is evaluated across four structural dimensions:</p>
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            {[
-              { label: "Alignment", desc: "Does the messaging structure remain aligned with the core value proposition and revenue-stage context?" },
-              { label: "ICP Clarity", desc: "Is the intended customer represented clearly and consistently across monitored pages?" },
-              { label: "Anchor Density", desc: "Does the messaging contain sufficient decision-supporting proof and conversion anchors?" },
-              { label: "Positioning Coherence", desc: "Does the core positioning remain coherent across monitored pages?" },
-            ].map(item => (
+        <Section title="2. The four sub-scores">
+          <p>Each sub-score runs from 0 to 100. <strong className="text-gray-900">Higher is stronger.</strong></p>
+          <div className="grid md:grid-cols-2 gap-4">
+            {SUBSCORES.map(item => (
               <div key={item.label} className="p-5 bg-gray-50 border border-gray-200 rounded-xl">
                 <p className="font-semibold text-gray-900 mb-2">{item.label}</p>
                 <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
-          <div className="space-y-3 text-gray-600 leading-relaxed">
-            <p>The headline output is the <strong className="text-gray-900">Revenue Impact Index (RII)</strong> — a 0–100 score summarizing structural messaging risk across revenue-stage dimensions. Lower RII indicates stronger structural architecture. RII is not a measurement of revenue, conversion rate, or actual revenue loss.</p>
-            <p>Classification follows structural priority and dominance rules — not a simple average of sub-scores, and not the same as live conversion rate in analytics.</p>
-          </div>
-        </section>
+          <p>The detected audience (for example developers, marketing teams or support teams) is shown with every scan, so you can see what the scoring assumed.</p>
+        </Section>
 
-        {/* Evidence Calibration */}
-        <section className="mb-12 border-b border-gray-200 pb-12">
-          <h2 className="text-2xl font-bold mb-6">2. Evidence Calibration & Revenue Context</h2>
-          <div className="space-y-4 text-gray-600 leading-relaxed">
-            <p>Structural analysis provides the baseline evidence layer. Connected data sources add behavioral, search, and revenue context without changing the distinction between observed evidence and structural inference.</p>
-            <p>Connected data increases evidence depth. It does not automatically establish causality between structural changes and revenue outcomes.</p>
-          </div>
-        </section>
-
-        {/* Evidence Sources */}
-        <section className="mb-12 border-b border-gray-200 pb-12">
-          <h2 className="text-2xl font-bold mb-6">3. Evidence Sources</h2>
-          <p className="text-gray-600 leading-relaxed mb-6">Each connected source adds a distinct evidence layer to the monitoring model.</p>
-          <div className="space-y-4 mb-6">
-            {[
-              { label: "Google Search Console", desc: "Adds observed search-performance signals — impressions, clicks, and CTR — to the structural monitoring model." },
-              { label: "Google Analytics 4", desc: "Adds observed behavioral signals such as engagement and session conversion rate to the monitoring model." },
-              { label: "HubSpot CRM", desc: "Adds observed CRM and revenue-stage evidence such as pipeline volume and deal outcomes to the monitoring model." },
-            ].map(item => (
-              <div key={item.label} className="p-5 border-l-4 border-indigo-600 bg-indigo-50 rounded-r-xl">
-                <p className="font-semibold text-gray-900 mb-2">{item.label}</p>
-                <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
+        <Section title="3. The Revenue Impact Index (RII)">
+          <p>The RII combines the four sub-scores into one number from 0 to 100. <strong className="text-gray-900">Lower is better.</strong></p>
+          <ul className="space-y-2">
+            <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span><span>Each sub-score is turned into a gap with a curve that weighs weak scores more than a straight line would, so one weak area is not hidden by three average ones.</span></li>
+            <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span><span>The gaps are added with fixed weights. In the current calibration messaging alignment carries 50%; ICP clarity, anchor density and positioning share the other 50%, in proportions set by the detected audience.</span></li>
+            <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span><span>Bounded corrections apply in known cases: developer-first and product-led sites (whose proof looks different from sales-led sites), near-duplicate pages, and very focused messaging with little proof. The rules are the same for every site.</span></li>
+          </ul>
+          <div className="grid sm:grid-cols-3 gap-3 pt-2">
+            {BANDS.map(b => (
+              <div key={b.range} className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                <p className="font-semibold text-gray-900">{b.range}</p>
+                <p className="text-sm text-gray-600">{b.label}</p>
               </div>
             ))}
           </div>
-          <p className="text-sm text-gray-500 italic">Without integrations: structural evidence only. With integrations: structural evidence augmented by behavioral and revenue context.</p>
-        </section>
+          <p>The RII describes how a site&apos;s messaging is built. It is not a measure of revenue, conversion rate or lost revenue, and VectriOS does not turn it into money figures.</p>
+        </Section>
 
-        {/* Dominance Logic */}
-        <section className="mb-12 border-b border-gray-200 pb-12">
-          <h2 className="text-2xl font-bold mb-6">4. Dominance & Override Logic</h2>
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-            <p className="text-gray-600 leading-relaxed mb-4">RII does not treat all structural signals as interchangeable.</p>
-            <ul className="space-y-2 text-gray-600">
-              <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span>Critical misalignment cannot be offset by secondary strength</li>
-              <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span>ICP absence activates structural floors</li>
-              <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span>Severe gaps escalate classification regardless of other signals</li>
-              <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span>Signal contradictions trigger override mechanisms</li>
-            </ul>
-            <p className="text-gray-600 leading-relaxed mt-4 font-medium">Risk is determined by hierarchy, not arithmetic blending.</p>
+        <Section title="4. Confidence">
+          <p>Every scan shows a confidence value from 0 to 100. It says how much of the site the score rests on. It is shown next to the score and is not mixed into it.</p>
+          <div className="grid sm:grid-cols-3 gap-3">
+            {CONFIDENCE.map(c => (
+              <div key={c.part} className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                <p className="font-semibold text-gray-900">{c.part}</p>
+                <p className="text-sm text-gray-600">{c.desc}</p>
+              </div>
+            ))}
           </div>
-        </section>
+          <p>When only part of a site could be read, confidence is reduced by 40%. When nothing could be read, there is no score.</p>
+        </Section>
 
-        {/* Confidence Layer */}
-        <section className="mb-12 border-b border-gray-200 pb-12">
-          <h2 className="text-2xl font-bold mb-6">5. Confidence Layer</h2>
-          <div className="space-y-3 text-gray-600 leading-relaxed">
-            <p>Every classification includes a Structural Signal Confidence evaluation — assessing signal density, alignment variance, sample reliability, and override frequency.</p>
-            <p>High risk with low confidence requires further sampling. High-confidence high-risk signals warrant intervention review.</p>
-          </div>
-        </section>
+        <Section title="5. The benchmark">
+          <p>The benchmark holds 500+ SaaS websites, each read with the current version of the method. Each domain appears once. Your position is your RII compared with theirs.</p>
+          <p>Scores are compared only when they were produced by the same version of the method. When the method changes, the whole benchmark is read again before new positions are shown, so a change of method never looks like a change of website.</p>
+          <p><Link href="/saas-revenue-index" className="text-indigo-700 underline">See the benchmark</Link></p>
+        </Section>
 
-        {/* Monitoring */}
-        <section className="mb-12 border-b border-gray-200 pb-12">
-          <h2 className="text-2xl font-bold mb-6">6. Continuous Monitoring & Drift Detection</h2>
-          <div className="space-y-3 text-gray-600 leading-relaxed">
-            <p>Risk is longitudinal. VectriOS runs automated monitoring cycles every 24 hours — crawling your revenue-stage pages, recomputing RII, and detecting structural drift before it compounds across monitored pages and messaging history.</p>
-            <p>Drift detection compares each cycle against the previous baseline. Significant messaging changes trigger alerts. Stable architecture confirms structural integrity.</p>
-            <p>Structural drift accumulates gradually. Continuous monitoring makes it visible and traceable across the monitoring history.</p>
-          </div>
-        </section>
+        <Section title="6. Nightly monitoring and change reports">
+          <p>With an active plan, your site and up to 5 competitors are read <strong className="text-gray-900">every night</strong> with the same method. Each reading produces a new RII and is kept in your history.</p>
+          <p>Today, change reports cover the <strong className="text-gray-900">homepage headline</strong>, for your site and for each competitor. A change is reported only when the new headline appears on two nightly readings in a row. A headline that appears for one night and then goes back, such as an A/B test or a one-day banner, is not reported.</p>
+          <p>Subheadlines and calls to action are recorded on every reading. They will be added to change reports once their readings are proven stable enough to report without false alarms.</p>
+        </Section>
 
-        {/* Dark CTA */}
-        <section className="mb-12 bg-slate-900 rounded-2xl p-8">
-          <p className="text-xs font-bold tracking-widest uppercase text-indigo-500 mb-3">Monitoring Infrastructure</p>
-          <p className="text-white text-lg font-semibold mb-2">Analytics measure what happened. VectriOS monitors the structural signals upstream of performance data.</p>
-          <p className="text-slate-400 leading-relaxed">Revenue-Stage Monitoring Infrastructure operates upstream from performance dashboards — tracking structural messaging integrity before changes become difficult to trace.</p>
-        </section>
+        <Section title="7. Quality checks on every reading">
+          <p>After each night, every reading is checked against rules a correct reading must meet: the homepage was read, a headline was found, each page was read the same way as the night before, and a score did not move while the page text stayed identical. Readings that fail a rule are reviewed before the rule is relaxed or the reading is repaired.</p>
+        </Section>
 
-        {/* CTA */}
+        <Section title="8. Connected data">
+          <p>Google Search Console, Google Analytics 4 and HubSpot can be connected. They add search, visitor and pipeline context next to the structural readings.</p>
+          <p>Connected data shows what happened around a change. It does not prove that the change caused it, and VectriOS does not present it that way.</p>
+        </Section>
+
+        <Section title="What VectriOS does not do">
+          <p>It does not estimate revenue or conversion from website text. It does not grade writing quality, design or SEO. It does not read private pages, and it does not change anything on your site.</p>
+        </Section>
+
         <div className="text-center mb-16">
           <Link href="/" className="inline-block bg-indigo-600 hover:bg-indigo-500 text-black font-bold px-8 py-4 rounded-xl text-base transition">
-            Establish your messaging baseline →
+            Scan your site free →
           </Link>
-          <p className="text-gray-400 text-sm mt-3">Automated scan · No credit card required</p>
+          <p className="text-gray-400 text-sm mt-3">No signup and no credit card for the scan</p>
         </div>
 
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-gray-200 py-8 text-center">
         <p className="text-gray-400 text-sm">© 2026 VectriOS. All rights reserved.</p>
       </footer>

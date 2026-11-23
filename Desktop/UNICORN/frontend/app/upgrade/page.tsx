@@ -7,31 +7,18 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import DashboardHeader from '@/components/DashboardHeader'
 import SiteFooter from '@/components/SiteFooter'
+import { PLANS } from '@/config/plans'
 
 // Plan hierarchy — only Scale
 const PLAN_RANK: Record<string, number> = { scale: 0 }
 
+// Single source of truth: config/plans.ts. Never list a feature here.
 const PLAN_FEATURES: Record<string, string[]> = {
-  scale: [
-    '• RII Score — structural risk 0–100',
-    '• Revenue leak detection (page-by-page)',
-    '• Full fix playbook — step-by-step with $/month recovery',
-    '• ARR at risk + close rate impact modeling',
-    '• 24h continuous monitoring',
-    '• Revenue Delta Engine — +$X/month vs last scan + WHY drivers',
-    '• Delta + Action combo — "Fix this first" on leak increase',
-    '• Risk trajectory — 30/60/90-day view',
-    '• Revenue incidents (severity-ranked)',
-    '• Benchmark vs 500+ SaaS companies',
-    '• 12-month ARR simulation',
-    '• GSC + GA4 behavioral modifiers',
-    '• Executive risk summaries (weekly)',
-    '• Team monitoring — unlimited seats',
-  ],
+  scale: PLANS[0].features.map(f => `• ${f}`),
 }
 
 const PLAN_PRICE: Record<string, { monthly: number; annual: number }> = {
-  scale: { monthly: 299, annual: 239 },
+  scale: { monthly: PLANS[0].priceMonthly, annual: PLANS[0].priceAnnual },
 }
 
 interface SubStatus {
@@ -182,12 +169,12 @@ export default function UpgradePage() {
               Scale — one plan
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r text-slate-900">
-              {isScale ? 'You\'re on the highest plan' : 'Upgrade your monitoring'}
+              {isScale ? 'You\'re on Scale' : 'Activate monitoring'}
             </h1>
             <p className="text-gray-600 text-lg max-w-xl mx-auto">
               {isScale
-                ? 'Scale gives you everything — continuous monitoring, delta engine, behavioral modifiers, and executive reporting.'
-                : 'Move up at any time. Upgrades are instant. No downgrades from Scale.'}
+                ? 'Scale includes everything: nightly readings of your site and up to 5 competitors, change reports, score history and the benchmark.'
+                : `One plan, $${PLANS[0].priceMonthly}/month or $${PLANS[0].priceAnnual}/month billed annually. Everything is included.`}
             </p>
           </div>
 
@@ -243,7 +230,7 @@ export default function UpgradePage() {
               <div className="text-5xl mb-4 text-emerald-400" aria-hidden>✓</div>
               <h2 className="text-2xl font-bold mb-3 text-gray-900">You're on Scale — the highest plan</h2>
               <p className="text-gray-600 mb-6 max-w-lg mx-auto">
-                Downgrade is not available. Scale includes continuous monitoring, delta engine, and behavioral intelligence. For billing or account help, use Account → Support.
+                Scale is the only plan, so there is nothing to change here. For billing or account help, use Account → Support.
               </p>
               <div className="flex items-center justify-center gap-4 flex-wrap">
                 <Link href="/dashboard" className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-xl transition">
@@ -360,23 +347,7 @@ export default function UpgradePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    'Revenue leak detection',
-                    'RII score (0–100)',
-                    'Close rate modeling',
-                    'ARR at risk calculation',
-                    'Page-by-page breakdown',
-                    'Full fix playbook (3 fixes)',
-                    'Continuous monitoring (24h)',
-                    'Delta engine (+$X vs last scan)',
-                    'GSC + GA4 behavioral modifiers',
-                    'Benchmark vs 500+ companies',
-                    'Structural drift alerts',
-                    'Risk trajectory (30/60/90-day)',
-                    'Revenue incidents',
-                    'Executive-grade reporting',
-                    'Team monitoring — unlimited seats',
-                  ].map((label, i) => (
+                  {PLANS[0].features.map((label, i) => (
                     <tr key={i} className="border-b border-gray-200/50 hover:bg-gray-800/20 transition">
                       <td className="p-4 text-gray-600">{label}</td>
                       <td className="p-4 text-center">

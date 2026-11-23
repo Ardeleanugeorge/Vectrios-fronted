@@ -563,7 +563,7 @@ export default function PricingPage() {
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-3">Your monitoring plan is ready</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Structural baseline complete. Activate continuous monitoring to track meaningful messaging changes, review structural risk, and build an evidence history over time.
+            Your scan is your baseline. Activate monitoring and VectriOS reads your site and up to 5 competitors every night, keeps the score history, and reports confirmed homepage headline changes.
           </p>
         </div>
 
@@ -572,11 +572,11 @@ export default function PricingPage() {
         <div className="max-w-2xl mx-auto mb-12">
           <div className="p-7 bg-gradient-to-br from-cyan-950/40 to-[#111827] rounded-2xl border border-blue-200 text-center">
             <p className="text-white font-semibold mb-2 text-lg">
-              Activate Continuous Monitoring
+              Activate nightly monitoring
             </p>
             <h2 className="text-2xl font-bold mb-2">14-day trial — full Scale access</h2>
             <p className="text-slate-200 text-sm mb-6">
-              Every trial includes the full monitoring workspace so you can see how VectriOS detects structural changes, surfaces review areas, and tracks them over time.
+              The trial includes everything in the plan: nightly readings of your site and up to 5 competitors, change reports, score history and the benchmark.
             </p>
             <button
               onClick={handleTrial}
@@ -587,7 +587,7 @@ export default function PricingPage() {
             >
               Start 14-day free trial
             </button>
-            <p className="text-xs text-slate-200 mt-3 font-medium">No charge today · cancel anytime · full access in under 10 minutes</p>
+            <p className="text-xs text-slate-200 mt-3 font-medium">No charge today · cancel anytime before day 14</p>
           </div>
         </div>
 
@@ -680,11 +680,12 @@ export default function PricingPage() {
           <div className="max-w-2xl mx-auto space-y-3">
             {[
               { q: "What happens after the 14-day trial?", a: "After 14 days, your plan continues at $299/month. You can cancel anytime before the trial ends — no charge." },
-              { q: "Do I need HubSpot or Google Analytics?", a: "No. VectriOS works on structural evidence alone. Connecting HubSpot and GA4 adds behavioral and revenue-stage evidence layers to your monitoring model." },
-              { q: "How long does setup take?", a: "Under 10 minutes. Scan your domain, enter your email, and activate monitoring. No onboarding call required." },
-              { q: "How is structural risk assessed?", a: "VectriOS evaluates four structural dimensions: ICP clarity, messaging alignment, anchor density, and positioning coherence. The Revenue Impact Index (RII) summarizes structural messaging risk across these dimensions. Lower RII indicates stronger structural architecture." },
-              { q: "Can my team use it?", a: "Yes. The Scale plan includes unlimited team seats." },
-              { q: "Is this a content audit or SEO tool?", a: "Neither. VectriOS monitors structural messaging architecture — ICP clarity, positioning coherence, proof, and alignment — not content quality or SEO." },
+              { q: "Do I need HubSpot or Google Analytics?", a: "No. Monitoring works from your public website alone. Connecting Search Console, GA4 or HubSpot adds search, visitor and pipeline context next to the readings." },
+              { q: "What do I need to set up?", a: "Scan your domain, confirm your email, add up to 5 competitor websites and start the trial. No call and no code on your site." },
+              { q: "What counts as a change?", a: "Today: a new homepage headline, on your site or a competitor's, seen on two nightly readings in a row. A headline that shows for one night and goes back, such as an A/B test, is not reported. The score and sub-scores are recorded on every reading." },
+              { q: "How is the score calculated?", a: "The Revenue Impact Index (RII, 0 to 100, lower is better) combines four sub-scores: messaging alignment, ICP clarity, anchor density and positioning coherence. The same method is used for every site. The methodology page shows the weights and rules." },
+              { q: "Does VectriOS estimate revenue?", a: "No. The RII describes how the messaging is built. VectriOS does not turn it into revenue or conversion figures." },
+              { q: "Is this a content audit or SEO tool?", a: "Neither. VectriOS reads what your pages say and how consistently they say it. It does not grade writing quality, design or SEO." },
             ].map(({ q, a }) => (
               <details key={q} className="group rounded-xl border border-gray-200 bg-gray-50 p-5 cursor-pointer">
                 <summary className="flex items-center justify-between font-medium text-gray-900 list-none">

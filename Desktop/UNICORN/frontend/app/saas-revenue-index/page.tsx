@@ -212,8 +212,8 @@ export default function SaaSRevenueIndex() {
           <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">How the index works</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-xs font-semibold text-gray-700 mb-1">1. Anonymous structural assessment</p>
-              <p className="text-xs text-gray-600">VectriOS analyzes publicly available website messaging across revenue-stage dimensions.</p>
+              <p className="text-xs font-semibold text-gray-700 mb-1">1. Public pages only</p>
+              <p className="text-xs text-gray-600">VectriOS reads each site&apos;s homepage and up to 4 key pages (pricing, product, solutions, customers), the same way it reads a customer&apos;s site.</p>
             </div>
             <div>
               <p className="text-xs font-semibold text-gray-700 mb-1">2. One company, one benchmark position</p>
@@ -224,8 +224,8 @@ export default function SaaSRevenueIndex() {
               <p className="text-xs text-gray-600">Benchmark scores measure messaging architecture — ICP clarity, positioning coherence, anchor density and alignment. No behavioral or revenue data is used in this public index.</p>
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-700 mb-1">4. Continuous refresh</p>
-              <p className="text-xs text-gray-600">When a domain is rescanned, its latest assessment replaces the previous snapshot. Historical scans are retained for trend analysis.</p>
+              <p className="text-xs font-semibold text-gray-700 mb-1">4. One method version</p>
+              <p className="text-xs text-gray-600">Every score in the index comes from the same version of the method. When the method changes, the whole index is read again, so positions stay comparable.</p>
             </div>
           </div>
         </div>
@@ -434,9 +434,9 @@ export default function SaaSRevenueIndex() {
 
         {/* Legend */}
         <div className="mt-8 flex flex-wrap gap-6 justify-center text-xs text-gray-600">
-          <span><span className="text-green-400 font-semibold">Low RII</span> = strong structural architecture</span>
-          <span><span className="text-yellow-400 font-semibold">Moderate RII</span> = structural misalignment signals</span>
-          <span><span className="text-red-400 font-semibold">High RII</span> = significant structural risk</span>
+          <span><span className="text-green-400 font-semibold">Low RII (0–39)</span> = clear audience, consistent story, proof near decisions</span>
+          <span><span className="text-yellow-400 font-semibold">Moderate RII (40–69)</span> = one or two sub-scores pull the score up</span>
+          <span><span className="text-red-400 font-semibold">High RII (70–100)</span> = unclear who it is for or why to choose it</span>
         </div>
 
         {/* Bottom CTA */}

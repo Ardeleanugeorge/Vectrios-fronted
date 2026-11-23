@@ -4,7 +4,7 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: "VectriOS — Structural messaging monitoring for B2B SaaS",
-  description: "Detect structural misalignment between your homepage, pricing and product pages. See what changed in positioning, audience and proof — and what it means.",
+  description: "VectriOS reads your site and up to 5 competitors every night, scores each against 500+ SaaS websites, and reports confirmed homepage headline changes. For B2B SaaS marketing teams. $299/month, 14-day free trial.",
   icons: {
     icon: "/favicon.png",
   },
