@@ -232,7 +232,7 @@ export default function SaaSRevenueIndex() {
         {/* Stats bar — real numbers */}
         <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
           {[
-            { label: "Companies Analyzed", value: displayTotal.toLocaleString("en-US"), color: "text-gray-900" },
+            { label: "Sites in the benchmark", value: displayTotal.toLocaleString("en-US"), color: "text-gray-900" },
             { label: "Average RII (lower = better)", value: displayAvgRii, color: "text-orange-600" },
           ].map(stat => (
             <div key={stat.label} className="rounded-xl bg-gray-50 border border-gray-200 p-5 text-center">

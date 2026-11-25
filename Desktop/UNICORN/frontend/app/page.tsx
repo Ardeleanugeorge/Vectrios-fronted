@@ -8,6 +8,7 @@ import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
+import { BENCHMARK_SIZE } from "@/config/benchmark"
 
 type CookieConsent = {
   necessary: true
@@ -43,7 +44,7 @@ export default function Home() {
   const scanPhases = useRef([
     "Reading your homepage and up to 4 key pages...",
     "Scoring ICP clarity, alignment, proof and positioning...",
-    "Comparing with 500+ SaaS sites in the benchmark...",
+    `Comparing with ${BENCHMARK_SIZE} SaaS sites in the benchmark...`,
     "Calculating your Revenue Impact Index (RII)..."
   ])
   const [scanPhase, setScanPhase] = useState(0)
@@ -62,10 +63,12 @@ export default function Home() {
       if (urlParam) setScanUrl(urlParam)
     } catch {}
 
-    // Fetch real scan count from public index stats
+    // The number of sites in the current benchmark generation - the same sites
+    // every position is computed against. Not every scan ever run: those
+    // include sites that left the benchmark. No number from the API, no counter.
     fetch(`https://api.vectrios.com/public/index-stats`)
       .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-      .then(d => setScanCount(d.total_companies_analyzed ?? 0))
+      .then(d => setScanCount(typeof d.benchmark_sites === "number" ? d.benchmark_sites : 0))
       .catch((err) => { console.error("[INDEX-STATS] Fetch error:", err); setScanCount(0); })
   }, [])
 
@@ -130,7 +133,9 @@ export default function Home() {
       clearTimeout(timeoutId)
 
       if (res.status === 429) {
-        setScanError("You have reached today's limit of 3 free scans. Please try again tomorrow.")
+        // The limit lives in one place, the API; its message states it.
+        const body = await res.json().catch(() => null)
+        setScanError(typeof body?.detail === "string" ? body.detail : "Scan limit reached for today. Please try again tomorrow.")
         setScanning(false)
         return
       }
@@ -227,7 +232,7 @@ export default function Home() {
             For B2B SaaS marketing teams: know when your website, or a competitor&apos;s, changes its message.
           </h1>
           <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
-            VectriOS reads your site and up to 5 competitors every night, scores each one against 500+ SaaS websites, and reports when a homepage headline changes.
+            VectriOS reads your site and up to 5 competitors every night, scores each one against {BENCHMARK_SIZE} SaaS websites, and reports when a homepage headline changes.
           </p>
           <p className="text-sm md:text-base text-gray-900 font-medium mb-6 max-w-2xl mx-auto">
             Every reading covers the homepage and up to 4 key pages: pricing, product, solutions, customers. A headline change is reported only after it appears on two nightly readings in a row, so A/B tests and one-day banners never become alerts.
@@ -415,7 +420,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4 text-slate-900">One score, four parts. Lower is better.</h2>
           <p className="text-lg text-gray-700 mb-8">
-            The Revenue Impact Index (RII) runs from 0 to 100. It summarizes the four sub-scores above with the same method for every site, yours, your competitors&apos; and the 500+ in the benchmark. RII describes how a site&apos;s messaging is built; it is not a revenue figure. <Link href="/methodology" className="text-indigo-700 underline">How the score is calculated</Link>.</p>
+            The Revenue Impact Index (RII) runs from 0 to 100. It summarizes the four sub-scores above with the same method for every site, yours, your competitors&apos; and the {BENCHMARK_SIZE} in the benchmark. RII describes how a site&apos;s messaging is built; it is not a revenue figure. <Link href="/methodology" className="text-indigo-700 underline">How the score is calculated</Link>.</p>
           <div className="grid md:grid-cols-3 gap-4 mb-8">
             {[
               { metric: "Under 40: low risk", desc: "Clear audience, consistent story, proof near decisions." },
@@ -482,7 +487,7 @@ export default function Home() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
-                RII score history and your position among 500+ SaaS sites
+                RII score history and your position among {BENCHMARK_SIZE} SaaS sites
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
@@ -502,7 +507,7 @@ export default function Home() {
             Start with a free scan of your site.
           </h2>
           <p className="text-lg text-gray-700 mb-8">
-            See your RII, the four sub-scores and where you stand among 500+ SaaS sites.
+            See your RII, the four sub-scores and where you stand among {BENCHMARK_SIZE} SaaS sites.
             Nightly monitoring of your site and up to 5 competitors starts with the 14-day trial.
           </p>
           <Link

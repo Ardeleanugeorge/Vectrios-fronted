@@ -97,26 +97,7 @@ function IncidentCard({ inc }: { inc: RevenueIncident }) {
       </div>
 
       {/* Impact row */}
-      <div className="flex items-center gap-5 mb-2 ml-4">
-        {inc.close_rate_impact != null && (
-          <div>
-            <span className="text-[10px] text-gray-600 uppercase tracking-wide">Close-rate impact</span>
-            <p className="text-sm font-bold text-red-600">-{inc.close_rate_impact.toFixed(1)}%</p>
-          </div>
-        )}
-        {inc.arr_exposure != null && inc.arr_exposure > 0 && (
-          <div>
-            <span className="text-[10px] text-gray-600 uppercase tracking-wide">ARR exposure</span>
-            <p className="text-sm font-bold text-amber-600">{fmt(inc.arr_exposure)}</p>
-          </div>
-        )}
-        {inc.estimated_monthly_exposure != null && inc.estimated_monthly_exposure > 0 && (
-          <div>
-            <span className="text-[10px] text-gray-600 uppercase tracking-wide">Monthly</span>
-            <p className="text-sm font-semibold text-gray-600">{fmt(inc.estimated_monthly_exposure)}</p>
-          </div>
-        )}
-      </div>
+      {/* No close-rate or $ figures per incident: modelled, not measured from the customer's data. */}
 
       {/* Description */}
       {inc.description && (
@@ -143,7 +124,6 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
   }, [companyId])
 
   const open = incidents.filter(i => i.status === "open")
-  const totalExposure = open.reduce((s, i) => s + (i.arr_exposure || 0), 0)
   const criticalCount = open.filter(i => i.severity === "critical").length
   const persistentCount = open.filter(i => i.is_persistent).length
 
@@ -190,12 +170,6 @@ export default function RevenueIncidentsPanel({ companyId }: Props) {
             <div>
               <p className="text-[10px] text-gray-600 uppercase tracking-wide">Persistent</p>
               <p className="text-lg font-bold text-purple-400">{persistentCount}</p>
-            </div>
-          )}
-          {totalExposure > 0 && (
-            <div>
-              <p className="text-[10px] text-gray-600 uppercase tracking-wide">Total ARR Exposure</p>
-              <p className="text-lg font-bold text-amber-600">{fmt(totalExposure)}</p>
             </div>
           )}
         </div>

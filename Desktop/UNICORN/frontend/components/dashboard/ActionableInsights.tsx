@@ -512,9 +512,17 @@ export default function ActionableInsights({
     : [...baseLayer.fixes, ...additionalFixes].slice(0, 8)
   const mergedFixes = dedupeBuyerHeroPlaybookFixes(combined)
 
+  // No modelled money reaches the page: the API, an older stored playbook or a
+  // placeholder may still carry "$/month", close-rate or ARR estimates, and
+  // nothing behind them is measured from the customer's own data. They are
+  // cleared here, the one place every fix passes through before rendering.
   const effectiveLayer = {
     ...baseLayer,
-    fixes: mergedFixes,
+    expected_impact: { close_rate_improvement: "", arr_recovery: "" },
+    fixes: mergedFixes.map(f => ({
+      ...f,
+      impact_contribution: { ...f.impact_contribution, monthly_impact: "—", monthly_impact_hi_raw: undefined, close_rate: "", arr_recovery: "" },
+    })),
   };
 
   if (effectiveLayer?.primary_issue?.title && effectiveLayer.fixes?.length) {

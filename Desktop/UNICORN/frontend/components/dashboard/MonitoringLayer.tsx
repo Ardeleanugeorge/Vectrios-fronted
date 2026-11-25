@@ -7,7 +7,6 @@ import { useState, useEffect } from "react"
 import RevenueSystemStatus from "./RevenueSystemStatus"
 import PageIncidentsPanel from "./PageIncidentsPanel"
 import RevenueStatusHeader from "./RevenueStatusHeader"
-import CumulativeExposureCard from "./CumulativeExposureCard"
 import StructuralBreakdownWithDelta from "./StructuralBreakdownWithDelta"
 import ExecutiveInterpretation from "./ExecutiveInterpretation"
 import AlertPanel from "./AlertPanel"
@@ -16,11 +15,9 @@ import RevenueSignalsPanel from "./RevenueSignalsPanel"
 import RevenueAlertsPanel from "./RevenueAlertsPanel"
 import RevenueIncidentsPanel from "./RevenueIncidentsPanel"
 import ActivityFeed from "./ActivityFeed"
-import RevenueForecastPanel from "./RevenueForecastPanel"
 import RevenueTrajectorySimulation from "./RevenueTrajectorySimulation"
 import BenchmarkPanel from "./BenchmarkPanel"
 import CompetitorsPanel from "./CompetitorsPanel"
-import FinancialExposureCard from "./FinancialExposureCard"
 
 import SystemHealthIndicator from "./SystemHealthIndicator"
 import FeatureGate from "./FeatureGate"
@@ -250,39 +247,24 @@ export default function MonitoringLayer({
       .catch(() => {})
   }, [companyId])
 
-  // Fetch forecast data for FinancialExposureCard
-  const [forecast, setForecast] = useState<any>(null)
-  const [forecastFetchDone, setForecastFetchDone] = useState(false)
-  useEffect(() => {
-    if (!companyId) {
-      setForecastFetchDone(true)
-      return
-    }
-    setForecastFetchDone(false)
-    const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
-    fetch(`${API_URL}/revenue-forecast/${companyId}`, {
-      headers: { "Authorization": `Bearer ${token || ""}` }
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data && data.has_data !== false) setForecast(data) })
-      .catch(() => {})
-      .finally(() => setForecastFetchDone(true))
-  }, [companyId])
-
   // Check for critical alerts to show banner
   const criticalAlerts = alerts.filter(a => !a.is_read && a.severity_level === "critical")
   const hasCriticalAlerts = criticalAlerts.length > 0
 
   // Extract revenue impact data
   const revenueImpact = monitoringStatus.revenue_impact
-  const monthlyExposure = revenueImpact?.projected_monthly_revenue_impact || null
-  const rolling30DayExposure = revenueImpact?.rolling_30_day_exposure || null
+  // No sum of money is shown anywhere: nothing here is measured from the
+  // customer's own revenue data (Account > Revenue context says the same).
+  // Older accounts may still carry modelled values from the API; they are
+  // ignored here, not displayed.
+  const monthlyExposure: number | null = null
+  const rolling30DayExposure: number | null = null
   const impactConfidence = revenueImpact?.impact_confidence || "moderate"
   const impactDirection = revenueImpact?.impact_direction || "neutral"
-  const closeRateDelta = revenueImpact?.projected_close_rate_delta || null
+  const closeRateDelta: number | null = null
   const driftSeverity = monitoringStatus.drift_status === "critical" ? "high" :
                         monitoringStatus.drift_status === "degrading" ? "moderate" : "none"
-  const annualDelta: number | null = forecast?.annual_revenue_delta ?? null
+  const annualDelta: number | null = null
 
   // Extract diagnostic metrics — localStorage diagnostic first, then backend structural_scores fallback
   const ss = monitoringStatus.structural_scores
@@ -425,15 +407,14 @@ const delayTimer = setTimeout(() => {
       const fixesArr = Array.isArray(data?.fixes) ? data.fixes.slice(0, 3) : []
       if (!fixesArr.length) return
       const mapFix = (fix: any) => {
-        const monthlyLow = typeof fix.estimated_monthly_impact_low === "number" ? fix.estimated_monthly_impact_low : null
-        const monthlyHigh = typeof fix.estimated_monthly_impact_high === "number" ? fix.estimated_monthly_impact_high : null
-        const monthlyImpact = monthlyLow && monthlyHigh ? `+$${Math.round(monthlyLow).toLocaleString()} – $${Math.round(monthlyHigh).toLocaleString()}/month` : "—"
+        const monthlyImpact = "—"  // no modelled $ per fix (see monthlyExposure above)
+        const monthlyHigh = undefined
         return {
           title: fix.title,
           current_example: fix.before || "—",
           suggested_change: fix.after,
           reason: fix.why,
-          impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh || undefined, close_rate: "", arr_recovery: "" },
+          impact_contribution: { monthly_impact: monthlyImpact, monthly_impact_hi_raw: monthlyHigh, close_rate: "", arr_recovery: "" },
           page_url: fix.page_url || null,
           behavioral_source: Array.isArray(fix.badges) && fix.badges.some((b:string)=>["HIGH EXIT","INTENT MISMATCH"].includes((b||"").toUpperCase())),
           badges: Array.isArray(fix.badges) ? fix.badges : []
@@ -482,8 +463,8 @@ const delayTimer = setTimeout(() => {
     severity: (e.severity?.toLowerCase?.() as any) || "info",
     delta: e.delta
   }))
-  const arrUsed = forecast?.arr_used ?? null
-  const monthlyLossTruth = monthlyExposure || forecast?.estimated_monthly_exposure || null
+  const arrUsed = null
+  const monthlyLossTruth = null
   const truth = monitoringStatus.revenue_truth ?? computeRevenueTruth({
       rii: rii ?? null,
       arr: arrUsed,
@@ -611,12 +592,6 @@ const delayTimer = setTimeout(() => {
               <p className="text-sm font-semibold text-gray-900">
                 {diagnostic.action_layer.fixes[0].title}
               </p>
-              {diagnostic.action_layer.fixes[0].impact_contribution?.monthly_impact &&
-               diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact !== "—" && (
-                <p className="text-xs text-emerald-600 mt-1">
-                  → expected recovery: <span className="font-bold">{diagnostic.action_layer.fixes[0].impact_contribution.monthly_impact}</span>
-                </p>
-              )}
             </div>
           )}
         </div>
@@ -748,14 +723,7 @@ const delayTimer = setTimeout(() => {
           actionLayer={playbookActionLayer ?? diagnostic?.action_layer ?? null}
           playbookLoading={playbookLoading}
           currentPlan={currentPlan}
-          monthlyExposureReal={
-            // Prefer monitoring status monthly, fall back to forecast monthly
-            monthlyExposure ||
-            forecast?.monthly_revenue_delta ||
-            forecast?.monthly_revenue_impact ||
-            forecast?.monthly_exposure ||
-            null
-          }
+          monthlyExposureReal={null}
           useMonitoringSnapshot={
             monitoringStatus.monitoring_active &&
             (
@@ -768,21 +736,6 @@ const delayTimer = setTimeout(() => {
 
       {/* AI Playbook block removed — fixes are integrated into ActionableInsights above */}
 
-      {/* 1. FINANCIAL EXPOSURE — ARR at risk, recovery potential, compression gauge */}
-      <FinancialExposureCard
-        forecast={forecast}
-        forecastLoading={!!companyId && !forecast && !forecastFetchDone}
-        riskScore={diagnostic?.risk_score != null ? Math.round(diagnostic.risk_score) : null}
-        riskLevel={diagnostic?.risk_level || null}
-        uiState={uiState}
-      />
-      {monthlyExposure && monthlyExposure > 0 && (
-        <CumulativeExposureCard
-          rolling30DayExposure={rolling30DayExposure}
-          monthlyExposure={monthlyExposure}
-          uiState={uiState}
-        />
-      )}
 
       {/* DIAGNOSTICS SECTION */}
       <div className="border-t border-gray-100 pt-2 mt-2">
@@ -808,9 +761,6 @@ const delayTimer = setTimeout(() => {
       </FeatureGate>
       <FeatureGate feature="Activity Feed" planRequired="growth" currentPlan={currentPlan}>
         <ActivityFeed companyId={companyId} />
-      </FeatureGate>
-      <FeatureGate feature="Forecast Engine" planRequired="growth" currentPlan={currentPlan}>
-        <RevenueForecastPanel companyId={companyId} uiState={uiState} />
       </FeatureGate>
 
       {/* 14. BENCHMARK INTELLIGENCE — cross-company comparison (Scale+) */}

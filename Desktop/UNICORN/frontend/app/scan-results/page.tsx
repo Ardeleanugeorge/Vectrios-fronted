@@ -88,7 +88,6 @@ interface ScanSnapshot {
   scanned_at: string | null
 }
 
-const SAAS_MEDIAN_RII = 56   // benchmark reference shown to user
 
 function RiskBadge({ level }: { level: string }) {
   if (level?.includes("High"))
@@ -1046,15 +1045,6 @@ function ScanResultsContent() {
   const hasRii = data.rii !== null && data.rii !== undefined
   const rii = hasRii ? (data.rii as number) : null
   const riiColor = (rii ?? 0) >= 70 ? "text-red-500" : (rii ?? 0) >= 40 ? "text-amber-600" : "text-emerald-400"
-  const benchmarkLabel = (() => {
-    if (!hasRii || isBlocked) return null
-    const diff = Math.round((rii as number) - SAAS_MEDIAN_RII)
-    return diff > 0
-      ? "Your messaging shows more revenue risk than many comparable B2B sites"
-      : diff < 0
-        ? "Your messaging underperforms compared to similar B2B sites"
-        : "Roughly in line with typical B2B messaging exposure"
-  })()
 
   const wideLayout = unlocked
 
@@ -1180,13 +1170,6 @@ function ScanResultsContent() {
                       ? "Structural assessment complete"
                       : "Structural assessment complete"}
                 </p>
-                {typeof data.percentile === "number" && (
-                  <p className="text-xs text-gray-600 mt-1">
-                    {data.percentile >= 50
-                      ? "Structural assessment benchmarked against the public SaaS index."
-                      : `You're performing worse than ${Math.max(0, Math.min(99, Math.round(100 - data.percentile)))}% of SaaS domains in the index`}
-                  </p>
-                )}
               </div>
             )}
 
@@ -1205,47 +1188,20 @@ function ScanResultsContent() {
 
             <ScanStatusMessage status={data.status} reason={data.reason} confidence={data.confidence} />
 
-            {data.percentile_label && !isBlocked ? (
+            {/* Benchmark position: one sentence from the API, computed against the
+                current benchmark generation (the same sites the index shows). */}
+            {data.percentile_label && !isBlocked && (
               <div
-                className={`flex flex-col sm:flex-row items-start sm:items-center gap-2 px-4 py-3 rounded-xl border text-sm font-medium w-full ${
-                  wideLayout ? "max-w-none" : "max-w-lg mx-auto"
+                className={`flex items-center px-4 py-3 rounded-xl border text-sm font-medium w-full ${
+                  wideLayout ? "max-w-none" : "max-w-lg mx-auto justify-center"
                 } ${
-                  (data.percentile ?? 0) >= 60
+                  data.percentile_label.startsWith("Lower")
                     ? "bg-emerald-50 border-emerald-300 text-emerald-800"
-                    : (data.percentile ?? 0) >= 40
-                      ? "bg-amber-50 border-amber-300 text-amber-800"
-                      : "bg-gray-50 border-gray-200 text-gray-800"
+                    : "bg-amber-50 border-amber-300 text-amber-800"
                 }`}
               >
-                <span>
-                  {(data.percentile ?? 0) < 50
-                    ? "Structural risk detected — primary review areas identified"
-                    : "Moderate structural risk — primary review areas identified"}
-                </span>
-                {(data.percentile ?? 0) >= 50 ? (
-                  <span className="text-xs opacity-80">
-                    {canShowFinancials && financialImpact
-                      ? "Structural architecture shows relative strength — activate monitoring to track changes."
-                      : "Activate monitoring to add behavioral and revenue evidence layers."}
-                  </span>
-                ) : (
-                  <span className="text-xs opacity-80">
-                    {hasHighConfidence && canShowFinancials && financialImpact
-                      ? "Activate monitoring to add behavioral and revenue evidence layers."
-                      : "Activate monitoring to add behavioral and revenue evidence layers."}
-                  </span>
-                )}
+                {data.percentile_label}
               </div>
-            ) : (
-              !isBlocked && benchmarkLabel ? (
-                <div
-                  className={`flex items-center px-4 py-3 rounded-xl bg-gray-50/60 border border-gray-200 text-sm text-gray-700 w-full ${
-                    wideLayout ? "max-w-none" : "max-w-lg mx-auto justify-center"
-                  }`}
-                >
-                  {benchmarkLabel}
-                </div>
-              ) : null
             )}
           </div>
         </div>

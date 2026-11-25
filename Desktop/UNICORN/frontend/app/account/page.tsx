@@ -5,6 +5,7 @@ import { API_URL } from '@/lib/config'
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
+import { PLANS } from "@/config/plans"
 import Header from "@/components/Header"
 import SiteFooter from "@/components/SiteFooter"
 
@@ -840,31 +841,10 @@ export default function AccountPage() {
   const trialExpired = isTrial && subscription?.trial_days_left === 0
 
   // -- Plan feature map (static, always shown) --------------------------
-  const ALL_FEATURES: Array<{
-    icon: string; key: string; label: string; desc: string
-    minPlan: "scale"
-  }> = [
-    { icon: "•", key: "rii",          label: "RII Score",                 desc: "Revenue Impact Index — structural risk on a 0–100 scale",            minPlan: "scale" },
-    { icon: "•", key: "leak",         label: "Revenue Leak Detection",    desc: "Identify primary messaging gaps costing pipeline",                   minPlan: "scale" },
-    { icon: "•", key: "breakdown",    label: "Messaging Breakdown",       desc: "Page-by-page structural analysis from live crawl",                   minPlan: "scale" },
-    { icon: "•", key: "action",       label: "Action Engine",             desc: "Top fix with priority, $/month impact estimate and Start here",   minPlan: "scale" },
-    { icon: "•", key: "autofix",      label: "Auto-Fix Engine",           desc: "Before/After copy per fix — copy-ready text with Copy button",   minPlan: "scale" },
-    { icon: "•", key: "playbook",     label: "Full Fix Playbook",         desc: "3-fix step-by-step plan, each with page target + $/month recovery",  minPlan: "scale" },
-    { icon: "•", key: "close_rate",   label: "Close Rate Impact Model",   desc: "How messaging gaps compress your current close rate",                minPlan: "scale" },
-    { icon: "•", key: "signals",      label: "Revenue Signals",           desc: "Granular structural change signals after each scan",                 minPlan: "scale" },
-    { icon: "•", key: "alerts",       label: "Revenue Alerts",            desc: "Real-time drift alerts when structural risk changes",                minPlan: "scale" },
-    { icon: "•", key: "forecast",     label: "Forecast Engine",           desc: "30-day revenue compression prediction",                              minPlan: "scale" },
-    { icon: "•", key: "monitoring",   label: "24h Continuous Monitoring", desc: "Daily automatic re-scan — always-fresh RII and signals",             minPlan: "scale" },
-    { icon: "•", key: "delta",        label: "Revenue Delta Engine",      desc: "+$X/month worse vs last scan — with WHY drivers (ICP, alignment–)",  minPlan: "scale" },
-    { icon: "•", key: "delta_action", label: "Delta + Action Combo",      desc: "'Fix this first' shown instantly when revenue leak increases",       minPlan: "scale" },
-    { icon: "•", key: "trajectory",   label: "Risk Trajectory",           desc: "30/60/90-day forward-looking risk projections",                      minPlan: "scale" },
-    { icon: "⚡", key: "incidents",    label: "Revenue Incidents",         desc: "Severity-ranked active incidents with suggested response",            minPlan: "scale" },
-    { icon: "•", key: "benchmark",    label: "Benchmark Intelligence",    desc: "Your position against every SaaS site in the index, measured the same way",               minPlan: "scale" },
-    { icon: "•", key: "arr_sim",      label: "12-Month ARR Simulation",   desc: "Model revenue trajectory with vs without fixes applied",             minPlan: "scale" },
-    { icon: "•", key: "apis",         label: "GSC + GA4 Modifiers",       desc: "Real search + behavior data applied to revenue model",               minPlan: "scale" },
-    { icon: "•", key: "executive",    label: "Executive Risk Summaries",  desc: "Weekly board-ready summaries of structural drift",                   minPlan: "scale" },
-    { icon: "•", key: "team",         label: "Team Monitoring",           desc: "Unlimited seats with shared dashboard access",                       minPlan: "scale" },
-  ]
+  // -- Plan features: the same list as pricing (config/plans.ts) -----------
+  // One source, so this page can never promise what the product does not do.
+  const ALL_FEATURES: Array<{ icon: string; key: string; label: string; desc: string; minPlan: "scale" }> =
+    PLANS[0].features.map((label, i) => ({ icon: "•", key: `f${i}`, label, desc: "", minPlan: "scale" }))
 
   const userTier = (isTrial || (planName === "scale")) ? 0 : -1 // scale or trial = full access
   const featureTier = (_f: typeof ALL_FEATURES[0]) => 0
@@ -981,7 +961,7 @@ export default function AccountPage() {
             <div className="mb-6 p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 flex items-center justify-between gap-4 flex-wrap">
                 <div>
                 <p className="text-amber-300 font-semibold">{subscription.trial_days_left}d left on your trial</p>
-                <p className="text-amber-400/70 text-sm">Subscribe to Scale ($99/mo) to keep all features.</p>
+                <p className="text-amber-400/70 text-sm">Subscribe to Scale (${PLANS[0].priceMonthly}/month) to keep all features.</p>
               </div>
               <Link href="/upgrade" className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-sm transition">
                 Upgrade ?
@@ -1186,9 +1166,11 @@ export default function AccountPage() {
                                     <span className="text-[10px] font-bold text-indigo-500" aria-hidden>✓</span>
                                   )}
                                 </div>
-                                <p className={`text-xs mt-0.5 leading-relaxed ${groupEnabled ? "text-gray-600" : "text-gray-700"}`}>
-                                  {feat.desc}
-                                </p>
+                                {feat.desc && (
+                                  <p className={`text-xs mt-0.5 leading-relaxed ${groupEnabled ? "text-gray-600" : "text-gray-700"}`}>
+                                    {feat.desc}
+                                  </p>
+                                )}
                               </div>
                             </div>
                           ))}
@@ -1204,10 +1186,10 @@ export default function AccountPage() {
                     <div className="p-4 rounded-xl border border-indigo-600/20 bg-indigo-600/5 flex items-center justify-between gap-4 flex-wrap">
                       <div>
                         <p className="text-sm font-semibold text-cyan-300">
-                          Activate Scale — $99/month
+                          Activate Scale — ${PLANS[0].priceMonthly}/month
                         </p>
                         <p className="text-xs text-gray-600 mt-0.5">
-                          Unlock 24h monitoring, full playbook, incidents, benchmark, and team access.
+                          Nightly monitoring of your site and up to 5 competitors, page-level findings and your benchmark position.
                         </p>
                       </div>
                       <Link

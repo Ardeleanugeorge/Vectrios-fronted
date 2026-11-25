@@ -2,6 +2,7 @@
  * Plans configuration — single commercial plan: Scale ($299/mo, $239/mo billed annually) + 14-day trial (full Scale access).
  * Every feature listed here must exist in the product today. Check before adding a line.
  */
+import { BENCHMARK_SIZE } from "./benchmark"
 
 export interface Plan {
   id?: string
@@ -37,7 +38,7 @@ export const PLANS: Plan[] = [
       "Up to 5 competitors read every night, same method",
       "Homepage headline change reports, confirmed on 2 readings",
       "RII and 4 sub-scores on every reading, with history",
-      "Benchmark position among 500+ SaaS sites",
+      `Benchmark position among ${BENCHMARK_SIZE} SaaS sites`,
       "Page-level findings with suggested copy for top review areas",
       "Google Search Console, GA4 and HubSpot connections",
     ],

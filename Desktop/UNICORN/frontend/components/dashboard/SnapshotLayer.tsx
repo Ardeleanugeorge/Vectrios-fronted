@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { PLANS } from "@/config/plans"
 
 interface DiagnosticResult {
   risk_level?: string
@@ -89,9 +90,9 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
     "text-yellow-400 border-yellow-900/40 bg-yellow-950/10"
 
   const riskLabel =
-    riskLevel === "HIGH" ? "High Exposure" :
-    riskLevel === "MODERATE" ? "Moderate Exposure" :
-    "Low Exposure"
+    riskLevel === "HIGH" ? "High structural risk" :
+    riskLevel === "MODERATE" ? "Moderate structural risk" :
+    "Low structural risk"
 
   const riskIcon =
     riskLevel === "HIGH" ? "⚠" :
@@ -113,7 +114,7 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
 
       {/* ══ EXPOSURE DETECTED — unica informație gratuită ══ */}
       <div className={`p-6 rounded-lg border ${riskColor}`}>
-        <p className="text-xs uppercase tracking-widest mb-2 opacity-60">Structural Exposure Detected</p>
+        <p className="text-xs uppercase tracking-widest mb-2 opacity-60">Structural reading</p>
         <div className="flex items-center gap-3">
           <span className="text-2xl">{riskIcon}</span>
           <div>
@@ -125,7 +126,7 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
         </div>
         <div className="mt-4 pt-4 border-t border-white/10">
           <p className="text-xs opacity-50">
-            See exact ARR at risk, root cause, and recovery path—upgrade to a paid plan.
+            Monitoring reads your site and up to 5 competitors every night and shows what changed.
           </p>
         </div>
       </div>
@@ -153,42 +154,42 @@ export default function SnapshotLayer({ diagnostic }: SnapshotLayerProps) {
       {/* One locked module per tier (clear upgrade path) */}
       <div className="grid md:grid-cols-3 gap-3">
         <LockedCard
-          title="Find what's costing you revenue"
-          description="Identify your biggest leak, where messaging breaks, and one high-impact fix."
-          ctaLabel="Find my revenue leak"
+          title="Page-level findings"
+          description="The top review areas on your key pages, each with suggested copy."
+          ctaLabel="See the findings"
         />
         <LockedCard
-          title="Recover lost revenue"
-          description="Full fix plan, ARR at risk, close-rate impact, and page-by-page breakdown."
-          ctaLabel="See full recovery plan"
+          title="Nightly monitoring"
+          description="Your site and up to 5 competitors read every night; headline changes confirmed on 2 readings."
+          ctaLabel="Start monitoring"
         />
         <LockedCard
-          title="Maximize revenue performance"
-          description="Benchmarks vs similar companies, ongoing monitoring, and weekly revenue-risk alerts."
-          ctaLabel="Maximize my revenue"
+          title="Benchmark position"
+          description="Your RII and 4 sub-scores against the SaaS benchmark, with history."
+          ctaLabel="See your position"
         />
       </div>
 
       {/* ══ CTA PRINCIPAL ══ */}
       <div className="p-8 rounded-lg border border-cyan-200 bg-indigo-50">
         <h3 className="text-lg font-bold text-gray-900 mb-2">
-          Your diagnostic is ready—see how much you can recover.
+          Your structural reading is ready.
         </h3>
         <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-          Typical companies lose $120K–$300K/year to messaging and funnel leaks. Vectri<span className="text-blue-600">OS</span> maps the fix and the dollar impact—from $99/mo.
+          Vectri<span className="text-blue-600">OS</span> keeps reading your key pages and your competitors&apos; every night, for ${PLANS[0].priceMonthly}/month after a 14-day free trial.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
             href="/upgrade"
             className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-sm text-center"
           >
-            View plans & recover revenue
+            View plan
           </Link>
           <Link
             href="/upgrade"
             className="inline-block px-6 py-3 bg-transparent hover:bg-gray-100"
           >
-            Try risk-free — 14-day full access
+            Start 14-day free trial
           </Link>
         </div>
       </div>

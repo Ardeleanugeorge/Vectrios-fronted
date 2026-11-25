@@ -1,6 +1,7 @@
 ﻿"use client"
 import Link from "next/link"
 import Header from "@/components/Header"
+import { BENCHMARK_SIZE } from "@/config/benchmark"
 
 const SUBSCORES = [
   { label: "Messaging alignment", desc: "Whether the pages tell one consistent value story, and whether it matches the audience the site addresses. Carries the largest weight in the RII." },
@@ -41,7 +42,7 @@ export default function MethodologyPage() {
           <h1 className="text-4xl font-bold mb-4">How VectriOS reads and scores a website</h1>
           <p className="text-lg text-gray-600 leading-relaxed">
             For B2B SaaS marketing teams who want to know exactly what the score measures, what it does not measure, and what triggers a change report.
-            The same method is used for your site, your competitors and the 500+ SaaS sites in the benchmark.
+            The same method is used for your site, your competitors and the {BENCHMARK_SIZE} SaaS sites in the benchmark.
           </p>
         </div>
 
@@ -96,7 +97,7 @@ export default function MethodologyPage() {
         </Section>
 
         <Section title="5. The benchmark">
-          <p>The benchmark holds 500+ SaaS websites, each read with the current version of the method. Each domain appears once. Your position is your RII compared with theirs.</p>
+          <p>The benchmark holds {BENCHMARK_SIZE} SaaS websites, each read with the current version of the method. Each domain appears once. Your position is your RII compared with theirs.</p>
           <p>Scores are compared only when they were produced by the same version of the method. When the method changes, the whole benchmark is read again before new positions are shown, so a change of method never looks like a change of website.</p>
           <p><Link href="/saas-revenue-index" className="text-indigo-700 underline">See the benchmark</Link></p>
         </Section>
