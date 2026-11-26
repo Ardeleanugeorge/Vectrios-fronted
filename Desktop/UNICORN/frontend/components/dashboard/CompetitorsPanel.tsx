@@ -2,6 +2,7 @@
 import { apiFetch } from "@/lib/api"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 
 // The competitors a customer watches. Each one's homepage is read every night
 // by the monitoring job, alongside the customer's own site, and that reading is
@@ -242,7 +243,7 @@ export default function CompetitorsPanel({ companyId }: Props) {
 
       {!loadError && you && items.some((c) => c.scores) ? (
         <div className="mb-4">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">How you compare</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">How you compare <Link href="/methodology" className="inline-block ml-2 align-middle text-[10px] font-semibold uppercase tracking-widest text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">Experimental</Link></p>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>

@@ -7,101 +7,41 @@ import { buildScanPrefillPayload, persistScanDataForPrefill } from '@/lib/scanPr
 import {
   isScanUnlockedWithEmail,
   markScanUnlockedWithEmail,
-  readScanResultsRefined,
   scanUnlockStorageKey,
 } from "@/lib/scanResultsRefine"
 
-import { useEffect, useState, useMemo, Suspense } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
 import SiteFooter from "@/components/SiteFooter"
-import { riiBand, riiRiskLabel, riiShown } from "@/lib/rii"
-import { HEADLINE, MONITORING_PITCH, NAMES, SUBHEADLINE } from "@/config/messaging"
+import { MONITORING_PITCH, NAMES } from "@/config/messaging"
+import ScanFindings, { type Findings } from "@/components/scan/ScanFindings"
+
+/**
+ * A scan shows what the site says on its key pages, quoted with the page it
+ * says it on - no score (decision of 26 Nov 2026: the experimental score left
+ * every customer surface until it passes validation). Everything shown comes
+ * from the API's findings; this page adds no claim about the site of its own.
+ */
+/** What nightly monitoring does today - nothing it does not. */
+const MONITORING_INCLUDES = [
+  "Your homepage and up to four key pages, and up to five competitors', read every night",
+  "A note when a homepage headline changes, once two consecutive nightly readings confirm it",
+  "14-day free trial",
+]
 
 interface ScanData {
   scan_token: string
   domain: string
-  rii: number | null
-  alignment: number | null
-  icp_clarity: number | null
-  anchor_density: number | null
-  positioning: number | null
-  confidence: number | null
-  risk_level: string
-  inferred_icp: string
-  pages_scanned: number
-  primary_signal: string
-  percentile: number | null
-  percentile_label: string | null
-  financial_impact?: {
-    // What the backend sends on every scan: whether a sum exists at all.
-    available?: boolean
-    reason?: string | null
-    // Present only when available is true, i.e. when a contract value and
-    // behavioural evidence were measured rather than assumed.
-    arr_at_risk_low?: number
-    arr_at_risk_high?: number
-    recovery_low?: number
-    recovery_high?: number
-    monthly_loss_low?: number
-    monthly_loss_high?: number
-    arr_range?: string | null
-    acv_range?: string | null
-  } | null
-  driver_impacts?: Array<{
-    key: string
-    title: string
-    description: string
-    monthly_low: number
-    monthly_high: number
-  }> | null
+  pages_scanned: number | null
   status?: string  // success, partial, blocked, failed
   reason?: string  // waf, low_content, etc.
   created_at?: string
+  findings?: Findings | null
 }
 
-interface BenchmarkBand {
-  p25: number
-  p50: number
-  p75: number
-  n: number
-}
-
-interface BenchmarkBands {
-  available: boolean
-  generation?: string
-  population?: number
-  dimensions?: {
-    alignment?: BenchmarkBand | null
-    icp_clarity?: BenchmarkBand | null
-    anchor_density?: BenchmarkBand | null
-    positioning?: BenchmarkBand | null
-    rii?: BenchmarkBand | null
-  }
-}
-
-interface ScanSnapshot {
-  rii: number | null
-  alignment: number | null
-  icp_clarity: number | null
-  anchor_density: number | null
-  positioning: number | null
-  scanned_at: string | null
-}
-
-
-function RiskBadge({ level }: { level: string }) {
-  if (level?.includes("High"))
-    return <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold border border-red-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
-  if (level?.includes("Moderate"))
-    return <span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-semibold border border-orange-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
-  if (level?.includes("Blocked"))
-    return <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold border border-red-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
-  return <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold border border-emerald-500/30 whitespace-nowrap inline-flex items-center">{level}</span>
-}
-
-function ScanStatusMessage({ status, reason, confidence }: { status?: string; reason?: string; confidence?: number | null }) {
+function ScanStatusMessage({ status, reason }: { status?: string; reason?: string }) {
   // Blocked status
   if (status === "blocked") {
     const isRateLimited = reason === "rate_limit"
@@ -132,7 +72,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
           Partial scan
         </p>
         <p className="text-xs text-gray-600">
-          Site may use dynamic rendering (React / SPA). Limited content detected; score confidence reduced.
+          Some pages had little readable text (the site may build them in the browser). What was found is shown below.
         </p>
       </div>
     )
@@ -171,44 +111,7 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
         </p>
         <p className="text-xs text-gray-600">{explained}</p>
         <p className="text-xs text-gray-500 mt-2">
-          No pages were read, so no structural assessment was produced.
-        </p>
-      </div>
-    )
-  }
-  
-  // Low confidence (even if status is success, but confidence is low)
-  if (status === "success" && confidence !== null && confidence !== undefined && confidence < 50) {
-    return (
-      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-        <p className="text-gray-700 font-semibold text-sm mb-1">
-          Low confidence (limited content)
-        </p>
-        <p className="text-xs text-gray-600">
-          Limited content detected; site may use dynamic rendering. Score confidence reduced.
-        </p>
-      </div>
-    )
-  }
-  
-  // Success with good confidence
-  if (status === "success") {
-    return (
-      <div className="mt-3 text-xs text-gray-600 text-center">
-        Full analysis completed
-      </div>
-    )
-  }
-  
-  // Fallback: if no status but low confidence
-  if (!status && confidence !== null && confidence !== undefined && confidence < 50) {
-    return (
-      <div className="mt-4 mx-auto max-w-md px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-        <p className="text-gray-700 font-semibold text-sm mb-1">
-          Low confidence (limited content)
-        </p>
-        <p className="text-xs text-gray-600">
-          Limited content detected; site may use dynamic rendering. Score confidence reduced.
+          No pages were read, so there is nothing to show.
         </p>
       </div>
     )
@@ -217,169 +120,23 @@ function ScanStatusMessage({ status, reason, confidence }: { status?: string; re
   return null
 }
 
-// -- Business-language metric copy (no framework jargon) ---------------------
-const METRIC_ROWS: { label: string; hint: string }[] = [
-  {
-    label: "Your pages don't consistently convert",
-    hint: "Messaging doesn't line up with the revenue story you're selling.",
-  },
-  {
-    label: "You're attracting low-fit visitors",
-    hint: "ICP signals are weak – wrong people enter the funnel.",
-  },
-  {
-    label: "Proof and numbers are too thin to justify the next step",
-    hint: "Anchors that drive decisions are missing or vague.",
-  },
-  {
-    label: "Your category story is inconsistent across pages",
-    hint: "Positioning shifts – buyers can't compare you with confidence.",
-  },
-]
-
-/**
- * How urgently a dimension needs attention, read against the field.
- *
- * On these four dimensions a higher score is the stronger result, so the ones
- * needing work are the low ones. The boundaries come from the benchmark
- * population rather than from chosen numbers, because the dimensions sit on
- * different scales - a 50 is a weak alignment and a strong anchor density -
- * and because fixed thresholds drift out of date silently as the field moves.
- *
- * "High priority" therefore means "in the weakest quarter of the sites measured
- * the same way", which a reader can check. Without the bands, no claim is made.
- */
-function metricImpactLabel(v: number, band?: BenchmarkBand | null): string | null {
-  if (!band) return null
-  if (v < band.p25) return "High structural priority"
-  if (v < band.p75) return "Medium structural priority"
-  return "Lower structural priority"
-}
-
-function ScoreBar({ label, hint, value }: { label: string; hint: string; value: number | null }) {
-  const v = value ?? 0
-  const color = v >= 65 ? "from-emerald-500 to-green-400"
-    : v >= 40 ? "from-yellow-500 to-orange-400"
-    : "from-red-500 to-orange-500"
-  return (
-    <div>
-      <div className="flex justify-between mb-1.5 gap-3">
-        <span className="text-sm text-gray-700 font-medium leading-snug">{label}</span>
-        <div className="flex flex-col items-end shrink-0">
-          <span className="text-sm font-bold text-gray-900 tabular-nums">{value !== null ? Math.round(v) : "–"}</span>
-
-        </div>
-      </div>
-      <div className="w-full h-2 bg-gray-50 rounded-full overflow-hidden mb-1">
-        <div
-          className={`h-full bg-gradient-to-r ${color} rounded-full transition-all duration-700`}
-          style={{ width: `${Math.min(v, 100)}%` }}
-        />
-      </div>
-      <p className="text-xs text-gray-600">{hint}</p>
-    </div>
-  )
-}
-
-/**
- * State the structural finding, not a consequence that was not measured.
- *
- * The scan reads how a site's messaging is composed. It does not observe
- * visitors, so it cannot know that anyone failed to convert or that a buyer
- * was confused - and a reader who connects analytics and finds the opposite
- * has been given a reason to distrust everything else on the page. What the
- * scan does know is specific enough to be worth saying plainly.
- */
-function primarySignalDisplay(signal: string): { headline: string } {
-  const s = (signal || "").toLowerCase()
-  if (s.includes("positioning") || s.includes("coherence")) {
-    return {
-      headline: "Your category positioning shifts between pages",
-    }
-  }
-  if (s.includes("icp") || s.includes("clarity")) {
-    return {
-      headline: "Who this is for is not stated explicitly on your key pages",
-    }
-  }
-  if (s.includes("alignment") || s.includes("messaging")) {
-    return {
-      headline: "Your pages point toward different outcomes",
-    }
-  }
-  if (s.includes("anchor")) {
-    return {
-      headline: "Proof and decision-supporting anchors are sparse near your calls to action",
-    }
-  }
+/** What the dashboard reads from a scan before monitoring starts: the domain and pages, no scores. */
+function scanDiagnosticStub(data: ScanData, token: string) {
   return {
-    headline: signal || "Structural signals were found across your key pages",
+    risk_level: null,
+    risk_score: null,
+    alignment_score: null,
+    anchor_density_score: null,
+    icp_clarity_score: null,
+    positioning_coherence_score: null,
+    confidence: null,
+    inferred_icp: "",
+    primary_signal: "",
+    pages_scanned: data.pages_scanned || 0,
+    is_partial: true,
+    source: "instant_scan",
+    scan_token: token,
   }
-}
-
-// NOTE: Financial numbers are now provided by backend (`financial_impact` + `driver_impacts`).
-
-function buildStructureInsightBullets(data: ScanData, closeLow: number, closeHigh: number): string[] {
-  const bullets: string[] = []
-  if (closeRateDeltaBase(data) > 0) {
-    bullets.push(
-      `Modeled close-rate gap vs. structural potential: ~${closeLow.toFixed(1)}–${closeHigh.toFixed(1)} percentage points from this scan's signals.`
-    )
-  }
-  const icp = data.icp_clarity ?? 0
-  const anch = data.anchor_density ?? 0
-  const aln = data.alignment ?? 0
-  const pos = data.positioning ?? 0
-  if (icp < 45) {
-    bullets.push(
-      `ICP clarity scores ${Math.round(icp)}/100 on analyzed pages – targeting reads broad, which drags deal quality.`
-    )
-  }
-  if (anch < 45) {
-    bullets.push(
-      `Proof / anchor density is ${Math.round(anch)}/100 – fewer quantified triggers for buyers to justify the next step.`
-    )
-  }
-  if (aln < 45) {
-    bullets.push(
-      `Messaging alignment is ${Math.round(aln)}/100 – the revenue story is inconsistent across key pages.`
-    )
-  }
-  if (pos < 45 && bullets.length < 4) {
-    bullets.push(
-      `Positioning coherence is ${Math.round(pos)}/100 — category and "why us" language shifts between pages.`
-    )
-  }
-  if (data.inferred_icp && bullets.length < 4) {
-    bullets.push(`Detected audience focus: ${data.inferred_icp} – check that hero and pricing match that buyer.`)
-  }
-  return bullets.slice(0, 4)
-}
-
-function closeRateDeltaBase(data: ScanData): number {
-  let b = 0
-  if (data.icp_clarity && data.icp_clarity < 30) b += 1.2
-  if (data.anchor_density && data.anchor_density < 30) b += 0.8
-  if (data.alignment && data.alignment < 40) b += 0.6
-  return b
-}
-
-// Driver impacts are provided by backend (`driver_impacts`) – no frontend allocation.
-
-function LockedInsight({ label }: { label: string }) {
-  return (
-    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-      <span className="text-sm text-gray-600">{label}</span>
-      <div className="flex items-center gap-2">
-        <div className="w-16 h-2 bg-gray-50 rounded-full overflow-hidden">
-          <div className="w-1/2 h-full bg-gray-100 rounded-full" />
-        </div>
-        <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
-        </svg>
-      </div>
-    </div>
-  )
 }
 
 function ScanResultsContent() {
@@ -387,8 +144,6 @@ function ScanResultsContent() {
   const router = useRouter()
   const token = params.get("token")
   const [data, setData] = useState<ScanData | null>(null)
-  const [scanCount, setScanCount] = useState<number | null>(null)
-  const [bands, setBands] = useState<BenchmarkBands | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [showEmailCapture, setShowEmailCapture] = useState(false)
@@ -400,47 +155,12 @@ function ScanResultsContent() {
   const [otpError, setOtpError] = useState("")
   const [otpVerifying, setOtpVerifying] = useState(false)
   const [unlocked, setUnlocked] = useState(false)
-  const [showFinancialImpact, setShowFinancialImpact] = useState(false)
-  const [arrRange, setArrRange] = useState("")
-  const [trafficRange, setTrafficRange] = useState("")
-  const [isCalibrated, setIsCalibrated] = useState(false)
-  const [calibratedImpact, setCalibratedImpact] = useState<any>(null)
-  const [calibrating, setCalibrating] = useState(false)
-
-  const handleCalibrate = async () => {
-    if (!arrRange) return
-    setCalibrating(true)
-    try {
-      const res = await apiFetch("/calculate-exposure", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          rii: data?.rii ?? 50,
-          arr_range: arrRange,
-          traffic_range: trafficRange,
-        }),
-      })
-      if (res.ok) {
-        const result = await res.json()
-        setCalibratedImpact(result)
-        setIsCalibrated(true)
-      }
-    } catch (e) {
-      console.error("Calibration failed", e)
-    } finally {
-      setCalibrating(false)
-    }
-  }
-  const confidenceScore = data?.confidence ?? 0
-  const hasHighConfidence = confidenceScore >= 60
-  const canShowFinancials = hasHighConfidence && arrRange !== "" && isCalibrated
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   /** true = has active trial or paid plan ? full paywall bypass */
   const [hasActivePlan, setHasActivePlan] = useState(false)
   /** true = billing_cycle === 'trial' */
   const [isTrialPlan, setIsTrialPlan] = useState(false)
   const [unlockTransitioning, setUnlockTransitioning] = useState(false)
-  const [previousSnapshot, setPreviousSnapshot] = useState<ScanSnapshot | null>(null)
   /** True when this browser already has scan unlock and/or saved email – do not push user through email-capture again. */
   const [returningAccountHint, setReturningAccountHint] = useState(false)
   const [savedWorkEmail, setSavedWorkEmail] = useState("")
@@ -474,7 +194,6 @@ function ScanResultsContent() {
             persistScanDataForPrefill(
               buildScanPrefillPayload({
                 domain: d.domain,
-                inferred_icp: d.inferred_icp,
                 pages_scanned: d.pages_scanned,
                 scan_token: token,
               })
@@ -486,22 +205,6 @@ function ScanResultsContent() {
       })
       .catch(() => { setError("Scan results not found or expired."); setLoading(false) })
   }, [token])
-
-  useEffect(() => {
-    apiFetch(`/scan-stats`)
-      .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then(d => setScanCount(d.total ?? 0))
-      .catch(() => setScanCount(0))
-  }, [])
-
-  // Quartile boundaries from the benchmark population. If they do not arrive,
-  // priority labels are omitted rather than guessed.
-  useEffect(() => {
-    apiFetch(`/public/benchmark-bands`)
-      .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then(d => setBands(d && d.available ? d : null))
-      .catch(() => setBands(null))
-  }, [])
 
   /** Restore wide view after email unlock for this scan token.
    *  If the user is already authenticated, skip the email gate entirely.
@@ -516,17 +219,14 @@ function ScanResultsContent() {
       setHasActivePlan(false)
       if (isScanUnlockedWithEmail(token)) {
         setUnlocked(true)
-        setShowFinancialImpact(true)
       } else {
         setUnlocked(false)
-        setShowFinancialImpact(false)
       }
       return
     }
 
     setIsAuthenticated(true)
     setUnlocked(true)
-    setShowFinancialImpact(true)
     // Do not persist unlock here: that skips the email gate for anonymous users after logout
     // (unlock is stored only after /email-capture success or explicit mark elsewhere).
     sessionStorage.setItem("dashboard_needs_refresh", "1")
@@ -586,7 +286,8 @@ function ScanResultsContent() {
     }
   }, [token])
 
-  /** Sync this scan into dashboard-readable storage when logged in (OTP return path never ran email-capture). */
+  /** Sync this scan into dashboard-readable storage when logged in (OTP return path never ran email-capture).
+   *  The scan carries no score any more; the dashboard reads the domain and pages from here. */
   useEffect(() => {
     if (!data || !token || typeof window === "undefined") return
     const auth = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -600,23 +301,8 @@ function ScanResultsContent() {
     } catch {
       /* continue */
     }
-    const partialDiagnostic = {
-      risk_level: data.risk_level || "MODERATE",
-      risk_score: data.rii ?? null,
-      alignment_score: data.alignment ?? null,
-      anchor_density_score: data.anchor_density ?? null,
-      icp_clarity_score: data.icp_clarity ?? null,
-      positioning_coherence_score: data.positioning ?? null,
-      confidence: data.confidence ?? null,
-      inferred_icp: data.inferred_icp || "",
-      primary_signal: data.primary_signal || "",
-      pages_scanned: data.pages_scanned || 0,
-      is_partial: true,
-      source: "instant_scan",
-      scan_token: token,
-    }
     try {
-      const raw = JSON.stringify(partialDiagnostic)
+      const raw = JSON.stringify(scanDiagnosticStub(data, token))
       localStorage.setItem("diagnostic_result", raw)
       sessionStorage.setItem("diagnostic_result", raw)
       localStorage.setItem("diagnostic_result_partial", raw)
@@ -636,10 +322,6 @@ function ScanResultsContent() {
       window.scrollTo(0, 0)
     }, 120)
   }
-
-  const financialImpact = data?.financial_impact || null
-  const effectiveImpact = calibratedImpact || financialImpact
-  const driverImpacts = Array.isArray(data?.driver_impacts) ? (data?.driver_impacts as any[]) : []
 
   const readStoredUserEmail = (): string => {
     if (typeof window === "undefined") return ""
@@ -831,27 +513,12 @@ function ScanResultsContent() {
     }
 
     if (data) {
-      const partialDiagnostic = {
-        risk_level: data.risk_level || "MODERATE",
-        risk_score: data.rii || null,
-        alignment_score: data.alignment || null,
-        anchor_density_score: data.anchor_density || null,
-        icp_clarity_score: data.icp_clarity || null,
-        positioning_coherence_score: data.positioning || null,
-        confidence: data.confidence || null,
-        inferred_icp: data.inferred_icp || "",
-        primary_signal: data.primary_signal || "",
-        pages_scanned: data.pages_scanned || 0,
-        is_partial: true,
-        source: "instant_scan",
-        scan_token: token ?? "",
-      }
+      const partialDiagnostic = scanDiagnosticStub(data, token ?? "")
       localStorage.setItem("diagnostic_result_partial", JSON.stringify(partialDiagnostic))
       sessionStorage.setItem("diagnostic_result_partial", JSON.stringify(partialDiagnostic))
 
       const scanData = buildScanPrefillPayload({
         domain: data.domain,
-        inferred_icp: data.inferred_icp,
         pages_scanned: data.pages_scanned,
         scan_token: token ?? "",
         unlock_company_id: result.company_id != null ? String(result.company_id) : null,
@@ -929,88 +596,12 @@ function ScanResultsContent() {
   const doUnlock = () => {
     setUnlockTransitioning(true)
     setUnlocked(true)
-    setShowFinancialImpact(true)
     window.requestAnimationFrame(() => {
       forceScrollToTop()
       window.setTimeout(() => setUnlockTransitioning(false), 120)
     })
   }
 
-
-  const formatCurrency = (val: number | null | undefined) => {
-    // A figure the backend did not measure arrives absent, not as zero.
-    // Reading toFixed off it is what blanked this page for every scan
-    // after c0f88dd stopped the product stating sums it cannot measure.
-    if (typeof val !== "number" || !Number.isFinite(val)) return "\u2014"
-    if (val >= 1000000) {
-      return `$${(val / 1000000).toFixed(1)}M`
-    } else if (val >= 1000) {
-      return `$${(val / 1000).toFixed(0)}K`
-    }
-    return `$${val.toFixed(0)}`
-  }
-
-  const formatDelta = (v: number) => `${v > 0 ? "+" : ""}${v}`
-
-  const topCauses = useMemo(() => {
-    if (!data) return []
-    const causes = [
-      { label: "Messaging alignment dropped across revenue pages", value: data.alignment ?? 0 },
-      { label: "ICP clarity weakened and traffic quality likely declined", value: data.icp_clarity ?? 0 },
-      { label: "Proof and anchors are not strong enough at decision moments", value: data.anchor_density ?? 0 },
-      { label: "Positioning coherence shifted between key pages", value: data.positioning ?? 0 },
-    ]
-    return causes
-      .sort((a, b) => a.value - b.value)
-      .slice(0, 3)
-      .map((c) => c.label)
-  }, [data])
-
-  const riskDelta = useMemo(() => {
-    if (!data || data.rii === null || previousSnapshot?.rii === null || previousSnapshot?.rii === undefined) {
-      return null
-    }
-    return Math.round((data.rii as number) - (previousSnapshot.rii as number))
-  }, [data, previousSnapshot])
-
-  useEffect(() => {
-    if (!data?.domain) return
-    let cancelled = false
-
-    const loadHistory = async () => {
-      try {
-        const res = await apiFetch(`/company/${encodeURIComponent(data.domain)}/history`)
-        if (!res.ok) {
-          setPreviousSnapshot(null)
-          return
-        }
-        const payload = await res.json()
-        const history = Array.isArray(payload?.history) ? payload.history : []
-        if (history.length < 2) {
-          if (!cancelled) setPreviousSnapshot(null)
-          return
-        }
-        const prev = history[history.length - 2]
-        if (!cancelled) {
-          setPreviousSnapshot({
-            rii: prev?.rii ?? null,
-            alignment: prev?.alignment ?? null,
-            icp_clarity: prev?.icp_clarity ?? null,
-            anchor_density: prev?.anchor_density ?? null,
-            positioning: prev?.positioning ?? null,
-            scanned_at: prev?.scanned_at ?? null,
-          })
-        }
-      } catch {
-        if (!cancelled) setPreviousSnapshot(null)
-      }
-    }
-
-    loadHistory()
-    return () => {
-      cancelled = true
-    }
-  }, [data?.domain])
 
   if (loading) return (
     <div className="page-root flex items-center justify-center">
@@ -1035,508 +626,85 @@ function ScanResultsContent() {
 
   if (!data) return null
 
-  // No reading, no findings. status is the backend's own word for how the
-  // crawl went; the absent score is the invariant that holds even if that
-  // field never arrives. With no score there is nothing to report, and the
-  // template findings below must not appear as though there were.
-  const isBlocked =
-    data.status === "blocked" ||
-    data.status === "failed" ||
-    data.rii === null ||
-    data.rii === undefined
-  const hasRii = data.rii !== null && data.rii !== undefined
-  const rii = hasRii ? (data.rii as number) : null
-  // Band, colour and label follow the number shown (lib/rii.ts), one rule on every page.
-  const riiColor = rii === null ? "text-emerald-400"
-    : { high: "text-red-500", moderate: "text-amber-600", low: "text-emerald-400" }[riiBand(rii)]
-  const riskLabel = hasRii && !isBlocked ? riiRiskLabel(rii as number) : data.risk_level
-
-  const wideLayout = unlocked
-
-  const modeledMonthlyLossLabel = !canShowFinancials ? null : (() => {
-    if (!financialImpact || financialImpact.available === false) return null
-    return `${formatCurrency(financialImpact.monthly_loss_low)}–${formatCurrency(financialImpact.monthly_loss_high)}/month`
-  })()
-
-  const modeledAnnualLossLabel = (() => {
-    if (!financialImpact || financialImpact.available === false) return null
-    return `${formatCurrency(financialImpact.arr_at_risk_low)}–${formatCurrency(financialImpact.arr_at_risk_high)}/year`
-  })()
-
-  const modeledRecoverableLabel = (() => {
-    if (!financialImpact || financialImpact.available === false) return null
-    return `${formatCurrency(financialImpact.recovery_low)}–${formatCurrency(financialImpact.recovery_high)}/year`
-  })()
-
-  const modeledCloseRateGapLabel = (() => {
-    if (!data) return null
-    const base = closeRateDeltaBase(data)
-    if (base <= 0) return null
-    const low = Math.max(0.3, base - 0.4)
-    const high = base + 0.4
-    return `-${low.toFixed(1)}% to -${high.toFixed(1)}%`
+  const notRead = data.status === "blocked" || data.status === "failed"
+  const findings = data.findings || null
+  const readDate = (() => {
+    const d = findings?.read_at || data.created_at
+    if (!d) return null
+    const t = new Date(d.endsWith("Z") || d.includes("+") ? d : d + "Z")
+    return isNaN(t.getTime()) ? null : t.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })
   })()
 
   return (
     <div className="page-root">
-      {/* Înainte de email: același header îngust ca landing-ul de rezultate. După email: lățime dashboard. */}
-      {wideLayout ? (
-        <Header />
-      ) : (
-        <div className="border-b border-gray-200 px-6 py-4 flex items-center max-w-4xl mx-auto">
-          <Link href={PUBLIC_HOME_URL} className="text-xl font-bold">
-            Vectri<span className="text-indigo-500">OS</span>
-          </Link>
-        </div>
-      )}
+      <Header />
 
-      <main
-        className={
-          wideLayout
-            ? "mx-auto w-full max-w-7xl px-4 sm:px-6 py-10 lg:py-12"
-            : "max-w-3xl mx-auto px-6 py-12"
-        }
-      >
-
-        {/* Domain + badge */}
-        <div className={`flex items-center gap-3 mb-8 ${wideLayout ? "flex-wrap lg:mb-10" : ""}`}>
-          <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-xs font-bold text-indigo-500 border border-gray-200">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 lg:py-12">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-sm font-bold text-indigo-500 border border-gray-200">
             {data.domain.charAt(0).toUpperCase()}
           </div>
           <div>
-            <p className="text-sm text-gray-600 uppercase tracking-wider">{NAMES.scan}</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider">{NAMES.scan}</p>
             <p className="font-semibold text-gray-900">{data.domain}</p>
           </div>
-          <div className="ml-auto">
-            <RiskBadge level={riskLabel} />
-          </div>
+          {readDate && (
+            <p className="ml-auto text-xs text-gray-500 text-right">
+              Read {readDate}
+              {findings ? ` · ${findings.pages.length} key page${findings.pages.length !== 1 ? "s" : ""}` : ""}
+            </p>
+          )}
         </div>
 
-        {/* RII: coloană îngustă + centrat înainte de email; grid lat după email */}
-        <div
-          className={`bg-gray-50 rounded-xl border border-gray-200 mb-6 ${
-            wideLayout ? "p-6 lg:p-8 lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start text-left" : "p-8 text-center"
-          }`}
-        >
-          {!wideLayout && !isBlocked && (
-            <div className="mb-6 p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-left">
-              <p className="text-lg font-semibold text-gray-900 leading-snug mb-2">
-                Messaging scan complete
-              </p>
-              {canShowFinancials && financialImpact && (
-                <p className="text-base text-gray-800 font-semibold mb-2">
-                  Structural baseline established
-                </p>
-              )}
-              <p className="text-sm text-gray-700 mt-2">
-                Your baseline is ready. VectriOS read your homepage and key pages and scored ICP clarity, positioning coherence, anchor density and messaging alignment.
-              </p>
-            </div>
-          )}
-          {!wideLayout && !isBlocked && !financialImpact && (
-            <div className="mb-6 p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-left">
-              <p className="text-lg font-semibold text-gray-900 leading-snug">
-                Messaging scan complete
-              </p>
-              <p className="text-sm text-gray-600 mt-1">Loading model from your scan…</p>
-            </div>
-          )}
+        {notRead && <ScanStatusMessage status={data.status} reason={data.reason} />}
 
-          <div className={wideLayout ? "lg:col-span-4 lg:row-span-2" : ""}>
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Revenue Impact Index</p>
-            <p className={`font-bold mb-2 ${riiColor} ${wideLayout ? "text-6xl sm:text-7xl" : "text-7xl"}`}>
-              {hasRii && !isBlocked ? riiShown(rii as number) : "–"}
+        {!notRead && !findings && (
+          <div className="p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6">
+            <p className="font-semibold text-gray-900 mb-1">This scan was made with an earlier version of VectriOS</p>
+            <p className="text-sm text-gray-600 mb-4">
+              Scans now show what the site says on its key pages, quoted with the page it says it on.
+              Scan the site again to see it.
             </p>
-            <p className={`text-lg font-semibold mb-3 ${riiColor}`}>{riskLabel}</p>
-          </div>
-
-          <div className={wideLayout ? "lg:col-span-8 space-y-4" : "contents"}>
-            {data.status !== "blocked" && (
-              <p className={`text-sm text-gray-600 ${wideLayout ? "mb-2" : "mb-4"}`}>
-                Structural signals identified across your key pages. See the breakdown below.
-              </p>
-            )}
-            {data.status === "blocked" && (
-              <p className="text-sm text-gray-600 mb-4">
-                Unable to analyze – site blocked automated access.
-              </p>
-            )}
-
-            <p className="text-xs text-gray-600 mb-4">
-              {data.pages_scanned} key page{data.pages_scanned !== 1 ? "s" : ""} analyzed
-            </p>
-
-            {!isBlocked && (
-              <div className={`${wideLayout ? "text-left" : "text-center"}`}>
-                <p className="text-sm text-gray-700 font-medium">
-                  {!unlocked
-                    ? "Structural assessment complete — full breakdown after unlock"
-                    : financialImpact
-                      ? "Structural assessment complete"
-                      : "Structural assessment complete"}
-                </p>
-              </div>
-            )}
-
-            {!isBlocked && data.confidence !== null && (
-              <div
-                className={`flex items-center gap-2 text-sm text-gray-600 mb-4 ${
-                  wideLayout ? "justify-start" : "justify-center"
-                }`}
-              >
-                <div className={`h-1.5 bg-gray-50 rounded-full overflow-hidden ${wideLayout ? "w-24 sm:w-32" : "w-24"}`}>
-                  <div className="h-full bg-indigo-600/60 rounded-full" style={{ width: `${data.confidence}%` }} />
-                </div>
-                <span>Confidence: {Math.round(data.confidence)}%</span>
-              </div>
-            )}
-
-            <ScanStatusMessage status={data.status} reason={data.reason} confidence={data.confidence} />
-
-            {/* Benchmark position: one sentence from the API, computed against the
-                current benchmark generation (the same sites the index shows). */}
-            {data.percentile_label && !isBlocked && (
-              <div
-                className={`flex items-center px-4 py-3 rounded-xl border text-sm font-medium w-full ${
-                  wideLayout ? "max-w-none" : "max-w-lg mx-auto justify-center"
-                } ${
-                  data.percentile_label.startsWith("Lower")
-                    ? "bg-emerald-50 border-emerald-300 text-emerald-800"
-                    : "bg-amber-50 border-amber-300 text-amber-800"
-                }`}
-              >
-                {data.percentile_label}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {scanCount !== null && scanCount > 0 && (
-          <div className="flex items-center justify-center mb-6">
-            <Link
-              href="/saas-revenue-index"
-              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/10 hover:border-indigo-600/30 hover:bg-white/[0.06] transition-all text-sm text-gray-600"
-            >
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shrink-0" />
-              <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
-                Benchmarked against the public SaaS index — structural messaging analysis only
-              </span>
-              <span className="text-indigo-600 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                View index
-              </span>
+            <Link href={PUBLIC_HOME_URL} className="inline-flex px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-black font-semibold text-sm">
+              Scan again
             </Link>
           </div>
         )}
 
-        {!unlocked && !isBlocked && (
-          <div className={`p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6 ${wideLayout ? "lg:p-8 lg:mb-8" : ""}`}>
-            <p className="text-lg font-semibold text-gray-900 mb-1">Structural signals detected</p>
-            <p className="text-sm text-gray-600 mb-1">Signals identified across your key pages</p>
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-5">Primary structural signals</p>
-            <ul className="space-y-3 text-sm text-gray-700">
-              <li className="flex items-center justify-between gap-3">
-                <span>Messaging does not consistently reinforce the intended conversion path</span>
-                <span className="text-xs text-gray-600">{metricImpactLabel(data.alignment ?? 0, bands?.dimensions?.alignment)}</span>
-              </li>
-              <li className="flex items-center justify-between gap-3">
-                <span>Audience definition is not consistently explicit across key pages</span>
-                <span className="text-xs text-gray-600">{metricImpactLabel(data.icp_clarity ?? 0, bands?.dimensions?.icp_clarity)}</span>
-              </li>
-              <li className="flex items-center justify-between gap-3">
-                <span>Proof and decision-supporting anchors are limited at key decision points</span>
-                <span className="text-xs text-gray-600">{metricImpactLabel(data.anchor_density ?? 0, bands?.dimensions?.anchor_density)}</span>
-              </li>
-              <li className="flex items-center justify-between gap-3">
-                <span>Category positioning is inconsistent across monitored pages</span>
-                <span className="text-xs text-gray-600">{metricImpactLabel(data.positioning ?? 0, bands?.dimensions?.positioning)}</span>
-              </li>
-            </ul>
-          </div>
+        {!notRead && findings && (
+          <>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight mb-2">
+              What {data.domain} says on its key pages
+            </h1>
+            <p className="text-sm text-gray-600 mb-6 max-w-2xl">
+              Quoted from the pages VectriOS read, each with a link to where it says it.
+            </p>
+            {data.status === "partial" && <ScanStatusMessage status={data.status} reason={data.reason} />}
+            <ScanFindings findings={findings} />
+          </>
         )}
 
-        {!unlocked && !isBlocked && (
-          <div className="p-5 bg-gray-50 rounded-xl border border-orange-500/20 mb-6">
-            <p className="text-xs text-gray-600 uppercase tracking-wider mb-2">Primary signal</p>
-            <p className="text-gray-800 font-semibold text-lg mb-2 leading-snug">
-              {primarySignalDisplay(data.primary_signal).headline}
-            </p>
-            <p className="text-sm text-gray-600">
-              The current messaging architecture provides limited decision-supporting proof and conversion anchoring.
-            </p>
-            
-          </div>
-        )}
-
-        {/* Locked insights — hide after unlock once full numbers are shown below */}
-        {!unlocked && !isBlocked && (
-          <div className="p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <p className="text-xs text-gray-600 uppercase tracking-widest">Full Diagnostic</p>
-              <span className="px-2 py-0.5 text-xs bg-indigo-600/10 text-indigo-500 rounded border border-gray-200">Locked</span>
-            </div>
-            <div className="space-y-3">
-              <LockedInsight label="Structural Messaging Risk Assessment" />
-              <LockedInsight label="ICP Clarity Assessment" />
-              <LockedInsight label="Messaging Alignment Assessment" />
-              <LockedInsight label="Anchor Density Assessment" />
-              <LockedInsight label="Positioning Coherence Assessment" />
-              <LockedInsight label="Structural Root Cause & Page-Level Breakdown" />
-              <LockedInsight label="Position among the SaaS benchmark, per sub-score" />
-            </div>
-          </div>
-        )}
-
-        {/* Soft Paywall - Full Diagnostic (only show if not unlocked) */}
-        {!unlocked && !isBlocked && (
-          <div className="text-center p-8 bg-white rounded-xl border border-gray-200 mb-6">
-            <div className="mb-4">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-600/10 border border-gray-200 text-indigo-500 text-xs font-medium">
-                Full Diagnostic
-              </span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-bold mb-2 text-gray-900 max-w-xl mx-auto leading-snug">
-              {HEADLINE}</h2>
-            <p className="text-gray-600 mb-5 text-sm max-w-2xl mx-auto leading-relaxed">
-              {SUBHEADLINE}
-            </p>
-            <div className="text-left max-w-2xl mx-auto mb-6 rounded-lg border border-white/10 bg-white/[0.02] p-4">
-              <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Primary structural review areas</p>
-              <ul className="space-y-1.5 text-sm text-gray-700">
-                <li>ICP definition is too broad across key messaging surfaces</li>
-                <li>Decision-stage proof is not sufficiently explicit</li>
-                <li>Messaging shifts across key pages</li>
-              </ul>
-            </div>
-            {canShowFinancials && <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">We&apos;ve mapped exactly</p>}
-            {canShowFinancials && (
-              <div className="space-y-2.5 mb-4 text-left max-w-md mx-auto">
-                {[
-                  "Which pages show the strongest structural signals",
-                  "Where structural ICP clarity and positioning gaps concentrate",
-                  "What to review first based on structural priority",
-                  "How structural signals change over time with monitoring",
-                ].map((line) => (
-                  <div key={line} className="flex items-start gap-2 text-sm text-gray-700">
-                    <svg className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>{line}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            {canShowFinancials && (
-              <p className="text-xs text-gray-600 mb-5">
-                Connect GA4 and HubSpot to add behavioral and revenue evidence layers to your structural monitoring.
-              </p>
-            )}
-            
-            <button
-              onClick={handleUnlock}
-              className="px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
-            >
-              {NAMES.activateMonitoring}
-            </button>
-            <p className="text-xs text-gray-600 mt-3 max-w-md mx-auto text-center leading-relaxed">
-              Your site and up to 5 competitors read every night · 14-day free trial
-            </p>
-          </div>
-        )}
-
-        {/* Back to Dashboard strip – only for authenticated users WITH active plan */}
-        {unlocked && (() => {
-          const isAuth = typeof window !== "undefined" &&
-            !!(sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token"))
-          // respect active plan gate: show strip only when plan/trial is active
-          if (!isAuth || !hasActivePlan) return null
-          return (
-            <div className="flex items-center justify-between gap-4 px-5 py-3 rounded-xl border border-gray-200/50 bg-gray-50 mb-4">
-              <p className="text-sm text-gray-600">
-                New diagnostic complete. Your dashboard has been updated.
-              </p>
-              <Link
-                href={token ? `/dashboard?token=${encodeURIComponent(token)}` : "/dashboard"}
-                className="shrink-0 px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-black rounded-lg transition whitespace-nowrap"
-              >
-                Back to Dashboard
-              </Link>
-            </div>
-          )
-        })()}
-
-        {/* Dupa email: single Page 4 experience (uses backend numbers when available, safe fallbacks otherwise). */}
-        {unlocked && showFinancialImpact && !isBlocked && (
-          <div
-            id="financial-impact-instant"
-            className="p-6 sm:p-8 lg:p-10 bg-white rounded-xl border border-gray-200 shadow-sm mb-8"
-          >
-            <p className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2 text-center lg:text-left">
-              Structural Diagnostic Complete
-            </p>
-            {(() => {
-              const impact = canShowFinancials ? financialImpact : null
-              const mLow = canShowFinancials ? (financialImpact?.monthly_loss_low ?? null) : null
-              const mHigh = canShowFinancials ? (financialImpact?.monthly_loss_high ?? null) : null
-              const drivers = canShowFinancials ? driverImpacts : []
-              return (
-                <>
-                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-3 text-center lg:text-left max-w-4xl">
-                    {"Primary structural review areas identified"}
-                  </h3>
-                  <p className="text-base font-semibold text-gray-800 mb-2 text-center lg:text-left">
-                    {impact
-                      ? "Structural signals identified across your key pages"
-                      : "Structural signals identified across your key pages"}
-                  </p>
-                  <p className="text-sm text-gray-600 mb-6 max-w-3xl text-center lg:text-left">
-                    VectriOS reads your key pages and your competitors&apos; every night and shows the signals worth reviewing first.
-                  </p>
-                  {canShowFinancials && (
-                  <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-indigo-600/[0.04] p-4">
-                    <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-2">Structural diagnostic summary</p>
-                    <ul className="space-y-1.5 text-sm text-gray-700">
-                      <li>Structural messaging risk assessment</li>
-                      <li>Primary structural review areas</li>
-                      <li>ICP clarity and positioning assessment</li>
-                      <li>Structural signal trend over monitoring history</li>
-                    </ul>
-                  </div>
-                  )}
-                  {canShowFinancials && (
-                  <div className="max-w-3xl mb-6">
-                    <p className="text-sm font-semibold text-gray-700">
-                      {impact && mLow !== null && mHigh !== null
-                        ? `Unmonitored structural drift compounds into an estimated ~${formatCurrency(mLow)}–${formatCurrency(mHigh)}.`
-                        : "Structural messaging drift accumulates gradually and becomes harder to trace without continuous monitoring."}
-                    </p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Structural monitoring provides early detection before pipeline metrics reflect the impact.
-                    </p>
-                  </div>
-                  )}
-                  {canShowFinancials && (
-                  <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 relative overflow-hidden">
-                    <p className="text-[11px] uppercase tracking-wider text-blue-600 mb-1">Structural assessment preview</p>
-                    <p className="text-[11px] text-gray-600 mb-3">Based on structural assessments across the SaaS index</p>
-                    <div className="grid sm:grid-cols-3 gap-3">
-                      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Structural Risk</p>
-                        <p className="text-2xl font-bold text-gray-900">{riskLabel ?? "Assessed"}</p>
-                        <p className="text-[11px] text-gray-600 mt-1">Current structural classification</p>
-                      </div>
-                      <div className="rounded-lg border border-indigo-200 bg-indigo-50 p-4">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Primary Review Area</p>
-                        <p className="text-xl font-bold text-gray-900">ICP Clarity</p>
-                        <p className="text-[11px] text-gray-600 mt-1">Highest structural signal</p>
-                      </div>
-                      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                        <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Monitoring Cadence</p>
-                        <p className="text-2xl font-bold text-gray-800">24h</p>
-                        <p className="text-[11px] text-gray-600">Automated structural scan</p>
-                      </div>
-                    </div>
-                    {!isAuthenticated && (
-                      <div className="pointer-events-none absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/40 border border-white/15 text-[10px] text-gray-700">
-                        <span aria-hidden>🔒</span>
-                        <span>Unlock full model</span>
-                      </div>
-                    )}
-                  </div>
-                  )}
-                  {canShowFinancials && (
-                  
-                  <p className="text-xs text-gray-600 mb-6">
-                    Connect GA4 and HubSpot to add behavioral and revenue evidence layers to your structural monitoring.
-                  <span className="block text-xs text-gray-500 mt-1">Structural evidence only — behavioral and revenue context requires connected integrations.</span>
-                  </p>
-                  )}
-
-                  {canShowFinancials && (
-  <div className="grid lg:grid-cols-12 gap-6 mb-8">
-    <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-white border border-gray-200/70">
-      <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-3">Primary structural signals</p>
-      <p className="text-xs text-gray-600 mb-3">
-        {SUBHEADLINE}
-      </p>
-      <div className="rounded-lg border border-white/10 bg-white/[0.02] p-3 mb-3">
-        <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Primary structural review areas</p>
-        <ul className="space-y-1.5 text-xs text-gray-700">
-          <li>ICP definition is too broad across key messaging surfaces</li>
-          <li>Decision-stage proof is not sufficiently explicit</li>
-          <li>Messaging shifts across key pages</li>
-        </ul>
-      </div>
-                      <div className="space-y-3">
-                        {drivers.map((d: any, idx: number) => (
-                          <div key={String(d.key || d.title)} className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-                            <div className="flex items-start justify-between gap-4">
-                              <div>
-                                <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-1">
-                                  {idx + 1}. {idx === 0 ? "Primary driver" : idx === 1 ? "Secondary driver" : "Tertiary driver"}
-                                </p>
-                                <p className="text-sm font-semibold text-gray-900">{d.title || "Structural gap"}</p>
-                                <p className="text-xs text-gray-600 mt-1 leading-relaxed">{d.description || ""}</p>
-                              </div>
-                              <div className="text-right shrink-0">
-                                <p className="text-[11px] text-gray-600 mt-0.5">Structural signal</p>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="lg:col-span-5 p-4 sm:p-5 rounded-xl bg-gray-50 border border-gray-200/80">
-                      <p className="text-xs font-semibold text-indigo-500/90 uppercase tracking-wider mb-2">
-                        What to fix first
-                      </p>
-                      {drivers.length > 0 ? (
-                        <>
-                          <p className="text-sm text-gray-700 mb-2">
-                            Highest impact fix path: <span className="text-gray-900 font-semibold">{drivers[0]?.title || "Primary structural gap"}</span>
-                          </p>
-                          <p className="text-xs text-gray-600 mb-3">
-                            Start with this first – it drives the largest share of your modeled monthly loss.
-                          </p>
-                          <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-                            <p className="text-xs uppercase tracking-wider text-gray-600 mb-1">Primary structural review area</p>
-                            <p className="text-sm font-semibold text-gray-700">
-                              {drivers[0]?.title || "ICP Clarity"}
-                            </p>
-                          </div>
-                          <p className="text-xs text-gray-600 mt-3">
-                            {impact
-                              ? "Connect GA4 and HubSpot to add behavioral and revenue evidence to your monitoring model."
-                              : "Activate monitoring to track structural changes over time."}
-                          </p>
-                        </>
-                      ) : (
-                        <p className="text-sm text-gray-600">
-                          We&apos;ll prioritize fixes by impact once the full recovery layer is unlocked.
-                        </p>
-                      )}
-                    </div>
-                  </div>)}
-                </>
-              )
-            })()}
+        {!notRead && (
+          <div className="mt-8 p-6 sm:p-8 bg-white rounded-xl border border-gray-200 shadow-sm">
+            <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-2">{NAMES.monitoring}</p>
+            {/* Only what monitoring does today. Side by side on these lines, and
+                change notes for them beyond the headline, are added here when they ship. */}
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-snug mb-2">
+              Keep reading these pages, and your competitors&apos;, every night
+            </h2>
+            <p className="text-sm text-gray-600 mb-5 max-w-2xl">{MONITORING_PITCH}</p>
 
             {isAuthenticated && hasActivePlan ? (
               /* -- STATE A: Authenticated + active plan ? full bypass -- */
               <div className="p-5 sm:p-6 rounded-xl bg-gray-50 border border-emerald-800/40">
                 <p className="text-xs font-semibold text-emerald-400/90 uppercase tracking-wider mb-2">
-                  Diagnostic complete
+                  Monitoring is active
                 </p>
                 <p className="text-sm text-gray-700 mb-4">
-                  Your dashboard has been updated with the latest structural assessment. Revenue playbook, trajectory, and benchmarks reflect this scan.
+                  Your dashboard shows the nightly readings of your site and your competitors.
                 </p>
                 <ul className="space-y-2 text-sm text-gray-600 mb-5">
-                  {[
-                    "Revenue playbook updated with page-level fixes",
-                    "RII score and trajectory recalculated",
-                    "Benchmark position refreshed",
-                    "Continuous monitoring runs after you activate it from the dashboard",
-                  ].map((line) => (
+                  {MONITORING_INCLUDES.map((line) => (
                     <li key={line} className="flex items-start gap-2">
                       <span className="text-emerald-400 mt-0.5 shrink-0" aria-hidden>✓</span>
                       <span>{line}</span>
@@ -1554,18 +722,13 @@ function ScanResultsContent() {
               /* -- STATE B: Authenticated but no active plan ? upgrade CTA -- */
               <div className="p-5 sm:p-6 rounded-xl bg-gray-50 border border-amber-800/40">
                 <p className="text-xs font-semibold text-gray-700/90 uppercase tracking-wider mb-2">
-                  Address structural messaging drift
+                  Monitoring not started
                 </p>
                 <p className="text-sm text-gray-700 mb-3">
-                  You’re logged in, but monitoring hasn’t been started yet. {MONITORING_PITCH}
+                  You&apos;re signed in, but nightly monitoring hasn&apos;t been started yet.
                 </p>
                 <ul className="space-y-2 text-sm text-gray-600 mb-4">
-                  {[
-                    "Page-level structural findings",
-                    "Before/After copy for each fix",
-                    "Prioritized structural review actions",
-                    "Nightly monitoring of your site and up to five competitors",
-                  ].map((line) => (
+                  {MONITORING_INCLUDES.map((line) => (
                     <li key={line} className="flex items-start gap-2">
                       <span className="text-gray-700 mt-0.5 shrink-0" aria-hidden>✓</span>
                       <span>{line}</span>
@@ -1583,20 +746,16 @@ function ScanResultsContent() {
               /* -- STATE C: Unauthenticated ? continue to login/plans (not a second signup) -- */
               <div className="p-5 sm:p-6 rounded-xl bg-gray-50 border border-gray-200/80">
                 <p className="text-xs font-semibold text-indigo-500/90 uppercase tracking-wider mb-2">
-                  {returningAccountHint ? "Next step" : "Full diagnostic locked"}
+                  {returningAccountHint ? "Next step" : "What monitoring includes"}
                 </p>
-                <p className="text-sm text-gray-700 mb-3">
-                  {returningAccountHint
-                    ? "You already unlocked this scan from this browser. Sign in (password or one-time code) if the page lost your session, or open plans to activate monitoring."
-                    : MONITORING_PITCH}
-                </p>
+                {returningAccountHint && (
+                  <p className="text-sm text-gray-700 mb-3">
+                    You already saved this scan from this browser. Sign in (password or one-time code) if the page lost
+                    your session, or open plans to start monitoring.
+                  </p>
+                )}
                 <ul className="space-y-2 text-sm text-gray-600 mb-4">
-                  {[
-                    "Page-level structural findings",
-                    "Where conversion breaks (and why)",
-                    "What to review first based on structural priority",
-                    "Prioritized structural review actions",
-                  ].map((line) => (
+                  {MONITORING_INCLUDES.map((line) => (
                     <li key={line} className="flex items-start gap-2">
                       <span className="text-emerald-400 mt-0.5 shrink-0" aria-hidden>✓</span>
                       <span>{line}</span>
@@ -1694,11 +853,11 @@ function ScanResultsContent() {
         {showEmailCapture && (
           <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl border border-gray-200 shadow-xl p-8 max-w-md w-full">
-              <h3 className="text-2xl font-bold mb-2 text-gray-900">Save your structural baseline</h3>
+              <h3 className="text-2xl font-bold mb-2 text-gray-900">Save this scan</h3>
               <p className="text-gray-600 mb-6 text-sm leading-relaxed">
                 {otpStep === "email" ? (
                   <>
-                    Your structural assessment is ready. Enter your email to save this baseline to your account and continue to continuous monitoring.
+                    Enter your work email to save this scan to your account and continue to nightly monitoring.
                   </>
                 ) : (
                   <>
@@ -1746,12 +905,12 @@ function ScanResultsContent() {
                         disabled={capturing || !email.trim()}
                         className="order-1 sm:order-2 w-full sm:flex-1 min-h-[48px] px-6 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-black font-bold rounded-lg transition text-base"
                       >
-                        {capturing ? "Sending code…" : "Save baseline & continue"}
+                        {capturing ? "Sending code…" : "Save scan & continue"}
                       </button>
                     </div>
                   </form>
                   <p className="text-xs text-gray-600 mt-4 text-center leading-relaxed">
-                    No spam. We’ll use your email to save your assessment and set up your monitoring account.
+                    No spam. We’ll use your email to save this scan and set up your monitoring account.
                   </p>
                 </>
               ) : (
@@ -1825,7 +984,7 @@ function ScanResultsContent() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            <p className="text-sm text-gray-700">Unlocking your full results…</p>
+            <p className="text-sm text-gray-700">Saving your scan…</p>
           </div>
         </div>
       )}

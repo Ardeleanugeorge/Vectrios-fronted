@@ -4,22 +4,26 @@ import Header from "@/components/Header"
 import { BENCHMARK_SIZE } from "@/config/benchmark"
 
 const SUBSCORES = [
-  { label: "Messaging alignment", desc: "Whether the pages tell one consistent value story, and whether it matches the audience the site addresses. Carries the largest weight in the RII." },
-  { label: "ICP clarity", desc: "Whether the pages say explicitly who the product is for: role, team, company type or industry." },
-  { label: "Anchor density", desc: "Proof and numbers a buyer can decide on: customer names, results, percentages, prices, and how they sit around the calls to action." },
-  { label: "Positioning coherence", desc: "Whether the category and the reason to choose the product stay the same from page to page." },
+  { label: "ICP clarity", desc: "Intended to measure whether the pages say explicitly who the product is for." },
+  { label: "Positioning", desc: "Intended to measure whether the category and the reason to choose the product are stated, and stay the same from page to page." },
+  { label: "Cross-page alignment", desc: "Intended to measure whether the pages tell one consistent value story." },
+  { label: "Supporting evidence", desc: "Proof a buyer can decide on: customer names, results, figures and prices near the decision points (anchor density)." },
 ]
 
-const BANDS = [
-  { range: "0 to 39", label: "Low structural risk" },
-  { range: "40 to 69", label: "Moderate structural risk" },
-  { range: "70 to 100", label: "High structural risk" },
+const ESTABLISHED = [
+  "Website and competitor page monitoring",
+  "Detection of homepage headline changes",
+  "Confirmation of changes across two consecutive nightly readings",
+  "Consistent page selection, checked against a labelled set of pages",
+  "The supporting-evidence measure responds when proof is removed from a page (tested on real pages; not yet validated in every condition)",
 ]
 
-const CONFIDENCE = [
-  { part: "50%", desc: "How many of the 5 pages were read" },
-  { part: "30%", desc: "How much text was read, up to 4,000 words" },
-  { part: "20%", desc: "How many pages could be analyzed semantically" },
+const UNDER_VALIDATION = [
+  "Cross-page messaging alignment",
+  "Audience and ICP clarity",
+  "Positioning clarity",
+  "How the individual dimensions combine into one overall score",
+  "Score stability when pages are read under different content-extraction conditions",
 ]
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -39,21 +43,43 @@ export default function MethodologyPage() {
 
         <div className="mb-12">
           <p className="text-xs font-bold tracking-widest uppercase text-indigo-600 mb-3">Methodology</p>
-          <h1 className="text-4xl font-bold mb-4">How VectriOS reads and scores a website</h1>
+          <h1 className="text-4xl font-bold mb-4">VectriOS scoring methodology</h1>
+          <p className="inline-block text-xs font-semibold uppercase tracking-widest text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-3 py-1 mb-4">
+            Experimental scoring, under validation
+          </p>
           <p className="text-lg text-gray-600 leading-relaxed">
-            For product marketing, marketing and competitive intelligence teams who want to know exactly what the score measures, what it does not measure, and what triggers a change report.
-            The same method is used for your site, your competitors and the {BENCHMARK_SIZE} SaaS sites in the benchmark.
+            VectriOS provides automated website monitoring, competitor messaging comparisons and a set of experimental messaging scores.
+            The monitoring tracks changes on selected pages of your site and your competitors&apos;. The scores are intended to evaluate how a company
+            communicates its audience, positioning, value proposition and supporting evidence.
+          </p>
+          <p className="text-lg text-gray-600 leading-relaxed mt-4">
+            Recent controlled testing identified limitations in the current scoring model. Some dimensions do not yet respond consistently to the
+            messaging changes they are intended to measure, and scores are sensitive to irrelevant page content and to differences in content extraction.
+            For this reason, individual company scores and risk classifications are withheld from the public benchmark.
           </p>
         </div>
 
         <Section title="1. What is read">
-          <p>Each reading covers the <strong className="text-gray-900">homepage and up to 4 key pages</strong>, found automatically: pricing, product, solutions, customers and about pages come first. The homepage is always included. If the homepage cannot be read, no score is produced for that reading, rather than a score built from other pages.</p>
-          <p>Pages are read with services that run the page&apos;s scripts when the site needs it, so content built in the browser is read too. On later readings each page is read by the same reading service as before, so two readings of an unchanged page give the same text and the same score.</p>
+          <p>Each reading covers the <strong className="text-gray-900">homepage and up to 4 key pages</strong>, found automatically: pricing, product, solutions, customers and about pages come first. Legal pages, forms, comparisons with competitors and other-language versions of the site are not scored. If the homepage cannot be read, no score is produced for that reading.</p>
+          <p>Pages are read with services that run the page&apos;s scripts when the site needs it. VectriOS tries to read each page with the same service every night; when that service is unavailable another one reads the page, and the extracted text can differ. How much that changes a score is one of the conditions now being tested.</p>
           <p>VectriOS reads only public pages. It does not log in, fill forms or read anything behind a password.</p>
         </Section>
 
-        <Section title="2. The four sub-scores">
-          <p>Each sub-score runs from 0 to 100. <strong className="text-gray-900">Higher is stronger.</strong></p>
+        <Section title="2. What is currently established">
+          <ul className="space-y-2">
+            {ESTABLISHED.map(x => (
+              <li key={x} className="flex items-start gap-2"><span className="text-emerald-600 font-bold mt-0.5">✓</span><span>{x}</span></li>
+            ))}
+          </ul>
+        </Section>
+
+        <Section title="3. What remains under validation">
+          <ul className="space-y-2">
+            {UNDER_VALIDATION.map(x => (
+              <li key={x} className="flex items-start gap-2"><span className="text-amber-600 font-bold mt-0.5">○</span><span>{x}</span></li>
+            ))}
+          </ul>
+          <p>The experimental scores, including the Revenue Impact Index (RII) that combines them, are shown to you for your own site and your monitored competitors, labelled as experimental. They describe how a site&apos;s messaging is built; they are not a measure of revenue, conversion or lost revenue.</p>
           <div className="grid md:grid-cols-2 gap-4">
             {SUBSCORES.map(item => (
               <div key={item.label} className="p-5 bg-gray-50 border border-gray-200 rounded-xl">
@@ -62,48 +88,21 @@ export default function MethodologyPage() {
               </div>
             ))}
           </div>
-          <p>The detected audience (for example developers, marketing teams or support teams) is shown with every scan, so you can see what the scoring assumed.</p>
         </Section>
 
-        <Section title="3. The Revenue Impact Index (RII)">
-          <p>The RII combines the four sub-scores into one number from 0 to 100. <strong className="text-gray-900">Lower is better.</strong></p>
-          <ul className="space-y-2">
-            <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span><span>Each sub-score is turned into a gap with a curve that weighs weak scores more than a straight line would, so one weak area is not hidden by three average ones.</span></li>
-            <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span><span>The gaps are added with fixed weights. In the current calibration messaging alignment carries 50%; ICP clarity, anchor density and positioning share the other 50%, in proportions set by the detected audience.</span></li>
-            <li className="flex items-start gap-2"><span className="text-indigo-600 font-bold mt-0.5">→</span><span>Bounded corrections apply in known cases: developer-first and product-led sites (whose proof looks different from sales-led sites), near-duplicate pages, and very focused messaging with little proof. The rules are the same for every site.</span></li>
-          </ul>
-          <div className="grid sm:grid-cols-3 gap-3 pt-2">
-            {BANDS.map(b => (
-              <div key={b.range} className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
-                <p className="font-semibold text-gray-900">{b.range}</p>
-                <p className="text-sm text-gray-600">{b.label}</p>
-              </div>
-            ))}
-          </div>
-          <p>The RII describes how a site&apos;s messaging is built. It is not a measure of revenue, conversion rate or lost revenue, and VectriOS does not turn it into money figures.</p>
-        </Section>
-
-        <Section title="4. Confidence">
-          <p>Every scan shows a confidence value from 0 to 100. It says how much of the site the score rests on. It is shown next to the score and is not mixed into it.</p>
-          <div className="grid sm:grid-cols-3 gap-3">
-            {CONFIDENCE.map(c => (
-              <div key={c.part} className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
-                <p className="font-semibold text-gray-900">{c.part}</p>
-                <p className="text-sm text-gray-600">{c.desc}</p>
-              </div>
-            ))}
-          </div>
-          <p>When only part of a site could be read, confidence is reduced by 40%. When nothing could be read, there is no score.</p>
+        <Section title="4. What happens next">
+          <p>The scoring model is being rebuilt and tested with controlled content changes (removing the audience, the proof, the category; making two pages contradict each other), with controls that must not move the score (synonyms, page order, a cookie notice), and with stability tests across days.</p>
+          <p>The new model will be evaluated against acceptance thresholds set before the results are known, and then against independent human ratings. Individual scores and company rankings will be republished only after it passes.</p>
+          <p>The objective: every score measures the property it claims to measure, responds predictably to meaningful changes, and stays stable when the message has not changed.</p>
         </Section>
 
         <Section title="5. The benchmark">
-          <p>The benchmark holds {BENCHMARK_SIZE} SaaS websites, each read with the current version of the method. Each domain appears once. Your position is your RII compared with theirs.</p>
-          <p>Scores are compared only when they were produced by the same version of the method. When the method changes, the whole benchmark is read again before new positions are shown, so a change of method never looks like a change of website.</p>
+          <p>The benchmark holds {BENCHMARK_SIZE} SaaS websites, each read once with the same version of the method. While the scoring is validated, only aggregate figures are published; no company is named or ranked.</p>
           <p><Link href="/saas-revenue-index" className="text-indigo-700 underline">See the benchmark</Link></p>
         </Section>
 
         <Section title="6. Nightly monitoring and change reports">
-          <p>With an active plan, your site and up to 5 competitors are read <strong className="text-gray-900">every night</strong> with the same method. Each reading produces a new RII and is kept in your history.</p>
+          <p>With an active plan, your site and up to 5 competitors are read <strong className="text-gray-900">every night</strong> with the same method, and every reading is kept in your history.</p>
           <p>Today, change reports cover the <strong className="text-gray-900">homepage headline</strong>, for your site and for each competitor. A change is reported only when the new headline appears on two nightly readings in a row. A headline that appears for one night and then goes back, such as an A/B test or a one-day banner, is not reported.</p>
           <p>Subheadlines and calls to action are recorded on every reading. They will be added to change reports once their readings are proven stable enough to report without false alarms.</p>
         </Section>

@@ -37,37 +37,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   //
   // A build while the API is unreachable must produce a smaller sitemap, never
   // an empty one and never a failed build - which is why this is wrapped.
-  let domainPages: MetadataRoute.Sitemap = []
-  try {
-    const res = await fetch(`${API}/saas-revenue-index`, {
-      next: { revalidate: 86400 },
-    })
-    if (res.ok) {
-      const data = await res.json()
-      const rows: IndexRow[] = Array.isArray(data?.companies)
-        ? data.companies
-        : Array.isArray(data?.rows)
-          ? data.rows
-          : Array.isArray(data)
-            ? data
-            : []
-      const seen = new Set<string>()
-      for (const row of rows) {
-        const domain = (row?.domain || "").trim().toLowerCase()
-        if (!domain || !domain.includes(".") || seen.has(domain)) continue
-        seen.add(domain)
-        const scanned = row?.scanned_at ? new Date(row.scanned_at) : now
-        domainPages.push({
-          url: `${BASE}/company/${encodeURIComponent(domain)}`,
-          lastModified: isNaN(scanned.getTime()) ? now : scanned,
-          changeFrequency: "weekly" as const,
-          priority: 0.6,
-        })
-      }
-    }
-  } catch {
-    // Left empty on purpose: the static pages below still ship.
-  }
+  // No per-company pages in the sitemap: individual scores are withheld while
+  // the scoring method is validated (26 Nov 2026).
+  const domainPages: MetadataRoute.Sitemap = []
 
   return [...staticPages, ...domainPages]
 }

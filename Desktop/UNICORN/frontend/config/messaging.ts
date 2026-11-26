@@ -14,9 +14,9 @@ export const CATEGORY = "Competitive messaging intelligence for B2B SaaS"
 export const HEADLINE = "See how your positioning compares with your competitors, and when either one changes."
 
 export const SUBHEADLINE =
-  "VectriOS monitors your website and up to five competitors every night, scoring how clearly each communicates " +
-  "who it serves and why customers should choose it. Every score uses the same documented methodology, applied " +
-  `across ${BENCHMARK_SIZE} B2B SaaS websites. Changes are reported once two consecutive nightly readings confirm them.`
+  "VectriOS monitors your website and up to five competitors every night and shows how each one describes who it " +
+  "serves and why customers should choose it, side by side. Changes are reported once two consecutive nightly " +
+  "readings confirm them."
 
 export const AUDIENCE = "Built for product marketing, marketing and competitive intelligence teams at B2B SaaS companies."
 
@@ -28,8 +28,8 @@ export const PROOF_POINTS: Array<{ title: string; body: string }> = [
     body: "Know when your homepage headline or a competitor\u2019s changes, confirmed on two consecutive nightly readings.",
   },
   {
-    title: "Benchmark with one consistent methodology",
-    body: `Compare your messaging with ${BENCHMARK_SIZE} B2B SaaS websites, all scored with the same documented framework.`,
+    title: "Compare messaging side by side",
+    body: "Your headline and key pages next to each competitor\u2019s, read the same way every night. Messaging scores are shown as experimental while the method is validated.",
   },
   {
     title: "Monitor the pages that shape positioning",

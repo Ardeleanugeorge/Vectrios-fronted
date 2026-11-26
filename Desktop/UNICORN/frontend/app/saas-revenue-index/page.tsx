@@ -185,266 +185,50 @@ export default function SaaSRevenueIndex() {
       <main className="max-w-6xl mx-auto px-6 py-16">
 
         {/* Hero */}
-        <div className="text-center mb-14">
+        <div className="text-center mb-10">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
             {NAMES.benchmark}
           </h1>
           <p className="text-gray-700 text-lg max-w-2xl mx-auto mb-2">
-            How clearly 497 B2B SaaS websites say who they serve and why to choose them, scored with one documented method.
-          </p>
-          <p className="text-gray-600 text-sm max-w-2xl mx-auto mb-6">
-            This index measures messaging architecture clarity across ICP clarity, positioning coherence, anchor density and alignment. Structural metrics only — no behavioral or revenue data is used in this public index.
-          </p>
-          <a href="/" className="inline-block px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-sm">
-            Scan your site — see your RII
-          </a>
-        </div>
-
-
-        {/* Data source disclaimer */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-xs text-gray-600">
-            <span className="font-semibold text-gray-700">Data source:</span> Domains appear in this index based on publicly available website content analyzed by VectriOS. No private analytics, conversion data or user data is included. The index lists the sites of the current benchmark, each read once with the same method version. Scans run from this site are not added to it.
+            {displayTotal.toLocaleString("en-US")} B2B SaaS websites, each read once with the same method version.
           </p>
         </div>
 
-        {/* How the index works */}
+        {/* Rankings withheld while the scoring is validated (decision of 26 Nov 2026) */}
+        <div className="mb-10 p-6 rounded-xl border border-amber-200 bg-amber-50">
+          <p className="text-xs font-semibold uppercase tracking-widest text-amber-700 mb-2">Individual scores withheld</p>
+          <p className="text-sm text-gray-800 leading-relaxed">
+            Controlled testing showed that parts of the current scoring model do not yet respond consistently to the messaging
+            changes they are intended to measure. Until the rebuilt model passes its acceptance tests and an independent human
+            evaluation, VectriOS does not publish individual company scores, rankings or risk classifications.
+          </p>
+          <p className="text-sm text-gray-800 mt-3">
+            <Link href="/methodology" className="text-indigo-700 underline">What is established and what is under validation</Link>
+          </p>
+        </div>
+
+        {/* How the benchmark works */}
         <div className="mb-10 p-6 bg-gray-50 rounded-xl border border-gray-200">
-          <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">How the index works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">How the benchmark is built</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <p className="text-xs font-semibold text-gray-700 mb-1">1. Public pages only</p>
-              <p className="text-xs text-gray-600">VectriOS reads each site&apos;s homepage and up to 4 key pages (pricing, product, solutions, customers), the same way it reads a customer&apos;s site.</p>
+              <p className="text-xs text-gray-600">The homepage and up to 4 key pages of each site (pricing, product, solutions, customers), read the same way as a customer&apos;s site.</p>
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-700 mb-1">2. One company, one benchmark position</p>
-              <p className="text-xs text-gray-600">Each site appears once, with its reading from the current benchmark. A scan run from this site shows where that site would stand; it does not add it to the index.</p>
+              <p className="text-xs font-semibold text-gray-700 mb-1">2. Each site once</p>
+              <p className="text-xs text-gray-600">Every site is read once per method version. Scans run from this site are not added to the benchmark.</p>
             </div>
             <div>
-              <p className="text-xs font-semibold text-gray-700 mb-1">3. Structural metrics only</p>
-              <p className="text-xs text-gray-600">Benchmark scores measure messaging architecture — ICP clarity, positioning coherence, anchor density and alignment. No behavioral or revenue data is used in this public index.</p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-gray-700 mb-1">4. One method version</p>
-              <p className="text-xs text-gray-600">Every score in the index comes from the same version of the method. When the method changes, the whole index is read again, so positions stay comparable.</p>
+              <p className="text-xs font-semibold text-gray-700 mb-1">3. One method version</p>
+              <p className="text-xs text-gray-600">All readings come from the same version of the method. When the method changes, the whole benchmark is read again.</p>
             </div>
           </div>
-        </div>
-        {/* Stats bar — real numbers */}
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
-          {[
-            { label: "Sites in the benchmark", value: displayTotal.toLocaleString("en-US"), color: "text-gray-900" },
-            { label: "Average RII (lower = better)", value: displayAvgRii, color: "text-orange-600" },
-          ].map(stat => (
-            <div key={stat.label} className="rounded-xl bg-gray-50 border border-gray-200 p-5 text-center">
-              <div className={`text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</div>
-              <div className="text-xs text-gray-600">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-
-        <p className="text-xs sm:text-sm text-gray-600 mb-10 max-w-3xl mx-auto text-center">
-          Use this benchmark to understand structural messaging risk across SaaS companies — then run your scan to see your RII and structural messaging profile.
-        </p>
-
-        {/* -- Top 10 / Worst 10 -- */}
-        {data && (data.top10.length > 0 || data.worst10.length > 0) && (
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
-
-            {/* Top 10 */}
-            <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] overflow-hidden">
-              <div className="px-5 py-4 border-b border-emerald-500/20 flex items-center gap-2">
-                <span className="text-emerald-400 text-sm font-semibold">Strongest structural architecture</span>
-                <span className="ml-auto text-xs text-gray-600">lowest RII</span>
-              </div>
-              <div>
-                {data.top10.map((c, i) => (
-                  <div key={c.domain} className="flex items-center gap-3 px-5 py-3 border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
-                    <span className="text-xs text-gray-600 font-mono w-4">{i + 1}</span>
-                    <img
-                      src={`https://icons.duckduckgo.com/ip3/${c.domain.replace(/^https?:\/\//, '').split('/')[0]}.ico`}
-                      alt=""
-                      className="w-4 h-4 rounded opacity-60"
-                      onError={e => {
-                        const img = e.currentTarget as HTMLImageElement;
-                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0];
-                        img.onerror = null;
-                        img.src = `https://${host}/favicon.ico`;
-                        img.addEventListener("error", () => { img.style.display = "none"; }, { once: true });
-                      }}
-                    />
-                    <Link href={`/company/${c.domain}`}
-                       className="text-sm text-gray-900 hover:text-emerald-300 transition-colors flex-1 truncate">
-                      {c.domain}
-                    </Link>
-                    <span className="text-emerald-400 font-mono text-sm font-bold">
-                      {c.rii !== null ? riiShown(c.rii) : "—"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Worst 10 */}
-            <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.03] overflow-hidden">
-              <div className="px-5 py-4 border-b border-red-500/20 flex items-center gap-2">
-                <span className="text-red-400 text-sm font-semibold">Highest structural risk</span>
-                <span className="ml-auto text-xs text-gray-600">highest RII</span>
-              </div>
-              <div>
-                {data.worst10.map((c, i) => (
-                  <div key={c.domain} className="flex items-center gap-3 px-5 py-3 border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
-                    <span className="text-xs text-gray-600 font-mono w-4">{i + 1}</span>
-                    <img
-                      src={`https://icons.duckduckgo.com/ip3/${c.domain.replace(/^https?:\/\//, '').split('/')[0]}.ico`}
-                      alt=""
-                      className="w-4 h-4 rounded opacity-60"
-                      onError={e => {
-                        const img = e.currentTarget as HTMLImageElement;
-                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0];
-                        img.onerror = null;
-                        img.src = `https://${host}/favicon.ico`;
-                        img.addEventListener("error", () => { img.style.display = "none"; }, { once: true });
-                      }}
-                    />
-                    <Link href={`/company/${c.domain}`}
-                       className="text-sm text-gray-900 hover:text-red-300 transition-colors flex-1 truncate">
-                      {c.domain}
-                    </Link>
-                    <span className="text-red-400 font-mono text-sm font-bold">
-                      {c.rii !== null ? riiShown(c.rii) : "—"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* Divider */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="flex-1 h-px bg-white/5" />
-          <span className="text-xs text-gray-600 uppercase tracking-widest">Full Index</span>
-          <div className="flex-1 h-px bg-white/5" />
-        </div>
-
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <div className="flex gap-2">
-            {(["all", "low", "moderate", "high"] as const).map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                  filter === f
-                    ? "bg-indigo-600/20 border-indigo-600/40 text-cyan-300"
-                    : "bg-white/[0.03] border-white/10 text-gray-600 hover:border-white/20"
-                }`}
-              >
-                {f === "all" ? "All Companies" :
-                 f === "low" ? "Low risk" :
-                 f === "moderate" ? "Moderate risk" :
-                 "High risk"}
-              </button>
-            ))}
-          </div>
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search domain..."
-            className="sm:ml-auto bg-white/[0.03] border border-white/10 rounded-lg px-4 py-1.5 text-sm text-gray-900 placeholder:text-gray-600 focus:outline-none focus:border-indigo-600/40 w-full sm:w-56"
-          />
-        </div>
-
-        {/* Table */}
-        <div className="rounded-2xl border border-white/5 overflow-hidden">
-          <div className="grid grid-cols-[2.5rem_1fr_7rem_5rem_5rem_5rem_5rem_6rem] gap-2 px-5 py-3 bg-white/[0.02] border-b border-white/5 text-xs text-gray-600 font-medium uppercase tracking-widest">
-            <span>#</span>
-            <span>Company</span>
-            <span className="text-center">RII Score</span>
-            <span className="text-center">Align</span>
-            <span className="text-center">ICP</span>
-            <span className="text-center">Anchor</span>
-            <span className="text-center">Pos.</span>
-            <span className="text-center">Status</span>
-          </div>
-
-          {loading && (
-            <div className="py-20 text-center text-gray-600 text-sm">
-              <div className="w-5 h-5 border border-indigo-600/30 border-t-cyan-400 rounded-full animate-spin mx-auto mb-3" />
-              Loading index...
-            </div>
-          )}
-
-          {!loading && filtered.length === 0 && (
-            <div className="py-20 text-center">
-              <p className="text-gray-600 text-sm">No companies scanned yet.</p>
-              <Link href={PUBLIC_HOME_URL} className="mt-3 inline-block text-indigo-500 text-sm hover:underline">
-                Run the first scan
-              </Link>
-            </div>
-          )}
-
-          {!loading && filtered.map((c, i) => {
-            // The status follows the number shown in the row (lib/rii.ts).
-            const riskText = c.rii !== null ? riiRiskLabel(c.rii) : c.risk_level;
-            const risk = getRiskColor(riskText);
-            return (
-              <div
-                key={c.domain}
-                className="grid grid-cols-[2.5rem_1fr_7rem_5rem_5rem_5rem_5rem_6rem] gap-2 items-center px-5 py-3.5 border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors group"
-              >
-                <span className="text-xs text-gray-600 font-mono">{i + 1}</span>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <img
-                      src={`https://icons.duckduckgo.com/ip3/${c.domain.replace(/^https?:\/\//, '').split('/')[0]}.ico`}
-                      alt=""
-                      className="w-4 h-4 rounded opacity-70"
-                      onError={e => {
-                        const img = e.currentTarget as HTMLImageElement;
-                        const host = c.domain.replace(/^https?:\/\//, '').split('/')[0];
-                        img.onerror = null;
-                        img.src = `https://${host}/favicon.ico`;
-                        img.addEventListener("error", () => { img.style.display = "none"; }, { once: true });
-                      }}
-                    />
-                    <Link
-                      href={`/company/${c.domain}`}
-                      className="text-sm text-gray-900 font-medium group-hover:text-cyan-300 transition-colors"
-                    >
-                      {c.domain}
-                    </Link>
-                  </div>
-
-                </div>
-                <div className="flex justify-center"><RiiBar value={c.rii} /></div>
-                <div className="text-center"><ScoreCell value={c.alignment} /></div>
-                <div className="text-center"><ScoreCell value={c.icp_clarity} /></div>
-                <div className="text-center"><ScoreCell value={c.anchor_density} /></div>
-                <div className="text-center"><ScoreCell value={c.positioning} /></div>
-                <div className="flex justify-center">
-                  <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${risk.bg} ${risk.text}`}>
-                    <span className={`w-1 h-1 rounded-full ${risk.dot}`} />
-                    {normalizeRiskLabel(riskText) ?? "—"}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Legend */}
-        <div className="mt-8 flex flex-wrap gap-6 justify-center text-xs text-gray-600">
-          <span><span className="text-green-400 font-semibold">Low RII (0–39)</span> = clear audience, consistent story, proof near decisions</span>
-          <span><span className="text-yellow-400 font-semibold">Moderate RII (40–69)</span> = one or two sub-scores pull the score up</span>
-          <span><span className="text-red-400 font-semibold">High RII (70–100)</span> = unclear who it is for or why to choose it</span>
         </div>
 
         {/* Bottom CTA */}
         <div className="mt-14 text-center rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 p-10">
-          <p className="text-gray-600 text-sm mb-2">Where would your site stand?</p>
+          <p className="text-gray-600 text-sm mb-2">See how your site describes who it serves and why to choose it</p>
           <h3 className="text-2xl font-bold text-gray-900 mb-6">
             Run a free messaging scan
           </h3>
@@ -452,7 +236,7 @@ export default function SaaSRevenueIndex() {
             href={PUBLIC_HOME_URL}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-semibold text-sm transition-colors"
           >
-            Run Free Structural Scan
+            Run a free scan
           </Link>
           <p className="text-gray-600 text-xs mt-3">Instant scan — No signup required</p>
         </div>
@@ -460,7 +244,7 @@ export default function SaaSRevenueIndex() {
 
       <footer className="border-t border-white/5 px-6 py-6 text-center text-gray-600 text-xs">
         Vectri<span className="text-indigo-500">OS</span> {NAMES.benchmark}: public pages of the SaaS sites in the current benchmark, each read once with the same method.
-        All scores based on structural messaging analysis only.
+        Individual scores are withheld while the scoring method is validated.
       </footer>
     </div>
   );

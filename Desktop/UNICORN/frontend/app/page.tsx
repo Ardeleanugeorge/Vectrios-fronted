@@ -285,8 +285,7 @@ export default function Home() {
           {scanning && (
             <div className="mb-4 text-xs text-indigo-700 flex flex-col items-center gap-1">
               <p>
-                Reading your homepage and up to 4 key pages, then scoring them and placing the site
-                among {BENCHMARK_SIZE} SaaS sites in the benchmark.
+                Reading your homepage and up to 4 key pages, then scoring them.
               </p>
               <p className="text-gray-500">
                 {scanSeconds}s · usually under a minute, up to 3 minutes for slow sites
@@ -340,7 +339,7 @@ export default function Home() {
           <p className="text-2xl text-indigo-700 font-semibold mb-8">
             Headlines, offers and proof change on your site and on your competitors&apos; sites, often without anyone on the team seeing it.
           </p>
-          <p className="text-xl text-gray-700 mb-6">What VectriOS scores on every reading:</p>
+          <p className="text-xl text-gray-700 mb-6">What the experimental messaging scores are designed to measure (<Link href="/methodology" className="text-indigo-700 underline">under validation</Link>):</p>
           <ul className="space-y-4 text-lg text-gray-700 mb-8 ml-6">
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
@@ -427,21 +426,12 @@ export default function Home() {
       {/* -- 5. FINANCIAL FRAMING ------------------------------------------ */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">One score, four parts. Lower is better.</h2>
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">An experimental score, under validation.</h2>
           <p className="text-lg text-gray-700 mb-8">
-            The Revenue Impact Index (RII) runs from 0 to 100. It summarizes the four sub-scores above with the same method for every site, yours, your competitors&apos; and the {BENCHMARK_SIZE} in the benchmark. RII describes how a site&apos;s messaging is built; it is not a revenue figure. <Link href="/methodology" className="text-indigo-700 underline">How the score is calculated</Link>.</p>
-          <div className="grid md:grid-cols-3 gap-4 mb-8">
-            {[
-              { metric: "Under 40: low risk", desc: "Clear audience, consistent story, proof near decisions." },
-              { metric: "40 to 69: moderate risk", desc: "One or two sub-scores pull the score up. The scan shows which." },
-              { metric: "70 and above: high risk", desc: "The pages do not say clearly who they serve or why to choose you." },
-            ].map(item => (
-              <div key={item.metric} className="p-5 bg-gray-50 rounded-lg border border-gray-200">
-                <p className="text-indigo-700 font-semibold mb-2">{item.metric}</p>
-                <p className="text-sm text-gray-600">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+            The Revenue Impact Index (RII) combines the four experimental sub-scores into one number from 0 to 100; lower is better.
+            Controlled tests showed that parts of it do not yet measure what they are designed to measure, so it is shown to you for
+            your own site and your competitors, labelled experimental, and is not published for other companies. It is not a revenue
+            figure. <Link href="/methodology" className="text-indigo-700 underline">What is established and what is under validation</Link>.</p>
         </div>
       </section>
 
@@ -496,7 +486,7 @@ export default function Home() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
-                RII score history and your position among {BENCHMARK_SIZE} SaaS sites
+                Experimental messaging scores on every reading, with history
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
@@ -516,7 +506,7 @@ export default function Home() {
             Start with a free scan of your site.
           </h2>
           <p className="text-lg text-gray-700 mb-8">
-            See your RII, the four sub-scores and where you stand among {BENCHMARK_SIZE} SaaS sites.
+            See how your site describes who it serves and why to choose it, with experimental messaging scores.
             Nightly monitoring of your site and up to 5 competitors starts with the 14-day trial.
           </p>
           <Link

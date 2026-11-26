@@ -93,6 +93,7 @@ export default function RevenueRiskIndex({
         </p>
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1 tracking-tight">
           {RII_NAME}
+          <Link href="/methodology" className="inline-block ml-2 align-middle text-[10px] font-semibold uppercase tracking-widest text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">Experimental</Link>
         </h2>
         <p className="text-sm text-gray-600 mb-3">
           <abbr title={RII_TAGLINE} className="cursor-help font-semibold text-blue-600/90 border-b border-dotted border-indigo-600/50">
