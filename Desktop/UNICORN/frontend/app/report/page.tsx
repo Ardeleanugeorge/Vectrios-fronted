@@ -345,7 +345,7 @@ export default function ReportPage() {
 
       {/* Cover band */}
       <header className="mx-8 mt-4 mb-7 rounded-2xl px-7 py-6 text-white" style={{ background: `linear-gradient(135deg, ${C.ink} 0%, #164e63 60%, ${C.brand} 100%)` }}>
-        <p className="text-[11px] font-bold tracking-[0.2em] uppercase" style={{ color: "#a5f3fc" }}>VectriOS &middot; Structural messaging report</p>
+        <p className="text-[11px] font-bold tracking-[0.2em] uppercase" style={{ color: "#a5f3fc" }}>VectriOS &middot; Competitive messaging report</p>
         <h1 className="text-3xl font-bold mt-2">{site || "Your site"}</h1>
         <p className="text-sm mt-2" style={{ color: "#cffafe" }}>
           Prepared {fmtDate(generated)}
@@ -504,7 +504,7 @@ export default function ReportPage() {
           )}
         </Section>
 
-        <Section n="04" title="What changed" lead="Headlines are read from the rendered page every night. A change is reported only when two consecutive readings differ.">
+        <Section n="04" title="What changed" lead="Headlines are read from the rendered page every night. A change is reported once the new headline is read on two consecutive nights.">
           <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: C.sub }}>Your site</p>
           {incidents.length ? (
             <div className="space-y-3 mb-5">

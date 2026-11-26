@@ -17,6 +17,7 @@ import Link from "next/link"
 import Header from "@/components/Header"
 import SiteFooter from "@/components/SiteFooter"
 import { riiBand, riiRiskLabel, riiShown } from "@/lib/rii"
+import { HEADLINE, MONITORING_PITCH, NAMES, SUBHEADLINE } from "@/config/messaging"
 
 interface ScanData {
   scan_token: string
@@ -312,7 +313,7 @@ function primarySignalDisplay(signal: string): { headline: string } {
     }
   }
   return {
-    headline: signal || "Structural signals were found across your revenue-stage pages",
+    headline: signal || "Structural signals were found across your key pages",
   }
 }
 
@@ -1103,7 +1104,7 @@ function ScanResultsContent() {
             {data.domain.charAt(0).toUpperCase()}
           </div>
           <div>
-            <p className="text-sm text-gray-600 uppercase tracking-wider">Structural Architecture Scan</p>
+            <p className="text-sm text-gray-600 uppercase tracking-wider">{NAMES.scan}</p>
             <p className="font-semibold text-gray-900">{data.domain}</p>
           </div>
           <div className="ml-auto">
@@ -1120,7 +1121,7 @@ function ScanResultsContent() {
           {!wideLayout && !isBlocked && (
             <div className="mb-6 p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-left">
               <p className="text-lg font-semibold text-gray-900 leading-snug mb-2">
-                Baseline Architecture Scan Complete
+                Messaging scan complete
               </p>
               {canShowFinancials && financialImpact && (
                 <p className="text-base text-gray-800 font-semibold mb-2">
@@ -1128,14 +1129,14 @@ function ScanResultsContent() {
                 </p>
               )}
               <p className="text-sm text-gray-700 mt-2">
-                Your structural messaging baseline is ready. VectriOS analyzed your public website across ICP clarity, positioning coherence, anchor density and messaging alignment.
+                Your baseline is ready. VectriOS read your homepage and key pages and scored ICP clarity, positioning coherence, anchor density and messaging alignment.
               </p>
             </div>
           )}
           {!wideLayout && !isBlocked && !financialImpact && (
             <div className="mb-6 p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-left">
               <p className="text-lg font-semibold text-gray-900 leading-snug">
-                Baseline Architecture Scan Complete
+                Messaging scan complete
               </p>
               <p className="text-sm text-gray-600 mt-1">Loading model from your scan…</p>
             </div>
@@ -1152,7 +1153,7 @@ function ScanResultsContent() {
           <div className={wideLayout ? "lg:col-span-8 space-y-4" : "contents"}>
             {data.status !== "blocked" && (
               <p className={`text-sm text-gray-600 ${wideLayout ? "mb-2" : "mb-4"}`}>
-                Structural messaging signals identified across revenue-stage pages — see the breakdown below.
+                Structural signals identified across your key pages. See the breakdown below.
               </p>
             )}
             {data.status === "blocked" && (
@@ -1162,7 +1163,7 @@ function ScanResultsContent() {
             )}
 
             <p className="text-xs text-gray-600 mb-4">
-              {data.pages_scanned} revenue-stage page{data.pages_scanned !== 1 ? "s" : ""} analyzed
+              {data.pages_scanned} key page{data.pages_scanned !== 1 ? "s" : ""} analyzed
             </p>
 
             {!isBlocked && (
@@ -1230,7 +1231,7 @@ function ScanResultsContent() {
         {!unlocked && !isBlocked && (
           <div className={`p-6 bg-gray-50 rounded-xl border border-gray-200 mb-6 ${wideLayout ? "lg:p-8 lg:mb-8" : ""}`}>
             <p className="text-lg font-semibold text-gray-900 mb-1">Structural signals detected</p>
-            <p className="text-sm text-gray-600 mb-1">Signals identified across revenue-stage pages</p>
+            <p className="text-sm text-gray-600 mb-1">Signals identified across your key pages</p>
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-5">Primary structural signals</p>
             <ul className="space-y-3 text-sm text-gray-700">
               <li className="flex items-center justify-between gap-3">
@@ -1294,18 +1295,10 @@ function ScanResultsContent() {
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold mb-2 text-gray-900 max-w-xl mx-auto leading-snug">
-              Address Structural Messaging Drift Before It Compounds Across Your Website.</h2>
+              {HEADLINE}</h2>
             <p className="text-gray-600 mb-5 text-sm max-w-2xl mx-auto leading-relaxed">
-              VectriOS identifies structural messaging changes and surfaces the signals worth reviewing across your revenue-stage pages.
+              {SUBHEADLINE}
             </p>
-            <div className="text-left max-w-2xl mx-auto mb-5">
-              <p className="text-sm text-gray-700 mb-2">
-                Structural drift accumulates gradually and becomes harder to trace without continuous monitoring.
-              </p>
-              <p className="text-sm text-gray-600">
-                Activate monitoring to detect meaningful changes automatically every 24h.
-              </p>
-            </div>
             <div className="text-left max-w-2xl mx-auto mb-6 rounded-lg border border-white/10 bg-white/[0.02] p-4">
               <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Primary structural review areas</p>
               <ul className="space-y-1.5 text-sm text-gray-700">
@@ -1342,7 +1335,7 @@ function ScanResultsContent() {
               onClick={handleUnlock}
               className="px-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-black font-bold rounded-lg transition text-base w-full sm:w-auto shadow-lg shadow-cyan-500/15"
             >
-              Activate Continuous Drift Monitoring
+              {NAMES.activateMonitoring}
             </button>
             <p className="text-xs text-gray-600 mt-3 max-w-md mx-auto text-center leading-relaxed">
               Your site and up to 5 competitors read every night · 14-day free trial
@@ -1392,11 +1385,11 @@ function ScanResultsContent() {
                   </h3>
                   <p className="text-base font-semibold text-gray-800 mb-2 text-center lg:text-left">
                     {impact
-                      ? "Structural signals identified across revenue-stage pages"
-                      : "Structural signals identified across revenue-stage pages"}
+                      ? "Structural signals identified across your key pages"
+                      : "Structural signals identified across your key pages"}
                   </p>
                   <p className="text-sm text-gray-600 mb-6 max-w-3xl text-center lg:text-left">
-                    VectriOS identifies structural messaging changes and surfaces the signals worth reviewing across your revenue-stage pages.
+                    VectriOS reads your key pages and your competitors&apos; every night and shows the signals worth reviewing first.
                   </p>
                   {canShowFinancials && (
                   <div className="max-w-3xl mb-6 rounded-lg border border-gray-200 bg-indigo-600/[0.04] p-4">
@@ -1463,7 +1456,7 @@ function ScanResultsContent() {
     <div className="lg:col-span-7 p-4 sm:p-5 rounded-xl bg-white border border-gray-200/70">
       <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-3">Primary structural signals</p>
       <p className="text-xs text-gray-600 mb-3">
-        Structural drift accumulates gradually and becomes harder to trace without continuous monitoring. Activate monitoring to detect meaningful changes automatically every 24h.
+        {SUBHEADLINE}
       </p>
       <div className="rounded-lg border border-white/10 bg-white/[0.02] p-3 mb-3">
         <p className="text-[11px] uppercase tracking-wider text-gray-600 mb-2">Primary structural review areas</p>
@@ -1564,14 +1557,14 @@ function ScanResultsContent() {
                   Address structural messaging drift
                 </p>
                 <p className="text-sm text-gray-700 mb-3">
-                  You’re logged in, but monitoring hasn’t been activated yet. Activate monitoring to track meaningful structural changes automatically every 24h.
+                  You’re logged in, but monitoring hasn’t been started yet. {MONITORING_PITCH}
                 </p>
                 <ul className="space-y-2 text-sm text-gray-600 mb-4">
                   {[
                     "Page-level structural findings",
                     "Before/After copy for each fix",
                     "Prioritized structural review actions",
-                    "24h automated monitoring",
+                    "Nightly monitoring of your site and up to five competitors",
                   ].map((line) => (
                     <li key={line} className="flex items-start gap-2">
                       <span className="text-gray-700 mt-0.5 shrink-0" aria-hidden>✓</span>
@@ -1583,7 +1576,7 @@ function ScanResultsContent() {
                 href="/pricing?from=scan&focus=monitoring"
                   className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                 >
-                  Activate Continuous Drift Monitoring
+                  {NAMES.activateMonitoring}
                 </Link>
               </div>
             ) : (
@@ -1595,7 +1588,7 @@ function ScanResultsContent() {
                 <p className="text-sm text-gray-700 mb-3">
                   {returningAccountHint
                     ? "You already unlocked this scan from this browser. Sign in (password or one-time code) if the page lost your session, or open plans to activate monitoring."
-                    : "Activate monitoring to track structural messaging changes and review primary signals across your revenue-stage pages."}
+                    : MONITORING_PITCH}
                 </p>
                 <ul className="space-y-2 text-sm text-gray-600 mb-4">
                   {[
@@ -1636,7 +1629,7 @@ function ScanResultsContent() {
                       onClick={handleUnlock}
                       className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-black font-bold text-sm sm:text-base transition shadow-lg shadow-cyan-500/20 w-full sm:w-auto"
                     >
-                      Activate Continuous Drift Monitoring
+                      {NAMES.activateMonitoring}
                     </button>
                     <p className="text-xs text-gray-600 mt-3">
                       No spam

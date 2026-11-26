@@ -41,7 +41,7 @@ export default function MethodologyPage() {
           <p className="text-xs font-bold tracking-widest uppercase text-indigo-600 mb-3">Methodology</p>
           <h1 className="text-4xl font-bold mb-4">How VectriOS reads and scores a website</h1>
           <p className="text-lg text-gray-600 leading-relaxed">
-            For B2B SaaS marketing teams who want to know exactly what the score measures, what it does not measure, and what triggers a change report.
+            For product marketing, marketing and competitive intelligence teams who want to know exactly what the score measures, what it does not measure, and what triggers a change report.
             The same method is used for your site, your competitors and the {BENCHMARK_SIZE} SaaS sites in the benchmark.
           </p>
         </div>

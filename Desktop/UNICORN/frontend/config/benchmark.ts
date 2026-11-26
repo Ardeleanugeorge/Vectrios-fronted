@@ -7,4 +7,4 @@
  * (/public/index-stats -> benchmark_sites), which counts that generation.
  * When a new generation changes the count, change this line with it.
  */
-export const BENCHMARK_SIZE = "nearly 500"
+export const BENCHMARK_SIZE = "497"

@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { METHODOLOGY_RII_HREF, RII_ABBREV, RII_NAME, RII_TAGLINE } from "@/lib/rii";
 import { riiBand, riiRiskLabel, riiShown } from "@/lib/rii"
+import { NAMES } from "@/config/messaging"
 
 const API = process.env.NEXT_PUBLIC_API_URL || `${API_URL}`;
 
@@ -231,7 +232,7 @@ export default function CompanyProfilePage() {
           </span>
         </Link>
         <Link href="/saas-revenue-index" className="text-xs text-gray-600 hover:text-gray-700 transition-colors">
-          ← Revenue Architecture Index
+          ← {NAMES.benchmark}
         </Link>
       </header>
 

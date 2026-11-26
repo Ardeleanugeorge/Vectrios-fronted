@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 import { apiFetch } from "@/lib/api"
 import { riiBand } from "@/lib/rii"
+import { NAMES } from "@/config/messaging"
 
 interface Props {
   companyId: string | null
@@ -66,7 +67,7 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <p className="text-sm font-semibold text-emerald-800">Structural monitoring active</p>
+              <p className="text-sm font-semibold text-emerald-800">{NAMES.monitoring} active</p>
             </div>
             <p className="text-xs text-emerald-700">No new commercial events detected since last scan.</p>
           </div>

@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
 import Script from "next/script"
 import "./globals.css"
-import { BENCHMARK_SIZE } from "@/config/benchmark"
+import { CATEGORY, SUBHEADLINE } from "@/config/messaging"
 
 export const metadata: Metadata = {
-  title: "VectriOS — Structural messaging monitoring for B2B SaaS",
-  description: `VectriOS reads your site and up to 5 competitors every night, scores each against ${BENCHMARK_SIZE} SaaS websites, and reports confirmed homepage headline changes. For B2B SaaS marketing teams. $299/month, 14-day free trial.`,
+  title: `VectriOS — ${CATEGORY}`,
+  description: `${SUBHEADLINE} $299/month, 14-day free trial.`,
   icons: {
     icon: "/favicon.png",
   },

@@ -15,6 +15,7 @@ import SnapshotLayer from "@/components/dashboard/SnapshotLayer"
 import MonitoringLayer from "@/components/dashboard/MonitoringLayer"
 import RevenueRiskIndex from "@/components/dashboard/RevenueRiskIndex"
 import type { ActionLayerPayload } from "@/components/dashboard/ActionableInsights"
+import { NAMES } from "@/config/messaging"
 
 interface DiagnosticResult {
   risk_level?: string
@@ -903,7 +904,7 @@ export default function DashboardPage() {
           <div className="mb-6 pb-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-semibold text-gray-900">Revenue Monitoring Console</h1>
+                <h1 className="text-2xl font-semibold text-gray-900">{NAMES.dashboard}</h1>
               </div>
               <a
                 href="/report"

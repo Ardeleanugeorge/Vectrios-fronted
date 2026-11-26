@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { CATEGORY } from "@/config/messaging"
 
 export default function SiteFooter() {
   return (
@@ -8,7 +9,7 @@ export default function SiteFooter() {
           Vectri<span className="text-indigo-700">OS</span>
         </h3>
         <p className="text-slate-600 dark:text-gray-500 mb-4">
-          Website messaging monitoring for B2B SaaS marketing teams
+          {CATEGORY}
         </p>
         <div className="flex flex-wrap justify-center gap-6 mb-5 text-sm">
           <Link href="/login" className="text-slate-600 hover:text-slate-900 dark:text-gray-500 dark:hover:text-gray-300">

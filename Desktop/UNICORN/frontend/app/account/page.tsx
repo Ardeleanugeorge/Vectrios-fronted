@@ -443,7 +443,7 @@ export default function AccountPage() {
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) { setCalibrationError(data?.detail || "Could not save calibration."); return }
-      setCalibrationSuccess("Saved. Financial model will update on next monitoring run.")
+      setCalibrationSuccess("Saved.")
     } catch { setCalibrationError("Network error while saving calibration.") }
     finally { setCalibrationLoading(false) }
   }

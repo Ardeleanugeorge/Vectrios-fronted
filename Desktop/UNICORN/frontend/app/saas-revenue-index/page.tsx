@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { riiBand, riiRiskLabel, riiShown } from "@/lib/rii"
+import { NAMES } from "@/config/messaging"
 
 interface CompanyRow {
   rank: number;
@@ -186,10 +187,10 @@ export default function SaaSRevenueIndex() {
         {/* Hero */}
         <div className="text-center mb-14">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
-            SaaS Revenue Architecture Index
+            {NAMES.benchmark}
           </h1>
           <p className="text-gray-700 text-lg max-w-2xl mx-auto mb-2">
-            A public benchmark of structural messaging architecture across SaaS companies.
+            How clearly 497 B2B SaaS websites say who they serve and why to choose them, scored with one documented method.
           </p>
           <p className="text-gray-600 text-sm max-w-2xl mx-auto mb-6">
             This index measures messaging architecture clarity across ICP clarity, positioning coherence, anchor density and alignment. Structural metrics only — no behavioral or revenue data is used in this public index.
@@ -445,7 +446,7 @@ export default function SaaSRevenueIndex() {
         <div className="mt-14 text-center rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 p-10">
           <p className="text-gray-600 text-sm mb-2">Where would your site stand?</p>
           <h3 className="text-2xl font-bold text-gray-900 mb-6">
-            Run a free Structural Architecture Scan
+            Run a free messaging scan
           </h3>
           <Link
             href={PUBLIC_HOME_URL}
@@ -458,7 +459,7 @@ export default function SaaSRevenueIndex() {
       </main>
 
       <footer className="border-t border-white/5 px-6 py-6 text-center text-gray-600 text-xs">
-        Vectri<span className="text-indigo-500">OS</span> Revenue Architecture Index — public pages of the SaaS sites in the current benchmark, each read once with the same method.
+        Vectri<span className="text-indigo-500">OS</span> {NAMES.benchmark}: public pages of the SaaS sites in the current benchmark, each read once with the same method.
         All scores based on structural messaging analysis only.
       </footer>
     </div>

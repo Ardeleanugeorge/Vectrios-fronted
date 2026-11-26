@@ -73,7 +73,7 @@ export default function ExecutiveInterpretation({
         : "Low structural risk. No single dominant structural review area identified."
       : dimensionName
         ? `${dimensionName.charAt(0).toUpperCase()}${dimensionName.slice(1)} is the primary structural review area. The playbook below names where to start.`
-        : "Review the playbook and the Revenue-Stage Alignment Map for the areas worth addressing first."
+        : "Review the playbook and the Messaging Alignment Map for the areas worth addressing first."
 
   return (
     <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">

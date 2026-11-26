@@ -59,12 +59,12 @@ export default function PageIncidentsPanel({ companyId }: Props) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Commercial Events</p>
-        <p className="text-[10px] text-gray-400 mt-0.5">Structural changes with potential commercial relevance</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Messaging changes</p>
+        <p className="text-[10px] text-gray-400 mt-0.5">Confirmed changes on your pages, read on two consecutive nights</p>
         <p className="text-sm font-semibold text-gray-900 mt-0.5">
           {majorIncidents.length > 0
-            ? `${majorIncidents.length} event${majorIncidents.length > 1 ? "s" : ""} requiring review`
-            : "No events requiring review"}
+            ? `${majorIncidents.length} event${majorIncidents.length > 1 ? "s" : ""} to review`
+            : "No changes to review"}
         </p>
       </div>
       {minorIncidents.length > 0 && (

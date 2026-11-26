@@ -9,6 +9,7 @@ import { PLANS, type Plan } from "@/config/plans"
 import { readScanResultsRefined } from "@/lib/scanResultsRefine"
 import Header from "@/components/Header"
 import SiteFooter from "@/components/SiteFooter"
+import { CATEGORY, HEADLINE, SUBHEADLINE } from "@/config/messaging"
 
 export default function PricingPage() {
   const router = useRouter()
@@ -561,9 +562,13 @@ export default function PricingPage() {
         )}
 
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold mb-3">Your monitoring plan is ready</h1>
+          <p className="text-[10px] uppercase tracking-widest text-gray-500 font-medium mb-3">{CATEGORY}</p>
+          <h1 className="text-4xl font-bold mb-3">{HEADLINE}</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Your scan is your baseline. Activate monitoring and VectriOS reads your site and up to 5 competitors every night, keeps the score history, and reports confirmed homepage headline changes.
+            {SUBHEADLINE}
+          </p>
+          <p className="text-gray-900 font-medium max-w-2xl mx-auto mt-3">
+            ${PLANS[0].priceMonthly}/month · 14-day free trial
           </p>
         </div>
 

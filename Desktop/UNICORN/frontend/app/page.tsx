@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
 import { BENCHMARK_SIZE } from "@/config/benchmark"
+import { AUDIENCE, AUDIENCE_ROLES, CATEGORY, HEADLINE, PROOF_POINTS, SUBHEADLINE } from "@/config/messaging"
 
 type CookieConsent = {
   necessary: true
@@ -220,17 +221,25 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 pt-12 pb-16 md:pt-16 md:pb-20">
         <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 border border-gray-200 text-gray-500 text-[10px] font-medium mb-6 uppercase tracking-widest">
-            WEBSITE MESSAGING MONITORING FOR B2B SAAS
+            {CATEGORY}
           </div>
           <h1 className="text-4xl md:text-6xl text-slate-900 dark:text-gray-900 mb-6 font-bold leading-tight">
-            For B2B SaaS marketing teams: know when your website, or a competitor&apos;s, changes its message.
+            {HEADLINE}
           </h1>
           <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed max-w-2xl mx-auto">
-            VectriOS reads your site and up to 5 competitors every night, scores each one against {BENCHMARK_SIZE} SaaS websites, and reports when a homepage headline changes.
+            {SUBHEADLINE}
           </p>
           <p className="text-sm md:text-base text-gray-900 font-medium mb-6 max-w-2xl mx-auto">
-            Every reading covers the homepage and up to 4 key pages: pricing, product, solutions, customers. A headline change is reported only after it appears on two nightly readings in a row, so A/B tests and one-day banners never become alerts.
+            {AUDIENCE}
           </p>
+          <div className="grid sm:grid-cols-3 gap-4 text-left max-w-4xl mx-auto mb-8">
+            {PROOF_POINTS.map(p => (
+              <div key={p.title} className="p-4 rounded-xl border border-gray-200 bg-white">
+                <p className="text-sm font-semibold text-gray-900 mb-1">{p.title}</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{p.body}</p>
+              </div>
+            ))}
+          </div>
 
 
           {/* -- SCAN BOX -- */}
@@ -314,7 +323,7 @@ export default function Home() {
       <section className="border-t border-b border-slate-200 bg-slate-50">
         <div className="max-w-6xl mx-auto px-6 py-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 px-4">
           <span className="text-sm text-gray-700 uppercase tracking-widest font-semibold shrink-0">Built for</span>
-          {["Heads of Marketing", "Product Marketing", "Growth & Demand Gen", "B2B SaaS Founders"].map(r => (
+          {AUDIENCE_ROLES.map(r => (
             <span key={r} className="flex items-center gap-1.5 text-base text-gray-800 font-medium">
               <span className="text-indigo-700 font-bold text-xs">&#10003;</span>
               {r}
@@ -470,7 +479,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-4 text-slate-900">What monitoring includes, for $299/month</h2>
           <p className="text-lg text-gray-700 mb-8">
-            One plan for marketing teams at B2B SaaS companies. 14-day free trial, cancel anytime.</p>
+            One plan for B2B SaaS teams. 14-day free trial, cancel anytime.</p>
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 mb-6">
             <ul className="space-y-4 text-lg text-gray-700">
               <li className="flex items-start gap-3">
@@ -529,7 +538,7 @@ export default function Home() {
         <div className="text-center">
           <h3 className="text-2xl font-bold mb-2 text-slate-900">Vectri<span className="text-indigo-700">OS</span></h3>
           <p className="text-gray-500 mb-4">
-            Website messaging monitoring for B2B SaaS marketing teams
+            {CATEGORY}
           </p>
           <div className="flex flex-wrap justify-center gap-6 mb-6 text-sm">
             <Link href="/security" className="text-gray-500 hover:text-gray-700">Security</Link>

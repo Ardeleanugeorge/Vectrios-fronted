@@ -151,14 +151,14 @@ export default function BenchmarkPanel({ companyId }: Props) {
 
   if (loading) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark position</h2>
       <p className="text-sm text-gray-600">Loading benchmarks...</p>
     </div>
   )
 
   if (!data) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark position</h2>
       <p className="text-sm text-gray-600">Run an assessment to unlock benchmarks.</p>
     </div>
   )
@@ -168,7 +168,7 @@ export default function BenchmarkPanel({ companyId }: Props) {
   // the methods, not between companies - and it would read as precise.
   if (data.available === false) return (
     <div className="p-8 bg-gray-50 rounded-lg border border-gray-200">
-      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
+      <h2 className="text-xl font-bold mb-4 uppercase tracking-wide text-gray-900">Benchmark position</h2>
       <p className="text-sm text-gray-700 mb-2">
         {data.reason === "own_reading_not_comparable"
           ? "Your site has no reading taken the same way as the index yet. The comparison appears after your next monitoring run."
@@ -190,14 +190,14 @@ export default function BenchmarkPanel({ companyId }: Props) {
       <div className="px-8 pt-7 pb-4 border-b border-gray-200">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Benchmark Intelligence</h2>
+            <h2 className="text-xl font-bold uppercase tracking-wide text-gray-900">Benchmark position</h2>
             <p className="text-xs text-gray-600 mt-0.5">
-              Your GTM messaging vs {data.context.total_companies} {data.context.industry} domains
+              Your messaging vs the {data.context.total_companies} {data.context.industry} sites in the benchmark
             </p>
           </div>
           {riiRank !== null && (
             <div className="text-right">
-              <p className="text-[10px] text-gray-600 uppercase tracking-wide mb-1">Structural Performance Rank</p>
+              <p className="text-[10px] text-gray-600 uppercase tracking-wide mb-1">Position in the benchmark</p>
               <p className={`text-2xl font-bold ${
                 riiRank >= 75 ? "text-green-600" :
                 riiRank >= 50 ? "text-blue-600" :

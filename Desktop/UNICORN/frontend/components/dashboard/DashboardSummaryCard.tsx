@@ -1,4 +1,5 @@
 "use client"
+import { NAMES } from "@/config/messaging"
 
 interface DashboardSummaryCardProps {
   companyName?: string | null
@@ -15,7 +16,7 @@ export default function DashboardSummaryCard({ companyName, riiScore, riskLevel,
     <div className="mb-2 flex items-center justify-between gap-4 flex-wrap">
       <div>
         <h2 className="text-base font-semibold text-gray-900">
-          {companyName || "Your site"} · Structural monitoring active
+          {companyName || "Your site"} · {NAMES.monitoring} active
         </h2>
       </div>
     </div>
