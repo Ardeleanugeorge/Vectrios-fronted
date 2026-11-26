@@ -83,7 +83,7 @@ export default function RevenueRiskIndex({
       ? ""
       : scoreClass === "MODERATE"
         ? ""
-        : "Large dollar exposure can reflect scale as much as urgency — use model inputs below for context."
+        : ""
 
   return (
     <div className="p-10 bg-gray-50 rounded-lg border-2 border-cyan-900/40 mb-8 shadow-[0_0_40px_rgba(34,211,238,0.06)]">

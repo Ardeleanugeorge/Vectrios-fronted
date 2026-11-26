@@ -12,6 +12,8 @@ interface ExecutiveInterpretationProps {
   uiState?: "low" | "medium" | "high"
   /** Same label as health strip / alignment map driver when available */
   leadingStructuralSignal?: string | null
+  /** The primary review area named by the playbook (API: weakest_dimension). */
+  reviewArea?: string | null
 }
 
 export default function ExecutiveInterpretation({
@@ -25,6 +27,7 @@ export default function ExecutiveInterpretation({
   anchorDensity,
   uiState = "medium",
   leadingStructuralSignal = null,
+  reviewArea = null,
 }: ExecutiveInterpretationProps) {
   const hasExposure =
     (monthlyExposure !== null && monthlyExposure > 0) ||
@@ -54,15 +57,14 @@ export default function ExecutiveInterpretation({
    * times in the system's own vocabulary. Deriving it from the scores keeps
    * this line consistent with the review area without repeating its wording.
    */
-  const dimensionName = (() => {
-    const scored: Array<[string, number]> = [
-      ["messaging alignment", alignmentScore],
-      ["ICP clarity", icpClarity],
-      ["anchor density", anchorDensity],
-    ].filter(([, v]) => typeof v === "number") as Array<[string, number]>
-    if (!scored.length) return null
-    return scored.reduce((lowest, entry) => (entry[1] < lowest[1] ? entry : lowest))[0]
-  })()
+  // The review area comes from the playbook, which takes it from the API's one
+  // rule (weakest dimension against the benchmark). This panel used to pick the
+  // lowest raw score of three dimensions itself and could name another area
+  // than the playbook directly below it.
+  const dimensionName = reviewArea
+    ? ({ alignment: "messaging alignment", icp: "ICP clarity", anchor: "anchor density",
+         positioning: "positioning coherence" } as Record<string, string>)[reviewArea] ?? null
+    : null
 
   const takeawayLine =
     uiState === "low"

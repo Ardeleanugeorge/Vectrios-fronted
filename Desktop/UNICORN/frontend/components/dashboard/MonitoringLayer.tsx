@@ -19,7 +19,6 @@ import RevenueTrajectorySimulation from "./RevenueTrajectorySimulation"
 import BenchmarkPanel from "./BenchmarkPanel"
 import CompetitorsPanel from "./CompetitorsPanel"
 
-import SystemHealthIndicator from "./SystemHealthIndicator"
 import FeatureGate from "./FeatureGate"
 import ActionableInsights, { type ActionLayerPayload } from "./ActionableInsights"
 import Link from "next/link"
@@ -486,14 +485,8 @@ const delayTimer = setTimeout(() => {
       {/* PAGE CHANGE INCIDENTS */}
       <PageIncidentsPanel companyId={companyId} />
 
-      {/* 0. SYSTEM HEALTH INDICATOR — secondary, compact */}
-      {rii !== null && (
-        <SystemHealthIndicator 
-          rii={rii} 
-          riskDelta={riskDelta}
-          primaryRiskDriver={primaryRiskDriver}
-        />
-      )}
+      {/* No "structural health" bar: it was 100 - RII, a second scale for the
+          same score, shown next to the RII itself. */}
 
       {/* REVENUE DELTA — +$/-$/stable vs last scan */}
   {companyId && revenueDelta && revenueDelta.has_delta && typeof revenueDelta.delta_rii === "number" && (
@@ -705,6 +698,7 @@ const delayTimer = setTimeout(() => {
         uiState={uiState}
         deltaDirection={revenueDelta?.direction}
         leadingStructuralSignal={displayRiskDriver}
+        reviewArea={playbookActionLayer?.issue_type ?? null}
       />
 
       {/* 0.5. ACTIONABLE INSIGHTS — Problem → Impact → Action
