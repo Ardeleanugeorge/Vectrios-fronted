@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { METHODOLOGY_RII_HREF, RII_ABBREV, RII_NAME, RII_TAGLINE } from "@/lib/rii";
+import { riiBand, riiRiskLabel, riiShown } from "@/lib/rii"
 
 const API = process.env.NEXT_PUBLIC_API_URL || `${API_URL}`;
 
@@ -208,7 +209,7 @@ export default function CompanyProfilePage() {
 
   const { latest, history } = data;
   const rii = latest.rii ?? 0;
-  const riiColor = rii >= 70 ? "text-red-400" : rii >= 40 ? "text-orange-400" : "text-emerald-400";
+  const riiColor = { high: "text-red-400", moderate: "text-orange-400", low: "text-emerald-400" }[riiBand(rii)];
   // The trend the backend computed, not a fresh subtraction over first and
   // last. Scans made under different crawl contracts were measured on
   // different page sets, so a difference between them reports the change in
@@ -264,8 +265,8 @@ export default function CompanyProfilePage() {
         <div className="grid grid-cols-3 gap-4 mb-8 items-stretch">
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center flex flex-col justify-center">
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-indigo-600/80 mb-2">Revenue Impact Index</p>
-            <p className={`text-5xl font-bold ${riiColor}`}>{Math.round(rii)}</p>
-            <p className={`text-sm mt-1 ${riiColor}`}>{latest.risk_level}</p>
+            <p className={`text-5xl font-bold ${riiColor}`}>{riiShown(rii)}</p>
+            <p className={`text-sm mt-1 ${riiColor}`}>{riiRiskLabel(rii)}</p>
             <Link
               href={METHODOLOGY_RII_HREF}
               className="text-[10px] text-indigo-700 hover:text-indigo-500 hover:underline mt-2 inline-block"
@@ -280,16 +281,18 @@ export default function CompanyProfilePage() {
             </p>
             <p className="text-xs text-gray-600 mt-1">
               {trendDelta === null
-                ? "needs two scans read the same way"
+                ? "needs two readings with the same method"
                 : partialTrend
                   ? `across ${data.comparable_scan_count} comparable scans`
                   : "vs first scan"}
             </p>
           </div>
           <div className="col-span-1 rounded-xl bg-white/[0.03] border border-white/5 p-6 text-center">
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Scans</p>
-            <p className="text-4xl font-bold text-gray-900">{data.scan_count}</p>
-            <p className="text-xs text-gray-600 mt-1">data points</p>
+            <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Read on</p>
+            <p className="text-2xl font-bold text-gray-900 mt-2">
+              {latest.scanned_at ? new Date(latest.scanned_at).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+            </p>
+            <p className="text-xs text-gray-600 mt-1">current benchmark, same method for every site</p>
           </div>
         </div>
 
@@ -316,7 +319,7 @@ export default function CompanyProfilePage() {
 
         {/* Structural breakdown */}
         <div className="rounded-xl bg-white/[0.03] border border-white/5 p-6 mb-6">
-          <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Structural Breakdown (latest scan)</p>
+          <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Structural Breakdown (benchmark reading)</p>
           <p className="text-[11px] text-gray-600 mb-5">
             Sub-scores feed your headline {RII_ABBREV}.{" "}
             <Link href={METHODOLOGY_RII_HREF} className="text-indigo-700 hover:text-indigo-500 hover:underline">
@@ -370,10 +373,9 @@ export default function CompanyProfilePage() {
                       </td>
                       <td className="px-5 py-3 text-center">
                         <span className={`font-bold font-mono ${
-                          h.rii >= 70 ? "text-red-400" :
-                          h.rii >= 40 ? "text-orange-400" : "text-emerald-400"
+                          { high: "text-red-400", moderate: "text-orange-400", low: "text-emerald-400" }[riiBand(h.rii)]
                         }`}>
-                          {Math.round(h.rii)}
+                          {riiShown(h.rii)}
                         </span>
                       </td>
                       <td className="px-5 py-3 text-center">

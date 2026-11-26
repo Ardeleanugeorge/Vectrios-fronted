@@ -23,6 +23,7 @@ import SystemHealthIndicator from "./SystemHealthIndicator"
 import FeatureGate from "./FeatureGate"
 import ActionableInsights, { type ActionLayerPayload } from "./ActionableInsights"
 import Link from "next/link"
+import { riiBand } from "@/lib/rii"
 // API_URL already imported above
 
 type PlaybookFix = {
@@ -304,7 +305,7 @@ export default function MonitoringLayer({
   )
   const uiState: UiState =
     monitoringStatus.ui_state_payload?.ui_state ??
-    (rii !== null && rii < 40 ? "low" : rii !== null && rii < 70 ? "medium" : "high")
+    (rii !== null && riiBand(rii) === "low" ? "low" : rii !== null && riiBand(rii) === "moderate" ? "medium" : "high")
   const trend = (monitoringStatus.trend_direction || "stable").toLowerCase()
   const trendText =
     trend === "improving" ? "Trend: Improving - recent changes are reducing risk."

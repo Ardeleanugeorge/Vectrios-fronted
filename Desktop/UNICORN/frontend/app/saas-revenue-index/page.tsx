@@ -4,6 +4,7 @@ import { API_URL, PUBLIC_HOME_URL } from '@/lib/config'
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { riiBand, riiRiskLabel, riiShown } from "@/lib/rii"
 
 interface CompanyRow {
   rank: number;
@@ -74,14 +75,15 @@ function getRiskColor(risk: string | null) {
 function RiiBar({ value }: { value: number | null }) {
   if (value === null) return <span className="text-gray-600">—</span>;
   const pct = Math.min(value, 100);
-  const color =
-    value >= 70 ? "from-red-500 to-orange-500" :
-    value >= 40 ? "from-yellow-500 to-amber-500" :
-                  "from-green-500 to-cyan-500";
+  const color = {
+    high: "from-red-500 to-orange-500",
+    moderate: "from-yellow-500 to-amber-500",
+    low: "from-green-500 to-cyan-500",
+  }[riiBand(value)];
   return (
     <div className="flex items-center gap-3">
       <span className="w-10 text-right font-mono text-sm font-semibold text-gray-900">
-        {Math.round(value)}
+        {riiShown(value)}
       </span>
       <div className="w-24 h-1.5 bg-gray-800 rounded-full overflow-hidden">
         <div
@@ -137,9 +139,7 @@ export default function SaaSRevenueIndex() {
   const filtered = companies.filter(c => {
     const matchFilter =
       filter === "all" ? true :
-      filter === "high"     ? (c.rii ?? 0) >= 70 :
-      filter === "moderate" ? (c.rii ?? 0) >= 40 && (c.rii ?? 0) < 70 :
-                              (c.rii ?? 0) < 40;
+      c.rii !== null && riiBand(c.rii) === filter;
     const matchSearch =
       search === "" ? true :
       c.domain.toLowerCase().includes(search.toLowerCase());
@@ -203,7 +203,7 @@ export default function SaaSRevenueIndex() {
         {/* Data source disclaimer */}
         <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
           <p className="text-xs text-gray-600">
-            <span className="font-semibold text-gray-700">Data source:</span> Domains appear in this index based on publicly available website content analyzed by VectriOS. No private analytics, conversion data or user data is included. Each domain contributes its latest eligible structural assessment to the index. Historical scans are retained separately for trend and monitoring analysis.
+            <span className="font-semibold text-gray-700">Data source:</span> Domains appear in this index based on publicly available website content analyzed by VectriOS. No private analytics, conversion data or user data is included. The index lists the sites of the current benchmark, each read once with the same method version. Scans run from this site are not added to it.
           </p>
         </div>
 
@@ -217,7 +217,7 @@ export default function SaaSRevenueIndex() {
             </div>
             <div>
               <p className="text-xs font-semibold text-gray-700 mb-1">2. One company, one benchmark position</p>
-              <p className="text-xs text-gray-600">Each unique SaaS domain contributes its latest eligible assessment. Rescans update the position — they do not add a new company.</p>
+              <p className="text-xs text-gray-600">Each site appears once, with its reading from the current benchmark. A scan run from this site shows where that site would stand; it does not add it to the index.</p>
             </div>
             <div>
               <p className="text-xs font-semibold text-gray-700 mb-1">3. Structural metrics only</p>
@@ -277,7 +277,7 @@ export default function SaaSRevenueIndex() {
                       {c.domain}
                     </Link>
                     <span className="text-emerald-400 font-mono text-sm font-bold">
-                      {c.rii !== null ? Math.round(c.rii) : "—"}
+                      {c.rii !== null ? riiShown(c.rii) : "—"}
                     </span>
                   </div>
                 ))}
@@ -311,7 +311,7 @@ export default function SaaSRevenueIndex() {
                       {c.domain}
                     </Link>
                     <span className="text-red-400 font-mono text-sm font-bold">
-                      {c.rii !== null ? Math.round(c.rii) : "—"}
+                      {c.rii !== null ? riiShown(c.rii) : "—"}
                     </span>
                   </div>
                 ))}
@@ -386,7 +386,9 @@ export default function SaaSRevenueIndex() {
           )}
 
           {!loading && filtered.map((c, i) => {
-            const risk = getRiskColor(c.risk_level);
+            // The status follows the number shown in the row (lib/rii.ts).
+            const riskText = c.rii !== null ? riiRiskLabel(c.rii) : c.risk_level;
+            const risk = getRiskColor(riskText);
             return (
               <div
                 key={c.domain}
@@ -424,7 +426,7 @@ export default function SaaSRevenueIndex() {
                 <div className="flex justify-center">
                   <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${risk.bg} ${risk.text}`}>
                     <span className={`w-1 h-1 rounded-full ${risk.dot}`} />
-                    {normalizeRiskLabel(c.risk_level) ?? "—"}
+                    {normalizeRiskLabel(riskText) ?? "—"}
                   </span>
                 </div>
               </div>
@@ -441,7 +443,7 @@ export default function SaaSRevenueIndex() {
 
         {/* Bottom CTA */}
         <div className="mt-14 text-center rounded-2xl bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 p-10">
-          <p className="text-gray-600 text-sm mb-2">Don&apos;t see your company?</p>
+          <p className="text-gray-600 text-sm mb-2">Where would your site stand?</p>
           <h3 className="text-2xl font-bold text-gray-900 mb-6">
             Run a free Structural Architecture Scan
           </h3>
@@ -456,7 +458,7 @@ export default function SaaSRevenueIndex() {
       </main>
 
       <footer className="border-t border-white/5 px-6 py-6 text-center text-gray-600 text-xs">
-        Vectri<span className="text-indigo-500">OS</span> Revenue Architecture Index — data sourced from anonymized structural assessments of unique SaaS domains.
+        Vectri<span className="text-indigo-500">OS</span> Revenue Architecture Index — public pages of the SaaS sites in the current benchmark, each read once with the same method.
         All scores based on structural messaging analysis only.
       </footer>
     </div>

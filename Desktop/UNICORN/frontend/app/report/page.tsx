@@ -7,6 +7,7 @@
 import { useEffect, useState } from "react"
 import type { CSSProperties, ReactNode } from "react"
 import { apiFetch } from "@/lib/api"
+import { riiBand } from "@/lib/rii"
 
 type ScoreKey = "rii" | "alignment" | "icp_clarity" | "anchor_density" | "positioning"
 interface Scores {
@@ -94,8 +95,8 @@ const C = {
 }
 function zone(rii: number | null | undefined) {
   if (typeof rii !== "number") return { label: "No reading", color: C.faint, soft: C.card }
-  if (rii >= 70) return { label: "High structural risk", color: C.bad, soft: C.badSoft }
-  if (rii >= 40) return { label: "Moderate structural risk", color: C.warn, soft: C.warnSoft }
+  if (riiBand(rii) === "high") return { label: "High structural risk", color: C.bad, soft: C.badSoft }
+  if (riiBand(rii) === "moderate") return { label: "Moderate structural risk", color: C.warn, soft: C.warnSoft }
   return { label: "Low structural risk", color: C.good, soft: C.goodSoft }
 }
 

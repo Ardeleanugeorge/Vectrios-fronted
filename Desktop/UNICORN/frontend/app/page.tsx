@@ -39,15 +39,11 @@ export default function Home() {
   const [scanCount, setScanCount] = useState<number | null>(null)
   const router = useRouter()
 
-  // Progress phases: they advance once and hold on the last one rather than
-  // looping, so a slow scan never claims to be crawling again after it finished.
-  const scanPhases = useRef([
-    "Reading your homepage and up to 4 key pages...",
-    "Scoring ICP clarity, alignment, proof and positioning...",
-    `Comparing with ${BENCHMARK_SIZE} SaaS sites in the benchmark...`,
-    "Calculating your Revenue Impact Index (RII)..."
-  ])
-  const [scanPhase, setScanPhase] = useState(0)
+  // While a scan runs the page says what is happening and how long it has
+  // taken - nothing more. The four timed "phases" it showed before advanced
+  // every 3 seconds whatever the scan was doing, so for most of a scan the
+  // page claimed a step it had not reached.
+  const [scanSeconds, setScanSeconds] = useState(0)
   const [showCookieBanner, setShowCookieBanner] = useState(false)
   const [showCookiePreferences, setShowCookiePreferences] = useState(false)
   const [cookieConsent, setCookieConsent] = useState<CookieConsent>(defaultCookieConsent())
@@ -97,15 +93,13 @@ export default function Home() {
     }
   }, [])
 
-  // Rotate fake scan phases while scanning
   useEffect(() => {
     if (!scanning) {
-      setScanPhase(0)
+      setScanSeconds(0)
       return
     }
-    const interval = setInterval(() => {
-      setScanPhase(prev => Math.min(prev + 1, scanPhases.current.length - 1))
-    }, 3000)
+    const started = Date.now()
+    const interval = setInterval(() => setScanSeconds(Math.floor((Date.now() - started) / 1000)), 1000)
     return () => clearInterval(interval)
   }, [scanning])
 
@@ -281,7 +275,13 @@ export default function Home() {
           </div>
           {scanning && (
             <div className="mb-4 text-xs text-indigo-700 flex flex-col items-center gap-1">
-              <p>{scanPhases.current[scanPhase]}</p>
+              <p>
+                Reading your homepage and up to 4 key pages, then scoring them and placing the site
+                among {BENCHMARK_SIZE} SaaS sites in the benchmark.
+              </p>
+              <p className="text-gray-500">
+                {scanSeconds}s · usually under a minute, up to 3 minutes for slow sites
+              </p>
             </div>
           )}
           <div className="text-xs sm:text-sm text-gray-500 mb-8 space-y-3 max-w-lg mx-auto">

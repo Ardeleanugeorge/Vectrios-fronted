@@ -4,6 +4,7 @@ import { API_URL } from '@/lib/config'
 import { RII_ABBREV, RII_NAME } from "@/lib/rii"
 
 import { useEffect, useState } from "react"
+import { riiBand } from "@/lib/rii"
 
 interface RevenueRiskTrajectory {
   id: string
@@ -56,14 +57,14 @@ export default function RevenueRiskTrajectoryPanel({ companyId }: RevenueRiskTra
   }, [companyId])
 
   const getRiiColor = (rii: number): string => {
-    if (rii >= 70) return "text-red-600"
-    if (rii >= 40) return "text-amber-600"
+    if (riiBand(rii) === "high") return "text-red-600"
+    if (riiBand(rii) === "moderate") return "text-amber-600"
     return "text-green-600"
   }
 
   const getRiiLabel = (rii: number): string => {
-    if (rii >= 70) return "High"
-    if (rii >= 40) return "Moderate"
+    if (riiBand(rii) === "high") return "High"
+    if (riiBand(rii) === "moderate") return "Moderate"
     return "Low"
   }
 

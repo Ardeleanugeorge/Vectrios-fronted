@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import { apiFetch } from "@/lib/api"
+import { riiBand } from "@/lib/rii"
 
 interface Props {
   companyId: string | null
@@ -50,8 +51,8 @@ export default function RevenueStatusHeader({ companyId, rii, lastEvaluatedAt, u
   }, [companyId])
 
   const lastScanLabel = lastEvaluatedAt ? formatAgo(lastEvaluatedAt) : "—"
-  const riskLabel = rii !== null ? (rii < 40 ? "Low structural risk" : rii < 70 ? "Moderate risk" : "High risk") : ""
-  const riskColor = rii !== null ? (rii < 40 ? "text-emerald-600" : rii < 70 ? "text-amber-600" : "text-red-600") : ""
+  const riskLabel = rii !== null ? { low: "Low structural risk", moderate: "Moderate structural risk", high: "High structural risk" }[riiBand(rii)] : ""
+  const riskColor = rii !== null ? { low: "text-emerald-600", moderate: "text-amber-600", high: "text-red-600" }[riiBand(rii)] : ""
 
   if (loading) return null
 

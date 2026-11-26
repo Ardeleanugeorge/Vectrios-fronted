@@ -28,6 +28,9 @@ export default function Header() {
           Vectri<span className="text-indigo-500">OS</span>
         </Link>
         <div className="flex items-center gap-4">
+          <Link href="/pricing" className="text-gray-500 hover:text-gray-300 transition text-sm">
+            Pricing
+          </Link>
           <Link
             href="/methodology#revenue-impact-index"
             className="text-gray-500 hover:text-gray-300 transition text-sm"

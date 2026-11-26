@@ -16,6 +16,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
 import SiteFooter from "@/components/SiteFooter"
+import { riiBand, riiRiskLabel, riiShown } from "@/lib/rii"
 
 interface ScanData {
   scan_token: string
@@ -1044,7 +1045,10 @@ function ScanResultsContent() {
     data.rii === undefined
   const hasRii = data.rii !== null && data.rii !== undefined
   const rii = hasRii ? (data.rii as number) : null
-  const riiColor = (rii ?? 0) >= 70 ? "text-red-500" : (rii ?? 0) >= 40 ? "text-amber-600" : "text-emerald-400"
+  // Band, colour and label follow the number shown (lib/rii.ts), one rule on every page.
+  const riiColor = rii === null ? "text-emerald-400"
+    : { high: "text-red-500", moderate: "text-amber-600", low: "text-emerald-400" }[riiBand(rii)]
+  const riskLabel = hasRii && !isBlocked ? riiRiskLabel(rii as number) : data.risk_level
 
   const wideLayout = unlocked
 
@@ -1103,7 +1107,7 @@ function ScanResultsContent() {
             <p className="font-semibold text-gray-900">{data.domain}</p>
           </div>
           <div className="ml-auto">
-            <RiskBadge level={data.risk_level} />
+            <RiskBadge level={riskLabel} />
           </div>
         </div>
 
@@ -1140,9 +1144,9 @@ function ScanResultsContent() {
           <div className={wideLayout ? "lg:col-span-4 lg:row-span-2" : ""}>
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Revenue Impact Index</p>
             <p className={`font-bold mb-2 ${riiColor} ${wideLayout ? "text-6xl sm:text-7xl" : "text-7xl"}`}>
-              {hasRii && !isBlocked ? Math.round(rii as number) : "–"}
+              {hasRii && !isBlocked ? riiShown(rii as number) : "–"}
             </p>
-            <p className={`text-lg font-semibold mb-3 ${riiColor}`}>{data.risk_level}</p>
+            <p className={`text-lg font-semibold mb-3 ${riiColor}`}>{riskLabel}</p>
           </div>
 
           <div className={wideLayout ? "lg:col-span-8 space-y-4" : "contents"}>
@@ -1276,7 +1280,7 @@ function ScanResultsContent() {
               <LockedInsight label="Anchor Density Assessment" />
               <LockedInsight label="Positioning Coherence Assessment" />
               <LockedInsight label="Structural Root Cause & Page-Level Breakdown" />
-              <LockedInsight label="SaaS Architecture Index Peer Comparison (Cohorts)" />
+              <LockedInsight label="Position among the SaaS benchmark, per sub-score" />
             </div>
           </div>
         )}
@@ -1341,7 +1345,7 @@ function ScanResultsContent() {
               Activate Continuous Drift Monitoring
             </button>
             <p className="text-xs text-gray-600 mt-3 max-w-md mx-auto text-center leading-relaxed">
-              Monitor meaningful structural changes automatically every 24h · Takes 30 seconds
+              Your site and up to 5 competitors read every night · 14-day free trial
             </p>
           </div>
         )}
@@ -1424,7 +1428,7 @@ function ScanResultsContent() {
                     <div className="grid sm:grid-cols-3 gap-3">
                       <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                         <p className="text-[10px] uppercase tracking-wider text-gray-600 mb-1">Structural Risk</p>
-                        <p className="text-2xl font-bold text-gray-900">{data.risk_level ?? "Assessed"}</p>
+                        <p className="text-2xl font-bold text-gray-900">{riskLabel ?? "Assessed"}</p>
                         <p className="text-[11px] text-gray-600 mt-1">Current structural classification</p>
                       </div>
                       <div className="rounded-lg border border-indigo-200 bg-indigo-50 p-4">
@@ -1635,7 +1639,7 @@ function ScanResultsContent() {
                       Activate Continuous Drift Monitoring
                     </button>
                     <p className="text-xs text-gray-600 mt-3">
-                      Takes 30 seconds – Instant access – No spam
+                      No spam
                     </p>
                   </>
                 )}
