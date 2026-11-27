@@ -28,7 +28,7 @@ import ScanFindings, { type Findings } from "@/components/scan/ScanFindings"
 const MONITORING_INCLUDES = [
   "Your homepage and up to four key pages, and up to five competitors', read every night",
   "Your site and your competitors on the same lines: headline, who it is for, proof, pricing",
-  "A note when a homepage headline changes, once two consecutive nightly readings confirm it",
+  "A note when the headline, who it is for, proof, prices or free offer changes, once two consecutive nightly readings confirm it",
   "14-day free trial",
 ]
 

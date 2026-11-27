@@ -81,7 +81,7 @@ export default function MethodologyPage() {
 
         <Section title="4. What counts as a change">
           <p>
-            Today: a new homepage headline, yours or a competitor&apos;s, read on two nightly readings in a row. A change that shows for one night and goes back, such as an A/B test, is not reported. You see the
+            A new homepage headline, or a new line on who it is for, what it says it is, its promise, customer count, review ratings, prices, free offer or sales contact - yours or a competitor&apos;s - read on two nightly readings in a row. A quoted line counts as changed only when the old quote is gone from the pages. A change that shows for one night and goes back, such as an A/B test, is not reported. You see the
             old and the new text and the dates of the readings.
           </p>
         </Section>

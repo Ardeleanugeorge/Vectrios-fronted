@@ -11,8 +11,60 @@ import { Fragment, useEffect, useState } from "react"
 import { apiFetch } from "@/lib/api"
 import { pagePath, type Findings, type Quote } from "@/components/scan/ScanFindings"
 
-export type Site = { domain: string; you: boolean; findings: Findings | null; read_at: string | null }
-export type Overview = { sites: Site[]; observations: string[] }
+export type Site = { domain: string; you: boolean; findings: Findings | null; read_at: string | null; current?: boolean }
+/** A confirmed change on one of the compared lines (services/findings_changes). */
+export type LineChange = {
+  domain: string
+  you: boolean
+  field: string
+  label: string
+  before: string
+  after: string
+  before_read_at: string | null
+  first_read_at: string | null
+  confirmed_at: string | null
+}
+export type Overview = { sites: Site[]; observations: string[]; changes?: LineChange[] }
+
+/** Confirmed changes on the compared lines, newest first: before, after, and the dates of the readings. */
+export function LineChanges({ changes }: { changes: LineChange[] }) {
+  if (!changes.length) {
+    return (
+      <p className="text-sm text-gray-600">
+        No change confirmed on these lines yet. A change counts once the new version is read on two nightly readings
+        in a row.
+      </p>
+    )
+  }
+  // Quotes from the page are shown in quotation marks; facts (prices shown, a sales contact) and "not found" are not.
+  const QUOTED = ["audience", "category", "promise", "customers", "ratings"]
+  const show = (c: LineChange, t: string) => (QUOTED.includes(c.field) && t !== "not found" ? `\u201c${t}\u201d` : t)
+  return (
+    <ul className="space-y-3">
+      {changes.map((c, i) => (
+        <li key={i} className="rounded-lg border border-gray-200 px-4 py-3">
+          <p className="text-sm text-gray-900">
+            <span className="font-semibold">{c.domain}</span>
+            {c.you && <span className="ml-1 text-[10px] font-semibold text-white bg-indigo-600 rounded px-1.5 py-px align-middle">you</span>}
+            <span className="text-gray-600"> &middot; {c.label} changed</span>
+          </p>
+          <div className="grid sm:grid-cols-2 gap-2 mt-2 text-xs">
+            <div className="rounded bg-gray-50 px-3 py-2">
+              <p className="text-[11px] text-gray-500 mb-0.5">Before &middot; read {fmtDate(c.before_read_at)}</p>
+              <p className="text-gray-800 break-words">{show(c, c.before)}</p>
+            </div>
+            <div className="rounded bg-indigo-50/70 px-3 py-2">
+              <p className="text-[11px] text-gray-500 mb-0.5">
+                After &middot; first read {fmtDate(c.first_read_at)}, confirmed {fmtDate(c.confirmed_at)}
+              </p>
+              <p className="text-gray-900 break-words">{show(c, c.after)}</p>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 function fmtDate(iso: string | null): string {
   if (!iso) return ""
@@ -122,7 +174,7 @@ function SiteName({ s }: { s: Site }) {
       <span className="text-sm font-semibold text-gray-900 break-all">{s.domain}</span>
       {s.you && <span className="ml-1.5 text-[10px] font-semibold text-white bg-indigo-600 rounded px-1.5 py-px align-middle">you</span>}
       <span className="block text-[11px] font-normal text-gray-500 mt-0.5">
-        {s.findings ? `Read ${fmtDate(s.read_at)}` : "First reading in progress"}
+        {s.findings ? `Read ${fmtDate(s.read_at)}${s.current === false ? " · earlier rules, updated tonight" : ""}` : "First reading in progress"}
       </span>
     </>
   )
@@ -271,6 +323,14 @@ export default function MessagingOverview({ companyId, reloadKey = 0 }: { compan
             Quotes are copied from the page linked under them and checked to appear there. &ldquo;Not found&rdquo; means no
             sentence on the pages read says it. No score is computed.
           </p>
+          <div className="border-t border-gray-200 px-5 py-4">
+            <h3 className="text-sm font-semibold text-gray-900">Changes on these lines</h3>
+            <p className="text-xs text-gray-500 mb-3">
+              Who it is for, what it says it is, the promise, customer count, ratings, prices, free offer and sales
+              contact, for your site and each competitor.
+            </p>
+            <LineChanges changes={data.changes || []} />
+          </div>
         </>
       )}
     </section>

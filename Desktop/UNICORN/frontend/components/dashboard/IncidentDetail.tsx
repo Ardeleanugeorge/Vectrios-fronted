@@ -124,7 +124,7 @@ export default function IncidentDetail({ incident, onStatusChange }: Props) {
 
         {/* 2. Commercial meaning */}
         <div>
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">02 — Commercial meaning</p>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">02 — What this part of the page is</p>
           <p className="text-sm text-gray-700">{commercialMeaning[incident.change_type] || "This is a minor wording change with no material structural signal detected."}</p>
         </div>
 

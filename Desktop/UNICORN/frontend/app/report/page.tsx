@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react"
 import type { CSSProperties, ReactNode } from "react"
 import { apiFetch } from "@/lib/api"
-import { SideBySide, type Overview } from "@/components/dashboard/MessagingOverview"
+import { LineChanges, SideBySide, type Overview } from "@/components/dashboard/MessagingOverview"
 
 interface HeadlineChange { detected_at: string | null; before: string | null; after: string | null; label?: string }
 interface Competitor {
@@ -190,7 +190,9 @@ export default function ReportPage() {
           </div>
         </Section>
 
-        <Section n="03" title="What changed" lead="Headlines are read from the rendered page every night. A change is reported once the new headline is read on two consecutive nights.">
+        <Section n="03" title="What changed" lead="Every site is read every night. A change is reported once the new version is read on two consecutive nights.">
+          <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: C.sub }}>The compared lines</p>
+          <div className="mb-5"><LineChanges changes={overview.changes || []} /></div>
           <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: C.sub }}>Your site</p>
           {incidents.length ? (
             <div className="space-y-3 mb-5">

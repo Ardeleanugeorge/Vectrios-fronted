@@ -357,7 +357,7 @@ export default function Home() {
             <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">03</p>
               <p className="text-lg font-bold text-gray-900 mb-2">Confirm</p>
-              <p className="text-sm text-gray-600">A headline change counts only when the new headline appears on two nightly readings in a row.</p>
+              <p className="text-sm text-gray-600">A change counts only when the new version is read on two nightly readings in a row.</p>
             </div>
             <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">04</p>
@@ -376,7 +376,7 @@ export default function Home() {
             <div className="p-6 bg-gray-50 rounded-lg border-2 border-indigo-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">Public pages</p>
               <p className="text-lg font-bold text-gray-900 mb-2">Website messaging</p>
-              <p className="text-sm text-gray-600">Quotes who each site is for, what it promises, its proof and its pricing, and reports homepage headline changes.</p>
+              <p className="text-sm text-gray-600">Quotes who each site is for, what it promises, its proof and its pricing, and reports when any of these changes.</p>
               <p className="text-xs text-indigo-600 font-semibold mt-3">Available now</p>
             </div>
             <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
@@ -414,7 +414,7 @@ export default function Home() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
-                Homepage headline changes, confirmed on two readings, for your site and each competitor
+                Changes to the headline, who it is for, proof, prices or free offer, confirmed on two readings, for your site and each competitor
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />

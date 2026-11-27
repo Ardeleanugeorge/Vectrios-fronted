@@ -25,7 +25,7 @@ export const AUDIENCE_ROLES = ["Product marketing", "Marketing", "Competitive in
 export const PROOF_POINTS: Array<{ title: string; body: string }> = [
   {
     title: "Track competitive messaging changes",
-    body: "Know when your homepage headline or a competitor\u2019s changes, confirmed on two consecutive nightly readings.",
+    body: "Know when your headline, audience line, proof or pricing changes, or a competitor\u2019s does, confirmed on two consecutive nightly readings.",
   },
   {
     title: "Compare messaging side by side",
