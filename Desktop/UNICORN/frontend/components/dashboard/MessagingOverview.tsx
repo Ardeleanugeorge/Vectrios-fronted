@@ -11,7 +11,11 @@ import { Fragment, useEffect, useState } from "react"
 import { apiFetch } from "@/lib/api"
 import { pagePath, type Findings, type Quote } from "@/components/scan/ScanFindings"
 
-export type Site = { domain: string; you: boolean; findings: Findings | null; read_at: string | null; current?: boolean }
+/** reading: a reading of this site started minutes ago (GET /messaging starts one when nothing current exists). */
+export type Site = { domain: string; you: boolean; findings: Findings | null; read_at: string | null; current?: boolean; reading?: boolean }
+
+/** What a column says when a site has no findings yet. */
+const notRead = (s: Site) => (s.reading ? "First reading in progress" : "Not read yet · read tonight")
 /** A confirmed change on one of the compared lines (services/findings_changes). */
 export type LineChange = {
   domain: string
@@ -174,7 +178,9 @@ function SiteName({ s }: { s: Site }) {
       <span className="text-sm font-semibold text-gray-900 break-all">{s.domain}</span>
       {s.you && <span className="ml-1.5 text-[10px] font-semibold text-white bg-indigo-600 rounded px-1.5 py-px align-middle">you</span>}
       <span className="block text-[11px] font-normal text-gray-500 mt-0.5">
-        {s.findings ? `Read ${fmtDate(s.read_at)}${s.current === false ? " · earlier rules, updated tonight" : ""}` : "First reading in progress"}
+        {s.findings
+          ? `Read ${fmtDate(s.read_at)}${s.current === false ? (s.reading ? " · earlier rules, reading again now" : " · earlier rules, updated tonight") : ""}`
+          : notRead(s)}
       </span>
     </>
   )
@@ -247,7 +253,7 @@ export function SideBySide({ sites, print = false }: { sites: Site[]; print?: bo
                         {s.domain}{s.you ? " · you" : ""}
                       </p>
                       <div className="leading-snug break-words">
-                        {s.findings ? r.cell(s.findings) : <span className="text-gray-400">First reading in progress</span>}
+                        {s.findings ? r.cell(s.findings) : <span className="text-gray-400">{notRead(s)}</span>}
                       </div>
                     </li>
                   ))}
@@ -265,6 +271,8 @@ export default function MessagingOverview({ companyId, reloadKey = 0 }: { compan
   const [data, setData] = useState<Overview | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const [poll, setPoll] = useState(0)
+
   useEffect(() => {
     if (!companyId) return
     let cancelled = false
@@ -276,7 +284,15 @@ export default function MessagingOverview({ companyId, reloadKey = 0 }: { compan
       .then((d) => { if (!cancelled) { setData(d); setError(null) } })
       .catch((e) => { if (!cancelled) setError(e instanceof Error ? e.message : "Could not load") })
     return () => { cancelled = true }
-  }, [companyId, reloadKey])
+  }, [companyId, reloadKey, poll])
+
+  // While a site is being read, look again every minute (at most 20 times).
+  const anyReading = !!data?.sites.some((s) => s.reading)
+  useEffect(() => {
+    if (!anyReading || poll >= 20) return
+    const t = setTimeout(() => setPoll((k) => k + 1), 60_000)
+    return () => clearTimeout(t)
+  }, [anyReading, poll, data])
 
   if (!companyId) return null
   const sites = data?.sites || []
@@ -305,11 +321,17 @@ export default function MessagingOverview({ companyId, reloadKey = 0 }: { compan
                 {data.observations.map((o) => <li key={o}>{o}</li>)}
               </ul>
             ) : !you?.findings ? (
-              <p className="text-sm text-gray-700">Your site has not been read with quotes yet. It is read tonight.</p>
+              <p className="text-sm text-gray-700">
+                {you?.reading ? "Your site is being read now; this page updates when the reading is in." : "Your site has not been read with quotes yet. It is read tonight."}
+              </p>
             ) : rivals.length === 0 ? (
               <p className="text-sm text-gray-700">Add competitors below to see them on the same lines.</p>
             ) : rivalsRead.length === 0 ? (
-              <p className="text-sm text-gray-700">Your competitors are read tonight; they appear here after their first reading.</p>
+              <p className="text-sm text-gray-700">
+                {rivals.some((s) => s.reading)
+                  ? "Your competitors are being read now, one after another; this page updates as each reading comes in."
+                  : "Your competitors are read tonight; they appear here after their first reading."}
+              </p>
             ) : (
               <p className="text-sm text-gray-700">
                 On who it is for, review ratings, customer results, customer counts, prices and free offers, you do

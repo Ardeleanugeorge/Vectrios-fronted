@@ -30,7 +30,34 @@ type Evidence = {
   min_sessions?: number
   recent_days?: number
   pages?: { page: string; ga4?: GA4 | null; gsc?: GSC }[]
+  /** What Search Console reported for the whole site in the same 28 days. */
+  gsc_recent?: { status: string; pages_reported?: number; at_limit?: boolean; hosts?: string[]; impressions?: number } | null
   comparisons?: Comparison[]
+}
+
+/** Why a Search Console cell is "—": said once under the table, from what Google reported for the whole site. */
+function GscNote({ ev, site }: { ev: Evidence; site: string }) {
+  const r = ev.gsc_recent
+  const pages = ev.pages || []
+  if (!r) return null
+  if (r.status === "unavailable") {
+    return <p className="px-3 py-2 text-[11px] text-gray-500 italic border-t border-gray-100">Search Console did not answer; tried again on the next load.</p>
+  }
+  if (!pages.some((p) => !p.gsc)) return null
+  if (!r.pages_reported) {
+    return (
+      <p className="px-3 py-2 text-[11px] text-gray-500 italic border-t border-gray-100">
+        Search Console reports no page of {site} in Google Search results in these {ev.recent_days} days.
+      </p>
+    )
+  }
+  const hosts = (r.hosts || []).join(", ")
+  return (
+    <p className="px-3 py-2 text-[11px] text-gray-500 italic border-t border-gray-100">
+      “—”: Google Search did not show the page in these {ev.recent_days} days. Search Console reports
+      {r.at_limit ? " at least" : ""} {r.pages_reported} page{r.pages_reported === 1 ? "" : "s"} of {site} in this period{hosts ? ` (on ${hosts})` : ""}.
+    </p>
+  )
 }
 type Choices = {
   selected_property_id: string | null
@@ -137,7 +164,7 @@ export default function YourFigures({ companyId }: { companyId: string | null })
   const ready = g?.connected && !g.needs && (g.property_id || g.site_url)
 
   return (
-    <section className="bg-white border border-gray-200 rounded-xl px-5 py-5">
+    <section id="your-figures" className="bg-white border border-gray-200 rounded-xl px-5 py-5 scroll-mt-4">
       <div className="flex items-start justify-between gap-4 mb-3">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">Your figures</h2>
@@ -165,6 +192,11 @@ export default function YourFigures({ companyId }: { companyId: string | null })
 
       {ev && ready && !choosing && (
         <>
+          <p className="text-[11px] text-gray-500">
+            {g!.property_id ? <>GA4 property {g!.property_id}</> : <>No GA4 property chosen</>}
+            {" · "}
+            {g!.site_url ? <>Search Console {g!.site_url}</> : <>No Search Console site chosen</>}
+          </p>
           <h3 className="text-sm font-semibold text-gray-900 mt-2">Last {ev.recent_days} days, per monitored page</h3>
           <div className="mt-2 grid gap-4 lg:grid-cols-2">
             {g!.property_id && (
@@ -184,6 +216,11 @@ export default function YourFigures({ companyId }: { companyId: string | null })
                       <td className="px-3 py-1.5 text-right">{n(p.ga4?.key_events)}</td>
                     </tr>))}</tbody>
                 </table>
+                {(ev.pages || []).some((p) => p.ga4 === null) && (
+                  <p className="px-3 py-2 text-[11px] text-gray-500 italic border-t border-gray-100">
+                    “—”: Google Analytics did not answer for this page; tried again on the next load.
+                  </p>
+                )}
               </div>
             )}
             {g!.site_url && (
@@ -205,6 +242,7 @@ export default function YourFigures({ companyId }: { companyId: string | null })
                       <td className="px-3 py-1.5 text-right">{pos(p.gsc?.position)}</td>
                     </tr>))}</tbody>
                 </table>
+                <GscNote ev={ev} site={g!.site_url!.replace(/^sc-domain:/, "")} />
               </div>
             )}
           </div>

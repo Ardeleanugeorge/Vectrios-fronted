@@ -19,6 +19,9 @@ interface Incident {
   created_at: string | null
 }
 
+/** Changes read from the rendered page (services/page_elements); these have a before/after in Your figures. */
+const ELEMENT_TYPES = new Set(["headline_change", "subhead_change", "cta_change", "ctas_change", "logos_change"])
+
 interface Props {
   incident: Incident
   onStatusChange?: (id: string, status: string) => void
@@ -136,31 +139,24 @@ export default function IncidentDetail({ incident, onStatusChange }: Props) {
           </div>
         )}
 
-        {/* 4. Evidence */}
-        <div>
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">04 — Evidence</p>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 p-2 bg-emerald-50 rounded border border-emerald-200">
-              <span className="text-emerald-600 text-xs">✓</span>
-              <span className="text-xs text-gray-700">Page change recorded</span>
-            </div>
-            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200">
-              <span className="text-gray-400 text-xs">○</span>
-              <span className="text-xs text-gray-500">Behavioral evidence: no GA4 measurement for this change</span>
-              <a href="/account#integrations" className="text-xs text-blue-600 ml-auto hover:underline">Integrations →</a>
-            </div>
-            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200">
-              <span className="text-gray-400 text-xs">○</span>
-              <span className="text-xs text-gray-500">Revenue evidence: no HubSpot data for this change</span>
-              <a href="/account#integrations" className="text-xs text-blue-600 ml-auto hover:underline">Integrations →</a>
-            </div>
+        {/* 4. Figures around the change. The old "Behavioral / Revenue evidence"
+            lines said "no GA4 measurement" even with Google connected; the
+            before/after of every element change is in Your figures. */}
+        {ELEMENT_TYPES.has(incident.change_type) && (
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">04 — Your figures around this change</p>
+            <p className="text-sm text-gray-700">
+              Google Analytics and Search Console for the 14 days before this change and the 14 days from its confirmation are
+              under “Before and after your changes” in <a href="#your-figures" className="text-blue-600 hover:underline">Your figures</a>.
+              They describe the two periods; they do not measure the effect of the change.
+            </p>
           </div>
-        </div>
+        )}
 
         {/* 5. Recommended action */}
         {incident.recommended_action && (
           <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">05 — Recommended action</p>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">{ELEMENT_TYPES.has(incident.change_type) ? "05" : "04"} — Recommended action</p>
             <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
               <p className="text-sm text-gray-800">{incident.recommended_action}</p>
             </div>
