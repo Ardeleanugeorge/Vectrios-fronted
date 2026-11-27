@@ -1189,7 +1189,7 @@ export default function AccountPage() {
                           Activate Scale — ${PLANS[0].priceMonthly}/month
                         </p>
                         <p className="text-xs text-gray-600 mt-0.5">
-                          Nightly monitoring of your site and up to 5 competitors, page-level findings and your benchmark position.
+                          Nightly monitoring of your site and up to 5 competitors, side by side, with change reports.
                         </p>
                       </div>
                       <Link
@@ -1266,7 +1266,7 @@ export default function AccountPage() {
                 <p className="text-xs font-medium text-gray-600 uppercase tracking-wider mb-3">How it works</p>
                 <div className="grid sm:grid-cols-3 gap-4">
                   {[
-                    { icon: "•", title: "Structural scan", desc: "RII and risk drivers come from crawling your site — always accurate." },
+                    { icon: "•", title: "Nightly reading", desc: "What your pages say is read from your public site every night." },
                     { icon: "•", title: "Financial model", desc: "Revenue figures come from a connected CRM, never from a form." },
                     { icon: "•", title: "Auto-updated", desc: "Connect analytics and a CRM, and figures appear on the next run." },
                   ].map(item => (
@@ -1457,7 +1457,7 @@ export default function AccountPage() {
                     placeholder="What happened, what you expected, and any steps to reproduce."
                   />
                   <p className="text-xs text-gray-600 mt-1.5">
-                    Context like company ID, scan token and latest RII is attached automatically.
+                    Context like company ID and scan token is attached automatically.
                   </p>
                 </div>
 

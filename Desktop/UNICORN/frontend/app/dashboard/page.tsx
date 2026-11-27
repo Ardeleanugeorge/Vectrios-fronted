@@ -9,11 +9,9 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import DashboardHeader from "@/components/DashboardHeader"
 import IntegrationsPanel from "@/components/dashboard/IntegrationsPanel"
-import DashboardSummaryCard from "@/components/dashboard/DashboardSummaryCard"
 import SiteFooter from "@/components/SiteFooter"
 import SnapshotLayer from "@/components/dashboard/SnapshotLayer"
 import MonitoringLayer from "@/components/dashboard/MonitoringLayer"
-import RevenueRiskIndex from "@/components/dashboard/RevenueRiskIndex"
 import type { ActionLayerPayload } from "@/components/dashboard/ActionableInsights"
 import { NAMES } from "@/config/messaging"
 
@@ -866,7 +864,7 @@ export default function DashboardPage() {
             <div className="rounded-2xl border border-amber-500/40 bg-amber-50 p-10">
               <p className="text-4xl mb-4">⏰</p>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">Your trial has ended</h2>
-              <p className="text-gray-600 mb-8">Upgrade to continue monitoring your revenue architecture.</p>
+              <p className="text-gray-600 mb-8">Upgrade to keep reading your site and your competitors every night.</p>
               <button
                 onClick={async () => {
                   const token = sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token")
@@ -917,66 +915,13 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <DashboardSummaryCard
-            companyName={user?.company_name || null}
-            monthlyLoss={null}
-            riiScore={monitoringLoading ? null : (monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null) ? Math.round(monitoringStatus.structural_scores.rii_score) : diagnostic?.risk_score != null ? Math.round(diagnostic.risk_score) : monitoringStatus?.structural_scores?.rii_score != null ? Math.round(monitoringStatus.structural_scores.rii_score) : null}
-            riskLevel={diagnostic?.risk_level || null}
-          />
-          {/* REVENUE RISK INDEX - Visible when diagnostic OR monitoring structural scores exist */}
-          {(() => {
-            const riiScore =
-              (monitoringStatus?.source === "monitoring" && monitoringStatus?.structural_scores?.rii_score != null)
-                ? monitoringStatus.structural_scores.rii_score
-                : diagnostic?.risk_score ??
-                  monitoringStatus?.structural_scores?.rii_score ??
-                  monitoringStatus?.structural_health?.structural_health_score ??
-                  null
-            const shouldShowRII =
-              !monitoringLoading && (
-                (hasDiagnostic && diagnostic) ||
-                (isMonitoringActive && riiScore !== null && riiScore !== undefined)
-              )
-            if (!shouldShowRII) return null
-            return (
-              <RevenueRiskIndex
-                riskScore={riiScore !== null ? Math.round(riiScore) : null}
-                riskLevel={diagnostic?.risk_level || "MODERATE"}
-                confidence={confidence}
-                overrideTriggered={overrideTriggered}
-                scoreSource={diagnostic?.is_partial ? "instant_scan" : hasDiagnostic ? "full_diagnostic" : undefined}
-                source={
-                  isMonitoringActive
-                    ? (monitoringStatus?.source as any) || "monitoring"
-                    : (hasDiagnostic ? "diagnostic" : undefined)
-                }
-                coveragePct={
-                  isMonitoringActive
-                    ? (typeof monitoringStatus?.data_coverage_pct === "number"
-                        ? monitoringStatus.data_coverage_pct
-                        : (monitoringStatus?.structural_scores?.confidence_score ?? null)) as number | null
-                    : (diagnostic?.confidence ?? diagnostic?.confidence_score ?? null) as number | null
-                }
-                assessmentDate={monitoringStatus?.last_evaluated_at ?? null}
-                primaryDimension={(() => {
-                  const short = (monitoringStatus?.structural_scores as any)?.primary_risk_driver_short
-                  if (!short) return null
-                  const byLabel: Record<string, string> = {
-                    "Conversion anchor gaps": "anchor",
-                    "ICP signal absence": "icp",
-                    "Positioning inconsistency": "positioning",
-                    "Strategic misalignment": "alignment",
-                  }
-                  return byLabel[short] ?? null
-                })()}
-              />
-            )
-          })()}
+          {/* No score on the dashboard (decision of 26 Nov 2026): what the site and
+              its competitors say, and what changed - components/dashboard/MonitoringLayer. */}
 
           {/* While monitoring status is loading from API, show spinner */}
           {monitoringLoading || !companyId ? (
             <div className="p-8 border border-gray-200 rounded-lg bg-gray-50">
-              <p className="text-sm text-gray-600 animate-pulse">Loading revenue monitoring status...</p>
+              <p className="text-sm text-gray-600 animate-pulse">Loading…</p>
             </div>
           ) : isMonitoringActive && monitoringStatus ? (
             /* STATE 3 ΓÇö CONTINUOUS MONITORING ACTIVE */
@@ -993,9 +938,9 @@ export default function DashboardPage() {
           ) : !hasDiagnostic && !monitoringLoading ? (
             /* STATE 1 ΓÇö NO DIAGNOSTIC & monitoring confirmed off */
             <div className="p-12 border border-gray-200 rounded-lg bg-gray-50 text-center">
-              <h2 className="text-2xl font-bold mb-4 text-gray-900">Revenue Monitoring Not Yet Active</h2>
+              <h2 className="text-2xl font-bold mb-4 text-gray-900">{NAMES.monitoring} is not active yet</h2>
               <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-                Run a scan first to quantify your revenue-stage exposure and identify compression risk.
+                Scan your site first to see what it says on its key pages, quoted with the page it says it on.
               </p>
               <Link
                 href={PUBLIC_HOME_URL}

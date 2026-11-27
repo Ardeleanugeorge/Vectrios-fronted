@@ -12,7 +12,6 @@ const PUBLIC_PATHS = [
   "",
   "/pricing",
   "/methodology",
-  "/saas-revenue-index",
   "/privacy",
   "/security",
   "/data-retention",

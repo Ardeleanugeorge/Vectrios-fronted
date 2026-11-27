@@ -37,8 +37,8 @@ export const PLANS: Plan[] = [
       "Your site read every night: homepage + up to 4 key pages",
       "Up to 5 competitors read every night, same method",
       "Homepage headline change reports, confirmed on 2 readings",
-      "Experimental messaging scores on every reading, with history",
-      "Page-level findings with suggested copy for top review areas",
+      "Your site and each competitor side by side: headline, who it is for, proof, pricing, quoted with the page",
+      "A report to save as PDF",
       "Google Search Console, GA4 and HubSpot connections",
     ],
     featureFlags: {

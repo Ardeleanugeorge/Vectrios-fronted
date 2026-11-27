@@ -29,7 +29,7 @@ export const PROOF_POINTS: Array<{ title: string; body: string }> = [
   },
   {
     title: "Compare messaging side by side",
-    body: "Your headline and key pages next to each competitor\u2019s, read the same way every night. Messaging scores are shown as experimental while the method is validated.",
+    body: "Your headline and key pages next to each competitor\u2019s, read the same way every night. Each line is quoted with the page it comes from.",
   },
   {
     title: "Monitor the pages that shape positioning",

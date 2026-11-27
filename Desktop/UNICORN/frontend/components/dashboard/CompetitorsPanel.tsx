@@ -2,7 +2,6 @@
 import { apiFetch } from "@/lib/api"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
 
 // The competitors a customer watches. Each one's homepage is read every night
 // by the monitoring job, alongside the customer's own site, and that reading is
@@ -27,46 +26,12 @@ interface Competitor {
   headline_comparisons?: number
   changes?: { detected_at: string | null; page_type: string | null; url: string; change_type: string; label: string; before: string | null; after: string | null }[]
   current?: { subhead?: string | null; main_cta?: string | null }
-  scores?: Scores | null
-}
-
-type ScoreKey = "rii" | "alignment" | "icp_clarity" | "anchor_density" | "positioning"
-
-interface Scores {
-  rii: number | null
-  alignment: number | null
-  icp_clarity: number | null
-  anchor_density: number | null
-  positioning: number | null
-  read_at: string | null
-}
-
-// Differences this small are counted as level, not as one site ahead.
-const LEVEL = 3.5
-const DIMS: { key: ScoreKey; label: string; lowerIsBetter: boolean }[] = [
-  { key: "rii", label: "RII", lowerIsBetter: true },
-  { key: "alignment", label: "Alignment", lowerIsBetter: false },
-  { key: "icp_clarity", label: "ICP clarity", lowerIsBetter: false },
-  { key: "anchor_density", label: "Anchor density", lowerIsBetter: false },
-  { key: "positioning", label: "Positioning", lowerIsBetter: false },
-]
-
-function fmtScore(v: number | null | undefined): string {
-  return typeof v === "number" ? String(Math.round(v)) : "\u2014"
-}
-
-// Positive when the competitor is stronger than you on this dimension, negative
-// when weaker, 0 when level, null when either reading is missing.
-function edge(d: (typeof DIMS)[number], mine: number | null | undefined, theirs: number | null | undefined): number | null {
-  if (typeof mine !== "number" || typeof theirs !== "number") return null
-  // On the whole numbers shown: a gap the reader sees as 4 is never counted level.
-  const a = Math.round(mine), b = Math.round(theirs)
-  const diff = d.lowerIsBetter ? a - b : b - a
-  return Math.abs(diff) <= LEVEL ? 0 : diff
 }
 
 interface Props {
   companyId: string | null
+  /** Called after a competitor is added or removed, so the side-by-side can reload. */
+  onChange?: () => void
 }
 
 function fmtDate(iso: string | null): string {
@@ -89,10 +54,9 @@ function readingStatus(c: Competitor): string {
   return `${c.readings} readings since ${fmtDate(c.history_from)}`
 }
 
-export default function CompetitorsPanel({ companyId }: Props) {
+export default function CompetitorsPanel({ companyId, onChange }: Props) {
   const [items, setItems] = useState<Competitor[]>([])
   const [limit, setLimit] = useState(5)
-  const [you, setYou] = useState<Scores | null>(null)
   const [loading, setLoading] = useState(true)
   const [input, setInput] = useState("")
   const [busy, setBusy] = useState(false)
@@ -107,7 +71,6 @@ export default function CompetitorsPanel({ companyId }: Props) {
         const d = await r.json()
         setItems(Array.isArray(d.competitors) ? d.competitors : [])
         if (typeof d.limit === "number") setLimit(d.limit)
-        setYou(d.you ?? null)
         setLoadError(null)
       } else {
         // A failed read is not an empty list. Shown as one, a signed-out
@@ -146,6 +109,7 @@ export default function CompetitorsPanel({ companyId }: Props) {
       } else {
         setInput("")
         await load()
+        onChange?.()
       }
     } catch {
       setError("Could not reach the server.")
@@ -164,6 +128,7 @@ export default function CompetitorsPanel({ companyId }: Props) {
       })
       if (!r.ok) setError("Could not remove that competitor.")
       await load()
+      onChange?.()
     } catch {
       setError("Could not reach the server.")
     } finally {
@@ -240,70 +205,6 @@ export default function CompetitorsPanel({ companyId }: Props) {
           ))}
         </ul>
       )}
-
-      {!loadError && you && items.some((c) => c.scores) ? (
-        <div className="mb-4">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">How you compare <Link href="/methodology" className="inline-block ml-2 align-middle text-[10px] font-semibold uppercase tracking-widest text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">Experimental</Link></p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-gray-500">
-                  <th className="text-left font-medium py-1 pr-2">Site</th>
-                  {DIMS.map((d) => (
-                    <th key={d.key} className="text-right font-medium py-1 px-1">{d.label}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="font-semibold text-gray-900 border-t border-gray-100">
-                  <td className="py-1 pr-2">You</td>
-                  {DIMS.map((d) => (
-                    <td key={d.key} className="text-right py-1 px-1">{fmtScore(you[d.key])}</td>
-                  ))}
-                </tr>
-                {items.map((c) => (
-                  <tr key={c.domain} className="text-gray-700 border-t border-gray-100">
-                    <td className="py-1 pr-2 truncate max-w-[140px]">{c.label || c.domain}</td>
-                    {DIMS.map((d) => {
-                      const e = edge(d, you[d.key], c.scores ? c.scores[d.key] : null)
-                      const cls = e === null || e === 0 ? "" : e > 0 ? "text-amber-700" : "text-emerald-700"
-                      return (
-                        <td key={d.key} className={`text-right py-1 px-1 ${cls}`}>
-                          {c.scores ? fmtScore(c.scores[d.key]) : "\u2014"}
-                        </td>
-                      )
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <ul className="mt-2 space-y-0.5">
-            {DIMS.map((d) => {
-              let stronger = 0, weaker = 0, level = 0
-              for (const c of items) {
-                const e = edge(d, you[d.key], c.scores ? c.scores[d.key] : null)
-                if (e === null) continue
-                if (e > 0) stronger++
-                else if (e < 0) weaker++
-                else level++
-              }
-              const n = stronger + weaker + level
-              return (
-                <li key={d.key} className="text-xs text-gray-600">
-                  {n === 0
-                    ? `${d.label}: no comparable readings.`
-                    : `${d.label}: ${stronger} of ${n} competitors stronger than you, ${weaker} weaker, ${level} level.`}
-                </li>
-              )
-            })}
-          </ul>
-          <p className="text-xs text-gray-400 mt-2">
-            Latest reading of each site, all under the same crawl method. Differences of 3 points or
-            less count as level. RII: lower is stronger; the other four: higher is stronger.
-          </p>
-        </div>
-      ) : null}
 
       {loadError ? null : full ? (
         <p className="text-xs text-gray-500">All {limit} places are in use. Remove one to add another.</p>

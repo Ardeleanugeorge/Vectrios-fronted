@@ -8,7 +8,6 @@ import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
-import { BENCHMARK_SIZE } from "@/config/benchmark"
 import { AUDIENCE, AUDIENCE_ROLES, CATEGORY, HEADLINE, PROOF_POINTS, SUBHEADLINE } from "@/config/messaging"
 
 type CookieConsent = {
@@ -37,7 +36,6 @@ export default function Home() {
   const [scanning, setScanning] = useState(false)
   const scanInFlightRef = useRef(false)
   const [scanError, setScanError] = useState("")
-  const [scanCount, setScanCount] = useState<number | null>(null)
   const router = useRouter()
 
   // While a scan runs the page says what is happening and how long it has
@@ -60,13 +58,6 @@ export default function Home() {
       if (urlParam) setScanUrl(urlParam)
     } catch {}
 
-    // The number of sites in the current benchmark generation - the same sites
-    // every position is computed against. Not every scan ever run: those
-    // include sites that left the benchmark. No number from the API, no counter.
-    fetch(`https://api.vectrios.com/public/index-stats`)
-      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-      .then(d => setScanCount(typeof d.benchmark_sites === "number" ? d.benchmark_sites : 0))
-      .catch((err) => { console.error("[INDEX-STATS] Fetch error:", err); setScanCount(0); })
   }, [])
 
   useEffect(() => {
@@ -299,23 +290,6 @@ export default function Home() {
             
           </div>
 
-          {/* -- Companies scanned counter (clickable -> leaderboard) -- */}
-          {scanCount !== null && scanCount > 0 && (
-            <div className="flex items-center justify-center">
-              <Link
-                href="/saas-revenue-index"
-                className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 border border-slate-200 hover:border-indigo-600/40 hover:bg-indigo-50/30 transition-all text-sm text-gray-600"
-              >
-                <span className="font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
-                  {scanCount.toLocaleString("en-US")}
-                </span>
-                <span className="text-gray-500">SaaS sites in the benchmark</span>
-                <span className="text-indigo-700 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                  View index &rarr;
-                </span>
-              </Link>
-            </div>
-          )}
         </div>
       </section>
 {/* -- QUALIFICATION STRIP ----------------------------------------- */}
@@ -339,23 +313,23 @@ export default function Home() {
           <p className="text-2xl text-indigo-700 font-semibold mb-8">
             Headlines, offers and proof change on your site and on your competitors&apos; sites, often without anyone on the team seeing it.
           </p>
-          <p className="text-xl text-gray-700 mb-6">What the experimental messaging scores are designed to measure (<Link href="/methodology" className="text-indigo-700 underline">under validation</Link>):</p>
+          <p className="text-xl text-gray-700 mb-6">What a scan shows, quoted from your own pages:</p>
           <ul className="space-y-4 text-lg text-gray-700 mb-8 ml-6">
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-              ICP clarity: does the page say who it is for?
+              Who it is for: the sentence that names your buyer, or that none does
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-              Messaging alignment: does the value story stay the same across pages?
+              What it says it is, and what it promises
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-              Anchor density: are there numbers, customers and pricing near each decision?
+              Proof: customer counts, review ratings, named customer results
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-              Positioning coherence: do the category and &ldquo;why us&rdquo; hold across pages?
+              Pricing: whether prices are shown, a free plan or trial, a sales contact
             </li>
           </ul>
           <p className="text-lg text-gray-700 leading-relaxed mb-2">
@@ -364,35 +338,6 @@ export default function Home() {
             
         </div>
       </section>
-
-      {/* -- 3. PRODUCT VISUALIZATION -------------------------------------- */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-4 text-center">EXAMPLE</p>
-          <p className="text-center text-base md:text-lg font-semibold text-slate-900 dark:text-gray-900 mb-6 max-w-xl mx-auto leading-snug">
-            What a change report shows.
-          </p>
-          <p className="text-center text-sm md:text-base text-gray-500 mb-10 max-w-xl mx-auto leading-relaxed">
-            When a homepage headline changes, on your site or a competitor&apos;s, you see the old and the new headline, the dates of the readings, and how the score moved.
-          </p>
-
-          {/* Real Dashboard Screenshot */}
-          <div className="relative rounded-xl border border-gray-200 overflow-hidden shadow-2xl">
-            <img src="/dashboard-example.png" alt="Example of a VectriOS change report" className="w-full rounded-xl" style={{objectFit: "cover", objectPosition: "top", maxHeight: "700px"}} />
-          </div>
-          <p className="text-center text-xs text-gray-500 mt-4">
-            Illustrative example &mdash; actual results reflect the website being monitored.
-          </p>
-
-          {/* Financial proof hook */}
-          <div className="mt-10 p-6 rounded-2xl border border-amber-200 bg-amber-50 text-center">
-            <p className="text-lg md:text-xl font-semibold text-slate-900">
-              Structural evidence comes first. Connect GA4 and HubSpot to add behavioral and revenue evidence.
-            </p>
-          </div>
-        </div>
-      </section>
-
 
       {/* WORKFLOW SECTION */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200">
@@ -406,35 +351,22 @@ export default function Home() {
             </div>
             <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">02</p>
+              <p className="text-lg font-bold text-gray-900 mb-2">Compare</p>
+              <p className="text-sm text-gray-600">Your site and each competitor on the same lines: headline, who it is for, proof, pricing, each quoted with its page.</p>
+            </div>
+            <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">03</p>
               <p className="text-lg font-bold text-gray-900 mb-2">Confirm</p>
               <p className="text-sm text-gray-600">A headline change counts only when the new headline appears on two nightly readings in a row.</p>
             </div>
             <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">03</p>
-              <p className="text-lg font-bold text-gray-900 mb-2">Review</p>
-              <p className="text-sm text-gray-600">See the old and new headline, the score before and after, and the areas to review first.</p>
-            </div>
-            <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">04</p>
-              <p className="text-lg font-bold text-gray-900 mb-2">Verify</p>
-              <p className="text-sm text-gray-600">The next readings show whether the score held, improved or slipped.</p>
+              <p className="text-lg font-bold text-gray-900 mb-2">Review</p>
+              <p className="text-sm text-gray-600">See the old and the new headline, with the dates of the two readings.</p>
             </div>
           </div>
         </div>
       </section>
-
-      {/* -- 5. FINANCIAL FRAMING ------------------------------------------ */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">An experimental score, under validation.</h2>
-          <p className="text-lg text-gray-700 mb-8">
-            The Revenue Impact Index (RII) combines the four experimental sub-scores into one number from 0 to 100; lower is better.
-            Controlled tests showed that parts of it do not yet measure what they are designed to measure, so it is shown to you for
-            your own site and your competitors, labelled experimental, and is not published for other companies. It is not a revenue
-            figure. <Link href="/methodology" className="text-indigo-700 underline">What is established and what is under validation</Link>.</p>
-        </div>
-      </section>
-
 
       {/* EVIDENCE LAYERS SECTION */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200">
@@ -444,7 +376,7 @@ export default function Home() {
             <div className="p-6 bg-gray-50 rounded-lg border-2 border-indigo-200">
               <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">Structural Evidence</p>
               <p className="text-lg font-bold text-gray-900 mb-2">Website messaging</p>
-              <p className="text-sm text-gray-600">Scores ICP clarity, alignment, proof and positioning on every reading, and reports homepage headline changes.</p>
+              <p className="text-sm text-gray-600">Quotes who each site is for, what it promises, its proof and its pricing, and reports homepage headline changes.</p>
               <p className="text-xs text-indigo-600 font-semibold mt-3">Available now</p>
             </div>
             <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
@@ -486,11 +418,7 @@ export default function Home() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
-                Experimental messaging scores on every reading, with history
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-2 shrink-0" />
-                Page-level findings with suggested copy for the top review areas
+                Your site and each competitor side by side: headline, who it is for, proof, pricing, each quoted with its page
               </li>
             </ul>
           </div>
@@ -506,7 +434,7 @@ export default function Home() {
             Start with a free scan of your site.
           </h2>
           <p className="text-lg text-gray-700 mb-8">
-            See how your site describes who it serves and why to choose it, with experimental messaging scores.
+            See how your site describes who it serves and why to choose it, quoted from your own pages.
             Nightly monitoring of your site and up to 5 competitors starts with the 14-day trial.
           </p>
           <Link

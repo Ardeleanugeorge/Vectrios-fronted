@@ -581,7 +581,7 @@ export default function PricingPage() {
             </p>
             <h2 className="text-2xl font-bold mb-2">14-day trial — full Scale access</h2>
             <p className="text-slate-200 text-sm mb-6">
-              The trial includes everything in the plan: nightly readings of your site and up to 5 competitors, change reports, score history and the benchmark.
+              The trial includes everything in the plan: nightly readings of your site and up to 5 competitors, side by side, and change reports.
             </p>
             <button
               onClick={handleTrial}
@@ -687,9 +687,9 @@ export default function PricingPage() {
               { q: "What happens after the 14-day trial?", a: "After 14 days, your plan continues at $299/month. You can cancel anytime before the trial ends — no charge." },
               { q: "Do I need HubSpot or Google Analytics?", a: "No. Monitoring works from your public website alone. Connecting Search Console, GA4 or HubSpot adds search, visitor and pipeline context next to the readings." },
               { q: "What do I need to set up?", a: "Scan your domain, confirm your email, add up to 5 competitor websites and start the trial. No call and no code on your site." },
-              { q: "What counts as a change?", a: "Today: a new homepage headline, on your site or a competitor's, seen on two nightly readings in a row. A headline that shows for one night and goes back, such as an A/B test, is not reported. The score and sub-scores are recorded on every reading." },
-              { q: "How is the score calculated?", a: "The Revenue Impact Index (RII, 0 to 100, lower is better) combines four sub-scores: messaging alignment, ICP clarity, anchor density and positioning coherence. The same method is used for every site. The methodology page shows the weights and rules." },
-              { q: "Does VectriOS estimate revenue?", a: "No. The RII describes how the messaging is built. VectriOS does not turn it into revenue or conversion figures." },
+              { q: "What counts as a change?", a: "Today: a new homepage headline, on your site or a competitor's, seen on two nightly readings in a row. A headline that shows for one night and goes back, such as an A/B test, is not reported." },
+              { q: "Is there a score?", a: "No. VectriOS shows what each site says, quoted with the page it says it on, and what changed. An experimental messaging score is being validated; it is not shown until it passes. The methodology page explains why." },
+              { q: "Does VectriOS estimate revenue?", a: "No. VectriOS does not turn what a page says into revenue or conversion figures." },
               { q: "Is this a content audit or SEO tool?", a: "Neither. VectriOS reads what your pages say and how consistently they say it. It does not grade writing quality, design or SEO." },
             ].map(({ q, a }) => (
               <details key={q} className="group rounded-xl border border-gray-200 bg-gray-50 p-5 cursor-pointer">

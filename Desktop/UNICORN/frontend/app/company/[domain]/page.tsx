@@ -12,7 +12,6 @@
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
-import { NAMES } from "@/config/messaging";
 
 export default function CompanyPage() {
   const params = useParams();
@@ -21,13 +20,12 @@ export default function CompanyPage() {
     <div className="page-root">
       <Header />
       <main className="max-w-2xl mx-auto px-6 py-20">
-        <Link href="/saas-revenue-index" className="text-sm text-gray-600 hover:text-gray-900">← {NAMES.benchmark}</Link>
         <h1 className="text-3xl font-bold text-gray-900 mt-6 mb-4">{domain || "This site"}</h1>
         <div className="p-6 rounded-xl border border-amber-200 bg-amber-50">
-          <p className="text-xs font-semibold uppercase tracking-widest text-amber-700 mb-2">Individual scores withheld</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-amber-700 mb-2">No public scores</p>
           <p className="text-sm text-gray-800 leading-relaxed">
-            VectriOS does not publish scores, rankings or risk classifications for individual companies while its scoring
-            method is being validated.
+            VectriOS publishes no scores, rankings or risk classifications for companies. A free scan shows what any site
+            says on its key pages, quoted with the page it says it on.
           </p>
           <p className="text-sm text-gray-800 mt-3">
             <Link href="/methodology" className="text-indigo-700 underline">Read the methodology</Link>
