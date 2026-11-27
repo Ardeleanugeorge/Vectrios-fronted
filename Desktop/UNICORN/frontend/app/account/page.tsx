@@ -1248,15 +1248,15 @@ export default function AccountPage() {
                   <div className="rounded-xl border border-slate-200 p-4">
                     <p className="text-sm font-semibold text-slate-900 dark:text-gray-900">Analytics</p>
                     <p className="text-xs text-gray-600 mt-1">
-                      Sessions and conversions turn a structural reading into a
-                      measured effect rather than a modelled one.
+                      Sessions and conversions on your monitored pages, as your
+                      analytics report them, next to the readings.
                     </p>
                   </div>
                   <p className="text-xs text-gray-500">
                     A number typed into a form is an assumption, and an
                     assumption displayed as a measurement is worth less than no
-                    number at all. The structural assessment does not depend on
-                    any of this: it comes from reading your site.
+                    number at all. The readings do not depend on any of this:
+                    they come from reading your site.
                   </p>
                 </div>
               </div>

@@ -95,7 +95,7 @@ export default function IntegrationsPanel() {
       <div className="mb-5">
         <h3 className="text-base font-semibold text-gray-900">Data Integrations</h3>
         <p className="text-xs text-gray-500 mt-1">
-          Connect your tools to add behavioral and revenue evidence to structural monitoring.
+          Connect your tools to see their figures next to the nightly readings.
         </p>
       </div>
 
@@ -114,7 +114,7 @@ export default function IntegrationsPanel() {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">Google Search Console + GA4</p>
-              <p className="text-xs text-gray-500">Search performance and behavioral signals</p>
+              <p className="text-xs text-gray-500">Search performance and visits to your monitored pages</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ export default function IntegrationsPanel() {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">HubSpot CRM</p>
-              <p className="text-xs text-gray-500">Pipeline and revenue-stage signals</p>
+              <p className="text-xs text-gray-500">Pipeline figures from your CRM</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -188,7 +188,7 @@ export default function IntegrationsPanel() {
       </div>
 
       <p className="text-xs text-gray-400 mt-4">
-        Additional data sources increase evidence depth and enable behavioral and revenue signals. All connected data is read-only.
+        VectriOS shows these figures as your tools report them and estimates none. All connected data is read-only.
       </p>
     </div>
   )

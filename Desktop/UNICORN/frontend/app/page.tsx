@@ -308,10 +308,10 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200 dark:border-gray-200">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
-            Websites change every week. Most marketing teams find out late.
+            Websites change, often without anyone on the team noticing.
           </h2>
           <p className="text-2xl text-indigo-700 font-semibold mb-8">
-            Headlines, offers and proof change on your site and on your competitors&apos; sites, often without anyone on the team seeing it.
+            Headlines, offers and proof change on your site and on your competitors&apos; sites. Unless someone reads them every day, the change is found late, or not at all.
           </p>
           <p className="text-xl text-gray-700 mb-6">What a scan shows, quoted from your own pages:</p>
           <ul className="space-y-4 text-lg text-gray-700 mb-8 ml-6">
@@ -371,28 +371,28 @@ export default function Home() {
       {/* EVIDENCE LAYERS SECTION */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-200">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4 text-slate-900">Start with structural evidence. Add behavioral and revenue context when available.</h2>
+          <h2 className="text-3xl font-bold mb-4 text-slate-900">Start with what the pages say. Add your own figures when you connect them.</h2>
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             <div className="p-6 bg-gray-50 rounded-lg border-2 border-indigo-200">
-              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">Structural Evidence</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600 mb-2">Public pages</p>
               <p className="text-lg font-bold text-gray-900 mb-2">Website messaging</p>
               <p className="text-sm text-gray-600">Quotes who each site is for, what it promises, its proof and its pricing, and reports homepage headline changes.</p>
               <p className="text-xs text-indigo-600 font-semibold mt-3">Available now</p>
             </div>
             <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Behavioral Evidence</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Search and visits</p>
               <p className="text-lg font-bold text-gray-700 mb-2">GA4 + GSC</p>
-              <p className="text-sm text-gray-500">Add behavioral and search-performance context to structural signals.</p>
+              <p className="text-sm text-gray-500">Search performance and visits to your monitored pages, next to the readings.</p>
               <p className="text-xs text-gray-400 font-semibold mt-3">Connect GA4 + GSC</p>
             </div>
             <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Revenue Evidence</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Pipeline</p>
               <p className="text-lg font-bold text-gray-700 mb-2">HubSpot</p>
-              <p className="text-sm text-gray-500">Add CRM and pipeline context to structural signals.</p>
+              <p className="text-sm text-gray-500">Pipeline figures from your CRM, next to the readings.</p>
               <p className="text-xs text-gray-400 font-semibold mt-3">Connect HubSpot</p>
             </div>
           </div>
-          <p className="text-sm text-gray-500 text-center italic">VectriOS does not infer revenue outcomes from structural signals alone.</p>
+          <p className="text-sm text-gray-500 text-center italic">VectriOS does not estimate revenue or conversions from what a page says.</p>
         </div>
       </section>
 
