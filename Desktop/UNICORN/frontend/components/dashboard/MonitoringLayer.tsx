@@ -14,6 +14,7 @@ import { useState } from "react"
 import PageIncidentsPanel from "./PageIncidentsPanel"
 import CompetitorsPanel from "./CompetitorsPanel"
 import MessagingOverview from "./MessagingOverview"
+import YourFigures from "./YourFigures"
 
 interface MonitoringStatus {
   monitoring_active: boolean
@@ -135,6 +136,9 @@ export default function MonitoringLayer({ monitoringStatus, trialDays, companyId
       })()}
 
       <MessagingOverview companyId={companyId} reloadKey={reloadKey} />
+
+      {/* Your own GA4 and Search Console figures, next to the readings */}
+      <YourFigures companyId={companyId} />
 
       {/* Confirmed changes on your own pages */}
       <PageIncidentsPanel companyId={companyId} />
