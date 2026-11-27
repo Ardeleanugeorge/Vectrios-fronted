@@ -32,7 +32,7 @@ export default function Header() {
             Pricing
           </Link>
           <Link
-            href="/methodology#revenue-impact-index"
+            href="/methodology"
             className="text-gray-500 hover:text-gray-300 transition text-sm"
           >
             Methodology
