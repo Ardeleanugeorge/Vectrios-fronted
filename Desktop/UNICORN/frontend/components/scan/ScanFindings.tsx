@@ -19,7 +19,7 @@ export type Findings = {
   buttons: string[]
   claims: { audience: Quote | null; category: Quote | null; promise: Quote | null }
   proof: Record<"customers" | "ratings" | "results", { count: number; quotes: Quote[] }>
-  customer_count: { as_written: string; quote: string; page: string } | null
+  customer_count: { as_written: string; unit?: string; quote: string; page: string } | null
   pricing: {
     pricing_page: string | null
     state: "shown" | "not_shown" | "unknown"
@@ -121,7 +121,7 @@ export default function ScanFindings({ findings }: { findings: Findings }) {
                 <span key={b} className="inline-block text-sm border border-gray-800 rounded-md px-2.5 py-0.5">{b}</span>
               ))}
             </div>
-          ) : <NotFound />}
+          ) : <span className="text-sm text-gray-400 italic">None near the headline</span>}
         </Row>
       </Section>
 
@@ -134,16 +134,16 @@ export default function ScanFindings({ findings }: { findings: Findings }) {
       </Section>
 
       <Section title="Proof">
-        <Row label="Customers stated">
+        <Row label="Customers or users stated">
           {f.customer_count ? (
             <div>
-              <p className="text-2xl font-bold text-gray-900">{f.customer_count.as_written}</p>
+              <p className="text-2xl font-bold text-gray-900">{f.customer_count.as_written}{f.customer_count.unit ? ` ${f.customer_count.unit}` : ""}</p>
               <p className="text-gray-700 mt-1">&ldquo;{f.customer_count.quote}&rdquo;</p>
               <Source url={f.customer_count.page} />
             </div>
           ) : <NotFound />}
         </Row>
-        <Row label="Review ratings" hint="G2, Capterra and similar">
+        <Row label="Ratings and awards" hint="G2, Capterra, Gartner and similar">
           <QuoteList items={f.proof.ratings.quotes} count={f.proof.ratings.count} />
         </Row>
         <Row label="Customer results" hint="A named customer and a number">

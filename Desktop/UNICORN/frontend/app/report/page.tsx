@@ -177,7 +177,7 @@ export default function ReportPage() {
             ) : (
               <p className="text-sm" style={{ color: C.sub }}>
                 {readCount
-                  ? "On who it is for, review ratings, customer results, customer counts, prices and free offers, you do what most of these competitors do. The differences are in the wording below."
+                  ? "On who it is for, ratings and awards, customer results, customer counts, prices and free offers, you do what most of these competitors do. The differences are in the wording below."
                   : "No competitor has been read yet."}
               </p>
             )}

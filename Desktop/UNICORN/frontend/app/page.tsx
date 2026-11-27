@@ -325,7 +325,7 @@ export default function Home() {
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
-              Proof: customer counts, review ratings, named customer results
+              Proof: customer or user counts, ratings and awards, named customer results
             </li>
             <li className="flex items-center gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />

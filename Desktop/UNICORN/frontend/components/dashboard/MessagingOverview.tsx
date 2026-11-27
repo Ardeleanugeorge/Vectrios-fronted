@@ -114,7 +114,7 @@ const ROWS: { group: string; rows: Row[] }[] = [
         cell: (f) => f.buttons.length
           ? <div className="flex flex-wrap gap-1">{f.buttons.map((b) => (
               <span key={b} className="border border-gray-700 rounded px-1.5 py-px text-gray-900">{b}</span>))}</div>
-          : NF,
+          : <span className="text-gray-400 italic">None near the headline</span>,
       },
     ],
   },
@@ -130,13 +130,13 @@ const ROWS: { group: string; rows: Row[] }[] = [
     group: "Proof",
     rows: [
       {
-        label: "Customers stated",
+        label: "Customers or users stated",
         cell: (f) => f.customer_count
-          ? <div><p className="font-semibold text-gray-900">{f.customer_count.as_written}</p>
+          ? <div><p className="font-semibold text-gray-900">{f.customer_count.as_written}{f.customer_count.unit ? ` ${f.customer_count.unit}` : ""}</p>
               <Q text={f.customer_count.quote} page={f.customer_count.page} /></div>
           : NF,
       },
-      { label: "Review ratings", cell: (f) => <Quotes items={f.proof.ratings.quotes} count={f.proof.ratings.count} /> },
+      { label: "Ratings and awards", cell: (f) => <Quotes items={f.proof.ratings.quotes} count={f.proof.ratings.count} /> },
       { label: "Customer results", cell: (f) => <Quotes items={f.proof.results.quotes} count={f.proof.results.count} show={2} /> },
     ],
   },
@@ -334,7 +334,7 @@ export default function MessagingOverview({ companyId, reloadKey = 0 }: { compan
               </p>
             ) : (
               <p className="text-sm text-gray-700">
-                On who it is for, review ratings, customer results, customer counts, prices and free offers, you do
+                On who it is for, ratings and awards, customer results, customer counts, prices and free offers, you do
                 what most of these competitors do. The differences are in the wording below.
               </p>
             )}

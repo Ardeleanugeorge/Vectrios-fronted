@@ -16,13 +16,14 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 const FIELDS: { label: string; how: string }[] = [
-  { label: "Headline, subheadline, buttons", how: "Read from the homepage as a browser renders it, and kept only if the homepage text also contains them, so a cookie banner or a pop-up is never reported as your headline." },
-  { label: "Who it is for", how: "A sentence that names a kind of buyer: a role, a team, a company type or size, or an industry. “Your team” or a customer count does not count." },
+  { label: "Headline, subheadline, buttons", how: "Read from the homepage as a browser renders it, and kept only if the homepage text also contains them, so a cookie banner or a pop-up is never reported as your headline. Buttons are those in the first screen, up to about 600 pixels below the headline, outside the navigation; a video's play button and a form's “Go” are not counted." },
+  { label: "Who it is for", how: "A sentence that names a kind of buyer as the one the product is for (“built for…”, “for…”, “helps…”): a role, a team, a company type or size, or an industry. “Your team”, a customer count, or a buyer merely mentioned does not count." },
   { label: "What it says it is", how: "The sentence that states the product's category." },
   { label: "Main promise", how: "The sentence that states the main result for the customer." },
-  { label: "Customers stated", how: "A sentence with a customer count (“Trusted by 30,000+ customers”); the largest one is shown as written." },
-  { label: "Review ratings", how: "A rating on a review site, such as “4.7 stars on G2”." },
+  { label: "Customers or users stated", how: "A sentence with a count of customers or users (“Trusted by 30,000+ customers”); the largest one is shown as written, with what was counted." },
+  { label: "Ratings and awards", how: "A rating or an award from a review or analyst site, such as “4.7 stars on G2” or “a Leader in the G2 Grid”." },
   { label: "Customer results", how: "A named customer with a number, such as a case-study title. Product screenshots and plan limits are not counted." },
+  { label: "Where claims are read", how: "Headline, who it is for, what it says it is and the main promise are read on the company's own pages. Pages about customers (case studies, customer stories) and anything inside quotation marks, such as a testimonial, are read for proof only, never as the company's claim." },
   { label: "Pricing", how: "Whether the pricing page shows prices, a free plan or a free trial, and a sales contact. Prices themselves are not copied: a monthly/annual switch can run them together in the page text." },
 ]
 
@@ -74,14 +75,14 @@ export default function MethodologyPage() {
         <Section title="3. Your site next to your competitors">
           <p>
             The dashboard and the report put your site and each competitor on the same lines. Where you differ is stated with a fixed
-            sentence over what was found, for example &ldquo;2 of 4 competitors cite a review rating; no rating was found on the
+            sentence over what was found, for example &ldquo;2 of 4 competitors cite a rating or award such as G2, Capterra or Gartner; none was found on the
             pages of your site that were read&rdquo;. Only competitors that were read are counted.
           </p>
         </Section>
 
         <Section title="4. What counts as a change">
           <p>
-            A new homepage headline, or a new line on who it is for, what it says it is, its promise, customer count, review ratings, prices, free offer or sales contact - yours or a competitor&apos;s - read on two nightly readings in a row. A quoted line counts as changed only when the old quote is gone from the pages. A change that shows for one night and goes back, such as an A/B test, is not reported. You see the
+            A new homepage headline, or a new line on who it is for, what it says it is, its promise, customer or user count, ratings and awards, prices, free offer or sales contact - yours or a competitor&apos;s - read on two nightly readings in a row. A quoted line counts as changed only when the old quote is gone from the pages. A change that shows for one night and goes back, such as an A/B test, is not reported. You see the
             old and the new text and the dates of the readings.
           </p>
         </Section>
