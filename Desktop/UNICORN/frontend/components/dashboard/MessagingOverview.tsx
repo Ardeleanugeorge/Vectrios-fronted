@@ -115,51 +115,97 @@ const ROWS: { group: string; rows: Row[] }[] = [
 ]
 
 
-/** The sites on the same lines - one column per site. Used by the dashboard and the report. */
-export function SideBySide({ sites, print = false }: { sites: Site[]; print?: boolean }) {
+/** Column header / row label of one site: domain, "you", when it was read. */
+function SiteName({ s }: { s: Site }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-xs border-collapse" style={print ? undefined : { minWidth: `${160 + sites.length * 220}px` }}>
-        <thead>
-          <tr>
-            <th className="sticky left-0 z-10 bg-white w-40 border-b border-gray-200" />
-            {sites.map((s) => (
-              <th key={s.domain} style={{ minWidth: 150 }} className={`text-left align-bottom px-3 py-2.5 border-b border-gray-200 ${s.you ? "bg-indigo-50/60" : ""}`}>
-                <span className="text-sm font-semibold text-gray-900">{s.domain}</span>
-                {s.you && <span className="ml-1.5 text-[10px] font-semibold text-white bg-indigo-600 rounded px-1.5 py-px align-middle">you</span>}
-                <span className="block text-[11px] font-normal text-gray-500 mt-0.5">
-                  {s.findings ? `Read ${fmtDate(s.read_at)}` : "First reading in progress"}
-                </span>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {ROWS.map((g) => (
-            <Fragment key={g.group}>
-              <tr>
-                <td colSpan={sites.length + 1}
-                    className="sticky left-0 bg-white px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                  {g.group}
-                </td>
-              </tr>
-              {g.rows.map((r) => (
-                <tr key={g.group + r.label} className="border-t border-gray-100 align-top">
-                  <th scope="row" className="sticky left-0 z-10 bg-white text-left font-medium text-gray-600 px-3 py-2.5 w-40">
-                    {r.label}
-                  </th>
-                  {sites.map((s) => (
-                    <td key={s.domain} className={`px-3 py-2.5 leading-snug ${s.you ? "bg-indigo-50/60" : ""}`}>
-                      {s.findings ? r.cell(s.findings) : <span className="text-gray-300">—</span>}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </Fragment>
+    <>
+      <span className="text-sm font-semibold text-gray-900 break-all">{s.domain}</span>
+      {s.you && <span className="ml-1.5 text-[10px] font-semibold text-white bg-indigo-600 rounded px-1.5 py-px align-middle">you</span>}
+      <span className="block text-[11px] font-normal text-gray-500 mt-0.5">
+        {s.findings ? `Read ${fmtDate(s.read_at)}` : "First reading in progress"}
+      </span>
+    </>
+  )
+}
+
+/**
+ * The sites on the same lines. Used by the dashboard and the report.
+ *
+ * Wide screens (and the report): one column per site, all of them on screen at
+ * once - equal widths (table-fixed), no horizontal scroll, long quotes wrap.
+ * Narrow screens: one block per line, the sites' answers under each other, the
+ * customer's first - the same comparison without scrolling sideways.
+ */
+export function SideBySide({ sites, print = false }: { sites: Site[]; print?: boolean }) {
+  const table = (
+    <table className="w-full table-fixed text-xs border-collapse">
+      <colgroup>
+        <col style={{ width: 128 }} />
+        {sites.map((s) => <col key={s.domain} />)}
+      </colgroup>
+      <thead>
+        <tr>
+          <th className="border-b border-gray-200" />
+          {sites.map((s) => (
+            <th key={s.domain} className={`text-left align-bottom px-2.5 py-2.5 border-b border-gray-200 ${s.you ? "bg-indigo-50/60" : ""}`}>
+              <SiteName s={s} />
+            </th>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </tr>
+      </thead>
+      <tbody>
+        {ROWS.map((g) => (
+          <Fragment key={g.group}>
+            <tr>
+              <td colSpan={sites.length + 1} className="px-2.5 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                {g.group}
+              </td>
+            </tr>
+            {g.rows.map((r) => (
+              <tr key={g.group + r.label} className="border-t border-gray-100 align-top">
+                <th scope="row" className="text-left font-medium text-gray-600 px-2.5 py-2.5">{r.label}</th>
+                {sites.map((s) => (
+                  <td key={s.domain} className={`px-2.5 py-2.5 leading-snug break-words ${s.you ? "bg-indigo-50/60" : ""}`}>
+                    {s.findings ? r.cell(s.findings) : <span className="text-gray-300">—</span>}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </Fragment>
+        ))}
+      </tbody>
+    </table>
+  )
+  if (print) return table
+
+  return (
+    <>
+      <div className="hidden lg:block">{table}</div>
+      <div className="lg:hidden divide-y divide-gray-100 text-xs">
+        {ROWS.map((g) => (
+          <div key={g.group} className="px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2">{g.group}</p>
+            {g.rows.map((r) => (
+              <div key={g.group + r.label} className="mb-4 last:mb-1">
+                <p className="text-sm font-semibold text-gray-700 mb-1.5">{r.label}</p>
+                <ul className="space-y-2">
+                  {sites.map((s) => (
+                    <li key={s.domain} className={`rounded-lg px-3 py-2 ${s.you ? "bg-indigo-50/70" : "bg-gray-50"}`}>
+                      <p className="text-[11px] font-semibold text-gray-500 mb-0.5">
+                        {s.domain}{s.you ? " · you" : ""}
+                      </p>
+                      <div className="leading-snug break-words">
+                        {s.findings ? r.cell(s.findings) : <span className="text-gray-400">First reading in progress</span>}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
   )
 }
 
@@ -191,7 +237,7 @@ export default function MessagingOverview({ companyId, reloadKey = 0 }: { compan
       <div className="px-5 pt-5 pb-3">
         <h2 className="text-lg font-semibold text-gray-900">Your site and your competitors</h2>
         <p className="text-sm text-gray-600 mt-0.5">
-          What each one says on its key pages, quoted from its latest nightly reading. Every quote links to its page.
+          What each one says on its key pages, quoted from its latest reading. Every quote links to its page.
         </p>
       </div>
 
