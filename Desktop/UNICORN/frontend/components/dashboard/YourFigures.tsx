@@ -31,7 +31,7 @@ type Evidence = {
   recent_days?: number
   pages?: { page: string; ga4?: GA4 | null; gsc?: GSC }[]
   /** What Search Console reported for the whole site in the same 28 days. */
-  gsc_recent?: { status: string; pages_reported?: number; at_limit?: boolean; hosts?: string[]; impressions?: number } | null
+  gsc_recent?: { status: string; pages_reported?: number; at_limit?: boolean; hosts?: string[]; impressions?: number; alternatives?: string[] } | null
   comparisons?: Comparison[]
 }
 
@@ -45,9 +45,16 @@ function GscNote({ ev, site }: { ev: Evidence; site: string }) {
   }
   if (!pages.some((p) => !p.gsc)) return null
   if (!r.pages_reported) {
+    const alts = r.alternatives || []
     return (
       <p className="px-3 py-2 text-[11px] text-gray-500 italic border-t border-gray-100">
         Search Console reports no page of {site} in Google Search results in these {ev.recent_days} days.
+        {alts.length > 0 && (
+          <span className="not-italic text-gray-700">
+            {" "}This connection also has {alts.join(" and ")}. A property that starts with an address sees only the pages
+            under that exact address (with or without www); choose the one that covers your site under “Change property”.
+          </span>
+        )}
       </p>
     )
   }
