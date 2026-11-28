@@ -88,6 +88,25 @@ function Src({ url }: { url: string | null | undefined }) {
   )
 }
 
+const _n = (t?: string | null) => (t || "").replace(/[“”"]/g, "").replace(/\s+/g, " ").trim().replace(/[.!?]+$/, "").toLowerCase()
+
+/** The lines above a line, in the order the table shows them, for "Same as …". */
+function earlier(f: Findings, upto: "subhead" | "audience" | "category" | "promise"): [string, string | null | undefined][] {
+  const all: [string, string | null | undefined][] = [
+    ["headline", f.headline], ["subheadline", f.subhead], ["who it is for", f.claims.audience?.quote],
+    ["what it says it is", f.claims.category?.quote], ["main promise", f.claims.promise?.quote],
+  ]
+  const stop = { subhead: 1, audience: 2, category: 3, promise: 4 }[upto]
+  return all.slice(0, stop)
+}
+
+/** A line that repeats a sentence already shown above it in the same column says so instead of repeating it. */
+function Line({ f, upto, text, page }: { f: Findings; upto: "subhead" | "audience" | "category" | "promise"; text?: string | null; page?: string | null }) {
+  const same = text ? earlier(f, upto).find(([, t]) => t && _n(t) === _n(text)) : undefined
+  if (same) return <span className="text-gray-500 italic">Same as {same[0]}</span>
+  return <Q text={text} page={page} />
+}
+
 function Q({ text, page }: { text: string | null | undefined; page?: string | null }) {
   if (!text) return NF
   return <div><span className="text-gray-900">&ldquo;{text}&rdquo;</span><Src url={page} /></div>
@@ -110,7 +129,7 @@ const ROWS: { group: string; rows: Row[] }[] = [
     group: "First screen",
     rows: [
       { label: "Headline", cell: (f) => (!f.headline && f.first_screen_read === false ? NR : <Q text={f.headline} page={f.pages[0]} />) },
-      { label: "Subheadline", cell: (f) => (!f.subhead && f.first_screen_read === false ? NR : <Q text={f.subhead} page={f.pages[0]} />) },
+      { label: "Subheadline", cell: (f) => (!f.subhead && f.first_screen_read === false ? NR : <Line f={f} upto="subhead" text={f.subhead} page={f.pages[0]} />) },
       {
         label: "Buttons",
         cell: (f) => f.buttons.length
@@ -123,9 +142,9 @@ const ROWS: { group: string; rows: Row[] }[] = [
   {
     group: "Positioning",
     rows: [
-      { label: "Who it is for", cell: (f) => <Q text={f.claims.audience?.quote} page={f.claims.audience?.page} /> },
-      { label: "What it says it is", cell: (f) => <Q text={f.claims.category?.quote} page={f.claims.category?.page} /> },
-      { label: "Main promise", cell: (f) => <Q text={f.claims.promise?.quote} page={f.claims.promise?.page} /> },
+      { label: "Who it is for", cell: (f) => <Line f={f} upto="audience" text={f.claims.audience?.quote} page={f.claims.audience?.page} /> },
+      { label: "What it says it is", cell: (f) => <Line f={f} upto="category" text={f.claims.category?.quote} page={f.claims.category?.page} /> },
+      { label: "Main promise", cell: (f) => <Line f={f} upto="promise" text={f.claims.promise?.quote} page={f.claims.promise?.page} /> },
     ],
   },
   {
