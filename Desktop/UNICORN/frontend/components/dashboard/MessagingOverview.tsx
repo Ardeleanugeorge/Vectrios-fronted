@@ -77,6 +77,8 @@ function fmtDate(iso: string | null): string {
 }
 
 const NF = <span className="italic text-gray-400">Not found</span>
+/** The homepage did not render on this reading: an empty first-screen line is "not read", not "not found". */
+const NR = <span className="italic text-gray-400">Not read this time (page did not render)</span>
 
 function Src({ url }: { url: string | null | undefined }) {
   if (!url || !/^https?:\/\//.test(url)) return null
@@ -107,14 +109,14 @@ const ROWS: { group: string; rows: Row[] }[] = [
   {
     group: "First screen",
     rows: [
-      { label: "Headline", cell: (f) => <Q text={f.headline} page={f.pages[0]} /> },
-      { label: "Subheadline", cell: (f) => <Q text={f.subhead} page={f.pages[0]} /> },
+      { label: "Headline", cell: (f) => (!f.headline && f.first_screen_read === false ? NR : <Q text={f.headline} page={f.pages[0]} />) },
+      { label: "Subheadline", cell: (f) => (!f.subhead && f.first_screen_read === false ? NR : <Q text={f.subhead} page={f.pages[0]} />) },
       {
         label: "Buttons",
         cell: (f) => f.buttons.length
           ? <div className="flex flex-wrap gap-1">{f.buttons.map((b) => (
               <span key={b} className="border border-gray-700 rounded px-1.5 py-px text-gray-900">{b}</span>))}</div>
-          : <span className="text-gray-400 italic">None near the headline</span>,
+          : f.first_screen_read === false ? NR : <span className="text-gray-400 italic">None near the headline</span>,
       },
     ],
   },

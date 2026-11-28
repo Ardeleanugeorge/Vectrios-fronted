@@ -17,6 +17,8 @@ export type Findings = {
   headline: string | null
   subhead: string | null
   buttons: string[]
+  /** false: the homepage could not be rendered on this reading (empty first-screen lines mean 'not read'). */
+  first_screen_read?: boolean
   claims: { audience: Quote | null; category: Quote | null; promise: Quote | null }
   proof: Record<"customers" | "ratings" | "results", { count: number; quotes: Quote[] }>
   customer_count: { as_written: string; unit?: string; quote: string; page: string } | null
@@ -100,6 +102,11 @@ function QuoteList({ items, count }: { items: Quote[]; count: number }) {
   )
 }
 
+/** The first screen could not be rendered on this reading: said as such, never as "not found". */
+function NotRendered() {
+  return <span className="text-sm text-gray-400 italic">Not read on this reading (the page did not render)</span>
+}
+
 export default function ScanFindings({ findings }: { findings: Findings }) {
   const f = findings
   const home = f.pages[0] || null
@@ -112,8 +119,8 @@ export default function ScanFindings({ findings }: { findings: Findings }) {
   return (
     <div>
       <Section title="First screen of the homepage">
-        <Row label="Headline"><Said text={f.headline} page={home} /></Row>
-        <Row label="Subheadline"><Said text={f.subhead} page={home} /></Row>
+        <Row label="Headline">{!f.headline && f.first_screen_read === false ? <NotRendered /> : <Said text={f.headline} page={home} />}</Row>
+        <Row label="Subheadline">{!f.subhead && f.first_screen_read === false ? <NotRendered /> : <Said text={f.subhead} page={home} />}</Row>
         <Row label="Buttons">
           {f.buttons.length ? (
             <div className="flex flex-wrap gap-2">
@@ -121,7 +128,7 @@ export default function ScanFindings({ findings }: { findings: Findings }) {
                 <span key={b} className="inline-block text-sm border border-gray-800 rounded-md px-2.5 py-0.5">{b}</span>
               ))}
             </div>
-          ) : <span className="text-sm text-gray-400 italic">None near the headline</span>}
+          ) : f.first_screen_read === false ? <NotRendered /> : <span className="text-sm text-gray-400 italic">None near the headline</span>}
         </Row>
       </Section>
 
